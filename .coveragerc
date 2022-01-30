@@ -1,0 +1,6 @@
+[run]
+omit =
+    DiverseSelector/test/*
+
+[report]
+show_missing = True
