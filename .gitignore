@@ -127,3 +127,23 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Editor junk
+tags
+[._]*.s[a-v][a-z]
+[._]*.sw[a-p]
+[._]s[a-v][a-z]
+[._]sw[a-p]
+*~
+\#*\#
+.\#*
+.ropeproject
+.idea/
+.spyderproject
+.spyproject
+.vscode/
+# Mac .DS_Store
+.DS_Store
+
+# jupyter notebook checkpoints
+.ipynb_checkpoints
