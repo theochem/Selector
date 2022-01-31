@@ -288,6 +288,7 @@ import re
 import subprocess
 import sys
 
+# pylint: skip-file
 
 class VersioneerConfig:
     """Container for Versioneer configuration parameters."""
