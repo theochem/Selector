@@ -36,3 +36,4 @@ comment:
   branches:               # branch names that can post comment
     - staging
     - main
+  after_n_builds: 4
