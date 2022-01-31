@@ -34,3 +34,8 @@ comment:
   branches:               # branch names that can post comment
     - staging
     - main
+
+ignore:
+  - "DiverseSelector/_version.py"  # ignore folders and all its contents
+  - "test_*.rb"       # wildcards accepted
+  # - "**/*.pyc"         # glob accepted
