@@ -21,6 +21,7 @@
 #
 # --
 
+"""The main DiverseSelector Package."""
 
 from .dissimilarity_based import *
 

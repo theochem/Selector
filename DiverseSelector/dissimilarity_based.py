@@ -21,6 +21,8 @@
 #
 # --
 
+"""Dissimilarity based diversity subset selection."""
+
 
 def canvas(with_attribution=True):
     """
