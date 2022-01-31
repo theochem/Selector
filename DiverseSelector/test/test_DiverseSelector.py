@@ -21,16 +21,15 @@
 #
 # --
 
-
 """
 Unit and regression test for the DiverseSelector package.
 """
 
-import pytest
-# Import package, test suite, and other packages as needed
 import sys
 
-import DiverseSelector
+
+# import pytest
+# import DiverseSelector
 
 
 def test_DiverseSelector_imported():
