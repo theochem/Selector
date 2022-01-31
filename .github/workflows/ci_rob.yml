@@ -4,10 +4,10 @@ on:
     tags:
       - '[1-9]+.[0-9]+.[0-9]+*'
     branches:
-      - master
+      - main
   pull_request:
     branches:
-      - master
+      - main
 
 jobs:
   # These are quick tests using Python's venv on different Python versions.
