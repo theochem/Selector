@@ -15,4 +15,6 @@ Template adapted from
 - https://github.com/theochem/iodata
 - https://github.com/theochem/DiverseSelector
 
+Contribution guidelines are listed in [How to contribute](.github/CONTRIBUTING.md).
+
 *Please note that this package is under active development and the API is subject to change.*
