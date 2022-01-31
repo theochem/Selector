@@ -64,6 +64,7 @@ jobs:
       uses: codecov/codecov-action@v2
       with:
         fail_ci_if_error: true
-        file: ./coverage.xml
+        files: ./coverage.xml, ./coverage2.xml
         flags: unittests
+        verbose: true # optional (default = false)
         name: codecov-${{ matrix.os }}-py${{ matrix.python-version }}
