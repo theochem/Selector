@@ -62,7 +62,7 @@ jobs:
 
     - name: CodeCov
       # https://github.com/zowe/vscode-extension-for-zowe/blob/master/.github/workflows/zowe-explorer-ci.yml
-      if: matrix.os == "ubuntu-latest" && matrix.matrix.python-version == "3.7"
+      if: ${{ matrix.os }} == "ubuntu-latest" && ${{ matrix.python-version }} == "3.7"
       uses: codecov/codecov-action@v2
       with:
         fail_ci_if_error: true
