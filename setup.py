@@ -23,8 +23,8 @@
 """Setup and Install Script."""
 
 import sys
-from setuptools import find_packages, setup
 
+from setuptools import find_packages, setup
 import versioneer
 
 short_description = "Molecule selection with maximum diversity".split("\n")[0]

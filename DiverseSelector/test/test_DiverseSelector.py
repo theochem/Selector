@@ -32,6 +32,6 @@ import sys
 # import DiverseSelector
 
 
-def test_DiverseSelector_imported():
+def test_diverseselector_imported():
     """Sample test, will always pass so long as import statement worked."""
     assert "DiverseSelector" in sys.modules
