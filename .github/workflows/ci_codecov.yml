@@ -1,4 +1,4 @@
-name: CI Tox
+name: CI CodeCov
 
 on:
   # GitHub has started calling new repo's first branch "main" https://github.com/github/renaming
@@ -24,9 +24,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macOS-latest, windows-latest, ubuntu-latest]
-        # python-version: [3.7, 3.8, 3.9, 3.10]
-        python-version: [3.7, 3.8, 3.9]
+        os: [ubuntu-latest]
+        python-version: [3.7]
 
     steps:
     - uses: actions/checkout@v2
@@ -53,9 +52,17 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         python -m pip install .
-        pip install tox tox-gh-actions
+        # pip install tox tox-gh-actions
 
     - name: Run tests
       shell: bash
       run: |
-        tox
+        pytest --cov-config=tox.ini  --cov-report=xml --color=yes DiverseSelector/test
+
+    - name: CodeCov
+      uses: codecov/codecov-action@v2
+      with:
+        fail_ci_if_error: true
+        file: ./coverage.xml
+        flags: unittests
+        name: codecov-${{ matrix.os }}-py${{ matrix.python-version }}
