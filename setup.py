@@ -24,6 +24,7 @@
 
 import sys
 from setuptools import setup, find_packages
+
 import versioneer
 
 short_description = "Molecule selection with maximum diversity".split("\n")[0]
@@ -35,9 +36,8 @@ pytest_runner = ["pytest-runner"] if needs_pytest else []
 try:
     with open("README.md", "r") as handle:
         long_description = handle.read()
-except:
+except ValueError:
     long_description = short_description
-
 
 setup(
     # Self-descriptive entries which should always be present
@@ -64,8 +64,7 @@ setup(
     # Allows `setup.py test` to work correctly with pytest
     setup_requires=["numpy>=1.21.2",
                     "scipy>=1.7.3",
-                    "pytest>=6.2.4"] +
-                   pytest_runner,
+                    "pytest>=6.2.4"] + pytest_runner,
 
     # Additional entries you may want simply uncomment the lines you want and fill in the data
     url="https://github.com/theochem/DiverseSelector",  # Website
@@ -76,9 +75,10 @@ setup(
     #            "Mac OS-X",
     #            "Unix",
     #            "Windows"],            # Valid platforms your code works on, adjust to your flavor
-    python_requires=">=3.6",          # Python version restrictions
+    python_requires=">=3.7",  # Python version restrictions
 
-    # Manual control if final package is compressible or not, set False to prevent the .egg from being made
+    # Manual control if final package is compressible or not, set False to prevent the .egg
+    # from being made
     # zip_safe=False,
 
     # todo: add classifiers
