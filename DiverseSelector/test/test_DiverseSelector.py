@@ -21,9 +21,7 @@
 #
 # --
 
-"""
-Unit and regression test for the DiverseSelector package.
-"""
+"""Unit and regression test for the DiverseSelector package."""
 
 import sys
 
