@@ -21,12 +21,11 @@
 #
 # --
 
+"""Dissimilarity based diversity subset selection."""
+
 
 def canvas(with_attribution=True):
-    """
-    Placeholder function to show example docstring (NumPy format).
-
-    Replace this function and doc string for your own project.
+    """This is a test and will update later.
 
     Parameters
     ----------
