@@ -25,8 +25,7 @@
 
 
 def canvas(with_attribution=True):
-    """
-    Placeholder function to show example docstring (NumPy format).
+    """Placeholder function to show example docstring (NumPy format).
 
     Parameters
     ----------
