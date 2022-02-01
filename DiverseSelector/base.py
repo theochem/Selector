@@ -83,18 +83,28 @@ class DissimilaritySelectionBase:
         """Select the subset molecules with optimal diversity."""
         pass
 
+    @property
+    def subset_diversity(self):
+        """Selected subset diversity."""
+        pass
+
+    @property
+    def all_diversity(self):
+        """Original dataset diversity."""
+        pass
+
 
 class ClusteringSelectionBase(DissimilaritySelectionBase):
     def __init__(self,
                  clustering_method,
                  num_clusters=None,
-                 enhanced_sampling=None,
+                 enhanced_sampling_method=None,
                  enhanced_sampling_weight=None,
                  ):
         """Base class for clustering based subset selection."""
         self.clustering_method = clustering_method
         self.num_clusters = num_clusters
-        self.enhanced_sampling = enhanced_sampling
+        self.enhanced_sampling_method = enhanced_sampling_method
         self.enhanced_sampling_weight = enhanced_sampling_weight
         super().__init__(self)
 
@@ -106,7 +116,7 @@ class ClusteringSelectionBase(DissimilaritySelectionBase):
         # todo: check how many molecules/percents do we need reserve for sampling
         # check if number of clusters is less than number of molecules when enhanced sampling is
         # enabled
-        if enhanced_sampling is not None:
+        if enhanced_sampling_method is not None:
             if self.num_clusters >= self.num_selected_mols * self.enhanced_sampling_weight:
                 raise ValueError(f"The defined number of clusters {self.num_clusters} is greater "
                                  f"than {self.enhanced_sampling_weight} of number of selected"
