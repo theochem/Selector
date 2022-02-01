@@ -121,3 +121,11 @@ class ClusteringSelectionBase(DissimilaritySelectionBase):
                 raise ValueError(f"The defined number of clusters {self.num_clusters} is greater "
                                  f"than {self.enhanced_sampling_weight} of number of selected"
                                  f"molecules {self.num_selected_mols}.")
+
+    def enhanced_sampling(self):
+        """Enhanced sampling with random sampling or Monte Carlo sampling."""
+        pass
+
+    def select(self):
+        """Add support of clustering and enhanced sampling."""
+        pass
