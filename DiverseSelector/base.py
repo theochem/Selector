@@ -23,10 +23,11 @@
 
 """Base class for diversity based subset selection."""
 
+from abc import ABC, abstractmethod
 from .utils import feature_generator, feature_reader
 
 
-class DissimilaritySelectionBase:
+class DissimilaritySelectionBase(ABC):
     def __init__(self,
                  num_selected,
                  initialization="medoid",
@@ -70,15 +71,18 @@ class DissimilaritySelectionBase:
 
         return features
 
+    @abstractmethod
     def pick_initial_compounds(self):
         """Pick the initial compounds."""
         pass
 
+    @abstractmethod
     def compute_diversity(self):
         """Compute the distance metrics."""
         # for iterative selection and final subset both
         pass
 
+    @abstractmethod
     def select(self):
         """Select the subset molecules with optimal diversity."""
         pass
@@ -86,15 +90,17 @@ class DissimilaritySelectionBase:
     @property
     def subset_diversity(self):
         """Selected subset diversity."""
-        pass
+        # todo: need to implement diversity measurement here
+        return None
 
     @property
     def all_diversity(self):
         """Original dataset diversity."""
-        pass
+        # todo: need to implement diversity measurement here
+        return None
 
 
-class ClusteringSelectionBase(DissimilaritySelectionBase):
+class ClusteringSelectionBase(DissimilaritySelectionBase, ABC):
     def __init__(self,
                  clustering_method,
                  num_clusters=None,
