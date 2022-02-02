@@ -27,6 +27,7 @@ __all__ = [
     "mol_reader",
     "feature_reader",
     "feature_generator",
+    "get_features",
 ]
 
 
@@ -43,3 +44,25 @@ def feature_reader():
 def feature_generator():
     """Molecule feature generation."""
     pass
+
+
+def get_features(mol_file,
+                 feature_file,
+                 ):
+    """Compute molecular features."""
+    # todo: can be refactored to run faster
+
+    # case: feature is not None, mol is None
+    if mol_file is None and feature_file is not None:
+        features = feature_reader(feature_file)
+    # case: feature is None, mol is not None
+    elif mol_file is not None and feature_file is None:
+        features = feature_generator(mol_file)
+    # case: feature is not None, mol is not None
+    elif mol_file is not None and feature_file is not None:
+        features = feature_reader(feature_file)
+    # case: feature is None, mol is None
+    else:
+        raise ValueError("It is required to define the input molecule file or feature file.")
+
+    return features
