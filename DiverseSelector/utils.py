@@ -26,7 +26,6 @@
 __all__ = [
     "mol_reader",
     "feature_reader",
-    "feature_generator",
     "get_features",
 ]
 
@@ -38,11 +37,6 @@ def mol_reader():
 
 def feature_reader():
     """Load molecule features/descriptors."""
-    pass
-
-
-def feature_generator():
-    """Molecule feature generation."""
     pass
 
 
