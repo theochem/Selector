@@ -22,15 +22,17 @@
 # --
 
 """Feature generation module."""
-
-import deepchem as dc
 import numpy as np
 import pandas as pd
 from e3fp.pipeline import fprints_from_mol
 from mhfp.encoder import MHFPEncoder
+from mordred import Calculator, descriptors
 from rdkit import Chem
 from rdkit.Chem import AllChem, MACCSkeys, PandasTools, Descriptors
 from rdkit.Chem import rdMHFPFingerprint
+
+from .utils import PandasDataFrame, RDKitMol
+
 
 # feature generation
 def feature_generator():
@@ -44,27 +46,24 @@ def feature_filtering():
     pass
 
 
-def mordred_generation_from_inchi(
-        excel_in="../data_source/complete_solv_energies_id_20210811_v3.xlsx",
-        excel_out="mordred_2d_descriptors.xlsx"):
-    """Mordred molecular descriptor generation."""
-    # load molecules
-    # suppl = Chem.SDMolSupplier(sdf_in, removeHs=False, sanitize=False)
-    # mols = [mol for mol in suppl]
-    df = pd.read_excel(excel_in)
-    smi_list = []
-    for _, row in df.iterrows():
-        inchi_str = row["inchi"]
-        mol = Chem.inchi.MolFromInchi(inchi_str)
-        mol = Chem.AddHs(mol)
-        smi = Chem.MolToSmiles(mol)
-        smi_list.append(smi)
+def mordred_descriptors(mols: list) -> PandasDataFrame:
+    """Mordred molecular descriptor generation.
 
-    featurizer = dc.feat.MordredDescriptors(ignore_3D=False)
-    features = featurizer.featurize(smi_list)
+    Parameters
+    ----------
+    mols : list
+        A list of molecules.
 
-    df_features = pd.DataFrame(index=df["ChembiSolvExp_id"], data=features)
-    df_features.to_excel(excel_out)
+    Returns
+    -------
+    df_features: PandasDataFrame
+        A `pandas.DataFrame` object with compute Mordred descriptors.
+
+    """
+    # if only compute 2D descriptors,
+    # ignore_3D=True
+    calc = Calculator(descriptors, ignore_3D=False)
+    df_features = calc.pandas(mols)
 
     return df_features
 
@@ -105,83 +104,83 @@ def rdkit_descriptor_from_sdf(
 
     Notes
     =====
-
     """
-    df = pd.read_excel(excel_in)
-    # load molecules
-    suppl = Chem.SDMolSupplier(sdf_in, removeHs=False, sanitize=True)
-    mols = [mol for mol in suppl]
-    mol_names = [mol.GetProp("_Name") for mol in mols]
-    df_mols = pd.DataFrame(list(zip(mols, mol_names)), columns=["mol", "ChembiSolvExp_id"])
-    df = df.merge(df_mols, how="inner", on="ChembiSolvExp_id")
-    # df = pd.concat([df, df_mols], join="inner", axis=1)
-    # df = df[df["ChembiSolvExp_id"].isin(mol_names)]
 
-    # have to remove CSE_810, H2, to make it work
-    # todo: need a fix here in the future
-    # drop CSE_810
-    # because H2 has problems with rdkit.Chem.Descriptors.FpDensityMorgan1(x)
-    dropped_records = ["CSE_810"]
-    df = df[~df["ChembiSolvExp_id"].isin(dropped_records)]
-    # df = df.drop(df[df["ChembiSolvExp_id"] == "CSE_810"].index)
+    # parsing descriptor information
+    desc_list = []
+    descriptor_types = []
+    for descriptor, function in Descriptors.descList:
+        if use_fragment is False and descriptor.startswith("fr_"):
+            continue
+        descriptor_types.append(descriptor)
+        desc_list.append((descriptor, function))
 
-    # featurizer = RDKitDescriptors(use_fragment=True, ipc_avg=True)
-    featurizer = dc.feat.RDKitDescriptors(use_fragment=True, ipc_avg=True)
-    features = featurizer.featurize(df["mol"].to_list())
+    # check initialization
+    assert len(descriptor_types) == len(desc_list)
 
-    df_records = pd.DataFrame()
-    df_records["ChembiSolvExp_id"] = df["ChembiSolvExp_id"]
-    df_records["diff_SMD_chembisolv"] = df["diff_SMD_chembisolv"]
+    arr_features = [_rdkit_descriptors_low(mol, desc_list=desc_list, ipc_avg=ipc_avg, *kwargs)
+                    for mol in mols]
+    df_features = pd.DataFrame(arr_features, columns=descriptor_types)
 
-    df_features = pd.DataFrame(index=df["ChembiSolvExp_id"], data=features)
-
-    df_features_out = df_records.merge(df_features, how="inner", on="ChembiSolvExp_id")
-    df_features_out.to_excel(excel_out, index=None)
-
-    return df_features_out
+    return df_features
 
 
-def rdkit_fragment_features(excel_in="../data_source/complete_solv_energies_id_20210811_v3.xlsx",
-                            sdf_in="../data_source/ChembiSolvExp_aqueous_optimized_clean.sdf",
-                            excel_out="rdkit_fragment_features.xlsx"):
-    """RDKit fragment features. http://rdkit.org/docs/source/rdkit.Chem.Fragments.html"""
-    df = pd.read_excel(excel_in, engine="openpyxl")
-    # load molecules
-    suppl = Chem.SDMolSupplier(sdf_in, removeHs=False, sanitize=True)
-    mols = [mol for mol in suppl]
-    mol_names = [mol.GetProp("_Name") for mol in mols]
-    df_mols = pd.DataFrame(list(zip(mols, mol_names)), columns=["mol", "ChembiSolvExp_id"])
-    df = df.merge(df_mols, how="inner", on="ChembiSolvExp_id")
-    # df = pd.concat([df, df_mols], join="inner", axis=1)
-    # df = df[df["ChembiSolvExp_id"].isin(mol_names)]
+# this part is modified from
+# https://github.com/deepchem/deepchem/blob/master/deepchem/feat/molecule_featurizers/
+# rdkit_descriptors.py#L11-L98
+def _rdkit_descriptors_low(mol: RDKitMol,
+                           desc_list: list,
+                           ipc_avg: bool = True,
+                           **kwargs) -> list:
+    """Calculate RDKit descriptors.
 
-    # have to remove CSE_810, H2, to make it work
-    # todo: need a fix here in the future
-    # drop CSE_810
-    # because H2 has problems with rdkit.Chem.Descriptors.FpDensityMorgan1(x)
-    dropped_records = ["CSE_810"]
-    df = df[~df["ChembiSolvExp_id"].isin(dropped_records)]
-    df.reset_index(drop=True, inplace=True)
-    # df = df.drop(df[df["ChembiSolvExp_id"] == "CSE_810"].index)
+    Parameters
+    ----------
+    mol : rdkit.Chem.rdchem.Mol
+        RDKit Mol object.
+    desc_list: list
+        A list of tuples, which contain descriptor types and functions.
+    use_fragment : bool, optional
+        If True, the return value includes the fragment binary descriptors like "fr_XXX".
+        Default=True.
+    ipc_avg : bool, optional
+        If True, the IPC descriptor calculates with avg=True option. Default=True
 
-    # this implementation is taken from https://github.com/Ryan-Rhys/FlowMO/blob/e221d989914f906501e1ad19cd3629d88eac1785/property_prediction/data_utils.py#L111
+    Returns
+    -------
+    features : list
+        1D list of RDKit descriptors for `mol`. The length is `len(descriptors)`.
+    """
+    if "mol" in kwargs:
+        mol = kwargs.get("mol")
+        raise DeprecationWarning(
+            "Mol is being phased out as a parameter, please pass RDKit mol object instead.")
+
+    features = []
+    for desc_name, function in desc_list:
+        if desc_name == "Ipc" and ipc_avg:
+            feature = function(mol, avg=True)
+        else:
+            feature = function(mol)
+        features.append(feature)
+    # return np.asarray(features)
+    return features
+
+
+def rdkit_fragment_features(mols: list):
+    """RDKit fragment features."""
+    # http://rdkit.org/docs/source/rdkit.Chem.Fragments.html
+    # this implementation is taken from https://github.com/Ryan-Rhys/FlowMO/blob/
+    # e221d989914f906501e1ad19cd3629d88eac1785/property_prediction/data_utils.py#L111
     fragments = {d[0]: d[1] for d in Descriptors.descList[115:]}
-    X = np.zeros((df.shape[0], len(fragments)))
-    for idx, row in df.iterrows():
-        mol = row["mol"]
+    frag_features = np.zeros((len(mols), len(fragments)))
+    for idx, mol in enumerate(mols):
         features = [fragments[d](mol) for d in fragments]
-        X[idx, :] = features
+        frag_features[idx, :] = features
 
-    df_records = pd.DataFrame()
-    df_records["ChembiSolvExp_id"] = df["ChembiSolvExp_id"]
-    df_records["diff_SMD_chembisolv"] = df["diff_SMD_chembisolv"]
+    df_features = pd.DataFrame(data=frag_features, columns=Descriptors.descList[115:])
 
-    df_features = pd.DataFrame(index=df["ChembiSolvExp_id"], data=X)
-
-    df_features_out = df_records.merge(df_features, how="inner", on="ChembiSolvExp_id")
-    df_features_out.to_excel(excel_out, index=None)
-
-    return df_features_out
+    return df_features
 
 
 def fingerprint_generator(mol,
@@ -307,7 +306,7 @@ def e3fp_fingerprint(n_bits=2048,
     # filter out molecules with only two atoms as /e3fp/fingerprint/fprinter.py line 547,
     # requires a 2-dimensional array
     # in __init__
-    #     self.distance_matrix = array_ops.make_distance_matrix(atom_coords)
+    #     distance_matrix = array_ops.make_distance_matrix(atom_coords)
     mols_doable = [mol for mol in mols if mol.GetNumAtoms() != 2]
     mols_not_doable = [mol for mol in mols if mol.GetNumAtoms() == 2]
     # molecular name for diatomic molecule
