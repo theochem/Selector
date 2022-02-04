@@ -68,37 +68,11 @@ def mordred_descriptors(mols: list) -> PandasDataFrame:
     return df_features
 
 
-def mordred_generation_from_sdf(
-        excel_in="../data_source/complete_solv_energies_id_20210811_v3.xlsx",
-        sdf_in="../data_source/ChembiSolvExp_aqueous_optimized_clean.sdf",
-        excel_out="mordred_3d_descriptors.xlsx"):
-    """Mordred molecular descriptor generation."""
-    df = pd.read_excel(excel_in)
-    # load molecules
-    suppl = Chem.SDMolSupplier(sdf_in, removeHs=False, sanitize=True)
-    mols = [mol for mol in suppl]
-    mol_names = [mol.GetProp("_Name") for mol in mols]
-    df_mols = pd.DataFrame(list(zip(mols, mol_names)), columns=["mol", "ChembiSolvExp_id"])
-    df = df.merge(df_mols, how="inner", on="ChembiSolvExp_id")
-
-    featurizer = dc.feat.MordredDescriptors(ignore_3D=False)
-    features = featurizer.featurize(df["mol"].to_list())
-
-    df_records = pd.DataFrame()
-    df_records["ChembiSolvExp_id"] = df["ChembiSolvExp_id"]
-    df_records["diff_SMD_chembisolv"] = df["diff_SMD_chembisolv"]
-
-    df_features = pd.DataFrame(index=df["ChembiSolvExp_id"], data=features)
-    df_features_out = df_records.merge(df_features, how="inner", on="ChembiSolvExp_id")
-    df_features_out.to_excel(excel_out, index=None)
-
-    return df_features_out
-
-
-def rdkit_descriptor_from_sdf(
-        excel_in="../data_source/complete_solv_energies_id_20210811_v3.xlsx",
-        sdf_in="../data_source/ChembiSolvExp_aqueous_optimized_clean.sdf",
-        excel_out="rdkit_3d_descriptors.xlsx"):
+def rdkit_descriptors(mols: list,
+                      use_fragment: bool = True,
+                      ipc_avg: bool = True,
+                      **kwargs,
+                      ):
     """
     Rdkit molecular descriptor generation.
 
