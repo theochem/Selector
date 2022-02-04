@@ -23,7 +23,9 @@
 
 """Utils module."""
 import gzip
+from typing import TypeVar
 
+import pandas as pd
 from rdkit import Chem
 
 __all__ = [
@@ -31,6 +33,8 @@ __all__ = [
     "feature_reader",
     "get_features",
 ]
+
+PandasDataFrame = TypeVar('pandas.core.frame.DataFrame')
 
 
 def mol_reader(file_name: str,
@@ -89,12 +93,43 @@ def mol_reader(file_name: str,
 
     return mols
 
-    pass
 
+def feature_reader(file_name: str,
+                   sep: str = ",",
+                   engine: str = "python",
+                   **kwargs,
+                   ) -> PandasDataFrame:
+    """Load molecule features/descriptors.
 
-def feature_reader():
-    """Load molecule features/descriptors."""
-    pass
+    Parameters
+    ----------
+    file_name : str
+        File name that provides molecular features.
+    sep : str, optional
+        Separator use for CSV like files. Default=",".
+    engine : str, optional
+        Engine name used for reading files, where "python" supports regular expression for CSV
+        formats, “xlrd” supports old-style Excel files (.xls), “openpyxl” supports newer Excel file
+        formats, “odf” supports OpenDocument file formats (.odf, .ods, .odt), “pyxlsb” supports
+        binary Excel files. One should note that the dependency should be installed properly to
+        make it work. Default="python".
+    **kwargs
+        Additional keyword arguments passed to
+        `pd.read_csv()<https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html>`_
+        or `pd.read_excel()<https://pandas.pydata.org/docs/reference/api/pandas.read_excel.html>`_.
+
+    Returns
+    -------
+    df : PandasDataFrame
+        A `pandas.DataFrame` object with molecular features.
+    """
+
+    if file_name.lower().endswith((".csv", ".txt")):
+        df = pd.read_csv(file_name, sep=sep, engine=engine, *kwargs)
+    elif file_name.lower().endswith((".xlsx", ".xls", "xlsb", ".odf", ".ods", ".odt")):
+        df = pd.read_excel(file_name, engine=engine, *kwargs)
+
+    return df
 
 
 def get_features(mol_file,
