@@ -24,6 +24,7 @@
 """Feature generation module."""
 import os
 import sys
+from typing import Any
 
 import numpy as np
 import pandas as pd
@@ -38,7 +39,7 @@ from rdkit.Chem import rdMHFPFingerprint
 from .utils import PandasDataFrame, RDKitMol
 
 __all__ = [
-    "descriptor_generator",
+    "DescriptorGenerator",
     "fingerprint_generator",
     "feature_filtering",
 ]
@@ -77,8 +78,9 @@ class DescriptorGenerator:
         # self.__dict__.update(kwargs)
 
     def descriptor_generator(self,
-                             **kwargs):
-        """Molecule feature generation."""
+                             **kwargs: Any,
+                             ):
+        """Molecule descriptor generation."""
         if self.desc_type.lower() == "mordred":
             df_features = self.mordred_descriptors(self.mols)
         elif self.desc_type.lower() == "padel":
@@ -158,14 +160,27 @@ class DescriptorGenerator:
                           use_fragment: bool = True,
                           ipc_avg: bool = True,
                           **kwargs,
-                          ):
-        """
-        Rdkit molecular descriptor generation.
+                          ) -> PandasDataFrame:
+        """RDKit molecular descriptor generation.
 
-        Notes
-        =====
-        """
+        Parameters
+        ----------
+        mols : list
+            A list of molecule RDKitMol objects.
+        use_fragment : bool, optional
+            If True, the return value includes the fragment binary descriptors like "fr_XXX".
+            Default=True.
+        ipc_avg : bool, optional
+            If True, the IPC descriptor calculates with avg=True option. Default=True
+        **kwargs : Any, optional
+            Other parameters that can be passed to `_rdkit_descriptors_low()`.
 
+        Returns
+        -------
+        df_features: PandasDataFrame
+            A `pandas.DataFrame` object with compute Mordred descriptors.
+
+        """
         # parsing descriptor information
         desc_list = []
         descriptor_types = []
@@ -185,8 +200,20 @@ class DescriptorGenerator:
         return df_features
 
     @staticmethod
-    def rdkit_fragment_descriptors(mols: list):
-        """RDKit fragment features."""
+    def rdkit_fragment_descriptors(mols: list) -> PandasDataFrame:
+        """RDKit fragment features.
+
+        Parameters
+        ----------
+        mols : list
+            A list of molecule RDKitMol objects.
+
+        Returns
+        -------
+        df_features: PandasDataFrame
+            A `pandas.DataFrame` object with compute Mordred descriptors.
+
+        """
         # http://rdkit.org/docs/source/rdkit.Chem.Fragments.html
         # this implementation is taken from https://github.com/Ryan-Rhys/FlowMO/blob/
         # e221d989914f906501e1ad19cd3629d88eac1785/property_prediction/data_utils.py#L111
