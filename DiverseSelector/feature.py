@@ -47,124 +47,143 @@ cwd = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(cwd, "padelpy"))
 
 
-# feature generation
-def descriptor_generator(mols: list,
-                         desc_type: str,
-                         use_fragment: bool = True,
-                         ipc_avg: bool = True,
-                         **kwargs):
-    """Molecule feature generation."""
-    if desc_type.lower() == "mordred":
-        df_features = mordred_descriptors(mols)
-    elif desc_type.lower() == "padel":
-        df_features = padelpy_descriptors(mols)
-    elif desc_type.lower() == "rdkit":
-        df_features = rdkit_descriptors(mols,
-                                        use_fragment=use_fragment,
-                                        ipc_avg=ipc_avg,
-                                        *kwargs)
-    elif desc_type.lower() == "rdkit_frag":
-        df_features = rdkit_fragment_descriptors(mols)
-    else:
-        raise ValueError(f"Unknown descriptor type {desc_type}.")
+class DescriptorGenerator:
+    def __init__(self,
+                 mols: list,
+                 desc_type: str,
+                 use_fragment: bool = True,
+                 ipc_avg: bool = True,
+                 ) -> None:
+        self.mols = mols
+        self.desc_type = desc_type
+        self.use_fragment = use_fragment
+        self.ipc_avg = ipc_avg
+        # self.__dict__.update(kwargs)
 
-    return df_features
+    def descriptor_generator(self,
+                             **kwargs):
+        """Molecule feature generation."""
+        if self.desc_type.lower() == "mordred":
+            df_features = self.mordred_descriptors(self.mols)
+        elif self.desc_type.lower() == "padel":
+            df_features = self.padelpy_descriptors(self.mols)
+        elif self.desc_type.lower() == "rdkit":
+            df_features = self.rdkit_descriptors(self.mols,
+                                                 use_fragment=self.use_fragment,
+                                                 ipc_avg=self.ipc_avg,
+                                                 *kwargs)
+        elif self.desc_type.lower() == "rdkit_frag":
+            df_features = self.rdkit_fragment_descriptors(self.mols)
+        else:
+            raise ValueError(f"Unknown descriptor type {self.desc_type}.")
 
+        return df_features
 
-# feature selection
-def feature_filtering():
-    """Feature selection."""
-    # todo: add feature selection for binary fingerprints
-    pass
+    @staticmethod
+    def mordred_descriptors(mols: list) -> PandasDataFrame:
+        """Mordred molecular descriptor generation.
 
+        Parameters
+        ----------
+        mols : list
+            A list of molecule RDKitMol objects.
 
-def mordred_descriptors(mols: list) -> PandasDataFrame:
-    """Mordred molecular descriptor generation.
+        Returns
+        -------
+        df_features: PandasDataFrame
+            A `pandas.DataFrame` object with compute Mordred descriptors.
 
-    Parameters
-    ----------
-    mols : list
-        A list of molecule RDKitMol objects.
+        """
+        # if only compute 2D descriptors,
+        # ignore_3D=True
+        calc = Calculator(descriptors, ignore_3D=False)
+        df_features = pd.DataFrame(calc.pandas(mols))
 
-    Returns
-    -------
-    df_features: PandasDataFrame
-        A `pandas.DataFrame` object with compute Mordred descriptors.
+        return df_features
 
-    """
-    # if only compute 2D descriptors,
-    # ignore_3D=True
-    calc = Calculator(descriptors, ignore_3D=False)
-    df_features = calc.pandas(mols)
+    @staticmethod
+    def padelpy_descriptors(mols: list) -> PandasDataFrame:
+        """PADEL molecular descriptor generation.
 
-    return df_features
+        Parameters
+        ----------
+        mols : list
+            A list of molecule RDKitMol objects.
 
+        Returns
+        -------
+        df_features: PandasDataFrame
+            A `pandas.DataFrame` object with compute Mordred descriptors.
 
-def padelpy_descriptors(mols: list) -> PandasDataFrame:
-    """PADEL molecular descriptor generation.
+        """
+        # if only compute 2D descriptors,
+        # ignore_3D=True
 
-    Parameters
-    ----------
-    mols : list
-        A list of molecule RDKitMol objects.
+        # save file temporarily
+        writer = Chem.SDWriter("padelpy_out_tmp.sdf")
+        for mol in mols:
+            writer.write(mol)
+        writer.close()
 
-    Returns
-    -------
-    df_features: PandasDataFrame
-        A `pandas.DataFrame` object with compute Mordred descriptors.
+        desc = from_sdf(sdf_file="padelpy_out_tmp.sdf",
+                        output_csv=None,
+                        descriptors=True,
+                        fingerprints=False,
+                        timeout=None)
+        df_features = pd.DataFrame(desc)
 
-    """
-    # if only compute 2D descriptors,
-    # ignore_3D=True
+        # delete temporary file
+        os.remove("padelpy_out_tmp.sdf")
 
-    # save file temporarily
-    writer = Chem.SDWriter("padelpy_out_tmp.sdf")
-    for mol in mols:
-        writer.write(mol)
-    writer.close()
+        return df_features
 
-    desc = from_sdf(sdf_file="padelpy_out_tmp.sdf",
-                    output_csv=None,
-                    descriptors=True,
-                    fingerprints=False,
-                    timeout=None)
-    df_features = pd.DataFrame(desc)
+    @staticmethod
+    def rdkit_descriptors(mols: list,
+                          use_fragment: bool = True,
+                          ipc_avg: bool = True,
+                          **kwargs,
+                          ):
+        """
+        Rdkit molecular descriptor generation.
 
-    # delete temporary file
-    os.remove("padelpy_out_tmp.sdf")
+        Notes
+        =====
+        """
 
-    return df_features
+        # parsing descriptor information
+        desc_list = []
+        descriptor_types = []
+        for descriptor, function in Descriptors.descList:
+            if use_fragment is False and descriptor.startswith("fr_"):
+                continue
+            descriptor_types.append(descriptor)
+            desc_list.append((descriptor, function))
 
+        # check initialization
+        assert len(descriptor_types) == len(desc_list)
 
-def rdkit_descriptors(mols: list,
-                      use_fragment: bool = True,
-                      ipc_avg: bool = True,
-                      **kwargs,
-                      ):
-    """
-    Rdkit molecular descriptor generation.
+        arr_features = [_rdkit_descriptors_low(mol, desc_list=desc_list, ipc_avg=ipc_avg, *kwargs)
+                        for mol in mols]
+        df_features = pd.DataFrame(arr_features, columns=descriptor_types)
 
-    Notes
-    =====
-    """
+        return df_features
 
-    # parsing descriptor information
-    desc_list = []
-    descriptor_types = []
-    for descriptor, function in Descriptors.descList:
-        if use_fragment is False and descriptor.startswith("fr_"):
-            continue
-        descriptor_types.append(descriptor)
-        desc_list.append((descriptor, function))
+    @staticmethod
+    def rdkit_fragment_descriptors(mols: list):
+        """RDKit fragment features."""
+        # http://rdkit.org/docs/source/rdkit.Chem.Fragments.html
+        # this implementation is taken from https://github.com/Ryan-Rhys/FlowMO/blob/
+        # e221d989914f906501e1ad19cd3629d88eac1785/property_prediction/data_utils.py#L111
+        fragments = {d[0]: d[1] for d in Descriptors.descList[115:]}
+        frag_features = np.zeros((len(mols), len(fragments)))
+        for idx, mol in enumerate(mols):
+            features = [fragments[d](mol) for d in fragments]
+            frag_features[idx, :] = features
 
-    # check initialization
-    assert len(descriptor_types) == len(desc_list)
+        feature_names = [desc[0] for desc in Descriptors.descList[115:]]
+        df_features = pd.DataFrame(data=frag_features, columns=feature_names)
 
-    arr_features = [_rdkit_descriptors_low(mol, desc_list=desc_list, ipc_avg=ipc_avg, *kwargs)
-                    for mol in mols]
-    df_features = pd.DataFrame(arr_features, columns=descriptor_types)
-
-    return df_features
+        return df_features
 
 
 # this part is modified from
@@ -209,21 +228,11 @@ def _rdkit_descriptors_low(mol: RDKitMol,
     return features
 
 
-def rdkit_fragment_descriptors(mols: list):
-    """RDKit fragment features."""
-    # http://rdkit.org/docs/source/rdkit.Chem.Fragments.html
-    # this implementation is taken from https://github.com/Ryan-Rhys/FlowMO/blob/
-    # e221d989914f906501e1ad19cd3629d88eac1785/property_prediction/data_utils.py#L111
-    fragments = {d[0]: d[1] for d in Descriptors.descList[115:]}
-    frag_features = np.zeros((len(mols), len(fragments)))
-    for idx, mol in enumerate(mols):
-        features = [fragments[d](mol) for d in fragments]
-        frag_features[idx, :] = features
-
-    feature_names = [desc[0] for desc in Descriptors.descList[115:]]
-    df_features = pd.DataFrame(data=frag_features, columns=feature_names)
-
-    return df_features
+# feature selection
+def feature_filtering():
+    """Feature selection."""
+    # todo: add feature selection for binary fingerprints
+    pass
 
 
 def fingerprint_generator(input_mol_fname,
