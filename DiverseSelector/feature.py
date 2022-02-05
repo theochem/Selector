@@ -50,10 +50,26 @@ sys.path.append(os.path.join(cwd, "padelpy"))
 class DescriptorGenerator:
     def __init__(self,
                  mols: list,
-                 desc_type: str,
+                 desc_type: str = "mordred",
                  use_fragment: bool = True,
                  ipc_avg: bool = True,
                  ) -> None:
+        """Molecular descriptor calculations.
+
+        Parameters
+        ----------
+        mols : list
+            A list of molecule RDKitMol objects.
+        desc_type : str, optional
+            Descriptor type name, which can be "mordred", "padel", "rdkit", "rdkit_frag",
+            or the capitalized version. Default="mordred".
+        use_fragment : bool, optional
+            If True, the return value includes the fragment binary descriptors like "fr_XXX".
+            Default=True.
+        ipc_avg : bool, optional
+            If True, the IPC descriptor calculates with avg=True option. Default=True
+
+        """
         self.mols = mols
         self.desc_type = desc_type
         self.use_fragment = use_fragment
