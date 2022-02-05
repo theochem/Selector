@@ -22,27 +22,59 @@
 # --
 
 """Feature generation module."""
+import os
+import sys
+
 import numpy as np
 import pandas as pd
 from e3fp.pipeline import fprints_from_mol
 from mhfp.encoder import MHFPEncoder
 from mordred import Calculator, descriptors
+from padelpy import from_sdf
 from rdkit import Chem
 from rdkit.Chem import AllChem, MACCSkeys, PandasTools, Descriptors
 from rdkit.Chem import rdMHFPFingerprint
 
 from .utils import PandasDataFrame, RDKitMol
 
+__all__ = [
+    "descriptor_generator",
+    "fingerprint_generator",
+    "feature_filtering",
+]
+
+cwd = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.join(cwd, "padelpy"))
+
 
 # feature generation
-def feature_generator():
+def descriptor_generator(mols: list,
+                         desc_type: str,
+                         use_fragment: bool = True,
+                         ipc_avg: bool = True,
+                         **kwargs):
     """Molecule feature generation."""
-    pass
+    if desc_type.lower() == "mordred":
+        df_features = mordred_descriptors(mols)
+    elif desc_type.lower() == "padel":
+        df_features = padelpy_descriptors(mols)
+    elif desc_type.lower() == "rdkit":
+        df_features = rdkit_descriptors(mols,
+                                        use_fragment=use_fragment,
+                                        ipc_avg=ipc_avg,
+                                        *kwargs)
+    elif desc_type.lower() == "rdkit_frag":
+        df_features = rdkit_fragment_descriptors(mols)
+    else:
+        raise ValueError(f"Unknown descriptor type {desc_type}.")
+
+    return df_features
 
 
 # feature selection
 def feature_filtering():
     """Feature selection."""
+    # todo: add feature selection for binary fingerprints
     pass
 
 
@@ -52,7 +84,7 @@ def mordred_descriptors(mols: list) -> PandasDataFrame:
     Parameters
     ----------
     mols : list
-        A list of molecules.
+        A list of molecule RDKitMol objects.
 
     Returns
     -------
@@ -64,6 +96,42 @@ def mordred_descriptors(mols: list) -> PandasDataFrame:
     # ignore_3D=True
     calc = Calculator(descriptors, ignore_3D=False)
     df_features = calc.pandas(mols)
+
+    return df_features
+
+
+def padelpy_descriptors(mols: list) -> PandasDataFrame:
+    """PADEL molecular descriptor generation.
+
+    Parameters
+    ----------
+    mols : list
+        A list of molecule RDKitMol objects.
+
+    Returns
+    -------
+    df_features: PandasDataFrame
+        A `pandas.DataFrame` object with compute Mordred descriptors.
+
+    """
+    # if only compute 2D descriptors,
+    # ignore_3D=True
+
+    # save file temporarily
+    writer = Chem.SDWriter("padelpy_out_tmp.sdf")
+    for mol in mols:
+        writer.write(mol)
+    writer.close()
+
+    desc = from_sdf(sdf_file="padelpy_out_tmp.sdf",
+                    output_csv=None,
+                    descriptors=True,
+                    fingerprints=False,
+                    timeout=None)
+    df_features = pd.DataFrame(desc)
+
+    # delete temporary file
+    os.remove("padelpy_out_tmp.sdf")
 
     return df_features
 
@@ -141,7 +209,7 @@ def _rdkit_descriptors_low(mol: RDKitMol,
     return features
 
 
-def rdkit_fragment_features(mols: list):
+def rdkit_fragment_descriptors(mols: list):
     """RDKit fragment features."""
     # http://rdkit.org/docs/source/rdkit.Chem.Fragments.html
     # this implementation is taken from https://github.com/Ryan-Rhys/FlowMO/blob/
@@ -157,7 +225,16 @@ def rdkit_fragment_features(mols: list):
     return df_features
 
 
-def fingerprint_generator(mol,
+def fingerprint_generator(input_mol_fname,
+                          out_excel_fname,
+                          inchi_col_name=None,
+                          delimiter=",",
+                          # smiles_column=0,
+                          # name_column=1,
+                          header=0,
+                          # title_line=True,
+                          sanitize=True,
+                          removeHs=False,
                           fingerprint_name="MHFP",
                           n_bits=2048,
                           radius=3,
@@ -166,10 +243,70 @@ def fingerprint_generator(mol,
                           rings=True,
                           isomeric=True,
                           kekulize=False,
-                          sanitize=True,
                           ):
+    """Wrapper to compute molecular fingerprints."""
+
+    # file format determination
+    if input_mol_fname.lower().endswith(".sdf"):
+        # suppl = Chem.SDMolSupplier(input_mol_fname, sanitize=sanitize, removeHs=False)
+        df = PandasTools.LoadSDF(input_mol_fname,
+                                 idName="ID",
+                                 molColName="ROMol",
+                                 includeFingerprints=False,
+                                 isomericSmiles=isomeric,
+                                 smilesName=None,
+                                 embedProps=False,
+                                 removeHs=removeHs,
+                                 strictParsing=True)
+
+    elif input_mol_fname.lower().endswith(".smi") or input_mol_fname.lower().endswith(".csv"):
+        df = pd.read_csv(input_mol_fname, sep=delimiter, header=header)
+        df["ROMol"] = df[inchi_col_name].apply(lambda x: Chem.inchi.MolFromInchi(x,
+                                                                                 removeHs=removeHs,
+                                                                                 sanitize=sanitize))
+    elif input_mol_fname.lower().endswith(".xlsx") or input_mol_fname.lower().endswith(".xls"):
+        df = pd.read_excel(input_mol_fname, header=header, engine="openpyxl")
+        df["ROMol"] = df[inchi_col_name].apply(lambda x: Chem.inchi.MolFromInchi(x,
+                                                                                 removeHs=removeHs,
+                                                                                 sanitize=sanitize))
+
+    else:
+        raise NotImplementedError("We only support SDF, SMI, XLSX and CSV file formats only.")
+
+    # compute molecular fingerprints
+    for idx, row in df.iterrows():
+        fp = rdkit_fingerprint(mol=row["ROMol"],
+                               fingerprint_name=fingerprint_name,
+                               n_bits=n_bits,
+                               radius=radius,
+                               min_radius=min_radius,
+                               random_seed=random_seed,
+                               rings=rings,
+                               isomeric=isomeric,
+                               kekulize=kekulize,
+                               sanitize=sanitize,
+                               )
+        df.loc[idx, "fingerprint"] = fp
+
+    # save computed fingerprint along with other records
+    df.drop(["ROMol"], axis=1, inplace=True)
+    df.to_excel(out_excel_fname, index=None)
+
+
+def rdkit_fingerprint(mol,
+                      fingerprint_name="MHFP",
+                      n_bits=2048,
+                      radius=3,
+                      min_radius=1,
+                      random_seed=12345,
+                      rings=True,
+                      isomeric=True,
+                      kekulize=False,
+                      sanitize=True,
+                      ):
     """
     Generate required molecular fingerprints.
+
     Parameters
     ----------
     fingerprint_name : str, optional
@@ -355,71 +492,3 @@ def MHFP_fingerprint(n_bits=2048,
     df_result = pd.concat([df_key_info, df_mhfp], axis=1)
 
     df_result.to_excel(output_fname, index=None)
-
-
-def fingerprint_generator_wrapper(input_mol_fname,
-                                  out_excel_fname,
-                                  inchi_col_name=None,
-                                  delimiter=",",
-                                  # smiles_column=0,
-                                  # name_column=1,
-                                  header=0,
-                                  # title_line=True,
-                                  sanitize=True,
-                                  removeHs=False,
-                                  fingerprint_name="MHFP",
-                                  n_bits=2048,
-                                  radius=3,
-                                  min_radius=1,
-                                  random_seed=12345,
-                                  rings=True,
-                                  isomeric=True,
-                                  kekulize=False,
-                                  ):
-    """Wrapper to compute molecular fingerprints."""
-
-    # file format determination
-    if input_mol_fname.lower().endswith(".sdf"):
-        # suppl = Chem.SDMolSupplier(input_mol_fname, sanitize=sanitize, removeHs=False)
-        df = PandasTools.LoadSDF(input_mol_fname,
-                                 idName="ID",
-                                 molColName="ROMol",
-                                 includeFingerprints=False,
-                                 isomericSmiles=isomeric,
-                                 smilesName=None,
-                                 embedProps=False,
-                                 removeHs=removeHs,
-                                 strictParsing=True)
-
-    elif input_mol_fname.lower().endswith(".smi") or input_mol_fname.lower().endswith(".csv"):
-        df = pd.read_csv(input_mol_fname, sep=delimiter, header=header)
-        df["ROMol"] = df[inchi_col_name].apply(lambda x: Chem.inchi.MolFromInchi(x,
-                                                                                 removeHs=removeHs,
-                                                                                 sanitize=sanitize))
-    elif input_mol_fname.lower().endswith(".xlsx") or input_mol_fname.lower().endswith(".xls"):
-        df = pd.read_excel(input_mol_fname, header=header, engine="openpyxl")
-        df["ROMol"] = df[inchi_col_name].apply(lambda x: Chem.inchi.MolFromInchi(x,
-                                                                                 removeHs=removeHs,
-                                                                                 sanitize=sanitize))
-
-    else:
-        raise NotImplementedError("We only support SDF, SMI, XLSX and CSV file formats only.")
-
-    # compute molecular fingerprints
-    for idx, row in df.iterrows():
-        fp = fingerprint_generator(mol=row["ROMol"],
-                                   fingerprint_name=fingerprint_name,
-                                   n_bits=n_bits,
-                                   radius=radius,
-                                   min_radius=min_radius,
-                                   random_seed=random_seed,
-                                   rings=rings,
-                                   isomeric=isomeric,
-                                   kekulize=kekulize,
-                                   sanitize=sanitize,
-                                   )
-        df.loc[idx, "fingerprint"] = fp
-
-    # save computed fingerprint along with other records
-    df.drop(["ROMol"], axis=1, inplace=True)
-    df.to_excel(out_excel_fname, index=None)
