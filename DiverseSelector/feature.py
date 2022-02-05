@@ -220,7 +220,8 @@ def rdkit_fragment_descriptors(mols: list):
         features = [fragments[d](mol) for d in fragments]
         frag_features[idx, :] = features
 
-    df_features = pd.DataFrame(data=frag_features, columns=Descriptors.descList[115:])
+    feature_names = [desc[0] for desc in Descriptors.descList[115:]]
+    df_features = pd.DataFrame(data=frag_features, columns=feature_names)
 
     return df_features
 
