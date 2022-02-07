@@ -22,3 +22,16 @@
 # --
 
 """Metric calculation module."""
+
+__all__ = [
+    "compute_diversity",
+]
+
+def compute_diversity():
+    """Compute the diversity."""
+    pass
+
+def total_diversity_volume():
+    """Compute the total diversity volume."""
+
+    pass
