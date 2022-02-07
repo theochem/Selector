@@ -1,4 +1,11 @@
+e3fp>=1.2.3
+mordred==1.2.0
+networkx==2.3.0
 numpy>=1.21.2
 scipy>=1.7.3
+padelpy>=0.1.11
+pandas>=1.4.0
 pytest>=6.2.5
 pytest-cov>=3.0.0
+setuptools>=58.0.4
+rdkit>=2020.09.1.0
