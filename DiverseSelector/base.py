@@ -25,51 +25,27 @@
 
 from abc import ABC, abstractmethod
 
-import numpy as np
+from .utils import get_features
 
-from .utils import feature_generator, feature_reader, get_features
 
-class Selector(ABC):
+class SelectionBase(ABC):
+
     @abstractmethod
-    def pick_initial_compounds(self):
-        """Pick the initial compounds.
-        """
+    def select(self):
+        """Select the subset molecules with optimal diversity."""
         pass
 
     @abstractmethod
-    def compute_diversity(self, metric: str, func=None):
+    @property
+    def subset_diversity(self):
         """
-        Compute the diversity between every component in dataset
-        :param metric: one of the standard metrics ("Euclidean", "Cosine", "Jaccard" etc. )
-        :param func: callable function that take 2 arguments and calculate distance between them. Specified by user
-        :return: np.ndarray aka (dis-)similarity matrix
-        """
-        pass
-
-    @abstractmethod
-    def select(self, num_selected: int, random_seed: int = None):
-        """
-        Select the subset molecules with optimal diversity.
-        :param num_selected: amount of molecule that need to be selected
-        :param random_seed: random seed for random selection compounds
-        :return: np.array of indices of selected molecules from the initial dataset ## Maybe not indices....
-        """
-        pass
-
-    @abstractmethod
-    def subset_diversity(self, subset: np.ndarray, div_metric: str):
-        """
-        Calculate diversity of the subset.
-        :param subset: numpy array of indices which make up a subset
-        :param div_metric: metric for calculating diversity of the subset ("Gini", "Entropy" etc.)
-        :return: float #Scale should be discussed (0 to 1, or 0 to 100 or -1 to 1 or anything else)
-        """
+        Calculate diversity of the subset."""
         # todo: need to implement diversity measurement here
         pass
 
     @abstractmethod
     @property
-    def all_diversity(self, div_metric: str): # Not an abstract method!!! Needs to be implemented explicitly here
+    def all_diversity(self):
         """
         Calculate diversity of the original dataset.
         :param div_metric: metric for calculating diversity of the subset ("Gini", "Entropy" etc.)
@@ -78,43 +54,51 @@ class Selector(ABC):
         # todo: need to implement diversity measurement here
         pass
 
-    def read_excel(self, fname: str):  # Not an abstract method!!! Needs to be implemented explicitly here
-        """
-        Read dataset from an excel file
-        :param fname: file name for saving molecule
-        :return: None
+    @abstractmethod
+    def load_data(self):
+        """Load dataset."""
+        pass
+
+    @abstractmethod
+    def save_output(self):
+        """Save output.
+        Notes
+        -----
+        csv or other text
+        excel
+        sdf
+
+        save :
+        1. index
+        2. selected features
+        3. selected molecules
+
         """
         pass
 
-    def to_excel(self, fname: str):  # Not an abstract method!!! Needs to be implemented explicitly here
-        """
-        Save selected molecules as an excel file
-        :param fname: file name for saving molecule
-        :return: None
-        """
-        pass
 
-    def to_txt(self, fname: str): # Not an abstract method!!! Needs to be implemented explicitly here
-        """
-        Save selected molecules as an excel file
-        :param fname: file name for saving molecule
-        :return: None
-        """
-        pass
-
-
-class DissimilaritySelectionBase(Selector):
+class DissimilaritySelectionBase(SelectionBase):
     def __init__(self,
                  initialization="medoid",
                  metric="Tanimoto",
-                 feature_file=None):
+                 random_seed=42,
+                 feature_type=None,
+                 mol_file=None,
+                 feature_file=None,
+                 num_selected=None,
+                 **kwargs,
+                 ):
         """Base class for dissimilarity based subset selection."""
         self.initialization = initialization
+        self.random_seed = random_seed
         self.metric = metric
-        self.feature_file = feature_file
+        self.num_selected = num_selected
+
         # compute/load molecular features
-        self.features = get_features(mol_file,
-                                     feature_file)
+        self.features = get_features(feature_type=feature_type,
+                                     mol_file=mol_file,
+                                     feature_file=feature_file,
+                                     **kwargs)
 
     def pick_initial_compounds(self):
         """Pick the initial compounds."""
@@ -125,28 +109,71 @@ class DissimilaritySelectionBase(Selector):
         # for iterative selection and final subset both
         pass
 
-    def select(self, num_selected: int, random_seed = None):
+    def select(self):
         """
         Select the subset molecules with optimal diversity.
         :param num_selected: amount of molecule that need to be selected
         :param random_seed: int
         :return:
         """
-        self.random_seed = 42 if random_seed is None else random_seed
+        if self.random_seed is None:
+            self.random_seed = 42
+
+        pass
+
+    @property
+    def subset_diversity(self):
+        """
+        Calculate diversity of the subset."""
+        # todo: need to implement diversity measurement here
+        pass
+
+    @property
+    def all_diversity(self):
+        """
+        Calculate diversity of the original dataset.
+        :param div_metric: metric for calculating diversity of the subset ("Gini", "Entropy" etc.)
+        :return: float #Scale should be discussed (0 to 1, or 0 to 100 or -1 to 1 or anything else)
+        """
+        # todo: need to implement diversity measurement here
+        pass
+
+    def load_data(self):
+        """Load dataset."""
+        pass
+
+    def save_output(self):
+        """Save output.
+        Notes
+        -----
+        csv or other text
+        excel
+        sdf
+
+        save :
+        1. index
+        2. selected features
+        3. selected molecules
+
+        """
         pass
 
 
-
-class ClusteringSelectionBase(ABC):
+class ClusteringSelectionBase(SelectionBase):
     def __init__(self,
+                 num_selected,
+                 num_clusters,
+                 clustering_method="k-means",
                  metric="Tanimoto",
-                 num_clusters=None,
                  feature_file=None,
                  output=None,
                  random_seed=None,
                  **kwargs
                  ):
         """Base class for clustering based subset selection."""
+
+        self.num_selected = num_selected
+        self.num_clusters = num_clusters
 
         # the number of molecules equals the number of clusters
         self.clustering_method = clustering_method
@@ -161,6 +188,12 @@ class ClusteringSelectionBase(ABC):
 
         self.__dict__.update(kwargs)
 
+        # check if number of clusters is less than number of selected molecules
+        if not self.num_clusters > self.num_selected:
+            raise ValueError("The number of clusters is great than number of selected molecules.")
+        # check if we have valid number of clusters because selecting 1.5 molecules is not practical
+        if int(self.num_selected / self.num_clusters) - self.num_selected / self.num_clusters != 0:
+            raise ValueError("The number of molecules in each cluster should be an integer.")
 
         # todo: see if we need to add support of this set of algorithms
         # where we can combine soft clustering and Monte Carlo sampling
@@ -179,31 +212,17 @@ class ClusteringSelectionBase(ABC):
         #                          f"than {self.enhanced_sampling_weight} of number of selected"
         #                          f"molecules {self.num_selected_mols}.")
 
-    def cluster(self, clustering_method:str):
+    def select(self):
         """
-        Perform the clastering of the dataset
-        :param clustering_method: selected method for clustering (k-means, DBSCAN etc)
-        :return:
-        """
-        pass
-
-    def select(self, num_selected: int, random_seed=None):
-        """
-        Select the subset molecules with optimal diversity.
+        Select the subset molecules based on the clustering method.
         :param num_selected: amount of molecule that need to be selected
         :param random_seed: int
         :return:
         """
-        self.random_seed = 42 if random_seed is None else random_seed
-        # check if number of clusters is less than number of selected molecules
-        if not self.num_clusters > num_selected:
-            raise ValueError("The number of clusters is great than number of selected molecules.")
-        # check if we have valid number of clusters because selecting 1.5 molecules is not practical
-        if int(num_selected / num_clusters) - num_selected / num_clusters != 0:
-            raise ValueError("The number of molecules in each cluster should be an integer.")
         pass
 
-    def subset_diversity(self, subset: np.ndarray, div_metric: str):
+    @property
+    def subset_diversity(self):
         """
         Calculate diversity of the subset.
         :param subset: numpy array of indices which make up a subset
@@ -213,6 +232,7 @@ class ClusteringSelectionBase(ABC):
         # todo: need to implement diversity measurement here
         pass
 
+    @property
     def all_diversity(self):
         """Original dataset diversity."""
         # todo: need to implement diversity measurement here
