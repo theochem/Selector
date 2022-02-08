@@ -23,13 +23,31 @@
 
 """Metric calculation module."""
 
+import numpy as np
+from scipy.spatial.distance import cdist
+
 __all__ = [
+    "pairwise_dist",
     "compute_diversity",
 ]
+
+
+def pairwise_dist(feature: np.array,
+                  metric: str = "euclidean"):
+    """Compute pairwise distance."""
+    # more to be implemented
+    # https://docs.scipy.org/doc/scipy-1.8.0/html-scipyorg/reference/generated/
+    # scipy.spatial.distance.pdist.html?highlight=pdist#scipy.spatial.distance.pdist
+    if metric == "euclidean":
+        arr_dist = cdist(feature, feature, "euclidean")
+
+    return arr_dist
+
 
 def compute_diversity():
     """Compute the diversity."""
     pass
+
 
 def total_diversity_volume():
     """Compute the total diversity volume."""
