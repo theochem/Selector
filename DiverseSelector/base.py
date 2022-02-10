@@ -36,22 +36,14 @@ class SelectionBase(ABC):
                  feature_type=None,
                  mol_file=None,
                  feature_file=None,
-                 num_selected=None,
-                 **kwargs):
+                 num_selected=None):
         self.metric = metric
         self.random_seed = random_seed
         self.feature_type = feature_type
         self.mol_file = mol_file
         self.feature_file = feature_file
         self.num_selected = num_selected
-
-        # compute/load molecular features
-        self.features = get_features(feature_type=feature_type,
-                                     mol_file=mol_file,
-                                     feature_file=feature_file,
-                                     **kwargs)
-        self.features_norm = self._normalize_desc()
-
+        self.features = None
 
     @abstractmethod  # abstract method, because we want in to be in both child classes
     def select(self):
@@ -77,10 +69,13 @@ class SelectionBase(ABC):
         # todo: need to implement diversity measurement here
         pass
 
-    def load_data(self):  # concrete method, because we want in to be in both child classes, and it should act
+    def load_data(self, **kwargs):  # concrete method, because we want in to be in both child classes, and it should act
         # in the same way
         """Load dataset."""
-        pass
+        self.features = get_features(feature_type=self.feature_type,
+                                     mol_file=self.mol_file,
+                                     feature_file=self.feature_file,
+                                     **kwargs)
 
     def save_output(self):  # concrete method, because we want in to be in both child classes, and it should act
         # in the same way
@@ -102,6 +97,5 @@ class SelectionBase(ABC):
     def _normalize_desc(self):
         """Normalize molecular descriptors."""
         scaler = StandardScaler()
-        feature_norm = scaler.fit_transform(self.features)
-
-        return feature_norm
+        self.features_norm = scaler.fit_transform(self.features)
+        return self.features_norm
