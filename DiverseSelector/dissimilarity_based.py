@@ -24,14 +24,11 @@
 """Dissimilarity based diversity subset selection."""
 
 import numpy as np
-from sklearn.preprocessing import StandardScaler
-
-from .base import DissimilaritySelectionBase
+from .base import SelectionBase
 from .metric import pairwise_dist
-from .utils import get_features
 
 
-class DissimilaritySelection(DissimilaritySelectionBase):
+class DissimilaritySelection(SelectionBase):
 
     def __init__(self,
                  initialization="medoid",
@@ -44,22 +41,11 @@ class DissimilaritySelection(DissimilaritySelectionBase):
                  **kwargs,
                  ):
         """Base class for dissimilarity based subset selection."""
+        super().__init__(metric, random_seed, feature_type, mol_file, feature_file, num_selected)
         self.initialization = initialization
-        self.metric = metric
-        self.random_seed = random_seed
-        self.feature_type = feature_type
-        self.mol_file = mol_file
-        self.feature_file = feature_file
-        self.num_selected = num_selected
 
-        # compute/load molecular features
-        self.features = get_features(feature_type=feature_type,
-                                     mol_file=mol_file,
-                                     feature_file=feature_file,
-                                     **kwargs)
-        self.features_norm = self._normalize_desc()
 
-        # super(DissimilaritySelection, self).__init__(**kwargs)
+        # super(DissimilaritySelection, self).__init__(**kwargs)  NOTE:# I'm not sure what it should do
         self.__dict__.update(kwargs)
 
         # the initial compound index
@@ -92,56 +78,28 @@ class DissimilaritySelection(DissimilaritySelectionBase):
         # for iterative selection and final subset both
         pass
 
-    def select(self):
-        """Select the subset molecules with optimal diversity."""
-        # a 1d vector to store the index of selected molecules
-        selected_indices = np.full((self.num_selected,), False)
-        selected_indices[self.starting_idx] = True
-
-        arr_dist_new = self.arr_dist.copy()
-
-        # todo: mimmax algorithm implementation
-        # for idx_counter in np.arange(1, self.num_selected):
-        pass
-
-    def _normalize_desc(self):
-        """Normalize molecular descriptors."""
-        scaler = StandardScaler()
-        feature_norm = scaler.fit_transform(self.feature)
-
-        return feature_norm
-
-    @property
-    def subset_diversity(self):
+    def select(self, selected=None, n_selected=10):
+        """Select the subset molecules with optimal diversity.
+        Algorithm is adapted from https://doi.org/10.1016/S1093-3263(98)80008-9
         """
-        Calculate diversity of the subset."""
-        # todo: need to implement diversity measurement here
-        pass
+        if selected is None:
+            selected = [self.starting_idx]
+            return self.select(selected, n_selected)
 
-    @property
-    def all_diversity(self):
-        """
-        Calculate diversity of the original dataset.
-        :param div_metric: metric for calculating diversity of the subset ("Gini", "Entropy" etc.)
-        :return: float #Scale should be discussed (0 to 1, or 0 to 100 or -1 to 1 or anything else)
-        """
-        # todo: need to implement diversity measurement here
-        pass
+        if len(selected) == n_selected:  # if we all selected all n_selected molecules then return list of selected mols
+            return selected
 
-    def load_data(self):
-        """Load dataset."""
-        pass
+        else:
+            # calculate min distances from each mol to the selected mols
+            min_distances = np.min(self.arr_dist[selected], axis=0)
 
-    def save_output(self):
-        """Save output.
-        Notes
-        -----
-        csv or other text
-        excel
-        sdf
-        save :
-        1. index
-        2. selected features
-        3. selected molecules
-        """
-        pass
+            # find molecules distance minimal distance of which is the maximum among all
+            new_id = np.argmax(min_distances)
+
+            # add selected molecule to the selected list
+            selected.append(new_id)
+
+            # call method again with an updated list of selected molecules
+            return self.select(selected, n_selected)
+
+
