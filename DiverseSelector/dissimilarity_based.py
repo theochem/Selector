@@ -26,7 +26,6 @@
 import numpy as np
 from .base import SelectionBase
 from .metric import pairwise_dist
-from .utils import get_features
 
 
 class DissimilaritySelection(SelectionBase):
@@ -42,7 +41,7 @@ class DissimilaritySelection(SelectionBase):
                  **kwargs,
                  ):
         """Base class for dissimilarity based subset selection."""
-        super().__init__(metric, random_seed, feature_type, mol_file, feature_file, num_selected, **kwargs)
+        super().__init__(metric, random_seed, feature_type, mol_file, feature_file, num_selected)
         self.initialization = initialization
 
 
@@ -79,14 +78,28 @@ class DissimilaritySelection(SelectionBase):
         # for iterative selection and final subset both
         pass
 
-    def select(self):
-        """Select the subset molecules with optimal diversity."""
-        # a 1d vector to store the index of selected molecules
-        selected_indices = np.full((self.num_selected,), False)
-        selected_indices[self.starting_idx] = True
+    def select(self, selected=None, n_selected=10):
+        """Select the subset molecules with optimal diversity.
+        Algorithm is adapted from https://doi.org/10.1016/S1093-3263(98)80008-9
+        """
+        if selected is None:
+            selected = [self.starting_idx]
+            return self.select(selected, n_selected)
 
-        arr_dist_new = self.arr_dist.copy()
+        if len(selected) == n_selected:  # if we all selected all n_selected molecules then return list of selected mols
+            return selected
 
-        # todo: mimmax algorithm implementation
-        # for idx_counter in np.arange(1, self.num_selected):
-        pass
+        else:
+            # calculate min distances from each mol to the selected mols
+            min_distances = np.min(self.arr_dist[selected], axis=0)
+
+            # find molecules distance minimal distance of which is the maximum among all
+            new_id = np.argmax(min_distances)
+
+            # add selected molecule to the selected list
+            selected.append(new_id)
+
+            # call method again with an updated list of selected molecules
+            return self.select(selected, n_selected)
+
+
