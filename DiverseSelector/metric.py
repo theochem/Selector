@@ -24,7 +24,8 @@
 """Metric calculation module."""
 
 import numpy as np
-from scipy.spatial.distance import cdist, pdist
+from scipy.spatial.distance import cdist
+#from scipy.spatial.distance import pdist
 
 __all__ = [
     "pairwise_dist",
