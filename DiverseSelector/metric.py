@@ -24,106 +24,260 @@
 """Metric calculation module."""
 
 import numpy as np
-from scipy.spatial.distance import cdist
-#from scipy.spatial.distance import pdist
+from scipy.spatial.distance import cdist, squareform
+
 
 __all__ = [
     "pairwise_dist",
     "compute_diversity",
+    "distance_similarity",
+    "pairwise_similarity",
+    "pairwise_similarity_bit",
+    "tanimoto",
+    "cosine",
+    "dice",
+    "bit_tanimoto",
+    "bit_cosine",
+    "bit_dice",
 ]
 
 
 def pairwise_dist(feature: np.array,
                   metric: str = "euclidean"):
-    """Compute pairwise distance."""
-    # more to be implemented
-    # https://docs.scipy.org/doc/scipy-1.8.0/html-scipyorg/referenc
-    # e/generated/scipy.spatial.distance.pdist.html?highlight=pdist#scipy.spatial.distance.pdist
+    """Compute pairwise distance.
+
+    Parameters
+    ----------
+    feature : ndarray
+        feature matrix
+    metric : str
+        metric to use
+   
+    Returns
+    -------
+    arr_dist : ndarray
+        symmetric distance array
+    """
     if metric == "euclidean":
         arr_dist = cdist(feature, feature, "euclidean")
-        # per_dist = pdist(feature ,"euclidean")
+    else:
+        arr_dist = cdist(feature, feature, metric)
     return arr_dist
 
 
-def euclidean(feature: np.array,
-              a_feature: np.array,
-              b_feature: np.array,
-              metric: str = "euclidean",):
-    """
-    Compute the euclidean distance
-    ----------
+def distance_similarity(distance: np.array):
+    """Compute similarity.
+    
     Parameters
     ----------
-    a_feature : Features in molecule A 
-    b_feature : Features in molecule B
-    feature : number of features shared by both
-    -------
+    distance : ndarray
+        symmetric distance array
+
     Returns
     -------
-    distance : euclidean distance between molecule A & B
+    similarity : ndarray
+        symmetric similarity array
     """
-    if metric == "euclidean":
-        if (a_feature) + (b_feature) - ((feature) * 2) > 0:
-            distance = np.sqrt((a_feature) + (b_feature) - ((feature) * 2))
-        else:
-            raise ValueError("Error in input")
-    return distance
+    similarity = 1 / (1 + distance)
+    return similarity
 
-def soergel(feature: np.array,
-              a_feature: np.array,
-              b_feature: np.array,
-              metric: str = "soergel",):
-    """
-    Compute the soergel distance
-    ----------
+
+def pairwise_similarity(feature: np.array, metric):
+    """Compute the pairwaise similarity coefficients
+    
     Parameters
     ----------
-    a_feature : Features in molecule A
-    b_feature : Features in molecule B
-    feature : number of features shared by both
-    -------
+    feature : ndarray
+        feature matrix
+    metric : str
+        method of calculation
+
     Returns
     -------
-    distance : soergel distance between molecule A & B
+    pair_coeff : ndarray
+        similairty coefficients for all molecule pairs in feature matrix
     """
-    if metric == "soergel":
-        if (a_feature + b_feature - feature) != 0:
-            distance = (a_feature + b_feature - (2 * feature)) / (a_feature + b_feature - feature)
-            return distance
-        else:
-            raise ValueError("Error in input")
+    pair_simi = []
+    size = len(np.shape(feature))
+    for i in range(0, size + 1):
+        for j in range(i + 1, size + 1):
+            pair_simi.append((metric(feature[:,i], feature[:,j])))
+    # this only works when the similarity to self is equal to 1
+    pair_coeff = (squareform(pair_simi) + np.identity(size + 1))
+    return pair_coeff
 
 
-def compute_diversity(feature: np.array,
-                      a_feature: np.array,
-                      b_feature: np.array,
-                      metric: str = "tanimoto"):
-    """
-    Compute the diversity.
-    ----------
+def pairwise_similarity_bit(feature: np.array, metric):
+    """Compute the pairwaise similarity coefficients
+    
     Parameters
     ----------
-    a_feature : Features in molecule A
-    b_feature : Features in molecule B
-    feature : number of features shared by both
-    -------
+    feature : ndarray
+        feature matrix in bit string
+    metric : str
+        method of calculation
+
     Returns
     -------
-    diversity : diversity between molecule A & B
-                1 being very diverse and 0 being not diverse
+    pair_coeff : ndarray
+        similairty coefficients for all molecule pairs in feature matrix
     """
-    # diversity = 1 - similarity
-    # similarity = 1 / 1 + distance
-    if metric == "tanimoto":
-        if ((a_feature) + (b_feature) - (feature)) != 0:
-            similarity = (feature) /  (a_feature) + (b_feature) - (feature)
-            diversity = 1 - similarity
-            return diversity
-        else:
-            raise ValueError("Error in input")
+    pair_simi = []
+    size = len(feature)
+    for i in range(0, size):
+        for j in range(i + 1 , size):
+            pair_simi.append(metric(feature[i],feature[j]))
+    pair_coeff = (squareform(pair_simi) + np.identity(size))
+    return pair_coeff
+
+
+# this section is the similarity metrics for non-bitstring input
+
+
+def tanimoto(a, b):
+    """Compute tanimoto coefficient
+
+    Parameters
+    ----------
+    a : array_like
+        molecule A's features
+    b : array_like
+        molecules B's features
+
+    Returns
+    -------
+    coeff : int
+        tanimoto coefficient for molecule A and B
+    """
+    coeff = (sum(a * b)) / ((sum(a ** 2)) + (sum(b ** 2)) - (sum(a * b)))
+    return coeff 
+
+
+def cosine(a, b):
+    """Compute cosine coefficient
+
+    Parameters
+    ----------
+    a : array_like
+        molecule A's features
+    b : array_like
+        molecules B's features
+
+    Returns
+    -------
+    coeff : int
+        cosine coefficient for molecule A and B
+    """
+    coeff = (sum(a * b)) / (((sum(a ** 2)) + (sum(b ** 2))) ** 0.5)
+    return coeff
+
+
+def dice(a, b):
+    """Compute dice coefficient
+
+    Parameters
+    ----------
+    a : array_like
+        molecule A's features
+    b : array_like
+        molecules B's features
+
+    Returns
+    -------
+    coeff : int
+        dice coefficient for molecule A and B
+    """
+    coeff = (2 * (sum(a * b))) / ((sum(a ** 2)) + (sum(b ** 2)))
+    return coeff 
+
+
+# this section is bit_string similarity calcualtions
+
+
+def modified_tanimoto(a, b):
+    pass
+
+
+def bit_tanimoto(a ,b):
+    """Compute tanimoto coefficient
+
+    Parameters
+    ----------
+    a : array_like
+        molecule A's features in bitstring
+    b : array_like
+        molecules B's features in bitstring
+
+    Returns
+    -------
+    coeff : int
+        tanimoto coefficient for molecule A and B
+    """
+    a_feat = np.count_nonzero(a)
+    b_feat = np.count_nonzero(b)
+    c = 0
+    for i in range(0, len(a)):
+        if a[i] == b[i] and a[i] != 0:
+            c += 1
+    b_t = c / (a_feat + b_feat - c)
+    return b_t
+
+
+def bit_cosine(a ,b):
+    """Compute dice coefficient
+
+    Parameters
+    ----------
+    a : array_like
+        molecule A's features in bit string
+    b : array_like
+        molecules B's features in bit string
+
+    Returns
+    -------
+    coeff : int
+        dice coefficient for molecule A and B
+    """
+    a_feat = np.count_nonzero(a)
+    b_feat = np.count_nonzero(b)
+    c = 0
+    for i in range(0, len(a)):
+        if a[i] == b[i] and a[i] != 0:
+            c += 1
+    b_c = c / ((a_feat * b_feat) ** 0.5)
+    return b_c
+
+
+def bit_dice(a ,b):
+    """Compute dice coefficient
+
+    Parameters
+    ----------
+    a : array_like
+        molecule A's features
+    b : array_like
+        molecules B's features
+
+    Returns
+    -------
+    coeff : int
+        dice coefficient for molecule A and B
+    """
+    a_feat = np.count_nonzero(a)
+    b_feat = np.count_nonzero(b)
+    c = 0
+    for i in range(0, len(a)):
+        if a[i] == b[i] and a[i] != 0:
+            c += 1
+    b_d = (2 * c) / (a_feat + b_feat) 
+    return b_d
+
+
+def compute_diversity():
+    """Compute the diversity."""
+    pass
 
 
 def total_diversity_volume():
     """Compute the total diversity volume."""
-    # V_tot = k * V_o
     pass
