@@ -24,7 +24,14 @@
 """Metric calculation module."""
 
 import numpy as np
+#from rdkit import Chem
+#from rdkit.Chem import MCS
 from scipy.spatial.distance import cdist, squareform
+
+sample2 = np.array([[1, 1, 0, 0, 0],
+                    [0, 1, 1, 0, 0],
+                    [0, 0, 0, 1, 0],
+                    [0, 0, 0, 0, 1]])
 
 
 __all__ = [
@@ -52,7 +59,7 @@ def pairwise_dist(feature: np.array,
         feature matrix
     metric : str
         metric to use
-   
+    
     Returns
     -------
     arr_dist : ndarray
@@ -127,11 +134,11 @@ def pairwise_similarity_bit(feature: np.array, metric):
     for i in range(0, size):
         for j in range(i + 1 , size):
             pair_simi.append(metric(feature[i],feature[j]))
-    pair_coeff = (squareform(pair_simi) + np.identity(size))
+    if metric == "euc_bit":
+        pair_coeff = (squareform(pair_simi))
+    else:
+        pair_coeff = (squareform(pair_simi) + np.identity(size))
     return pair_coeff
-
-
-# this section is the similarity metrics for non-bitstring input
 
 
 def tanimoto(a, b):
@@ -191,9 +198,6 @@ def dice(a, b):
     return coeff 
 
 
-# this section is bit_string similarity calcualtions
-
-
 def modified_tanimoto(a, b):
     pass
 
@@ -221,6 +225,17 @@ def bit_tanimoto(a ,b):
             c += 1
     b_t = c / (a_feat + b_feat - c)
     return b_t
+
+
+def euc_bit(a, b):
+    a_feat = np.count_nonzero(a)
+    b_feat = np.count_nonzero(b)
+    c = 0
+    for i in range(0, len(a)):
+        if a[i] == b[i] and a[i] != 0:
+            c += 1
+    e_d = (a_feat + b_feat - (2 * c)) ** 0.5
+    return e_d
 
 
 def bit_cosine(a ,b):
@@ -281,3 +296,58 @@ def compute_diversity():
 def total_diversity_volume():
     """Compute the total diversity volume."""
     pass
+
+
+def gini(x):
+    #returns negative values
+    l = len(x[:,0])
+    frac_top = 0
+    frac_bottom = 0
+    for i in range(0, l):
+        frac_top += ((i + 1) * sum(x[i]))
+        frac_bottom += (sum(x[i]))
+    g = ((2 * frac_top) / (l * frac_bottom))- ((l + 1) / l)
+    return g
+
+
+def entropy(x):
+    #returns negative values sometimes
+    l = len(x[:,0])
+    n = len(x)
+    top = 0
+    for i in range(0, l - 1):
+        top += (sum(x[:,i]) / n) * (np.log(sum(x[:,i]) / n))
+    e = -1 * top / (l * 0.34657359027997264)
+    return e
+
+
+def EDI(x):
+    cs = len(MCS.FindMCS(x)) #place holder, input must be moleculues not matrix?
+    nc = len(x)
+    sdi = (1 - NAT(x)) / ( 0.8047 - (0.065 * (np.log(nc))))
+    cr = -1 * np.log10(nc / (cs ** 2))
+    edi = (sdi + cr) * 0.7071067811865476
+    edi_scaled = ((np.tanh(edi / 3) + 1) / 2) * 100
+    return edi_scaled
+
+
+def NAT(x):
+    tani = []
+    for i in range(0, len(x)):
+        short = 100 
+        a = 0
+        b = 0
+        for j in range(0, len(x)):
+            if euc_bit(x[i], x[j]) < short and i != j:
+                short = euc_bit(x[i], x[j])
+                a = i
+                b = j
+        tani.append(bit_tanimoto(x[a],x[b]))
+    return np.average(tani)
+
+
+def logdet(x):
+    mid = np.dot(np.transpose(x) , x )
+    f_logdet = np.linalg.det(mid + np.identity(len(x[0])))
+    return f_logdet
+

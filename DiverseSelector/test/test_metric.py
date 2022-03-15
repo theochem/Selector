@@ -35,7 +35,7 @@ sample1 = np.array([[4, 2, 6],
                     [5, 3, 0]])
 
 #each row is a molecule and each colume is a feature
-sample2 = np.array([[1, 1, 0, 0, 0], 
+sample2 = np.array([[1, 1, 0, 0, 0],
                     [0, 1, 1, 0, 0],
                     [0, 0, 0, 1, 0],
                     [0, 0, 0, 0, 1]])
