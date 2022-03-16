@@ -44,11 +44,13 @@ class DissimilaritySelection(SelectionBase):
                  mol_file=None,
                  feature_file=None,
                  num_selected=None,
+                 arr_dist=None
                  **kwargs,
                  ):
         """Base class for dissimilarity based subset selection."""
         super().__init__(metric, random_seed, feature_type, mol_file, feature_file, num_selected)
         self.initialization = initialization
+        self.arr_dist = arr_dist
 
         # super(DissimilaritySelection, self).__init__(**kwargs)
         self.__dict__.update(kwargs)
@@ -60,8 +62,9 @@ class DissimilaritySelection(SelectionBase):
         """Pick the initial compounds."""
         # todo: current version only works for molecular descriptors
         # pair-wise distance matrix
-        arr_dist = pairwise_dist(feature=self.features_norm,
-                                 metric="euclidean")
+        if self.arr_dist is None:
+            arr_dist = pairwise_dist(feature=self.features_norm,
+                                     metric="euclidean")
 
         # use the molecule with maximum distance to initial medoid as  the starting molecule
         if self.initialization.lower() == "medoid":
