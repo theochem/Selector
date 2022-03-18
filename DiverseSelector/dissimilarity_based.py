@@ -23,6 +23,8 @@
 
 """Dissimilarity based diversity subset selection."""
 
+import random
+
 from DiverseSelector.base import SelectionBase
 from DiverseSelector.metric import ComputeDistanceMatrix
 import numpy as np
@@ -88,20 +90,21 @@ class DissimilaritySelection(SelectionBase):
         # for iterative selection and final subset both
         pass
 
-    def select(self, selected=None):
+    def brutestrength(self, selected=None, n_selected=10, method='maxmin'):
         """Select the subset molecules with optimal diversity.
 
         Algorithm is adapted from https://doi.org/10.1016/S1093-3263(98)80008-9
         """
+
         if selected is None:
             selected = [self.starting_idx]
-            return self.select(selected)
+            return self.brutestrength(selected, n_selected, method)
 
         # if we all selected all n_selected molecules then return list of selected mols
         if len(selected) == self.num_selected:
             return selected
 
-        else:
+        if method == 'maxmin':
             # calculate min distances from each mol to the selected mols
             min_distances = np.min(self.arr_dist[selected], axis=0)
 
@@ -112,4 +115,78 @@ class DissimilaritySelection(SelectionBase):
             selected.append(new_id)
 
             # call method again with an updated list of selected molecules
-            return self.select(selected)
+            return self.brutestrength(selected, n_selected, method)
+        elif method == 'maxsum':
+            sum_distances = np.sum(self.arr_dist[selected], axis=0)
+            while True:
+                new_id = np.argmax(sum_distances)
+                if new_id in selected:
+                    sum_distances[new_id] = 0
+                else:
+                    break
+            selected.append(new_id)
+            return self.brutestrength(selected, n_selected, method)
+        else:
+            raise ValueError(f"Method {method} not supported, choose maxmin or maxsum.")
+
+    def sphereexclusion(self, selected=None, n_selected=10, s_max=1, order=None):
+        if selected is None:
+            selected = []
+            return self.sphereexclusion(selected, n_selected, s_max, order)
+
+        if order is None:
+            option1, option2, option3 = random.sample(range(len(self.features_norm)), 3)
+            ref = [option1, option2, option3]
+            candidates = np.delete(np.arange(0, len(self.features_norm)), ref)
+            distances = []
+            for idx in candidates:
+                ref1 = self.features_norm[ref[0]]
+                point = self.features_norm[idx]
+                distance_sq = (ref1[0] - point[0]) ** 2 + (ref1[1] - point[1]) ** 2
+                distances.append((distance_sq, idx))
+            distances.sort()
+            print(distances, ref[0])
+            order = [idx for dist, idx in distances]
+            return self.sphereexclusion(selected, n_selected, s_max, order)
+
+        for idx in order:
+            if len(selected) == 0:
+                selected.append(idx)
+                continue
+            min_dist = np.min(pairwise_dist(self.features_norm[selected + [idx]])[-1, :-1])
+            if min_dist > s_max:
+                selected.append(idx)
+            if len(selected) == n_selected:
+                return selected
+
+        return selected
+
+    def optisim(self, selected=None, n_selected=10, k=3, radius=2, recycling=None):
+        if selected is None:
+            selected = [self.starting_idx]
+            return self.optisim(selected, n_selected, k, radius, recycling)
+
+        if len(selected) >= n_selected:
+            return selected
+
+        if recycling is None:
+            recycling = []
+
+        candidates = np.delete(np.arange(0, len(self.features_norm)), selected + recycling)
+        subsample = {}
+        while len(subsample) < k:
+            if len(candidates) == 0:
+                if len(subsample) > 0:
+                    selected.append(max(zip(subsample.values(), subsample.keys()))[1])
+                    return self.optisim(selected, n_selected, k, radius, recycling)
+                return selected
+            index_new = candidates[np.random.randint(0, len(candidates))]
+            min_dist = np.min(pairwise_dist(self.features_norm[selected + [index_new]])[-1, :-1])
+            if min_dist > radius:
+                subsample[index_new] = min_dist
+            else:
+                recycling.append(index_new)
+            candidates = np.delete(np.arange(0, len(self.features_norm)), selected + recycling + list(subsample.keys()))
+        selected.append(max(zip(subsample.values(), subsample.keys()))[1])
+
+        return self.optisim(selected, n_selected, k, radius, recycling)
