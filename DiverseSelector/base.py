@@ -24,7 +24,7 @@
 """Base class for diversity based subset selection."""
 
 from abc import ABC, abstractmethod
-from .utils import get_features
+from .feature import get_features
 from sklearn.preprocessing import StandardScaler
 
 
