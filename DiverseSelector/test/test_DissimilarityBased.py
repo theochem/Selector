@@ -23,7 +23,7 @@
 
 """Testing for the dissimilarity-based selection algorithms."""
 
-from DiverseSelector.dissimilarity_based import DissimilaritySelection
+from DiverseSelector import DissimilaritySelection
 from numpy.testing import assert_equal
 from sklearn.datasets import make_blobs
 from sklearn.metrics import pairwise_distances
