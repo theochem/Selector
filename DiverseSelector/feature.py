@@ -26,13 +26,12 @@ import os
 import sys
 from typing import Any
 
-import numpy as np
 from mordred import Calculator, descriptors
-import pandas as pd
+import numpy as np
 from padelpy import from_sdf
+import pandas as pd
 from rdkit import Chem
-from rdkit.Chem import AllChem, Descriptors, MACCSkeys
-from rdkit.Chem import rdMHFPFingerprint
+from rdkit.Chem import AllChem, Descriptors, MACCSkeys, rdMHFPFingerprint
 
 from .utils import ExplicitBitVector, mol_reader, PandasDataFrame, RDKitMol
 
