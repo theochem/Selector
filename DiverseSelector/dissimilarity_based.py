@@ -24,11 +24,17 @@
 """Dissimilarity based diversity subset selection."""
 
 import numpy as np
+
 from .base import SelectionBase
 from .metric import pairwise_dist
 
+__all__ = [
+    "DissimilaritySelection",
+]
+
 
 class DissimilaritySelection(SelectionBase):
+    """Dissimilarity based diversity subset selection."""
 
     def __init__(self,
                  initialization="medoid",
@@ -44,8 +50,7 @@ class DissimilaritySelection(SelectionBase):
         super().__init__(metric, random_seed, feature_type, mol_file, feature_file, num_selected)
         self.initialization = initialization
 
-
-        # super(DissimilaritySelection, self).__init__(**kwargs)  NOTE:# I'm not sure what it should do
+        # super(DissimilaritySelection, self).__init__(**kwargs)
         self.__dict__.update(kwargs)
 
         # the initial compound index
@@ -64,7 +69,7 @@ class DissimilaritySelection(SelectionBase):
             # J. Mol. Graphics Mod., 1998, Vol. 16,
             # DISSIM: A program for the analysis of chemical diversity
             medoid_idx = np.argmin(arr_dist.sum(axis=0))
-            # selected molecule with maximum distance to medoid 
+            # selected molecule with maximum distance to medoid
             starting_idx = np.argmax(arr_dist[medoid_idx, :])
 
         elif self.initialization.lower() == "random":
@@ -80,13 +85,15 @@ class DissimilaritySelection(SelectionBase):
 
     def select(self, selected=None, n_selected=10):
         """Select the subset molecules with optimal diversity.
+
         Algorithm is adapted from https://doi.org/10.1016/S1093-3263(98)80008-9
         """
         if selected is None:
             selected = [self.starting_idx]
             return self.select(selected, n_selected)
 
-        if len(selected) == n_selected:  # if we all selected all n_selected molecules then return list of selected mols
+        # if we all selected all n_selected molecules then return list of selected mols
+        if len(selected) == n_selected:
             return selected
 
         else:
@@ -101,5 +108,3 @@ class DissimilaritySelection(SelectionBase):
 
             # call method again with an updated list of selected molecules
             return self.select(selected, n_selected)
-
-
