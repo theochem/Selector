@@ -25,9 +25,8 @@
 
 from abc import ABC, abstractmethod
 
+from DiverseSelector.feature import get_features
 from sklearn.preprocessing import StandardScaler
-
-from .feature import get_features
 
 
 class SelectionBase(ABC):
