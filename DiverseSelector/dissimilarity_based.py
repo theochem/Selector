@@ -24,8 +24,13 @@
 """Dissimilarity based diversity subset selection."""
 
 import numpy as np
+
 from .base import SelectionBase
 from .metric import pairwise_dist
+
+__all__ = [
+    "DissimilaritySelection",
+]
 
 
 class DissimilaritySelection(SelectionBase):
