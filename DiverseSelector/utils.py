@@ -27,8 +27,8 @@ from typing import TypeVar
 
 from pandas.core.frame import DataFrame
 from rdkit.Chem.rdchem import Mol
-from rdkit.DataStructs.cDataStructs import ExplicitBitVect
 from rdkit import Chem
+from rdkit.DataStructs.cDataStructs import ExplicitBitVect
 
 
 __all__ = [
