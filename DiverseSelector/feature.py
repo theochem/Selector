@@ -31,10 +31,10 @@ import pandas as pd
 from mordred import Calculator, descriptors
 from padelpy import from_sdf
 from rdkit import Chem
-from rdkit.Chem import AllChem, MACCSkeys, Descriptors
+from rdkit.Chem import AllChem, Descriptors, MACCSkeys
 from rdkit.Chem import rdMHFPFingerprint
 
-from .utils import ExplicitBitVector, PandasDataFrame, RDKitMol, mol_reader
+from .utils import ExplicitBitVector, mol_reader, PandasDataFrame, RDKitMol
 
 __all__ = [
     "DescriptorGenerator",
@@ -48,6 +48,7 @@ sys.path.append(os.path.join(cwd, "padelpy"))
 
 
 class DescriptorGenerator:
+    """Molecular descriptor generator."""
     def __init__(self,
                  mols: list,
                  desc_type: str = "mordred",
@@ -67,7 +68,7 @@ class DescriptorGenerator:
             If True, the return value includes the fragment binary descriptors like "fr_XXX".
             Default=True.
         ipc_avg : bool, optional
-            If True, the IPC descriptor calculates with avg=True option. Default=True
+            If True, the IPC descriptor calculates with avg=True option. Default=True.
 
         """
         self.mols = mols
@@ -278,6 +279,7 @@ def feature_filtering():
 
 
 class FingerprintGenerator:
+    """Fingerprint generator."""
     def __init__(self,
                  mols: list,
                  fp_type: str = "SECFP",
@@ -289,7 +291,32 @@ class FingerprintGenerator:
                  isomeric: bool = True,
                  kekulize: bool = False,
                  ) -> None:
-        """Fingerprint generator"""
+        """Fingerprint generator.
+
+        Parameters
+        ----------
+        mols : RDKitMol
+            Molecule object.
+        fp_type : str, optional
+            Supported fingerprints: SECFP, ECFP, Morgan, RDKitFingerprint and MACCSkeys.
+            Default="SECFP".
+        n_bits : int, optional
+            Number of bits of fingerprint. Default=2048.
+        radius : int, optional
+            The maximum radius of the substructure that is generated at each atom. Default=3.
+        min_radius : int, optional
+            The minimum radius that is used to extract n-grams.
+        random_seed : int, optional
+            The random seed number. Default=12345.
+        rings : bool, optional
+            Whether the rings (SSSR) are extracted from the molecule and added to the shingling.
+            Default=True.
+        isomeric : bool, optional
+            Whether the SMILES added to the shingling are isomeric. Default=False.
+        kekulize : bool, optional
+            Whether the SMILES added to the shingling are kekulized. Default=True.
+
+        """
         self.mols = mols
         self.fp_type = fp_type
         self.n_bits = n_bits
