@@ -24,19 +24,42 @@
 """Base class for diversity based subset selection."""
 
 from abc import ABC, abstractmethod
-from utils import get_features
+
 from sklearn.preprocessing import StandardScaler
+
+from .feature import get_features
 
 
 class SelectionBase(ABC):
+    """Base class for subset selection."""
 
     def __init__(self,
-                 metric="Tanimoto",
-                 random_seed=42,
-                 feature_type=None,
-                 mol_file=None,
-                 feature_file=None,
-                 num_selected=None):
+                 metric: str = "Tanimoto",
+                 random_seed: int = 42,
+                 feature_type: str = None,
+                 mol_file: str = None,
+                 feature_file: str = None,
+                 num_selected: str = None,
+                 ):
+        """Abstract class for other modules.
+
+        Parameters
+        ----------
+        metric : str, optional
+            Metric for calculating diversity of the subset "Gini", "Entropy" etc.
+            Default="Tanimoto".
+        random_seed : int, optional
+            Random seed for reproducibility. Default=42.
+        feature_type : str, optional
+            Type of features. Default=None.
+        mol_file : str, optional
+            Path to the file with molecules. Default=None.
+        feature_file : str, optional
+            Path to the file with features. Default=None.
+        num_selected : int, optional
+            Number of molecules to select. Default=None.
+
+        """
         self.metric = metric
         self.random_seed = random_seed
         self.feature_type = feature_type
@@ -45,31 +68,39 @@ class SelectionBase(ABC):
         self.num_selected = num_selected
         self.features = None
 
-    @abstractmethod  # abstract method, because we want in to be in both child classes
+    # abstract method, because we want in to be in both child classes
+    @abstractmethod
     def select(self):
         """Select the subset molecules with optimal diversity."""
         pass
 
+    # concrete method, because we want in to be in both child classes, and it should act
     @property
-    def subset_diversity(self):  # concrete method, because we want in to be in both child classes, and it should act
-        # in the same way
-        """
-        Calculate diversity of the subset."""
+    def subset_diversity(self):
+        """Calculate diversity of the subset."""
         # todo: need to implement diversity measurement here
         pass
 
+    # concrete method, because we want in to be in both child classes, and it should act
     @property
-    def all_diversity(self):  # concrete method, because we want in to be in both child classes, and it should act
-        # in the same way
+    def all_diversity(self):
         """
         Calculate diversity of the original dataset.
-        :param div_metric: metric for calculating diversity of the subset ("Gini", "Entropy" etc.)
-        :return: float #Scale should be discussed (0 to 1, or 0 to 100 or -1 to 1 or anything else)
+
+        Parameters
+        ----------
+        div_metric:
+            metric for calculating diversity of the subset ("Gini", "Entropy" etc.)
+
+        Returns
+        -------
+            Scale should be discussed (0 to 1, or 0 to 100 or -1 to 1 or anything else).
+
         """
         # todo: need to implement diversity measurement here
         pass
 
-    def load_data(self, **kwargs):  # concrete method, because we want in to be in both child classes, and it should act
+    def load_data(self, **kwargs):
         # in the same way
         """Load dataset."""
         self.features = get_features(feature_type=self.feature_type,
@@ -77,9 +108,9 @@ class SelectionBase(ABC):
                                      feature_file=self.feature_file,
                                      **kwargs)
 
-    def save_output(self):  # concrete method, because we want in to be in both child classes, and it should act
-        # in the same way
+    def save_output(self):
         """Save output.
+
         Notes
         -----
         csv or other text

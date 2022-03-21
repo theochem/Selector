@@ -23,7 +23,7 @@
 
 """The main DiverseSelector Package."""
 
-from .dissimilarity_based import *
+from .dissimilarity_based import DissimilaritySelection
 
 # Handle versioneer
 from ._version import get_versions
