@@ -25,10 +25,12 @@
 import gzip
 from typing import TypeVar
 
+# pylint: disable=W0611
 from pandas.core.frame import DataFrame
+from rdkit import Chem
+# pylint: disable=W0611
 from rdkit.Chem.rdchem import Mol
 from rdkit.DataStructs.cDataStructs import ExplicitBitVect
-from rdkit import Chem
 
 
 __all__ = [
@@ -74,7 +76,7 @@ def mol_reader(file_name: str,
     # SMILES: *.smi, *.smiles, *.txt, *.csv
     elif file_name.lower().endswith((".smi", ".smiles", ".txt", ".csv")):
         mols = []
-        with open(file_name, "r") as f:
+        with open(file_name, "r", encoding="utf8") as f:
             for line in f:
                 mols.append(Chem.MolFromSmiles(line.strip()))
 
