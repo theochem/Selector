@@ -44,7 +44,7 @@ class DissimilaritySelection(SelectionBase):
                  mol_file=None,
                  feature_file=None,
                  num_selected=None,
-                 arr_dist=None
+                 arr_dist=None,
                  **kwargs,
                  ):
         """Base class for dissimilarity based subset selection."""
@@ -63,23 +63,25 @@ class DissimilaritySelection(SelectionBase):
         # todo: current version only works for molecular descriptors
         # pair-wise distance matrix
         if self.arr_dist is None:
-            arr_dist = pairwise_dist(feature=self.features_norm,
-                                     metric="euclidean")
+            arr_dist_init = pairwise_dist(feature=self.features_norm,
+                                          metric="euclidean")
 
         # use the molecule with maximum distance to initial medoid as  the starting molecule
         if self.initialization.lower() == "medoid":
             # https://www.sciencedirect.com/science/article/abs/pii/S1093326399000145?via%3Dihub
             # J. Mol. Graphics Mod., 1998, Vol. 16,
             # DISSIM: A program for the analysis of chemical diversity
-            medoid_idx = np.argmin(arr_dist.sum(axis=0))
+            medoid_idx = np.argmin(self.arr_dist.sum(axis=0))
             # selected molecule with maximum distance to medoid
-            starting_idx = np.argmax(arr_dist[medoid_idx, :])
+            starting_idx = np.argmax(self.arr_dist[medoid_idx, :])
+            arr_dist_init = self.arr_dist
 
         elif self.initialization.lower() == "random":
             rng = np.random.default_rng(self.random_seed)
             starting_idx = rng.choice(np.arange(self.features_norm.shape[0]), 1)
+            arr_dist_init = self.arr_dist
 
-        return arr_dist, starting_idx
+        return arr_dist_init, starting_idx
 
     def compute_diversity(self):
         """Compute the distance metrics."""
