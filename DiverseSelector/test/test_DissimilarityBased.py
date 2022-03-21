@@ -21,13 +21,19 @@
 #
 # --
 
-"""The main DiverseSelector Package."""
+"""Testing for the dissimilarity-based selection algorithms."""
 
 from DiverseSelector.dissimilarity_based import DissimilaritySelection
+from numpy.testing import assert_equal
+from sklearn.datasets import make_blobs
+from sklearn.metrics import pairwise_distances
 
-# Handle versioneer
-from ._version import get_versions
-versions = get_versions()
-__version__ = versions['version']
-__git_revision__ = versions['full-revisionid']
-del get_versions, versions
+
+def test_minmax_selector1():
+    """Testing the MinMax selection algorithm with predefined starting point."""
+    syn_data, _ = make_blobs(n_samples=100, n_features=2, centers=3, random_state=42)
+    arr_dist = pairwise_distances(syn_data)
+    model = DissimilaritySelection(num_selected=10, arr_dist=arr_dist, random_seed=42)
+    model.starting_idx = 0
+    selected = model.select()
+    assert_equal([0, 94, 3, 50, 64, 85, 93, 83, 34, 59], selected)

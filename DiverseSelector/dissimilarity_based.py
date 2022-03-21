@@ -23,10 +23,9 @@
 
 """Dissimilarity based diversity subset selection."""
 
+from DiverseSelector.base import SelectionBase
+from DiverseSelector.metric import pairwise_dist
 import numpy as np
-
-from .base import SelectionBase
-from .metric import pairwise_dist
 
 __all__ = [
     "DissimilaritySelection",
@@ -44,11 +43,13 @@ class DissimilaritySelection(SelectionBase):
                  mol_file=None,
                  feature_file=None,
                  num_selected=None,
+                 arr_dist=None,
                  **kwargs,
                  ):
         """Base class for dissimilarity based subset selection."""
         super().__init__(metric, random_seed, feature_type, mol_file, feature_file, num_selected)
         self.initialization = initialization
+        self.arr_dist = arr_dist
 
         # super(DissimilaritySelection, self).__init__(**kwargs)
         self.__dict__.update(kwargs)
@@ -60,23 +61,26 @@ class DissimilaritySelection(SelectionBase):
         """Pick the initial compounds."""
         # todo: current version only works for molecular descriptors
         # pair-wise distance matrix
-        arr_dist = pairwise_dist(feature=self.features_norm,
-                                 metric="euclidean")
+        if self.arr_dist is None:
+            arr_dist_init = pairwise_dist(feature=self.features_norm,
+                                          metric="euclidean")
 
         # use the molecule with maximum distance to initial medoid as  the starting molecule
         if self.initialization.lower() == "medoid":
             # https://www.sciencedirect.com/science/article/abs/pii/S1093326399000145?via%3Dihub
             # J. Mol. Graphics Mod., 1998, Vol. 16,
             # DISSIM: A program for the analysis of chemical diversity
-            medoid_idx = np.argmin(arr_dist.sum(axis=0))
+            medoid_idx = np.argmin(self.arr_dist.sum(axis=0))
             # selected molecule with maximum distance to medoid
-            starting_idx = np.argmax(arr_dist[medoid_idx, :])
+            starting_idx = np.argmax(self.arr_dist[medoid_idx, :])
+            arr_dist_init = self.arr_dist
 
         elif self.initialization.lower() == "random":
             rng = np.random.default_rng(self.random_seed)
             starting_idx = rng.choice(np.arange(self.features_norm.shape[0]), 1)
+            arr_dist_init = self.arr_dist
 
-        return arr_dist, starting_idx
+        return arr_dist_init, starting_idx
 
     def compute_diversity(self):
         """Compute the distance metrics."""
