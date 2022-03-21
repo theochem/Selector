@@ -1,5 +1,5 @@
-# rdkit-pypi>=2021.9.5.1
-rdkit-pypi==2021.3.1.1
+rdkit-pypi>=2021.9.5.1
+# rdkit-pypi==2021.3.1.1
 # e3fp>=1.2.3
 mordred==1.2.0
 networkx==2.3.0
