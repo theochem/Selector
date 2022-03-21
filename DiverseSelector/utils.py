@@ -25,7 +25,9 @@
 import gzip
 from typing import TypeVar
 
-import pandas as pd
+from pandas.core.frame import DataFrame
+from rdkit.Chem.rdchem import Mol
+from rdkit.DataStructs.cDataStructs import ExplicitBitVect
 from rdkit import Chem
 
 
@@ -34,13 +36,11 @@ __all__ = [
     "RDKitMol",
     "PandasDataFrame",
     "mol_reader",
-    "feature_reader",
-    "get_features",
 ]
 
-PandasDataFrame = TypeVar('pandas.core.frame.DataFrame')
-RDKitMol = TypeVar('rdkit.Chem.rdchem.Mol')
-ExplicitBitVect = TypeVar("rdkit.DataStructs.cDataStructs.ExplicitBitVect")
+PandasDataFrame = TypeVar('DataFrame')
+RDKitMol = TypeVar('Mol')
+ExplicitBitVector = TypeVar("ExplicitBitVect")
 
 
 def mol_reader(file_name: str,
