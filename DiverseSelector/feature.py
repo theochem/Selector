@@ -27,8 +27,8 @@ import sys
 from typing import Any
 
 import numpy as np
-import pandas as pd
 from mordred import Calculator, descriptors
+import pandas as pd
 from padelpy import from_sdf
 from rdkit import Chem
 from rdkit.Chem import AllChem, Descriptors, MACCSkeys
@@ -49,6 +49,7 @@ sys.path.append(os.path.join(cwd, "padelpy"))
 
 class DescriptorGenerator:
     """Molecular descriptor generator."""
+
     def __init__(self,
                  mols: list,
                  desc_type: str = "mordred",
@@ -161,6 +162,7 @@ class DescriptorGenerator:
                           ipc_avg: bool = True,
                           **kwargs,
                           ) -> PandasDataFrame:
+        # noqa: D403
         """RDKit molecular descriptor generation.
 
         Parameters
@@ -201,6 +203,7 @@ class DescriptorGenerator:
 
     @staticmethod
     def rdkit_fragment_descriptors(mols: list) -> PandasDataFrame:
+        # noqa: D403
         """RDKit fragment features.
 
         Parameters
@@ -280,6 +283,7 @@ def feature_filtering():
 
 class FingerprintGenerator:
     """Fingerprint generator."""
+
     def __init__(self,
                  mols: list,
                  fp_type: str = "SECFP",
@@ -447,7 +451,7 @@ class FingerprintGenerator:
             # https://github.com/keiserlab/e3fp
             # https://chemfp.readthedocs.io/en/latest/fp_types.html
             # https://xenonpy.readthedocs.io/en/stable/_modules/xenonpy/descriptor/fingerprint.html
-            raise NotImplementedError("{} not implemented yet.".format(fp_type))
+            raise NotImplementedError(f"{fp_type} is not implemented yet.")
 
         return fp
 

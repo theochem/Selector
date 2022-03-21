@@ -29,6 +29,7 @@ from .metric import pairwise_dist
 
 
 class DissimilaritySelection(SelectionBase):
+    """Dissimilarity based diversity subset selection."""
 
     def __init__(self,
                  initialization="medoid",
@@ -79,6 +80,7 @@ class DissimilaritySelection(SelectionBase):
 
     def select(self, selected=None, n_selected=10):
         """Select the subset molecules with optimal diversity.
+
         Algorithm is adapted from https://doi.org/10.1016/S1093-3263(98)80008-9
         """
         if selected is None:

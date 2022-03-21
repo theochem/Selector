@@ -26,11 +26,13 @@
 from abc import ABC, abstractmethod
 
 from sklearn.preprocessing import StandardScaler
+
 from .feature import get_features
 
 
 class SelectionBase(ABC):
     """Base class for subset selection."""
+
     def __init__(self,
                  metric: str = "Tanimoto",
                  random_seed: int = 42,
