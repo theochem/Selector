@@ -23,10 +23,9 @@
 
 """Dissimilarity based diversity subset selection."""
 
+from DiverseSelector.base import SelectionBase
+from DiverseSelector.metric import pairwise_dist
 import numpy as np
-
-from .base import SelectionBase
-from .metric import pairwise_dist
 
 __all__ = [
     "DissimilaritySelection",
