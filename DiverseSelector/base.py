@@ -50,16 +50,18 @@ class SelectionBase(ABC):
         """Select the subset molecules with optimal diversity."""
         pass
 
+    # concrete method, because we want in to be in both child classes, and it should act
     @property
-    def subset_diversity(self):  # concrete method, because we want in to be in both child classes, and it should act
+    def subset_diversity(self):
         # in the same way
         """
         Calculate diversity of the subset."""
         # todo: need to implement diversity measurement here
         pass
 
+    # concrete method, because we want in to be in both child classes, and it should act
     @property
-    def all_diversity(self):  # concrete method, because we want in to be in both child classes, and it should act
+    def all_diversity(self):
         # in the same way
         """
         Calculate diversity of the original dataset.
@@ -69,7 +71,7 @@ class SelectionBase(ABC):
         # todo: need to implement diversity measurement here
         pass
 
-    def load_data(self, **kwargs):  # concrete method, because we want in to be in both child classes, and it should act
+    def load_data(self, **kwargs):
         # in the same way
         """Load dataset."""
         self.features = get_features(feature_type=self.feature_type,
@@ -77,7 +79,7 @@ class SelectionBase(ABC):
                                      feature_file=self.feature_file,
                                      **kwargs)
 
-    def save_output(self):  # concrete method, because we want in to be in both child classes, and it should act
+    def save_output(self):
         # in the same way
         """Save output.
         Notes

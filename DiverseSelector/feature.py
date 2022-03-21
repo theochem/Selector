@@ -24,7 +24,7 @@
 """Feature generation module."""
 import os
 import sys
-from typing import Any, TypeVar
+from typing import Any
 
 import numpy as np
 import pandas as pd
@@ -34,12 +34,13 @@ from rdkit import Chem
 from rdkit.Chem import AllChem, MACCSkeys, Descriptors
 from rdkit.Chem import rdMHFPFingerprint
 
-from .utils import ExplicitBitVect, PandasDataFrame, RDKitMol, mol_reader
+from .utils import ExplicitBitVector, PandasDataFrame, RDKitMol, mol_reader
 
 __all__ = [
     "DescriptorGenerator",
     "FingerprintGenerator",
     "feature_filtering",
+    "get_features",
 ]
 
 cwd = os.path.dirname(os.path.abspath(__file__))
@@ -337,7 +338,7 @@ class FingerprintGenerator:
                               rings: bool = True,
                               isomeric: bool = False,
                               kekulize: bool = False,
-                              ) -> ExplicitBitVect:
+                              ) -> ExplicitBitVector:
         """
         Generate required molecular fingerprints.
 
@@ -366,7 +367,7 @@ class FingerprintGenerator:
 
         Returns
         -------
-        fp : ExplicitBitVect
+        fp : ExplicitBitVector
             The computed molecular fingerprint.
 
         Notes
