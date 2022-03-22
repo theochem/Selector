@@ -38,12 +38,39 @@ __all__ = [
     "RDKitMol",
     "PandasDataFrame",
     "mol_reader",
+    "sklearn_supported_metrics",
 ]
 
+# type checking
 PandasDataFrame = TypeVar('DataFrame')
 RDKitMol = TypeVar('Mol')
 ExplicitBitVector = TypeVar("ExplicitBitVect")
 
+# scikit-learn supported distance metrics
+sklearn_supported_metrics = ["cityblock",
+                             "cosine",
+                             "euclidean",
+                             "l1",
+                             "l2",
+                             "manhattan",
+                             "braycurtis",
+                             "canberra",
+                             "chebyshev",
+                             "correlation",
+                             "dice",
+                             "hamming",
+                             "jaccard",
+                             "kulsinski",
+                             "mahalanobis",
+                             "minkowski",
+                             "rogerstanimoto",
+                             "russellrao",
+                             "seuclidean",
+                             "sokalmichener",
+                             "sokalsneath",
+                             "sqeuclidean",
+                             "yule",
+                             ]
 
 def mol_reader(file_name: str,
                remove_hydrogen: bool = False,

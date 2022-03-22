@@ -23,13 +23,18 @@
 
 """Metric calculation module."""
 
+from typing import Any
+
 import numpy as np
 from scipy.spatial.distance import cdist, squareform
+from sklearn.metrics import pairwise_distances
+
+from DiverseSelector.utils import sklearn_supported_metrics
 
 __all__ = [
     "pairwise_dist",
     "compute_diversity",
-    "distance_similarity",
+    "distance_to_similarity",
     "pairwise_similarity",
     "pairwise_similarity_bit",
     "tanimoto",
@@ -39,6 +44,68 @@ __all__ = [
     "bit_cosine",
     "bit_dice",
 ]
+
+
+class ComputeDistanceMatrix:
+    """Compute distance matrix.
+
+    This class is just a demo and not finished yet."""
+
+    def __init__(self,
+                 feature: np.ndarray,
+                 metric: str = "euclidean",
+                 n_jobs: int = -1,
+                 force_all_finite: bool = True,
+                 **kwargs: Any,
+                 ):
+        """Compute pairwise distance given a feature matrix.
+
+        Parameters
+        ----------
+        feature : np.ndarray
+            Molecule feature matrix.
+        metric : str, optional
+            Distance metric.
+
+        """
+        self.feature = feature
+        self.metric = metric
+        self.n_jobs = n_jobs
+        self.force_all_finite = force_all_finite
+        self.kwargs = kwargs
+
+    def compute_distance(self):
+        """Compute the distance matrix."""
+        built_in_metrics = [
+            "tanimoto",
+            "modified_tanimoto",
+
+        ]
+
+        if self.metric in sklearn_supported_metrics:
+            dist = pairwise_distances(
+                X=self.feature,
+                Y=None,
+                metric=self.metric,
+                n_jobs=self.n_jobs,
+                force_all_finite=self.force_all_finite,
+                **self.kwargs,
+            )
+        elif self.metric in built_in_metrics:
+            func = self._select_function(self.metric)
+            dist = func(self.feature)
+
+        return dist
+
+    @staticmethod
+    def _select_function(metric: str) -> Any:
+        """Select the function to compute the distance matrix."""
+        function_dict = {
+            "tanimoto": tanimoto,
+            "modified_tanimoto": modified_tanimoto,
+        }
+
+        return function_dict[metric]
 
 
 def pairwise_dist(feature: np.array,
@@ -57,14 +124,10 @@ def pairwise_dist(feature: np.array,
     arr_dist : ndarray
         symmetric distance array
     """
-    if metric == "euclidean":
-        arr_dist = cdist(feature, feature, "euclidean")
-    else:
-        arr_dist = cdist(feature, feature, metric)
-    return arr_dist
+    return cdist(feature, feature, metric)
 
 
-def distance_similarity(distance: np.array):
+def distance_to_similarity(distance: np.array):
     """Compute similarity.
 
     Parameters
@@ -79,31 +142,6 @@ def distance_similarity(distance: np.array):
     """
     similarity = 1 / (1 + distance)
     return similarity
-
-
-def pairwise_similarity(feature: np.array, metric):
-    """Compute the pairwaise similarity coefficients.
-
-    Parameters
-    ----------
-    feature : ndarray
-        feature matrix
-    metric : str
-        method of calculation
-
-    Returns
-    -------
-    pair_coeff : ndarray
-        similairty coefficients for all molecule pairs in feature matrix.
-    """
-    pair_simi = []
-    size = len(np.shape(feature))
-    for i in range(0, size + 1):
-        for j in range(i + 1, size + 1):
-            pair_simi.append((metric(feature[:, i], feature[:, j])))
-    # this only works when the similarity to self is equal to 1
-    pair_coeff = (squareform(pair_simi) + np.identity(size + 1))
-    return pair_coeff
 
 
 def pairwise_similarity_bit(feature: np.array, metric):
@@ -132,7 +170,7 @@ def pairwise_similarity_bit(feature: np.array, metric):
 
 # this section is the similarity metrics for non-bitstring input
 
-
+# todo: we need to compute the pairwise distance matrix for all the molecules in the matrix
 def tanimoto(a, b):
     """Compute tanimoto coefficient.
 
