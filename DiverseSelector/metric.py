@@ -26,7 +26,6 @@
 import numpy as np
 from scipy.spatial.distance import cdist, squareform
 
-
 __all__ = [
     "pairwise_dist",
     "compute_diversity",
@@ -52,7 +51,7 @@ def pairwise_dist(feature: np.array,
         feature matrix
     metric : str
         metric to use
-   
+
     Returns
     -------
     arr_dist : ndarray
@@ -67,7 +66,7 @@ def pairwise_dist(feature: np.array,
 
 def distance_similarity(distance: np.array):
     """Compute similarity.
-    
+
     Parameters
     ----------
     distance : ndarray
@@ -76,15 +75,15 @@ def distance_similarity(distance: np.array):
     Returns
     -------
     similarity : ndarray
-        symmetric similarity array
+        symmetric similarity array.
     """
     similarity = 1 / (1 + distance)
     return similarity
 
 
 def pairwise_similarity(feature: np.array, metric):
-    """Compute the pairwaise similarity coefficients
-    
+    """Compute the pairwaise similarity coefficients.
+
     Parameters
     ----------
     feature : ndarray
@@ -95,21 +94,21 @@ def pairwise_similarity(feature: np.array, metric):
     Returns
     -------
     pair_coeff : ndarray
-        similairty coefficients for all molecule pairs in feature matrix
+        similairty coefficients for all molecule pairs in feature matrix.
     """
     pair_simi = []
     size = len(np.shape(feature))
     for i in range(0, size + 1):
         for j in range(i + 1, size + 1):
-            pair_simi.append((metric(feature[:,i], feature[:,j])))
+            pair_simi.append((metric(feature[:, i], feature[:, j])))
     # this only works when the similarity to self is equal to 1
     pair_coeff = (squareform(pair_simi) + np.identity(size + 1))
     return pair_coeff
 
 
 def pairwise_similarity_bit(feature: np.array, metric):
-    """Compute the pairwaise similarity coefficients
-    
+    """Compute the pairwise similarity coefficients.
+
     Parameters
     ----------
     feature : ndarray
@@ -120,13 +119,13 @@ def pairwise_similarity_bit(feature: np.array, metric):
     Returns
     -------
     pair_coeff : ndarray
-        similairty coefficients for all molecule pairs in feature matrix
+        similarity coefficients for all molecule pairs in feature matrix
     """
     pair_simi = []
     size = len(feature)
     for i in range(0, size):
-        for j in range(i + 1 , size):
-            pair_simi.append(metric(feature[i],feature[j]))
+        for j in range(i + 1, size):
+            pair_simi.append(metric(feature[i], feature[j]))
     pair_coeff = (squareform(pair_simi) + np.identity(size))
     return pair_coeff
 
@@ -135,7 +134,7 @@ def pairwise_similarity_bit(feature: np.array, metric):
 
 
 def tanimoto(a, b):
-    """Compute tanimoto coefficient
+    """Compute tanimoto coefficient.
 
     Parameters
     ----------
@@ -150,11 +149,11 @@ def tanimoto(a, b):
         tanimoto coefficient for molecule A and B
     """
     coeff = (sum(a * b)) / ((sum(a ** 2)) + (sum(b ** 2)) - (sum(a * b)))
-    return coeff 
+    return coeff
 
 
 def cosine(a, b):
-    """Compute cosine coefficient
+    """Compute cosine coefficient.
 
     Parameters
     ----------
@@ -173,7 +172,7 @@ def cosine(a, b):
 
 
 def dice(a, b):
-    """Compute dice coefficient
+    """Compute dice coefficient.
 
     Parameters
     ----------
@@ -188,18 +187,19 @@ def dice(a, b):
         dice coefficient for molecule A and B
     """
     coeff = (2 * (sum(a * b))) / ((sum(a ** 2)) + (sum(b ** 2)))
-    return coeff 
+    return coeff
 
 
 # this section is bit_string similarity calcualtions
 
 
-def modified_tanimoto(a, b):
+def modified_tanimoto():
+    """Compute modified tanimoto coefficient."""
     pass
 
 
-def bit_tanimoto(a ,b):
-    """Compute tanimoto coefficient
+def bit_tanimoto(a, b):
+    """Compute tanimoto coefficient.
 
     Parameters
     ----------
@@ -216,15 +216,15 @@ def bit_tanimoto(a ,b):
     a_feat = np.count_nonzero(a)
     b_feat = np.count_nonzero(b)
     c = 0
-    for i in range(0, len(a)):
-        if a[i] == b[i] and a[i] != 0:
+    for idx, _ in enumerate(a):
+        if a[idx] == b[idx] and a[idx] != 0:
             c += 1
     b_t = c / (a_feat + b_feat - c)
     return b_t
 
 
-def bit_cosine(a ,b):
-    """Compute dice coefficient
+def bit_cosine(a, b):
+    """Compute dice coefficient.
 
     Parameters
     ----------
@@ -241,15 +241,15 @@ def bit_cosine(a ,b):
     a_feat = np.count_nonzero(a)
     b_feat = np.count_nonzero(b)
     c = 0
-    for i in range(0, len(a)):
-        if a[i] == b[i] and a[i] != 0:
+    for idx, _ in enumerate(a):
+        if a[idx] == b[idx] and a[idx] != 0:
             c += 1
     b_c = c / ((a_feat * b_feat) ** 0.5)
     return b_c
 
 
-def bit_dice(a ,b):
-    """Compute dice coefficient
+def bit_dice(a, b):
+    """Compute dice coefficient.
 
     Parameters
     ----------
@@ -266,10 +266,10 @@ def bit_dice(a ,b):
     a_feat = np.count_nonzero(a)
     b_feat = np.count_nonzero(b)
     c = 0
-    for i in range(0, len(a)):
-        if a[i] == b[i] and a[i] != 0:
+    for idx, _ in enumerate(a):
+        if a[idx] == b[idx] and a[idx] != 0:
             c += 1
-    b_d = (2 * c) / (a_feat + b_feat) 
+    b_d = (2 * c) / (a_feat + b_feat)
     return b_d
 
 
