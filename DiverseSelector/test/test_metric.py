@@ -23,19 +23,32 @@
 
 """Metric calculation test module."""
 
+# todo: fix this later
+# noqa: F401
+from DiverseSelector.metric import (
+                                    # bit_cosine,
+                                    bit_dice,
+                                    # bit_tanimoto,
+                                    # compute_diversity,
+                                    # cosine,
+                                    # dice,
+                                    # distance_similarity,
+                                    pairwise_dist,
+                                    pairwise_similarity,
+                                    pairwise_similarity_bit,
+                                    tanimoto
+                                    )
 import numpy as np
-from DiverseSelector.metric import *
 
-
-#each row is a feature and each colume is a molecule
+# each row is a feature and each column is a molecule
 sample1 = np.array([[4, 2, 6],
                     [4, 9, 6],
                     [2, 5, 0],
                     [2, 0, 9],
                     [5, 3, 0]])
 
-#each row is a molecule and each colume is a feature
-sample2 = np.array([[1, 1, 0, 0, 0], 
+# each row is a molecule and each colume is a feature
+sample2 = np.array([[1, 1, 0, 0, 0],
                     [0, 1, 1, 0, 0],
                     [0, 0, 0, 1, 0],
                     [0, 0, 0, 0, 1]])
