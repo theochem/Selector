@@ -92,7 +92,7 @@ class DissimilaritySelection(SelectionBase):
     
     def select(dissimilarity_function):
         def wrapper(*args, **kwargs):
-            dissimilarity_function(*args, **kwargs)
+            return dissimilarity_function(*args, **kwargs)
         return wrapper
 
     @select
