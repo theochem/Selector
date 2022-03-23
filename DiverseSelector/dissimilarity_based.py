@@ -89,7 +89,13 @@ class DissimilaritySelection(SelectionBase):
         """Compute the distance metrics."""
         # for iterative selection and final subset both
         pass
+    
+    def select(dissimilarity_function):
+        def wrapper(*args, **kwargs):
+            dissimilarity_function(*args, **kwargs)
+        return wrapper
 
+    @select
     def brutestrength(self, selected=None, n_selected=10, method='maxmin'):
         """Select the subset molecules with optimal diversity.
 
@@ -129,31 +135,40 @@ class DissimilaritySelection(SelectionBase):
         else:
             raise ValueError(f"Method {method} not supported, choose maxmin or maxsum.")
 
+    @select
     def sphereexclusion(self, selected=None, n_selected=10, s_max=1, order=None):
         if selected is None:
             selected = []
             return self.sphereexclusion(selected, n_selected, s_max, order)
-
-        if order is None:
-            option1, option2, option3 = random.sample(range(len(self.features_norm)), 3)
-            ref = [option1, option2, option3]
+        
+        if order is None:        
+            ref = [self.starting_idx]
             candidates = np.delete(np.arange(0, len(self.features_norm)), ref)
             distances = []
             for idx in candidates:
-                ref1 = self.features_norm[ref[0]]
-                point = self.features_norm[idx]
-                distance_sq = (ref1[0] - point[0]) ** 2 + (ref1[1] - point[1]) ** 2
+                ref_point = self.features_norm[ref[0]]
+                data_point = self.features_norm[idx]
+                distance_sq = 0
+                for i in range(len(ref_point)):
+                    distance_sq += (ref_point[i] - data_point[i]) ** 2
                 distances.append((distance_sq, idx))
             distances.sort()
-            print(distances, ref[0])
-            order = [idx for dist, idx in distances]
-            return self.sphereexclusion(selected, n_selected, s_max, order)
+            order = [idx for dist, idx in distances]        
+            return self.sphereexclusion(selected, n_selected, s_max, order)            
 
         for idx in order:
             if len(selected) == 0:
                 selected.append(idx)
-                continue
-            min_dist = np.min(pairwise_dist(self.features_norm[selected + [idx]])[-1, :-1])
+                continue        
+            distances = []
+            for selected_idx in selected:
+                data_point = self.features_norm[idx]
+                selected_point = self.features_norm[selected_idx]
+                distance_sq = 0
+                for i in range(len(data_point)):
+                    distance_sq += (selected_point[i] - data_point[i]) ** 2
+                distances.append(np.sqrt(distance_sq))
+            min_dist = min(distances)
             if min_dist > s_max:
                 selected.append(idx)
             if len(selected) == n_selected:
@@ -161,6 +176,7 @@ class DissimilaritySelection(SelectionBase):
 
         return selected
 
+    @select
     def optisim(self, selected=None, n_selected=10, k=3, radius=2, recycling=None):
         if selected is None:
             selected = [self.starting_idx]
@@ -181,7 +197,15 @@ class DissimilaritySelection(SelectionBase):
                     return self.optisim(selected, n_selected, k, radius, recycling)
                 return selected
             index_new = candidates[np.random.randint(0, len(candidates))]
-            min_dist = np.min(pairwise_dist(self.features_norm[selected + [index_new]])[-1, :-1])
+            distances = []
+            for selected_idx in selected:
+                data_point = self.features_norm[index_new]
+                selected_point = self.features_norm[selected_idx]
+                distance_sq = 0
+                for i in range(len(data_point)):
+                    distance_sq += (selected_point[i] - data_point[i]) ** 2
+                distances.append(np.sqrt(distance_sq))
+            min_dist = min(distances)
             if min_dist > radius:
                 subsample[index_new] = min_dist
             else:
