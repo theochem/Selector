@@ -27,15 +27,14 @@ from typing import Any
 
 import numpy as np
 from scipy.spatial.distance import cdist, squareform
+from DiverseSelector.utils import sklearn_supported_metrics
 from sklearn.metrics import pairwise_distances
 
-from DiverseSelector.utils import sklearn_supported_metrics
 
 __all__ = [
     "pairwise_dist",
     "compute_diversity",
     "distance_to_similarity",
-    "pairwise_similarity",
     "pairwise_similarity_bit",
     "tanimoto",
     "cosine",
@@ -49,7 +48,8 @@ __all__ = [
 class ComputeDistanceMatrix:
     """Compute distance matrix.
 
-    This class is just a demo and not finished yet."""
+    This class is just a demo and not finished yet.
+    """
 
     def __init__(self,
                  feature: np.ndarray,
@@ -67,6 +67,10 @@ class ComputeDistanceMatrix:
         metric : str, optional
             Distance metric.
 
+        Returns
+        -------
+        dist : ndarray
+            symmetric distance array.
         """
         self.feature = feature
         self.metric = metric
@@ -79,9 +83,7 @@ class ComputeDistanceMatrix:
         built_in_metrics = [
             "tanimoto",
             "modified_tanimoto",
-
         ]
-
         if self.metric in sklearn_supported_metrics:
             dist = pairwise_distances(
                 X=self.feature,
@@ -109,31 +111,31 @@ class ComputeDistanceMatrix:
 
 
 def pairwise_dist(feature: np.array,
-                  metric: str = "euclidean"):
+                  metric: str = "euclidean") -> np.ndarray:
     """Compute pairwise distance.
 
     Parameters
     ----------
     feature : ndarray
-        feature matrix
+        feature matrix.
     metric : str
-        metric to use
+        method of calcualtion.
 
     Returns
     -------
     arr_dist : ndarray
-        symmetric distance array
+        symmetric distance array.
     """
     return cdist(feature, feature, metric)
 
 
-def distance_to_similarity(distance: np.array):
+def distance_to_similarity(distance: np.array) -> np.ndarray:
     """Compute similarity.
 
     Parameters
     ----------
     distance : ndarray
-        symmetric distance array
+        symmetric distance array.
 
     Returns
     -------
@@ -144,20 +146,20 @@ def distance_to_similarity(distance: np.array):
     return similarity
 
 
-def pairwise_similarity_bit(feature: np.array, metric):
+def pairwise_similarity_bit(feature: np.array, metric) -> np.ndarray:
     """Compute the pairwise similarity coefficients.
 
     Parameters
     ----------
     feature : ndarray
-        feature matrix in bit string
+        feature matrix in bit string.
     metric : str
-        method of calculation
+        method of calculation.
 
     Returns
     -------
     pair_coeff : ndarray
-        similarity coefficients for all molecule pairs in feature matrix
+        similarity coefficients for all molecule pairs in feature matrix.
     """
     pair_simi = []
     size = len(feature)
@@ -171,58 +173,58 @@ def pairwise_similarity_bit(feature: np.array, metric):
 # this section is the similarity metrics for non-bitstring input
 
 # todo: we need to compute the pairwise distance matrix for all the molecules in the matrix
-def tanimoto(a, b):
+def tanimoto(a, b) -> int:
     """Compute tanimoto coefficient.
 
     Parameters
     ----------
     a : array_like
-        molecule A's features
+        molecule A's features.
     b : array_like
-        molecules B's features
+        molecules B's features.
 
     Returns
     -------
     coeff : int
-        tanimoto coefficient for molecule A and B
+        tanimoto coefficient for molecule A and B.
     """
     coeff = (sum(a * b)) / ((sum(a ** 2)) + (sum(b ** 2)) - (sum(a * b)))
     return coeff
 
 
-def cosine(a, b):
+def cosine(a, b) -> int:
     """Compute cosine coefficient.
 
     Parameters
     ----------
     a : array_like
-        molecule A's features
+        molecule A's features.
     b : array_like
-        molecules B's features
+        molecules B's features.
 
     Returns
     -------
     coeff : int
-        cosine coefficient for molecule A and B
+        cosine coefficient for molecule A and B.
     """
     coeff = (sum(a * b)) / (((sum(a ** 2)) + (sum(b ** 2))) ** 0.5)
     return coeff
 
 
-def dice(a, b):
+def dice(a, b) -> int:
     """Compute dice coefficient.
 
     Parameters
     ----------
     a : array_like
-        molecule A's features
+        molecule A's features.
     b : array_like
-        molecules B's features
+        molecules B's features.
 
     Returns
     -------
     coeff : int
-        dice coefficient for molecule A and B
+        dice coefficient for molecule A and B.
     """
     coeff = (2 * (sum(a * b))) / ((sum(a ** 2)) + (sum(b ** 2)))
     return coeff
@@ -236,20 +238,20 @@ def modified_tanimoto():
     pass
 
 
-def bit_tanimoto(a, b):
+def bit_tanimoto(a, b) -> int:
     """Compute tanimoto coefficient.
 
     Parameters
     ----------
     a : array_like
-        molecule A's features in bitstring
+        molecule A's features in bitstring.
     b : array_like
-        molecules B's features in bitstring
+        molecules B's features in bitstring.
 
     Returns
     -------
     coeff : int
-        tanimoto coefficient for molecule A and B
+        tanimoto coefficient for molecule A and B.
     """
     a_feat = np.count_nonzero(a)
     b_feat = np.count_nonzero(b)
@@ -261,20 +263,20 @@ def bit_tanimoto(a, b):
     return b_t
 
 
-def bit_cosine(a, b):
+def bit_cosine(a, b) -> int:
     """Compute dice coefficient.
 
     Parameters
     ----------
     a : array_like
-        molecule A's features in bit string
+        molecule A's features in bit string.
     b : array_like
-        molecules B's features in bit string
+        molecules B's features in bit string.
 
     Returns
     -------
     coeff : int
-        dice coefficient for molecule A and B
+        dice coefficient for molecule A and B.
     """
     a_feat = np.count_nonzero(a)
     b_feat = np.count_nonzero(b)
@@ -286,20 +288,20 @@ def bit_cosine(a, b):
     return b_c
 
 
-def bit_dice(a, b):
+def bit_dice(a, b) -> int:
     """Compute dice coefficient.
 
     Parameters
     ----------
     a : array_like
-        molecule A's features
+        molecule A's features.
     b : array_like
-        molecules B's features
+        molecules B's features.
 
     Returns
     -------
     coeff : int
-        dice coefficient for molecule A and B
+        dice coefficient for molecule A and B.
     """
     a_feat = np.count_nonzero(a)
     b_feat = np.count_nonzero(b)
