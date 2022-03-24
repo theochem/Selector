@@ -21,13 +21,4 @@
 #
 # --
 
-"""Unit and regression test for the DiverseSelector package."""
-
-
-# import pytest
-# import DiverseSelector
-
-
-def test_diverseselector_imported():
-    """Sample test, will always pass so long as import statement worked."""
-    assert 5 == 5
+"""Testing Module for DiverseSelector."""
