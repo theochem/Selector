@@ -23,17 +23,35 @@
 
 """Testing for the dissimilarity-based selection algorithms."""
 
+from collections import Counter
+
 from DiverseSelector import DissimilaritySelection
+from DiverseSelector.test.common import generate_synthetic_data
 from numpy.testing import assert_equal
-from sklearn.datasets import make_blobs
-from sklearn.metrics import pairwise_distances
 
 
-def test_minmax_selector1():
+def test_minmax_selector_3_100():
     """Testing the MinMax selection algorithm with predefined starting point."""
-    syn_data, _ = make_blobs(n_samples=100, n_features=2, centers=3, random_state=42)
-    arr_dist = pairwise_distances(syn_data)
-    model = DissimilaritySelection(num_selected=10, arr_dist=arr_dist, random_seed=42)
+    # in the function name:
+    # 3 means that the number of clusters is 3
+    # 100 means that the number of total data pints is 100
+    _, class_labels, arr_dist = generate_synthetic_data(n_samples=100,
+                                                        n_features=2,
+                                                        n_clusters=3,
+                                                        pairwise_dist=True,
+                                                        metric="euclidean",
+                                                        random_state=42)
+    model = DissimilaritySelection(num_selected=12,
+                                   arr_dist=arr_dist,
+                                   random_seed=42)
     model.starting_idx = 0
     selected = model.select()
-    assert_equal([0, 94, 3, 50, 64, 85, 93, 83, 34, 59], selected)
+
+    # make sure all the selected indices are the same with expectation
+    assert_equal([0, 94, 3, 50, 64, 85, 93, 83, 34, 59, 49, 72], selected)
+
+    # make sure number of selected molecules is correct in reach cluster
+    selected_labels_count = Counter(class_labels[selected])
+    assert_equal(selected_labels_count[0], 4)
+    assert_equal(selected_labels_count[1], 4)
+    assert_equal(selected_labels_count[2], 4)
