@@ -41,11 +41,11 @@ def generate_synthetic_data(n_samples: int = 100,
                             center_box: Tuple[float, float] = (-10.0, 10.0),
                             metric: str = "euclidean",
                             shuffle: bool = True,
-                            return_centers: bool = False,
                             random_state: int = 42,
                             pairwise_dist: bool = False,
                             **kwargs: Any,
-                            ) -> Union[np.ndarray, Tuple[np.ndarray, np.ndarray]]:
+                            ) -> Union[Tuple[np.ndarray, np.ndarray],
+                                       Tuple[np.ndarray, np.ndarray, np.ndarray]]:
     """Generate synthetic data.
 
     Parameters
@@ -68,8 +68,6 @@ def generate_synthetic_data(n_samples: int = 100,
         Default="euclidean".
     shuffle : bool, optional
         Whether to shuffle the samples. Default=True.
-    return_centers : bool, optional
-        If True, then return the centers of each cluster. Default=False.
     random_state : int, optional
         The random state used for generating synthetic data. Default=42.
     pairwise_dist : bool, optional
@@ -81,25 +79,28 @@ def generate_synthetic_data(n_samples: int = 100,
     -------
     syn_data : np.ndarray
         The synthetic data.
+    class_labels : np.ndarray
+        The integer labels for cluster membership of each sample.
     dist: np.ndarray
         The symmetric pairwise distances between samples.
 
     """
-    syn_data, _ = make_blobs(n_samples=n_samples,
-                             n_features=n_features,
-                             centers=n_clusters,
-                             cluster_std=cluster_std,
-                             center_box=center_box,
-                             shuffle=shuffle,
-                             random_state=random_state,
-                             return_centers=return_centers,
-                             )
+    # pylint: disable=W0632
+    syn_data, class_labels = make_blobs(n_samples=n_samples,
+                                        n_features=n_features,
+                                        centers=n_clusters,
+                                        cluster_std=cluster_std,
+                                        center_box=center_box,
+                                        shuffle=shuffle,
+                                        random_state=random_state,
+                                        return_centers=False,
+                                        )
     if pairwise_dist:
         dist = pairwise_distances(X=syn_data,
                                   Y=None,
                                   metric=metric,
                                   **kwargs,
                                   )
-        return syn_data, dist
+        return syn_data, class_labels, dist
     else:
-        return syn_data
+        return syn_data, class_labels
