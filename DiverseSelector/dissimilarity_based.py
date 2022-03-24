@@ -87,17 +87,17 @@ class DissimilaritySelection(SelectionBase):
         # for iterative selection and final subset both
         pass
 
-    def select(self, selected=None, n_selected=10):
+    def select(self, selected=None):
         """Select the subset molecules with optimal diversity.
 
         Algorithm is adapted from https://doi.org/10.1016/S1093-3263(98)80008-9
         """
         if selected is None:
             selected = [self.starting_idx]
-            return self.select(selected, n_selected)
+            return self.select(selected)
 
         # if we all selected all n_selected molecules then return list of selected mols
-        if len(selected) == n_selected:
+        if len(selected) == self.num_selected:
             return selected
 
         else:
@@ -111,4 +111,4 @@ class DissimilaritySelection(SelectionBase):
             selected.append(new_id)
 
             # call method again with an updated list of selected molecules
-            return self.select(selected, n_selected)
+            return self.select(selected)
