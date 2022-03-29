@@ -45,7 +45,6 @@ def test_minmax_selector_3_100():
                                    arr_dist=arr_dist,
                                    random_seed=42)
     model.starting_idx = 0
-<<<<<<< HEAD
     selected = model.select()
 
     # make sure all the selected indices are the same with expectation
@@ -56,7 +55,3 @@ def test_minmax_selector_3_100():
     assert_equal(selected_labels_count[0], 4)
     assert_equal(selected_labels_count[1], 4)
     assert_equal(selected_labels_count[2], 4)
-=======
-    selected = model.brutestrength()
-    assert_equal([0, 94, 3, 50, 64, 85, 93, 83, 34, 59], selected)
->>>>>>> Fix select wrapper, dissimilarity test
