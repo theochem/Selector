@@ -215,3 +215,41 @@ def euc_bit(a, b):
             c += 1
     e_d = (a_feat + b_feat - (2 * c)) ** 0.5
     return e_d
+
+
+def cosine(a, b):
+    """Compute cosine coefficient.
+
+    Parameters
+    ----------
+    a : array_like
+        molecule A's features.
+    b : array_like
+        molecules B's features.
+
+    Returns
+    -------
+    coeff : int
+        cosine coefficient for molecule A and B.
+    """
+    coeff = (sum(a * b)) / (((sum(a ** 2)) + (sum(b ** 2))) ** 0.5)
+    return coeff
+
+
+def dice(a, b):
+    """Compute dice coefficient.
+
+    Parameters
+    ----------
+    a : array_like
+        molecule A's features.
+    b : array_like
+        molecules B's features.
+
+    Returns
+    -------
+    coeff : int
+        dice coefficient for molecule A and B.
+    """
+    coeff = (2 * (sum(a * b))) / ((sum(a ** 2)) + (sum(b ** 2)))
+    return coeff 
