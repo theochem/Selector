@@ -24,24 +24,110 @@
 """Metric calculation module."""
 
 import numpy as np
-from scipy.spatial.distance import cdist
+from scipy.spatial.distance import cdist, squareform
+from sklearn.metrics import pairwise_distances
+from typing import Any
 
 __all__ = [
     "pairwise_dist",
     "compute_diversity",
+    "distance_to_similarity",
+    "pairwise_similarity",
+    "pairwise_similarity_bit",
+    "tanimoto",
+    "cosine",
+    "dice",
+    "bit_tanimoto",
+    "bit_cosine",
+    "bit_dice",
 ]
 
+sklearn_supported_metrics = ["cityblock",
+                              "cosine",
+                              "euclidean",
+                              "l1",
+                              "l2",
+                              "manhattan",
+                              "braycurtis",
+                              "canberra",
+                              "chebyshev",
+                              "correlation",
+                              "dice",
+                              "hamming",
+                              "jaccard",
+                              "kulsinski",
+                              "mahalanobis",
+                              "minkowski",
+                              "rogerstanimoto",
+                              "russellrao",
+                              "seuclidean",
+                              "sokalmichener",
+                              "sokalsneath",
+                              "sqeuclidean",
+                              "yule",
+                              ]
 
-def pairwise_dist(feature: np.array,
-                  metric: str = "euclidean"):
-    """Compute pairwise distance."""
-    # more to be implemented
-    # https://docs.scipy.org/doc/scipy-1.8.0/html-scipyorg/reference/generated/
-    # scipy.spatial.distance.pdist.html?highlight=pdist#scipy.spatial.distance.pdist
-    if metric == "euclidean":
-        arr_dist = cdist(feature, feature, "euclidean")
 
-    return arr_dist
+class ComputeDistanceMatrix:
+    """Compute distance matrix.
+
+    This class is just a demo and not finished yet."""
+
+    def __init__(self,
+                 feature: np.ndarray,
+                 metric: str = "euclidean",
+                 n_jobs: int = -1,
+                 force_all_finite: bool = True,
+                 **kwargs: Any,
+                 ):
+        """Compute pairwise distance given a feature matrix.
+
+        Parameters
+        ----------
+        feature : np.ndarray
+            Molecule feature matrix.
+        metric : str, optional
+            Distance metric.
+
+        """
+        self.feature = feature
+        self.metric = metric
+        self.n_jobs = n_jobs
+        self.force_all_finite = force_all_finite
+        self.kwargs = kwargs
+
+    def compute_distance(self):
+        """Compute the distance matrix."""
+        built_in_metrics = [
+            "tanimoto",
+            "modified_tanimoto",
+
+        ]
+
+        if self.metric in sklearn_supported_metrics:
+            dist = pairwise_distances(
+                X=self.feature,
+                Y=None,
+                metric=self.metric,
+                n_jobs=self.n_jobs,
+                force_all_finite=self.force_all_finite,
+                **self.kwargs,
+            )
+        elif self.metric in built_in_metrics:
+            func = self._select_function(self.metric)
+            dist = func(self.feature)
+        print(dist)
+        return dist
+
+    @staticmethod
+    def _select_function(metric: str) -> Any:
+        """Select the function to compute the distance matrix."""
+        function_dict = {
+            "tanimoto": tanimoto,
+            "modified_tanimoto": modified_tanimoto,
+        }
+
+        return function_dict[metric]
 
 
 def compute_diversity():
