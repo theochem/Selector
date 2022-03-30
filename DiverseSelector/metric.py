@@ -39,6 +39,7 @@ __all__ = [
     "bit_tanimoto",
 ]
 
+
 class ComputeDistanceMatrix:
     """Compute distance matrix.
 
@@ -224,3 +225,50 @@ def modified_tanimoto(a, b) -> int:
     p = ((n - n_00) + n_11) / (2 * n)
     mt = (((2 - p) / 3) * t_1) + (((1 + p) / 3) * t_0)
     return mt
+
+
+def gini(x):
+    # incomplet
+    for i in range(0, len(x)):
+        for j in range(0, len(x[0])):
+            if x[i,j] != 0:
+                x[i,j] = 1
+            else:
+                x[i,j] = 0
+    L = len(x[0])
+    frac_top = 0
+    frac_bottom = 0
+    val = []
+    for i in range(0, L):
+        val.append(sum(x[:,i]))
+    ans = np.sort(val)
+    for i in range(0, L):
+        frac_top += ((i + 1) * ans[i])
+        frac_bottom += ans[i]
+    G = (2 * ((frac_top) / (L * frac_bottom))) - ((L + 1) / L)
+    return G
+
+
+def entropy(x):
+    # note: feature matrixs are conversted to bits,
+    # so we lose any information associated with num in matrix.
+    for i in range(0, len(x)):
+        for j in range(0, len(x[0])):
+            if x[i,j] != 0:
+                x[i,j] = 1
+            else:
+                x[i,j] = 0
+    L = len(x[0])
+    N = len(x)
+    top = 0
+    val = []
+    for i in range(0, L):
+        val.append(sum(x[:,i]))
+    ans = np.sort(val)
+    for i in range(0, L):
+        if ans[i] == 0:
+            raise ValueError
+        else:
+            top += ((ans[i]) / N ) * (np.log(ans[i] / N))
+    E = -1 * (top / (L * 0.34657359027997264))
+    return E
