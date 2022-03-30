@@ -140,3 +140,78 @@ def load_testing_mols(mol_type: str = "2d") -> list:
         raise ValueError("mol_type must be either '2d' or '3d'.")
 
     return mols
+
+
+def bit_cosine(a ,b):
+    """Compute dice coefficient.
+
+    Parameters
+    ----------
+    a : array_like
+        molecule A's features in bit string.
+    b : array_like
+        molecules B's features in bit string.
+
+    Returns
+    -------
+    coeff : int
+        dice coefficient for molecule A and B.
+    """
+    a_feat = np.count_nonzero(a)
+    b_feat = np.count_nonzero(b)
+    c = 0
+    for idx, _ in enumerate(a):
+         if a[idx] == b[idx] and a[idx] != 0:
+            c += 1
+    b_c = c / ((a_feat * b_feat) ** 0.5)
+    return b_c
+
+
+def bit_dice(a ,b):
+    """Compute dice coefficient.
+
+    Parameters
+    ----------
+    a : array_like
+        molecule A's features.
+    b : array_like
+        molecules B's features.
+
+    Returns
+    -------
+    coeff : int
+        dice coefficient for molecule A and B.
+    """
+    a_feat = np.count_nonzero(a)
+    b_feat = np.count_nonzero(b)
+    c = 0
+    for idx, _ in enumerate(a):
+         if a[idx] == b[idx] and a[idx] != 0:
+            c += 1
+    b_d = (2 * c) / (a_feat + b_feat)
+    return b_d
+
+
+def euc_bit(a, b):
+    """Compute Euclidean distance from bitstring.
+
+    Parameters
+    ----------
+    a : array_like
+        molecule A's features in bits.
+    b : array_like
+        molecules B's features in bits.
+
+    Returns
+    -------
+    e_d : int
+        Euclidean distance between molecule A and B.
+    """
+    a_feat = np.count_nonzero(a)
+    b_feat = np.count_nonzero(b)
+    c = 0
+    for idx, _ in enumerate(a):
+         if a[idx] == b[idx] and a[idx] != 0:
+            c += 1
+    e_d = (a_feat + b_feat - (2 * c)) ** 0.5
+    return e_d
