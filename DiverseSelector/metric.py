@@ -23,50 +23,21 @@
 
 """Metric calculation module."""
 
+from typing import Any
+
 import numpy as np
 from scipy.spatial.distance import cdist, squareform
+from DiverseSelector.utils import sklearn_supported_metrics
 from sklearn.metrics import pairwise_distances
-from typing import Any
 
 __all__ = [
     "pairwise_dist",
     "compute_diversity",
     "distance_to_similarity",
-    "pairwise_similarity",
     "pairwise_similarity_bit",
     "tanimoto",
-    "cosine",
-    "dice",
     "bit_tanimoto",
-    "bit_cosine",
-    "bit_dice",
 ]
-
-sklearn_supported_metrics = ["cityblock",
-                              "cosine",
-                              "euclidean",
-                              "l1",
-                              "l2",
-                              "manhattan",
-                              "braycurtis",
-                              "canberra",
-                              "chebyshev",
-                              "correlation",
-                              "dice",
-                              "hamming",
-                              "jaccard",
-                              "kulsinski",
-                              "mahalanobis",
-                              "minkowski",
-                              "rogerstanimoto",
-                              "russellrao",
-                              "seuclidean",
-                              "sokalmichener",
-                              "sokalsneath",
-                              "sqeuclidean",
-                              "yule",
-                              ]
-
 
 class ComputeDistanceMatrix:
     """Compute distance matrix.
@@ -130,7 +101,26 @@ class ComputeDistanceMatrix:
         return function_dict[metric]
 
 
-def distance_similarity(x, dist = True):
+def pairwise_dist(feature: np.array,
+                  metric: str = "euclidean") -> np.ndarray:
+    """Compute pairwise distance.
+
+    Parameters
+    ----------
+    feature : ndarray
+        feature matrix.
+    metric : str
+        method of calcualtion.
+
+    Returns
+    -------
+    arr_dist : ndarray
+        symmetric distance array.
+    """
+    return cdist(feature, feature, metric)
+
+
+def distance_to_similarity(x, dist: bool = True) -> np.ndarray:
     """Convert between distance and similarity matrix.
     
     Parameters
@@ -150,7 +140,7 @@ def distance_similarity(x, dist = True):
     return y
 
 
-def pairwise_similarity_bit(feature: np.array, metric):
+def pairwise_similarity_bit(feature: np.array, metric) -> np.ndarray:
     """Compute the pairwaise similarity coefficients.
     
     Parameters
@@ -174,7 +164,7 @@ def pairwise_similarity_bit(feature: np.array, metric):
     return pair_coeff
 
 
-def tanimoto(a, b):
+def tanimoto(a, b) -> int:
     """Compute tanimoto coefficient.
 
     Parameters
@@ -193,7 +183,7 @@ def tanimoto(a, b):
     return coeff 
 
 
-def bit_tanimoto(a ,b):
+def bit_tanimoto(a ,b) -> int:
     """Compute tanimoto coefficient.
 
     Parameters
@@ -218,7 +208,7 @@ def bit_tanimoto(a ,b):
     return b_t
 
 
-def modified_tanimoto(a, b):
+def modified_tanimoto(a, b) -> int:
     # This is not finished
     n = len(a)
     n_11 = sum(a * b)
@@ -234,4 +224,3 @@ def modified_tanimoto(a, b):
     p = ((n - n_00) + n_11) / (2 * n)
     mt = (((2 - p) / 3) * t_1) + (((1 + p) / 3) * t_0)
     return mt
-
