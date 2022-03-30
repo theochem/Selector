@@ -26,9 +26,12 @@
 from typing import Any
 
 import numpy as np
+import rdkit
+from rdkit import Chem
+from rdkit.Chem import MCS
 from scipy.spatial.distance import cdist, squareform
 from DiverseSelector.utils import sklearn_supported_metrics
-from sklearn.metrics import pairwise_distances
+from DiverseSelector.test.common import euc_bit
 
 __all__ = [
     "pairwise_dist",
@@ -272,3 +275,28 @@ def entropy(x):
             top += ((ans[i]) / N ) * (np.log(ans[i] / N))
     E = -1 * (top / (L * 0.34657359027997264))
     return E
+
+
+def nearest_average_tanimoto(x):
+    tani = []
+    for i in range(0, len(x)):
+        short = 100 # arbitary distance
+        a = 0
+        b = 0
+        for j in range(0, len(x)):
+            if euc_bit(x[i], x[j]) < short and i != j:
+                short = euc_bit(x[i], x[j])
+                a = i
+                b = j
+        tani.append(bit_tanimoto(x[a],x[b]))
+    return np.average(tani)
+
+
+def explicit_diversity_index(x, mol: rdkit.Chem.rdchem.Mol):
+    CS = len(MCS.FindMCS(mol))
+    NC = len(x)
+    SDI = (1 - nearest_average_tanimoto(x)) / ( 0.8047 - (0.065 * (np.log(NC))))
+    CR = -1 * np.log10(NC / (CS ** 2))
+    edi = (SDI + CR) * 0.7071067811865476
+    edi_scaled = ((np.tanh(edi / 3) + 1) / 2) * 100
+    return edi_scaled
