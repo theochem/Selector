@@ -300,3 +300,19 @@ def explicit_diversity_index(x, mol: rdkit.Chem.rdchem.Mol):
     edi = (SDI + CR) * 0.7071067811865476
     edi_scaled = ((np.tanh(edi / 3) + 1) / 2) * 100
     return edi_scaled
+
+
+def logdet(x):
+    mid = np.dot(np.transpose(x) , x )
+    f_logdet = np.linalg.det(mid + np.identity(len(x[0])))
+    return f_logdet
+
+def shannon_entropy(x):
+    # shouldnt be used when proprtion of on bits
+    # exceeds e^-1.
+    # incomplet
+    size = len(x[:,0])
+    for i in range(0, size):
+        inter =  np.count_nonzero(x[:,i]) / size
+        H_x += (-1 * inter ) * np.log10(inter)
+    return H_x
