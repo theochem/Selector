@@ -29,7 +29,8 @@ import numpy as np
 import rdkit
 from rdkit import Chem
 from rdkit.Chem import MCS
-from scipy.spatial.distance import cdist, squareform
+from scipy.spatial.distance import cdist, squareform, euclidean
+from scipy.integrate import quad
 from DiverseSelector.utils import sklearn_supported_metrics
 from DiverseSelector.test.common import euc_bit
 
@@ -307,6 +308,7 @@ def logdet(x):
     f_logdet = np.linalg.det(mid + np.identity(len(x[0])))
     return f_logdet
 
+
 def shannon_entropy(x):
     # shouldnt be used when proprtion of on bits
     # exceeds e^-1.
@@ -316,3 +318,62 @@ def shannon_entropy(x):
         inter =  np.count_nonzero(x[:,i]) / size
         H_x += (-1 * inter ) * np.log10(inter)
     return H_x
+
+
+def WDUD(x: np.array):
+    # incomplet
+    N = len(x[:,0])
+    ans = []
+    for i in range(0, (len(x[:,0]) + 1)):
+        mol = x[i]
+        s_mol = np.sort(mol)
+        v_min = s_mol[0]
+        v_max = s_mol[len(mol) - 1]
+        wdud_mol1 = []
+        for i in range(0, len(mol)):
+            v = (mol[i] - v_min) / (v_max - v_min)
+            if v < 0:
+                PU_v = 0
+            if 0 <= v <= 1:
+                PU_v = v
+            if 1 < v:
+                PU_v = 1
+            if v < v_min:
+                PV_v = 0
+            if mol[i - 1] <= v <= mol[i + 1]:
+                PV_v = (i - 1) / N
+            if v_max < v:
+                PV_v = 1
+            func = PV_v - PU_v
+            print(func, v_max, v_min)
+            WDUD = quad(func, v_min, v_max)
+            wdud_mol1.append(WDUD)
+        ans.append(np.average(wdud_mol1))
+    return ans
+
+
+def total_diversity_Volume(x):
+    # incomplete
+    # normilization:
+    max_x = 9
+    min_x = 0
+    for i in range(0, len(x)):
+        for j in range(0, len(x[0])):
+            x[i,j] = (x[i,j] - min_x) / (max_x - min_x)
+    # divesity
+    d = len(x[0])
+    k = len(x[:,0])
+    r_o = d * np.sqrt(1 / k)
+    g_s = 0
+    for i in range(0 , k):
+        for j in range(i, k):
+            dist = euclidean(i, j)
+            if dist <= (2 * r_o) and dist != 0:
+                O_ij = min(100, ((2 * r_o) / dist) - 1)
+                if i < j:
+                    g_s += O_ij
+                else:
+                    pass
+            else:
+                pass
+    return g_s
