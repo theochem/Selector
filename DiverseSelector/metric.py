@@ -130,12 +130,89 @@ class ComputeDistanceMatrix:
         return function_dict[metric]
 
 
-def compute_diversity():
-    """Compute the diversity."""
-    pass
+def distance_similarity(x, dist = True):
+    """Convert between distance and similarity matrix.
+    
+    Parameters
+    ----------
+    distance : ndarray
+        symmetric distance array.
+
+    Returns
+    -------
+    similarity : ndarray
+        symmetric similarity array.
+    """
+    if dist == True:
+        y = 1 / (1 + x)
+    else:
+        y = (1 / x) - 1
+    return y
 
 
-def total_diversity_volume():
-    """Compute the total diversity volume."""
+def pairwise_similarity_bit(feature: np.array, metric):
+    """Compute the pairwaise similarity coefficients.
+    
+    Parameters
+    ----------
+    feature : ndarray
+        feature matrix.
+    metric : str
+        method of calculation.
 
-    pass
+    Returns
+    -------
+    pair_coeff : ndarray
+        similairty coefficients for all molecule pairs in feature matrix.
+    """
+    pair_simi = []
+    size = len(feature)
+    for i in range(0, size):
+        for j in range(i + 1 , size):
+            pair_simi.append(metric(feature[i],feature[j]))
+    pair_coeff = (squareform(pair_simi) + np.identity(size))
+    return pair_coeff
+
+
+def tanimoto(a, b):
+    """Compute tanimoto coefficient.
+
+    Parameters
+    ----------
+    a : array_like
+        molecule A's features.
+    b : array_like
+        molecules B's features.
+
+    Returns
+    -------
+    coeff : int
+        tanimoto coefficient for molecule A and B.
+    """
+    coeff = (sum(a * b)) / ((sum(a ** 2)) + (sum(b ** 2)) - (sum(a * b)))
+    return coeff 
+
+
+def bit_tanimoto(a ,b):
+    """Compute tanimoto coefficient.
+
+    Parameters
+    ----------
+    a : array_like
+        molecule A's features in bitstring.
+    b : array_like
+        molecules B's features in bitstring.
+
+    Returns
+    -------
+    coeff : int
+        tanimoto coefficient for molecule A and B.
+    """
+    a_feat = np.count_nonzero(a)
+    b_feat = np.count_nonzero(b)
+    c = 0
+    for idx, _ in enumerate(a):
+         if a[idx] == b[idx] and a[idx] != 0:
+            c += 1
+    b_t = c / (a_feat + b_feat - c)
+    return b_t
