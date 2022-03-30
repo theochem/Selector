@@ -216,3 +216,22 @@ def bit_tanimoto(a ,b):
             c += 1
     b_t = c / (a_feat + b_feat - c)
     return b_t
+
+
+def modified_tanimoto(a, b):
+    # This is not finished
+    n = len(a)
+    n_11 = sum(a * b)
+    n_00 = sum((1 - a) * (1 - b))
+    if n_00 == n:
+        t_1 = 1
+    else:
+        t_1 = n_11 / (n_00 - n)
+    if n_11 == n:
+        t_0 = 1
+    else:
+        t_0 = n_00 / (n - n_11)
+    p = ((n - n_00) + n_11) / (2 * n)
+    mt = (((2 - p) / 3) * t_1) + (((1 + p) / 3) * t_0)
+    return mt
+
