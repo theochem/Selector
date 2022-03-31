@@ -39,6 +39,9 @@ class SelectionBase(ABC):
                  mol_file: str = None,
                  feature_file: str = None,
                  num_selected: str = None,
+                 normalize_features: bool = False,
+                 arr_dist=None,
+                 **kwargs,
                  ):
         """Abstract class for other modules.
 
@@ -57,6 +60,10 @@ class SelectionBase(ABC):
             Path to the file with features. Default=None.
         num_selected : int, optional
             Number of molecules to select. Default=None.
+        normalize_features : bool, optional
+            Normalize features or not. Default=False.
+        arr_dist : numpy.ndarray, optional
+            Array of distances between molecules. Default=None.
 
         """
         self.metric = metric
@@ -65,7 +72,10 @@ class SelectionBase(ABC):
         self.mol_file = mol_file
         self.feature_file = feature_file
         self.num_selected = num_selected
-        self.features = None
+        self.normalize_features = normalize_features
+        self.arr_dist = arr_dist
+        if arr_dist is not None:
+            self.features = self.load_data(**kwargs)
 
     # abstract method, because we want in to be in both child classes
     @abstractmethod
@@ -100,12 +110,16 @@ class SelectionBase(ABC):
         pass
 
     def load_data(self, **kwargs):
-        # in the same way
         """Load dataset."""
         self.features = get_features(feature_type=self.feature_type,
                                      mol_file=self.mol_file,
                                      feature_file=self.feature_file,
                                      **kwargs)
+        # normalize the features when needed
+        if self.normalize_features:
+            self.features = StandardScaler().fit_transform(self.features)
+
+        return self.features
 
     def save_output(self):
         """Save output.
@@ -123,9 +137,3 @@ class SelectionBase(ABC):
 
         """
         pass
-
-    def _normalize_desc(self):
-        """Normalize molecular descriptors."""
-        scaler = StandardScaler()
-        self.features_norm = scaler.fit_transform(self.features)
-        return self.features_norm
