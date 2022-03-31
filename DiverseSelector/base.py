@@ -40,6 +40,7 @@ class SelectionBase(ABC):
                  feature_file: str = None,
                  num_selected: str = None,
                  normalize_features: bool = False,
+                 arr_dist=None,
                  **kwargs,
                  ):
         """Abstract class for other modules.
@@ -61,6 +62,8 @@ class SelectionBase(ABC):
             Number of molecules to select. Default=None.
         normalize_features : bool, optional
             Normalize features or not. Default=False.
+        arr_dist : numpy.ndarray, optional
+            Array of distances between molecules. Default=None.
 
         """
         self.metric = metric
@@ -69,7 +72,10 @@ class SelectionBase(ABC):
         self.mol_file = mol_file
         self.feature_file = feature_file
         self.num_selected = num_selected
-        self.features = self.load_data(**kwargs)
+        self.normalize_features = normalize_features
+        self.arr_dist = arr_dist
+        if arr_dist is not None:
+            self.features = self.load_data(**kwargs)
 
     # abstract method, because we want in to be in both child classes
     @abstractmethod
@@ -131,9 +137,3 @@ class SelectionBase(ABC):
 
         """
         pass
-
-    def _normalize_desc(self):
-        """Normalize molecular descriptors."""
-        scaler = StandardScaler()
-        self.features_norm = scaler.fit_transform(self.features)
-        return self.features_norm
