@@ -24,15 +24,15 @@
 """Metric calculation module."""
 
 from typing import Any
-
 import numpy as np
 import rdkit
-from rdkit import Chem
 from rdkit.Chem import MCS
 from scipy.spatial.distance import cdist, squareform, euclidean
 from scipy.integrate import quad
+from sklearn.metrics import pairwise_distances
 from DiverseSelector.utils import sklearn_supported_metrics
 from DiverseSelector.test.common import euc_bit
+
 
 __all__ = [
     "pairwise_dist",
@@ -65,6 +65,10 @@ class ComputeDistanceMatrix:
         metric : str, optional
             Distance metric.
 
+        Returns
+        -------
+        dist : ndarray
+            symmetric distance array.
         """
         self.feature = feature
         self.metric = metric
@@ -214,7 +218,7 @@ def bit_tanimoto(a ,b) -> int:
 
 
 def modified_tanimoto(a, b) -> int:
-    # This is not finished
+    # incomplete
     n = len(a)
     n_11 = sum(a * b)
     n_00 = sum((1 - a) * (1 - b))
@@ -233,6 +237,7 @@ def modified_tanimoto(a, b) -> int:
 
 def gini(x):
     # incomplet
+    # could be a wrong formula
     for i in range(0, len(x)):
         for j in range(0, len(x[0])):
             if x[i,j] != 0:
@@ -310,13 +315,14 @@ def logdet(x):
 
 
 def shannon_entropy(x):
-    # shouldnt be used when proprtion of on bits
-    # exceeds e^-1.
-    # incomplet
     size = len(x[:,0])
+    H_x = 0
     for i in range(0, size):
         inter =  np.count_nonzero(x[:,i]) / size
-        H_x += (-1 * inter ) * np.log10(inter)
+        if inter < (0.36787944117):
+            H_x += (-1 * inter ) * np.log10(inter)
+        else:
+            raise ValueError
     return H_x
 
 
@@ -353,27 +359,23 @@ def WDUD(x: np.array):
 
 
 def total_diversity_Volume(x):
-    # incomplete
-    # normilization:
-    max_x = 9
-    min_x = 0
-    for i in range(0, len(x)):
-        for j in range(0, len(x[0])):
-            x[i,j] = (x[i,j] - min_x) / (max_x - min_x)
-    # divesity
     d = len(x[0])
     k = len(x[:,0])
+    # min_max normilization:
+    max_x = (max(map(max, x)))
+    y = np.zeros((k, d))
+    for i in range(0, len(x[:,0])):
+        for j in range(0, len(x[0])):
+            y[i,j] = x[i,j] / max_x
+    # divesity
     r_o = d * np.sqrt(1 / k)
     g_s = 0
-    for i in range(0 , k):
-        for j in range(i, k):
-            dist = euclidean(i, j)
+    for i in range(0 , (k - 1)):
+        for j in range((i + 1), k):
+            dist = euclidean(y[i], y[j])
             if dist <= (2 * r_o) and dist != 0:
-                O_ij = min(100, ((2 * r_o) / dist) - 1)
-                if i < j:
-                    g_s += O_ij
-                else:
-                    pass
+                O_ij = min(100, (((2 * r_o) / dist) - 1))
+                g_s += O_ij
             else:
                 pass
     return g_s
