@@ -81,14 +81,14 @@ class DescriptorGenerator:
                            ) -> PandasDataFrame:
         """Molecule descriptor generation."""
         if self.desc_type.lower() == "mordred":
-            df_features = self.mordred_descriptors(self.mols)
+            df_features = self.mordred_descriptors(self.mols, **kwargs)
         elif self.desc_type.lower() == "padel":
-            df_features = self.padelpy_descriptors(self.mols)
+            df_features = self.padelpy_descriptors(self.mols, **kwargs)
         elif self.desc_type.lower() == "rdkit":
             df_features = self.rdkit_descriptors(self.mols,
                                                  use_fragment=self.use_fragment,
                                                  ipc_avg=self.ipc_avg,
-                                                 *kwargs)
+                                                 **kwargs)
         elif self.desc_type.lower() == "rdkit_frag":
             df_features = self.rdkit_fragment_descriptors(self.mols)
         else:
@@ -97,7 +97,7 @@ class DescriptorGenerator:
         return df_features
 
     @staticmethod
-    def mordred_descriptors(mols: list) -> PandasDataFrame:
+    def mordred_descriptors(mols: list, **kwargs: Any) -> PandasDataFrame:
         """Mordred molecular descriptor generation.
 
         Parameters
@@ -113,13 +113,13 @@ class DescriptorGenerator:
         """
         # if only compute 2D descriptors,
         # ignore_3D=True
-        calc = Calculator(descriptors, ignore_3D=False)
+        calc = Calculator(descriptors, **kwargs)
         df_features = pd.DataFrame(calc.pandas(mols))
 
         return df_features
 
     @staticmethod
-    def padelpy_descriptors(mols: list) -> PandasDataFrame:
+    def padelpy_descriptors(mols: list, **kwargs: Any) -> PandasDataFrame:
         """PADEL molecular descriptor generation.
 
         Parameters
