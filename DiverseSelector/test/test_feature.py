@@ -117,3 +117,24 @@ def test_feature_desc_rdkit():
     assert_almost_equal(df_rdkit_desc.to_numpy(float),
                         df_rdkit_desc_exp.to_numpy(float),
                         decimal=7)
+
+
+def test_feature_desc_rdkit_frag():
+    """Testing molecular RDKit fragment descriptor with 3D molecules."""
+    # load molecules
+    mols = load_testing_mols(mol_type="3d")
+    # generate molecular descriptors with the DescriptorGenerator
+    desc_generator = DescriptorGenerator(mols=mols,
+                                         desc_type="rdkit_frag",
+                                         use_fragment=True,
+                                         ipc_avg=True,
+                                         )
+    df_rdkit_desc = desc_generator.compute_descriptor()
+    # load the expected descriptor dataframe
+    df_rdkit_desc_exp = pd.read_csv(os.path.join("data", "drug_mols_desc_rdkit_frag.csv"),
+                                    sep=",")
+    # check if the dataframes are equal
+    assert_equal(df_rdkit_desc.shape, df_rdkit_desc_exp.shape)
+    assert_almost_equal(df_rdkit_desc.to_numpy(float),
+                        df_rdkit_desc_exp.to_numpy(float),
+                        decimal=7)
