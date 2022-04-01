@@ -24,8 +24,8 @@
 """Testing for the dissimilarity-based selection algorithms."""
 
 from DiverseSelector import clustering_based
-import numpy as np
 from DiverseSelector.test.common import generate_synthetic_data
+import numpy as np
 
 coords, class_labels, arr_dist = generate_synthetic_data(n_samples=100,
                                                          n_features=2,
