@@ -23,8 +23,8 @@
 
 """Clustering based compound selection."""
 
-import numpy as np
 from DiverseSelector.base import SelectionBase
+import numpy as np
 from DiverseSelector.feature import get_features
 from sklearn.cluster import AffinityPropagation, AgglomerativeClustering, Birch, DBSCAN, KMeans,\
     MeanShift, OPTICS, SpectralClustering
@@ -88,10 +88,12 @@ class ClusteringSelection(SelectionBase):
 
     def cluster(self, **params):
         """
-        Performs clustering based on given algorithm from sklearn library and set of parameters
+        Performs clustering based on given algorithm from sklearn library and set of parameters.
+
         :param params: parameters for the selected cluster
-        :return: numpy array of labels: np.ndarray:
+        :return: numpy array of labels: np.ndarray
         """
+
         if self.clustering_method == 'k-means':
             algorithm = KMeans(n_clusters=self.num_clusters,
                                random_state=self.random_seed,
@@ -130,7 +132,7 @@ class ClusteringSelection(SelectionBase):
             self.labels = labels
 
     def select(self):
-        """Selecting molecules"""
+        """Selecting molecules."""
         unique_labels = np.unique(self.labels)
         n = self.num_selected//self.num_clusters
 
