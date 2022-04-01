@@ -24,8 +24,8 @@
 """Clustering based compound selection."""
 
 from DiverseSelector.base import SelectionBase
-import numpy as np
 from DiverseSelector.feature import get_features
+import numpy as np
 from sklearn.cluster import AffinityPropagation, AgglomerativeClustering, Birch, DBSCAN, KMeans,\
     MeanShift, OPTICS, SpectralClustering
 from sklearn.mixture import GaussianMixture
