@@ -126,7 +126,7 @@ class ClusteringSelection(SelectionBase):
         else:
             raise ValueError("Clustering algorithm isn't supported")
 
-        if algorithm != 'GMM':
+        if self.clustering_method != 'GMM':
             labels = algorithm.labels_
             self.labels = labels
 
