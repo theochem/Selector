@@ -26,24 +26,16 @@
 import os
 
 import pandas as pd
-from pandas.testing import assert_frame_equal
-from numpy.testing import assert_almost_equal
-from DiverseSelector.feature import (DescriptorGenerator,
-                                     FingerprintGenerator,
-                                     feature_filtering,
-                                     get_features)
-from rdkit import Chem
+from numpy.testing import assert_equal, assert_almost_equal, assert_array_equal
+
+from DiverseSelector.feature import (DescriptorGenerator)
+from DiverseSelector.test.common import load_testing_mols
 
 
-def test_feature_desc_mordred_smiles():
+def test_feature_desc_mordred_2d():
     """Testing molecular mordred descriptor with SMILES strings."""
-
     # load molecules
-    mols = [Chem.MolFromSmiles(smiles) for smiles in
-            ["OC(=O)[C@@H](N)Cc1[nH]cnc1",
-             "OC(=O)C(=O)C",
-             "CC(=O)OC1=CC=CC=C1C(=O)O"]
-            ]
+    mols = load_testing_mols(mol_type="2d")
     # generate molecular descriptors with the DescriptorGenerator
     desc_generator = DescriptorGenerator(mols=mols,
                                          desc_type="mordred",
@@ -57,7 +49,50 @@ def test_feature_desc_mordred_smiles():
                                       )
     df_mordred_desc_exp.drop(columns=["name"], inplace=True)
     # check if the dataframes are equal
-    # assert_frame_equal(df_mordred_desc, df_mordred_desc_exp)
+    assert_equal(df_mordred_desc.shape, df_mordred_desc_exp.shape)
     assert_almost_equal(df_mordred_desc.to_numpy(float),
                         df_mordred_desc_exp.to_numpy(float),
+                        decimal=7)
+
+
+def test_feature_desc_mordred_3d():
+    """Testing molecular mordred descriptor with 3d SDF formats."""
+    # load molecules
+    mols = load_testing_mols(mol_type="3d")
+    # generate molecular descriptors with the DescriptorGenerator
+    desc_generator = DescriptorGenerator(mols=mols,
+                                         desc_type="mordred",
+                                         use_fragment=True,
+                                         ipc_avg=True,
+                                         )
+    df_mordred_desc = desc_generator.compute_descriptor(ignore_3D=False)
+    # load the expected descriptor dataframe
+    df_mordred_desc_exp = pd.read_csv(os.path.join("data", "drug_mols_desc_sdf_3d.csv"),
+                                      sep=",",
+                                      )
+    df_mordred_desc_exp.drop(columns=["name"], inplace=True)
+    # check if the dataframes are equal
+    assert_equal(df_mordred_desc.shape, df_mordred_desc_exp.shape)
+    assert_almost_equal(df_mordred_desc.to_numpy(float),
+                        df_mordred_desc_exp.to_numpy(float),
+                        decimal=7)
+
+
+def test_feature_desc_padelpy_3d():
+    """Testing molecular PaDEL descriptor with SMILES strings."""
+    # generate molecular descriptors with the DescriptorGenerator
+    desc_generator = DescriptorGenerator(mol_file=os.path.join("data", "drug_mols.sdf"),
+                                         desc_type="padel",
+                                         use_fragment=True,
+                                         ipc_avg=True,
+                                         )
+    df_padel_desc = desc_generator.compute_descriptor()
+    # load the expected descriptor dataframe
+    df_padel_desc_exp = pd.read_csv(os.path.join("data", "drug_mols_desc_padel.csv"),
+                                    sep=",",
+                                    index_col="Name")
+    # check if the dataframes are equal
+    assert_equal(df_padel_desc.shape, df_padel_desc_exp.shape)
+    assert_almost_equal(df_padel_desc.to_numpy(float),
+                        df_padel_desc_exp.to_numpy(float),
                         decimal=7)

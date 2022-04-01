@@ -23,14 +23,17 @@
 
 """Common functions for test module."""
 
+import os
 from typing import Any, Tuple, Union
 
 import numpy as np
+from rdkit import Chem
 from sklearn.datasets import make_blobs
 from sklearn.metrics import pairwise_distances
 
 __all__ = [
     "generate_synthetic_data",
+    "load_testing_mols",
 ]
 
 
@@ -104,3 +107,31 @@ def generate_synthetic_data(n_samples: int = 100,
         return syn_data, class_labels, dist
     else:
         return syn_data, class_labels
+
+
+def load_testing_mols(mol_type: str = "2d") -> list:
+    """Load testing molecules.
+
+    Parameters
+    ----------
+    mol_type : str, optional
+        The type of molecules, "2d" or "3d". Default="2d".
+
+    Returns
+    -------
+    mols : list
+        The list of RDKit molecules.
+    """
+    if mol_type == "2d":
+        mols = [Chem.MolFromSmiles(smiles) for smiles in
+                ["OC(=O)[C@@H](N)Cc1[nH]cnc1",
+                 "OC(=O)C(=O)C",
+                 "CC(=O)OC1=CC=CC=C1C(=O)O"]
+                ]
+    elif mol_type == "3d":
+        suppl = Chem.SDMolSupplier(os.path.join("data", "drug_mols.sdf"), removeHs=False)
+        mols = [mol for mol in suppl]
+    else:
+        raise ValueError("mol_type must be either '2d' or '3d'.")
+
+    return mols
