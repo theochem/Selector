@@ -123,7 +123,6 @@ class ClusteringSelection(SelectionBase):
             labels = GaussianMixture(n_components=self.num_clusters,
                                      **params).fit_predict(self.features)
             self.labels = labels
-            return labels
         else:
             raise ValueError("Clustering algorithm isn't supported")
 
