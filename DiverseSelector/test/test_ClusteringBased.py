@@ -23,20 +23,20 @@
 
 """Testing for the dissimilarity-based selection algorithms."""
 
-import numpy as np
 from DiverseSelector import clustering_based
+import numpy as np
 from DiverseSelector.test.common import generate_synthetic_data
 
 coords, class_labels, arr_dist = generate_synthetic_data(n_samples=100,
-                                                    n_features=2,
-                                                    n_clusters=3,
-                                                    pairwise_dist=True,
-                                                    metric="euclidean",
-                                                    random_state=42)
+                                                         n_features=2,
+                                                         n_clusters=3,
+                                                         pairwise_dist=True,
+                                                         metric="euclidean",
+                                                         random_state=42)
 
 
 def test_kmeans():
-    """Testing the kmeans selection algorithm"""
+    """Testing the kmeans selection algorithm."""
     selector = clustering_based.ClusteringSelection(num_selected=12,
                                                     num_clusters=3,
                                                     clustering_method="k-means",
@@ -51,7 +51,7 @@ def test_kmeans():
 
 
 def test_affinitypropagation():
-    """Testing the affinity propagation selection algorithm"""
+    """Testing the affinity propagation selection algorithm."""
     selector = clustering_based.ClusteringSelection(num_selected=12,
                                                     num_clusters=3,
                                                     clustering_method="affinity propagation",
@@ -66,7 +66,7 @@ def test_affinitypropagation():
 
 
 def test_meanshift():
-    """Testing the mean shift selection algorithm"""
+    """Testing the mean shift selection algorithm."""
     selector = clustering_based.ClusteringSelection(num_selected=12,
                                                     num_clusters=3,
                                                     clustering_method="mean shift",
@@ -81,7 +81,7 @@ def test_meanshift():
 
 
 def test_spectral():
-    """Testing the spectral selection algorithm"""
+    """Testing the spectral selection algorithm."""
     selector = clustering_based.ClusteringSelection(num_selected=12,
                                                     num_clusters=3,
                                                     clustering_method="spectral",
@@ -96,7 +96,7 @@ def test_spectral():
 
 
 def test_agglomerative():
-    """Testing the agglomerative clustering selection algorithm"""
+    """Testing the agglomerative clustering selection algorithm."""
     selector = clustering_based.ClusteringSelection(num_selected=12,
                                                     num_clusters=3,
                                                     clustering_method="agglomerative",
@@ -110,8 +110,8 @@ def test_agglomerative():
         assert len(labels_seleted[labels_seleted == i]) == 4
 
 
-def test_DBSCAN():
-    """Testing the DBSCAN clustering selection algorithm"""
+def test_dbscan():
+    """Testing the DBSCAN clustering selection algorithm."""
     selector = clustering_based.ClusteringSelection(num_selected=12,
                                                     num_clusters=3,
                                                     clustering_method="DBSCAN",
@@ -125,8 +125,8 @@ def test_DBSCAN():
         assert len(labels_seleted[labels_seleted == i]) == 4
 
 
-def test_OPTICS():
-    """Testing the OPTICS clustering selection algorithm"""
+def test_optics():
+    """Testing the OPTICS clustering selection algorithm."""
     selector = clustering_based.ClusteringSelection(num_selected=12,
                                                     num_clusters=3,
                                                     clustering_method="OPTICS",
@@ -141,7 +141,7 @@ def test_OPTICS():
 
 
 def test_birch():
-    """Testing the birch clustering selection algorithm"""
+    """Testing the birch clustering selection algorithm."""
     selector = clustering_based.ClusteringSelection(num_selected=12,
                                                     num_clusters=3,
                                                     clustering_method="birch",
@@ -155,8 +155,8 @@ def test_birch():
         assert len(labels_seleted[labels_seleted == i]) == 4
 
 
-def test_GMM():
-    """Testing the GMM clustering selection algorithm"""
+def test_gmm():
+    """Testing the GMM clustering selection algorithm."""
     selector = clustering_based.ClusteringSelection(num_selected=12,
                                                     num_clusters=3,
                                                     clustering_method="GMM",
