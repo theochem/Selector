@@ -83,7 +83,7 @@ class DissimilaritySelection(SelectionBase):
 
         elif self.initialization.lower() == "random":
             rng = np.random.default_rng(self.random_seed)
-            starting_idx = rng.choice(np.arange(self.features_norm.shape[0]), 1)
+            starting_idx = rng.choice(np.arange(self.features.shape[0]), 1)
             arr_dist_init = self.arr_dist
 
         return arr_dist_init, starting_idx
@@ -139,11 +139,11 @@ class DissimilaritySelection(SelectionBase):
 
             if order is None:
                 ref = [self.starting_idx]
-                candidates = np.delete(np.arange(0, len(self.features_norm)), ref)
+                candidates = np.delete(np.arange(0, len(self.features)), ref)
                 distances = []
                 for idx in candidates:
-                    ref_point = self.features_norm[ref[0]]
-                    data_point = self.features_norm[idx]
+                    ref_point = self.features[ref[0]]
+                    data_point = self.features[idx]
                     distance_sq = 0
                     for i, point in enumerate(ref_point):
                         distance_sq += (ref_point[i] - point) ** 2
@@ -158,8 +158,8 @@ class DissimilaritySelection(SelectionBase):
                     continue
                 distances = []
                 for selected_idx in selected:
-                    data_point = self.features_norm[idx]
-                    selected_point = self.features_norm[selected_idx]
+                    data_point = self.features[idx]
+                    selected_point = self.features[selected_idx]
                     distance_sq = 0
                     for i, point in enumerate(data_point):
                         distance_sq += (selected_point[i] - point) ** 2
@@ -184,7 +184,7 @@ class DissimilaritySelection(SelectionBase):
             if recycling is None:
                 recycling = []
 
-            candidates = np.delete(np.arange(0, len(self.features_norm)), selected + recycling)
+            candidates = np.delete(np.arange(0, len(self.features)), selected + recycling)
             subsample = {}
             while len(subsample) < k:
                 if len(candidates) == 0:
@@ -195,8 +195,8 @@ class DissimilaritySelection(SelectionBase):
                 index_new = candidates[np.random.randint(0, len(candidates))]
                 distances = []
                 for selected_idx in selected:
-                    data_point = self.features_norm[index_new]
-                    selected_point = self.features_norm[selected_idx]
+                    data_point = self.features[index_new]
+                    selected_point = self.features[selected_idx]
                     distance_sq = 0
                     for i, point in enumerate(data_point):
                         distance_sq += (selected_point[i] - point) ** 2
@@ -206,7 +206,7 @@ class DissimilaritySelection(SelectionBase):
                     subsample[index_new] = min_dist
                 else:
                     recycling.append(index_new)
-                candidates = np.delete(np.arange(0, len(self.features_norm)),
+                candidates = np.delete(np.arange(0, len(self.features)),
                                        selected + recycling + list(subsample.keys()))
             selected.append(max(zip(subsample.values(), subsample.keys()))[1])
 
