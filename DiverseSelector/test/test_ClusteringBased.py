@@ -36,6 +36,7 @@ coords, class_labels, arr_dist = generate_synthetic_data(n_samples=100,
 
 
 def test_kmeans():
+    """Testing the kmeans selection algorithm"""
     selector = clustering_based.ClusteringSelection(num_selected=12,
                                                     num_clusters=3,
                                                     clustering_method="k-means",
@@ -50,6 +51,7 @@ def test_kmeans():
 
 
 def test_affinitypropagation():
+    """Testing the affinity propagation selection algorithm"""
     selector = clustering_based.ClusteringSelection(num_selected=12,
                                                     num_clusters=3,
                                                     clustering_method="affinity propagation",
@@ -64,6 +66,7 @@ def test_affinitypropagation():
 
 
 def test_meanshift():
+    """Testing the mean shift selection algorithm"""
     selector = clustering_based.ClusteringSelection(num_selected=12,
                                                     num_clusters=3,
                                                     clustering_method="mean shift",
@@ -78,6 +81,7 @@ def test_meanshift():
 
 
 def test_spectral():
+    """Testing the spectral selection algorithm"""
     selector = clustering_based.ClusteringSelection(num_selected=12,
                                                     num_clusters=3,
                                                     clustering_method="spectral",
@@ -92,20 +96,7 @@ def test_spectral():
 
 
 def test_agglomerative():
-    selector = clustering_based.ClusteringSelection(num_selected=12,
-                                                    num_clusters=3,
-                                                    clustering_method="agglomerative",
-                                                    metric='euclidean',
-                                                    arr_dist=arr_dist)
-    selector.features = coords
-    selector.cluster()
-    selected_ids = selector.select()
-    labels_seleted = np.array([class_labels[elem] for elem in selected_ids])
-    for i in range(3):
-        assert len(labels_seleted[labels_seleted == i]) == 4
-
-
-def test_agglomerative():
+    """Testing the agglomerative clustering selection algorithm"""
     selector = clustering_based.ClusteringSelection(num_selected=12,
                                                     num_clusters=3,
                                                     clustering_method="agglomerative",
@@ -120,6 +111,7 @@ def test_agglomerative():
 
 
 def test_DBSCAN():
+    """Testing the DBSCAN clustering selection algorithm"""
     selector = clustering_based.ClusteringSelection(num_selected=12,
                                                     num_clusters=3,
                                                     clustering_method="DBSCAN",
@@ -134,6 +126,7 @@ def test_DBSCAN():
 
 
 def test_OPTICS():
+    """Testing the OPTICS clustering selection algorithm"""
     selector = clustering_based.ClusteringSelection(num_selected=12,
                                                     num_clusters=3,
                                                     clustering_method="OPTICS",
@@ -148,6 +141,7 @@ def test_OPTICS():
 
 
 def test_birch():
+    """Testing the birch clustering selection algorithm"""
     selector = clustering_based.ClusteringSelection(num_selected=12,
                                                     num_clusters=3,
                                                     clustering_method="birch",
@@ -162,6 +156,7 @@ def test_birch():
 
 
 def test_GMM():
+    """Testing the GMM clustering selection algorithm"""
     selector = clustering_based.ClusteringSelection(num_selected=12,
                                                     num_clusters=3,
                                                     clustering_method="GMM",

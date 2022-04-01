@@ -20,23 +20,24 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-import numpy as np
 
+"""Clustering based compound selection."""
+
+import numpy as np
 from DiverseSelector.base import SelectionBase
 from DiverseSelector.feature import get_features
-from DiverseSelector.metric import pairwise_dist
-from sklearn.cluster import KMeans, AffinityPropagation, MeanShift, SpectralClustering, AgglomerativeClustering, \
-    DBSCAN, OPTICS, Birch
+from sklearn.cluster import AffinityPropagation, AgglomerativeClustering, Birch, DBSCAN, KMeans,\
+    MeanShift, OPTICS, SpectralClustering
 from sklearn.mixture import GaussianMixture
 
 __all__ = [
     "ClusteringSelection",
 ]
 
-"""Clustering based compound selection."""
-
 
 class ClusteringSelection(SelectionBase):
+    """Clustering based compound selection."""
+
     def __init__(self,
                  num_selected,
                  num_clusters,
@@ -88,30 +89,37 @@ class ClusteringSelection(SelectionBase):
     def cluster(self, **params):
         """
         Performs clustering based on given algorithm from sklearn library and set of parameters
-        :param params: parameters for the selected method
+        :param params: parameters for the selected cluster
         :return: numpy array of labels: np.ndarray:
         """
-        # todo: features
         if self.clustering_method == 'k-means':
-            algorithm = KMeans(n_clusters=self.num_clusters, random_state=self.random_seed, **params).fit(self.features)
+            algorithm = KMeans(n_clusters=self.num_clusters,
+                               random_state=self.random_seed,
+                               **params).fit(self.features)
         elif self.clustering_method == "affinity propagation":
-            algorithm = AffinityPropagation(random_state=self.random_seed, **params).fit(self.features)
+            algorithm = AffinityPropagation(random_state=self.random_seed,
+                                            **params).fit(self.features)
         elif self.clustering_method == 'mean shift':
             algorithm = MeanShift(**params).fit(self.features)
         elif self.clustering_method == 'spectral':
-            algorithm = SpectralClustering(n_clusters=self.num_clusters, **params).fit(self.features)
+            algorithm = SpectralClustering(n_clusters=self.num_clusters,
+                                           **params).fit(self.features)
         elif self.clustering_method == 'agglomerative':
             algorithm = AgglomerativeClustering(n_clusters=self.num_clusters,
                                                 affinity=self.metric,
                                                 **params).fit(self.features)
         elif self.clustering_method == 'DBSCAN':
-            algorithm = DBSCAN(metric=self.metric, **params).fit(self.features)
+            algorithm = DBSCAN(metric=self.metric,
+                               **params).fit(self.features)
         elif self.clustering_method == 'OPTICS':
-            algorithm = OPTICS(metric=self.metric, **params).fit(self.features)
+            algorithm = OPTICS(metric=self.metric,
+                               **params).fit(self.features)
         elif self.clustering_method == 'birch':
-            algorithm = Birch(n_clusters=self.num_clusters, **params).fit(self.features)
+            algorithm = Birch(n_clusters=self.num_clusters,
+                              **params).fit(self.features)
         elif self.clustering_method == "GMM":
-            labels = GaussianMixture(n_components=self.num_clusters, **params).fit_predict(self.features)
+            labels = GaussianMixture(n_components=self.num_clusters,
+                                     **params).fit_predict(self.features)
             self.labels = labels
             return labels
         else:
@@ -122,6 +130,7 @@ class ClusteringSelection(SelectionBase):
             self.labels = labels
 
     def select(self):
+        """Selecting molecules"""
         unique_labels = np.unique(self.labels)
         n = self.num_selected//self.num_clusters
 
