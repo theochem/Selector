@@ -26,10 +26,16 @@
 import os
 
 import pandas as pd
-from numpy.testing import assert_equal, assert_almost_equal, assert_array_equal
+from numpy.testing import assert_equal, assert_almost_equal
 
 from DiverseSelector.feature import (DescriptorGenerator)
 from DiverseSelector.test.common import load_testing_mols
+
+try:
+    from importlib_resources import path
+except ImportError:
+    from importlib.resources import path
+data_dir = os.path.join(os.path.dirname(__file__), "DiverseSelector", "test", "data")
 
 
 def test_feature_desc_mordred_2d():
@@ -44,7 +50,7 @@ def test_feature_desc_mordred_2d():
                                          )
     df_mordred_desc = desc_generator.compute_descriptor(ignore_3D=True)
     # load the expected descriptor dataframe
-    df_mordred_desc_exp = pd.read_csv(os.path.join("data", "drug_mols_desc_smi.csv"),
+    df_mordred_desc_exp = pd.read_csv(os.path.join(data_dir, "drug_mols_desc_smi.csv"),
                                       sep=",",
                                       )
     df_mordred_desc_exp.drop(columns=["name"], inplace=True)
@@ -67,7 +73,7 @@ def test_feature_desc_mordred_3d():
                                          )
     df_mordred_desc = desc_generator.compute_descriptor(ignore_3D=False)
     # load the expected descriptor dataframe
-    df_mordred_desc_exp = pd.read_csv(os.path.join("data", "drug_mols_desc_sdf_3d.csv"),
+    df_mordred_desc_exp = pd.read_csv(os.path.join(data_dir, "drug_mols_desc_sdf_3d.csv"),
                                       sep=",",
                                       )
     df_mordred_desc_exp.drop(columns=["name"], inplace=True)
@@ -81,14 +87,14 @@ def test_feature_desc_mordred_3d():
 def test_feature_desc_padelpy_3d():
     """Testing molecular PaDEL descriptor with SMILES strings."""
     # generate molecular descriptors with the DescriptorGenerator
-    desc_generator = DescriptorGenerator(mol_file=os.path.join("data", "drug_mols.sdf"),
+    desc_generator = DescriptorGenerator(mol_file=os.path.join(data_dir, "drug_mols.sdf"),
                                          desc_type="padel",
                                          use_fragment=True,
                                          ipc_avg=True,
                                          )
     df_padel_desc = desc_generator.compute_descriptor()
     # load the expected descriptor dataframe
-    df_padel_desc_exp = pd.read_csv(os.path.join("data", "drug_mols_desc_padel.csv"),
+    df_padel_desc_exp = pd.read_csv(os.path.join(data_dir, "drug_mols_desc_padel.csv"),
                                     sep=",",
                                     index_col="Name")
     # check if the dataframes are equal
@@ -110,7 +116,7 @@ def test_feature_desc_rdkit():
                                          )
     df_rdkit_desc = desc_generator.compute_descriptor()
     # load the expected descriptor dataframe
-    df_rdkit_desc_exp = pd.read_csv(os.path.join("data", "drug_mols_desc_rdkit.csv"),
+    df_rdkit_desc_exp = pd.read_csv(os.path.join(data_dir, "drug_mols_desc_rdkit.csv"),
                                     sep=",")
     # check if the dataframes are equal
     assert_equal(df_rdkit_desc.shape, df_rdkit_desc_exp.shape)
@@ -131,7 +137,7 @@ def test_feature_desc_rdkit_frag():
                                          )
     df_rdkit_desc = desc_generator.compute_descriptor()
     # load the expected descriptor dataframe
-    df_rdkit_desc_exp = pd.read_csv(os.path.join("data", "drug_mols_desc_rdkit_frag.csv"),
+    df_rdkit_desc_exp = pd.read_csv(os.path.join(data_dir, "drug_mols_desc_rdkit_frag.csv"),
                                     sep=",")
     # check if the dataframes are equal
     assert_equal(df_rdkit_desc.shape, df_rdkit_desc_exp.shape)
