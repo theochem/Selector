@@ -326,36 +326,24 @@ def shannon_entropy(x):
     return H_x
 
 
-def WDUD(x: np.array):
-    # incomplet
-    N = len(x[:,0])
+def wdud(x):
+    # min_max normilization:
+    d = len(x[0])
+    n = len(x[:,0])
+    max_x = (max(map(max, x)))
+    y = np.zeros((n, d))
+    for i in range(0, len(x[:,0])):
+        for j in range(0, len(x[0])):
+            y[i,j] = x[i,j] / max_x
+    #wdud
     ans = []
-    for i in range(0, (len(x[:,0]) + 1)):
-        mol = x[i]
-        s_mol = np.sort(mol)
-        v_min = s_mol[0]
-        v_max = s_mol[len(mol) - 1]
-        wdud_mol1 = []
-        for i in range(0, len(mol)):
-            v = (mol[i] - v_min) / (v_max - v_min)
-            if v < 0:
-                PU_v = 0
-            if 0 <= v <= 1:
-                PU_v = v
-            if 1 < v:
-                PU_v = 1
-            if v < v_min:
-                PV_v = 0
-            if mol[i - 1] <= v <= mol[i + 1]:
-                PV_v = (i - 1) / N
-            if v_max < v:
-                PV_v = 1
-            func = PV_v - PU_v
-            print(func, v_max, v_min)
-            WDUD = quad(func, v_min, v_max)
-            wdud_mol1.append(WDUD)
-        ans.append(np.average(wdud_mol1))
-    return ans
+    for i in range(0, d):
+        h = -np.sort(-y[:,i])
+        wdud = ((-1 / d) - h[0])
+        for j in range(1, len(h)):
+            wdud -= np.absolute(((j - 1) / d) - h[j])
+        ans.append(wdud)
+    return np.average(ans)
 
 
 def total_diversity_Volume(x):
