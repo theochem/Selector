@@ -25,6 +25,7 @@
 
 import os
 
+import numpy as np
 import pandas as pd
 from numpy.testing import assert_equal, assert_almost_equal
 
@@ -35,7 +36,7 @@ try:
     from importlib_resources import path
 except ImportError:
     from importlib.resources import path
-data_dir = os.path.join(os.path.dirname(__file__), "DiverseSelector", "test", "data")
+data_dir = os.path.join(os.path.dirname(__file__), "data")
 
 
 def test_feature_desc_mordred_2d():
