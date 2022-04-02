@@ -28,7 +28,6 @@ import numpy as np
 import rdkit
 from rdkit.Chem import MCS
 from scipy.spatial.distance import cdist, squareform, euclidean
-from scipy.integrate import quad
 from sklearn.metrics import pairwise_distances
 from DiverseSelector.utils import sklearn_supported_metrics
 from DiverseSelector.test.common import euc_bit
@@ -36,7 +35,6 @@ from DiverseSelector.test.common import euc_bit
 
 __all__ = [
     "pairwise_dist",
-    "compute_diversity",
     "distance_to_similarity",
     "pairwise_similarity_bit",
     "tanimoto",
@@ -131,7 +129,7 @@ def pairwise_dist(feature: np.array,
 
 def distance_to_similarity(x, dist: bool = True) -> np.ndarray:
     """Convert between distance and similarity matrix.
-    
+
     Parameters
     ----------
     distance : ndarray
@@ -142,7 +140,7 @@ def distance_to_similarity(x, dist: bool = True) -> np.ndarray:
     similarity : ndarray
         symmetric similarity array.
     """
-    if dist == True:
+    if dist is True:
         y = 1 / (1 + x)
     else:
         y = (1 / x) - 1
@@ -151,7 +149,7 @@ def distance_to_similarity(x, dist: bool = True) -> np.ndarray:
 
 def pairwise_similarity_bit(feature: np.array, metric) -> np.ndarray:
     """Compute the pairwaise similarity coefficients.
-    
+
     Parameters
     ----------
     feature : ndarray
@@ -189,7 +187,7 @@ def tanimoto(a, b) -> int:
         tanimoto coefficient for molecule A and B.
     """
     coeff = (sum(a * b)) / ((sum(a ** 2)) + (sum(b ** 2)) - (sum(a * b)))
-    return coeff 
+    return coeff
 
 
 def bit_tanimoto(a ,b) -> int:
@@ -211,7 +209,7 @@ def bit_tanimoto(a ,b) -> int:
     b_feat = np.count_nonzero(b)
     c = 0
     for idx, _ in enumerate(a):
-         if a[idx] == b[idx] and a[idx] != 0:
+        if a[idx] == b[idx] and a[idx] != 0:
             c += 1
     b_t = c / (a_feat + b_feat - c)
     return b_t
@@ -339,10 +337,10 @@ def wdud(x):
     ans = []
     for i in range(0, d):
         h = -np.sort(-y[:,i])
-        wdud = ((-1 / d) - h[0])
+        wdu = ((-1 / d) - h[0])
         for j in range(1, len(h)):
-            wdud -= np.absolute(((j - 1) / d) - h[j])
-        ans.append(wdud)
+            wdu -= np.absolute(((j - 1) / d) - h[j])
+        ans.append(wdu)
     return np.average(ans)
 
 
