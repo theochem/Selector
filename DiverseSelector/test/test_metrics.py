@@ -25,7 +25,7 @@
 
 # todo: fix this later
 # noqa: F401
-from DiverseSelector.metric import ( 
+from DiverseSelector.metric import  (
                                     bit_tanimoto,
                                     distance_to_similarity,
                                     pairwise_similarity_bit,
