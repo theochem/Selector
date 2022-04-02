@@ -31,6 +31,12 @@ from rdkit import Chem
 from sklearn.datasets import make_blobs
 from sklearn.metrics import pairwise_distances
 
+try:
+    from importlib_resources import path
+except ImportError:
+    from importlib.resources import path
+data_dir = os.path.join(os.path.dirname(__file__), "data")
+
 __all__ = [
     "generate_synthetic_data",
     "load_testing_mols",
@@ -129,7 +135,7 @@ def load_testing_mols(mol_type: str = "2d") -> list:
                  "CC(=O)OC1=CC=CC=C1C(=O)O"]
                 ]
     elif mol_type == "3d":
-        suppl = Chem.SDMolSupplier(os.path.join("data", "drug_mols.sdf"), removeHs=False)
+        suppl = Chem.SDMolSupplier(os.path.join(data_dir, "drug_mols.sdf"), removeHs=False)
         mols = [mol for mol in suppl]
     else:
         raise ValueError("mol_type must be either '2d' or '3d'.")
