@@ -27,7 +27,9 @@ import pandas as pd
 from numpy.testing import assert_almost_equal, assert_equal
 
 from DiverseSelector.feature import (DescriptorGenerator,
+                                     feature_reader,
                                      FingerprintGenerator,
+                                     get_features,
                                      )
 from DiverseSelector.test.common import load_testing_mols
 
@@ -164,7 +166,7 @@ def test_feature_fp_secfp6():
                                         n_bits=1024,
                                         radius=3,
                                         min_radius=1,
-                                        random_seed=12345,
+                                        random_seed=42,
                                         rings=True,
                                         isomeric=True,
                                         kekulize=False,
@@ -192,7 +194,7 @@ def test_feature_fp_ecfp6():
                                         n_bits=1024,
                                         radius=3,
                                         min_radius=1,
-                                        random_seed=12345,
+                                        random_seed=42,
                                         rings=True,
                                         isomeric=True,
                                         kekulize=False,
@@ -207,4 +209,157 @@ def test_feature_fp_ecfp6():
     assert_equal(df_ecfp6.shape, df_ecfp6_exp.shape)
     assert_almost_equal(df_ecfp6.to_numpy(int),
                         df_ecfp6_exp.to_numpy(int),
+                        )
+
+
+def test_feature_fp_morgan():
+    """Testing Morgan fingerprints with 3D molecules."""
+    # load molecules
+    mols = load_testing_mols(mol_type="3d")
+    # generate molecular descriptors with the DescriptorGenerator
+    fp_generator = FingerprintGenerator(mols=mols,
+                                        fp_type="Morgan",
+                                        n_bits=1024,
+                                        radius=3,
+                                        min_radius=1,
+                                        random_seed=42,
+                                        rings=True,
+                                        isomeric=True,
+                                        kekulize=False,
+                                        )
+    df_morgan = fp_generator.compute_fingerprint()
+    # load the expected descriptor dataframe
+    with path("DiverseSelector.test.data", "drug_mols_morgan.csv") as morgan_csv:
+        df_morgan_exp = pd.read_csv(morgan_csv,
+                                    sep=",",
+                                    index_col=0)
+    # check if the dataframes are equal
+    assert_equal(df_morgan.shape, df_morgan_exp.shape)
+    assert_almost_equal(df_morgan.to_numpy(int),
+                        df_morgan_exp.to_numpy(int),
+                        )
+
+
+def test_feature_fp_rdkit():
+    """Testing Morgan fingerprints with 3D molecules."""
+    # load molecules
+    mols = load_testing_mols(mol_type="3d")
+    # generate molecular descriptors with the DescriptorGenerator
+    fp_generator = FingerprintGenerator(mols=mols,
+                                        fp_type="RDkFingerprint",
+                                        n_bits=1024,
+                                        radius=3,
+                                        min_radius=1,
+                                        random_seed=42,
+                                        rings=True,
+                                        isomeric=True,
+                                        kekulize=False,
+                                        )
+    df_rdkit_fp = fp_generator.compute_fingerprint()
+    # load the expected descriptor dataframe
+    with path("DiverseSelector.test.data", "drug_mols_RDKitfp.csv") as rdkit_fp_csv:
+        df_rdkit_fp_exp = pd.read_csv(rdkit_fp_csv,
+                                      sep=",",
+                                      index_col=0)
+    # check if the dataframes are equal
+    assert_equal(df_rdkit_fp.shape, df_rdkit_fp_exp.shape)
+    assert_almost_equal(df_rdkit_fp.to_numpy(int),
+                        df_rdkit_fp_exp.to_numpy(int),
+                        )
+
+
+def test_feature_reader_csv():
+    """Testing the feature reader function."""
+    # load mock features
+    with path("DiverseSelector.test.data", "mock_features.csv") as mock_feature_csv:
+        df_features = feature_reader(mock_feature_csv,
+                                     sep=",",
+                                     engine="python",
+                                     )
+
+    data = {"feature_1": [1, 2, 3, 4],
+            "feature_2": [2, 3, 4, 5],
+            "feature_3": [3, 4, 5, 6],
+            "feature_4": [4, 5, 6, 7],
+            "feature_5": [5, 6, 7, 8],
+            }
+    df_features_exp = pd.DataFrame(data)
+
+    # check if the dataframes are equal
+    assert_equal(df_features.shape, df_features_exp.shape)
+    assert_almost_equal(df_features.to_numpy(int),
+                        df_features_exp.to_numpy(int),
+                        )
+
+
+def test_feature_reader_xlsx():
+    """Testing the feature reader function."""
+    # load mock features
+    with path("DiverseSelector.test.data", "mock_features.xlsx") as mock_feature_xlsx:
+        df_features = feature_reader(mock_feature_xlsx,
+                                     engine="openpyxl",
+                                     )
+
+    data = {"feature_1": [1, 2, 3, 4],
+            "feature_2": [2, 3, 4, 5],
+            "feature_3": [3, 4, 5, 6],
+            "feature_4": [4, 5, 6, 7],
+            "feature_5": [5, 6, 7, 8],
+            }
+    df_features_exp = pd.DataFrame(data)
+
+    # check if the dataframes are equal
+    assert_equal(df_features.shape, df_features_exp.shape)
+    assert_almost_equal(df_features.to_numpy(int),
+                        df_features_exp.to_numpy(int),
+                        )
+
+
+def test_feature_get_features_load():
+    """Testing the feature getter function by loading features."""
+    with path("DiverseSelector.test.data", "mock_features.xlsx") as mock_feature_xlsx:
+        df_features = get_features(engine="openpyxl",
+                                   feature_type=None,
+                                   mol_file=None,
+                                   feature_file=mock_feature_xlsx,
+                                   )
+    data = {"feature_1": [1, 2, 3, 4],
+            "feature_2": [2, 3, 4, 5],
+            "feature_3": [3, 4, 5, 6],
+            "feature_4": [4, 5, 6, 7],
+            "feature_5": [5, 6, 7, 8],
+            }
+    df_features_exp = pd.DataFrame(data)
+
+    # check if the dataframes are equal
+    assert_equal(df_features.shape, df_features_exp.shape)
+    assert_almost_equal(df_features.to_numpy(int),
+                        df_features_exp.to_numpy(int),
+                        )
+
+
+def test_feature_get_features_generate():
+    """Testing the feature getter function by computing features."""
+    with path("DiverseSelector.test.data", "drug_mols.sdf") as sdf_drugs:
+        df_secfp6 = get_features(feature_type="fingerprint",
+                                 fp_type="SECFP",
+                                 mol_file=str(sdf_drugs),
+                                 feature_file=None,
+                                 n_bits=1024,
+                                 radius=3,
+                                 min_radius=1,
+                                 random_seed=42,
+                                 rings=True,
+                                 isomeric=True,
+                                 kekulize=False,
+                                 )
+    with path("DiverseSelector.test.data", "drug_mols_secfp6.csv") as secfp6_csv:
+        df_secfp6_exp = pd.read_csv(secfp6_csv,
+                                    sep=",",
+                                    index_col=0)
+
+    # check if the dataframes are equal
+    assert_equal(df_secfp6.shape, df_secfp6_exp.shape)
+    assert_almost_equal(df_secfp6.to_numpy(int),
+                        df_secfp6_exp.to_numpy(int),
                         )
