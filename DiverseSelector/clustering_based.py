@@ -90,10 +90,17 @@ class ClusteringSelection(SelectionBase):
         """
         Performs clustering based on given algorithm from sklearn library and set of parameters.
 
-        :param params: parameters for the selected cluster
-        :return: numpy array of labels: np.ndarray
-        """
+        Parameters
+        ----------
+        params:
+            set of parameters for performing clustering
 
+        Returns
+        -------
+        None:
+            updates the labels of the molecules
+
+        """
         if self.clustering_method == 'k-means':
             algorithm = KMeans(n_clusters=self.num_clusters,
                                random_state=self.random_seed,
@@ -131,7 +138,15 @@ class ClusteringSelection(SelectionBase):
             self.labels = labels
 
     def select(self):
-        """Selecting molecules."""
+        """
+        Selecting molecules.
+
+        Returns
+        -------
+        selected_all: np.ndarray
+            array of selected molecules
+
+        """
         unique_labels = np.unique(self.labels)
         n = self.num_selected//self.num_clusters
 
