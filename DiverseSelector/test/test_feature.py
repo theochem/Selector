@@ -23,10 +23,13 @@
 
 """Testing for feature generation module."""
 
-from DiverseSelector.feature import (DescriptorGenerator)
-from DiverseSelector.test.common import load_testing_mols
-from numpy.testing import assert_almost_equal, assert_equal
 import pandas as pd
+from numpy.testing import assert_almost_equal, assert_equal
+
+from DiverseSelector.feature import (DescriptorGenerator,
+                                     FingerprintGenerator,
+                                     )
+from DiverseSelector.test.common import load_testing_mols
 
 try:
     from importlib_resources import path
@@ -149,3 +152,59 @@ def test_feature_desc_rdkit_frag():
     assert_almost_equal(df_rdkit_desc.to_numpy(float),
                         df_rdkit_desc_exp.to_numpy(float),
                         decimal=7)
+
+
+def test_feature_fp_secfp6():
+    """Testing SECFP6 fingerprints with 3D molecules."""
+    # load molecules
+    mols = load_testing_mols(mol_type="3d")
+    # generate molecular descriptors with the DescriptorGenerator
+    fp_generator = FingerprintGenerator(mols=mols,
+                                        fp_type="SECFP",
+                                        n_bits=1024,
+                                        radius=3,
+                                        min_radius=1,
+                                        random_seed=12345,
+                                        rings=True,
+                                        isomeric=True,
+                                        kekulize=False,
+                                        )
+    df_secfp6 = fp_generator.compute_fingerprint()
+    # load the expected descriptor dataframe
+    with path("DiverseSelector.test.data", "drug_mols_secfp6.csv") as secfp6_csv:
+        df_secfp6_exp = pd.read_csv(secfp6_csv,
+                                    sep=",",
+                                    index_col=0)
+    # check if the dataframes are equal
+    assert_equal(df_secfp6.shape, df_secfp6_exp.shape)
+    assert_almost_equal(df_secfp6.to_numpy(int),
+                        df_secfp6_exp.to_numpy(int),
+                        )
+
+
+def test_feature_fp_ecfp6():
+    """Testing ECFP6 fingerprints with 3D molecules."""
+    # load molecules
+    mols = load_testing_mols(mol_type="3d")
+    # generate molecular descriptors with the DescriptorGenerator
+    fp_generator = FingerprintGenerator(mols=mols,
+                                        fp_type="ECFP",
+                                        n_bits=1024,
+                                        radius=3,
+                                        min_radius=1,
+                                        random_seed=12345,
+                                        rings=True,
+                                        isomeric=True,
+                                        kekulize=False,
+                                        )
+    df_ecfp6 = fp_generator.compute_fingerprint()
+    # load the expected descriptor dataframe
+    with path("DiverseSelector.test.data", "drug_mols_ecfp6.csv") as ecfp6_csv:
+        df_ecfp6_exp = pd.read_csv(ecfp6_csv,
+                                   sep=",",
+                                   index_col=0)
+    # check if the dataframes are equal
+    assert_equal(df_ecfp6.shape, df_ecfp6_exp.shape)
+    assert_almost_equal(df_ecfp6.to_numpy(int),
+                        df_ecfp6_exp.to_numpy(int),
+                        )
