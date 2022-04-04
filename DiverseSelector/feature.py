@@ -572,9 +572,10 @@ def feature_reader(file_name: str,
         A `pandas.DataFrame` object with molecular features.
     """
 
-    if file_name.lower().endswith((".csv", ".txt")):
+    # use `str` function to support PosixPath
+    if str(file_name).lower().endswith((".csv", ".txt")):
         df = pd.read_csv(file_name, sep=sep, engine=engine, *kwargs)
-    elif file_name.lower().endswith((".xlsx", ".xls", "xlsb", ".odf", ".ods", ".odt")):
+    elif str(file_name).lower().endswith((".xlsx", ".xls", "xlsb", ".odf", ".ods", ".odt")):
         df = pd.read_excel(file_name, engine=engine, *kwargs)
 
     return df
@@ -582,9 +583,9 @@ def feature_reader(file_name: str,
 
 def get_features(sep: str = ",",
                  engine: str = "python",
-                 feature_type=None,
-                 mol_file=None,
-                 feature_file=None,
+                 feature_type: str = None,
+                 mol_file: str = None,
+                 feature_file: str = None,
                  **kwargs,
                  ) -> PandasDataFrame:
     """Compute molecular features.
