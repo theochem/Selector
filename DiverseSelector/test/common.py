@@ -23,7 +23,6 @@
 
 """Common functions for test module."""
 
-import os
 from typing import Any, Tuple, Union
 
 import numpy as np
@@ -35,7 +34,6 @@ try:
     from importlib_resources import path
 except ImportError:
     from importlib.resources import path
-data_dir = os.path.join(os.path.dirname(__file__), "data")
 
 __all__ = [
     "generate_synthetic_data",
@@ -135,8 +133,9 @@ def load_testing_mols(mol_type: str = "2d") -> list:
                  "CC(=O)OC1=CC=CC=C1C(=O)O"]
                 ]
     elif mol_type == "3d":
-        suppl = Chem.SDMolSupplier(os.path.join(data_dir, "drug_mols.sdf"), removeHs=False)
-        mols = [mol for mol in suppl]
+        with path("DiverseSelector.test.data", "drug_mols.sdf") as sdf_file:
+            suppl = Chem.SDMolSupplier(str(sdf_file), removeHs=False)
+            mols = [mol for mol in suppl]
     else:
         raise ValueError("mol_type must be either '2d' or '3d'.")
 
