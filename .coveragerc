@@ -1,6 +1,8 @@
 [run]
 omit =
     DiverseSelector/test/*
+    DiverseSelector/__init__.py
+    DiverseSelector/_version.py
 
 [report]
 show_missing = True
