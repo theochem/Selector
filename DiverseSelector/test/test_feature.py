@@ -23,15 +23,14 @@
 
 """Testing for feature generation module."""
 
-import pandas as pd
-from numpy.testing import assert_almost_equal, assert_equal
-
 from DiverseSelector.feature import (DescriptorGenerator,
                                      feature_reader,
                                      FingerprintGenerator,
                                      get_features,
                                      )
 from DiverseSelector.test.common import load_testing_mols
+from numpy.testing import assert_almost_equal, assert_equal
+import pandas as pd
 
 try:
     from importlib_resources import path
