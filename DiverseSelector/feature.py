@@ -438,7 +438,7 @@ class FingerprintGenerator:
         """
         # SECFP: SMILES extended connectivity fingerprint
         # https://jcheminf.biomedcentral.com/articles/10.1186/s13321-018-0321-8
-        if fp_type == "SECFP":
+        if fp_type.upper() == "SECFP":
             secfp_encoder = rdMHFPFingerprint.MHFPEncoder(random_seed)
             fp = secfp_encoder.EncodeSECFPMol(mol,
                                               radius=radius,
@@ -451,15 +451,15 @@ class FingerprintGenerator:
         # ECFP
         # https://github.com/deepchem/deepchem/blob/1a2d2e9ff097fdbf58894d1f91359fe466c65810/deepchem/utils/rdkit_utils.py#L414
         # https://www.rdkit.org/docs/source/rdkit.Chem.rdMolDescriptors.html
-        elif fp_type == "ECFP":
+        elif fp_type.upper() == "ECFP":
             # radius=3 --> ECFP6
             fp = AllChem.GetMorganFingerprintAsBitVect(mol=mol, radius=radius, nBits=n_bits,
                                                        useChirality=isomeric, useFeatures=False)
-        elif fp_type == "Morgan":
+        elif fp_type.upper() == "MORGAN":
             fp = AllChem.GetMorganFingerprintAsBitVect(mol=mol, radius=radius, nBits=n_bits,
                                                        useChirality=isomeric, useFeatures=True)
         # https://www.rdkit.org/docs/source/rdkit.Chem.rdmolops.html#rdkit.Chem.rdmolops.RDKFingerprint
-        elif fp_type == "RDKFingerprint":
+        elif fp_type.upper() == "RDKFINGERPRINT":
             fp = Chem.rdmolops.RDKFingerprint(mol=mol,
                                               minPath=1,
                                               # maxPath=mol.GetNumBonds(),
