@@ -65,16 +65,17 @@ def mol_reader(file_name: str,
     """
 
     # SDF
-    if file_name.lower().endswith(".sdf"):
+    # use `str` function to support PosixPath
+    if str(file_name).lower().endswith(".sdf"):
         suppl = Chem.SDMolSupplier(file_name, removeHs=remove_hydrogen, sanitize=True)
         mols = [mol for mol in suppl]
     # SDF.GZ
-    elif file_name.lower().endswith(".sdf.gz"):
+    elif str(file_name).lower().endswith(".sdf.gz"):
         file_unzipped = gzip.open(file_name)
         suppl = Chem.ForwardSDMolSupplier(file_unzipped, removeHs=remove_hydrogen, sanitize=True)
         mols = [mol for mol in suppl]
     # SMILES: *.smi, *.smiles, *.txt, *.csv
-    elif file_name.lower().endswith((".smi", ".smiles", ".txt", ".csv")):
+    elif str(file_name).lower().endswith((".smi", ".smiles", ".txt", ".csv")):
         mols = []
         with open(file_name, "r", encoding="utf8") as f:
             for line in f:

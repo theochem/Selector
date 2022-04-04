@@ -272,7 +272,7 @@ def test_feature_reader_csv():
     """Testing the feature reader function."""
     # load mock features
     with path("DiverseSelector.test.data", "mock_features.csv") as mock_feature_csv:
-        df_features = feature_reader(mock_feature_csv,
+        df_features = feature_reader(str(mock_feature_csv),
                                      sep=",",
                                      engine="python",
                                      )
@@ -296,7 +296,7 @@ def test_feature_reader_xlsx():
     """Testing the feature reader function."""
     # load mock features
     with path("DiverseSelector.test.data", "mock_features.xlsx") as mock_feature_xlsx:
-        df_features = feature_reader(mock_feature_xlsx,
+        df_features = feature_reader(str(mock_feature_xlsx),
                                      engine="openpyxl",
                                      )
 
@@ -321,7 +321,7 @@ def test_feature_get_features_load():
         df_features = get_features(engine="openpyxl",
                                    feature_type=None,
                                    mol_file=None,
-                                   feature_file=mock_feature_xlsx,
+                                   feature_file=str(mock_feature_xlsx),
                                    )
     data = {"feature_1": [1, 2, 3, 4],
             "feature_2": [2, 3, 4, 5],
