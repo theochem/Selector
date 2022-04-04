@@ -21,7 +21,7 @@
 #
 # --
 
-"""Testing for the dissimilarity-based selection algorithms."""
+"""Testing for the clustering-based selection algorithms."""
 
 from DiverseSelector import clustering_based
 from DiverseSelector.test.common import generate_synthetic_data
