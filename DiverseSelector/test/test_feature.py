@@ -23,16 +23,15 @@
 
 """Testing for feature generation module."""
 
-import pandas as pd
-import pytest
-from numpy.testing import assert_almost_equal, assert_equal
-
 from DiverseSelector.feature import (DescriptorGenerator,
                                      feature_reader,
                                      FingerprintGenerator,
                                      get_features,
                                      )
 from DiverseSelector.test.common import load_testing_mols
+from numpy.testing import assert_almost_equal, assert_equal
+import pandas as pd
+import pytest
 
 try:
     from importlib_resources import path
@@ -402,7 +401,7 @@ def test_feature_get_features_load():
                         )
 
 
-def test_feature_get_features_generate():
+def test_feature_get_features_fp_generate():
     """Testing the feature getter function by computing features."""
     with path("DiverseSelector.test.data", "drug_mols.sdf") as sdf_drugs:
         df_secfp6 = get_features(feature_type="fingerprint",
@@ -426,4 +425,25 @@ def test_feature_get_features_generate():
     assert_equal(df_secfp6.shape, df_secfp6_exp.shape)
     assert_almost_equal(df_secfp6.to_numpy(int),
                         df_secfp6_exp.to_numpy(int),
+                        )
+
+
+def test_feature_get_features_desc_generate():
+    """Testing the feature getter function by computing features."""
+    with path("DiverseSelector.test.data", "drug_mols.sdf") as sdf_drugs:
+        df_desc_rdkit_frag = get_features(mol_file=str(sdf_drugs),
+                                          feature_type="descriptor",
+                                          desc_type="rdkit_frag",
+                                          use_fragment=True,
+                                          ipc_avg=True,
+                                          )
+    with path("DiverseSelector.test.data", "drug_mols_desc_rdkit_frag.csv") as desc_csv:
+        df_desc_rdkit_frag_exp = pd.read_csv(desc_csv,
+                                             sep=",",
+                                             )
+
+    # check if the dataframes are equal
+    assert_equal(df_desc_rdkit_frag.shape, df_desc_rdkit_frag_exp.shape)
+    assert_almost_equal(df_desc_rdkit_frag.to_numpy(float),
+                        df_desc_rdkit_frag_exp.to_numpy(float),
                         )
