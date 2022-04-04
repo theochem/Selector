@@ -29,7 +29,8 @@ from typing import Any
 from DiverseSelector.utils import ExplicitBitVector, mol_reader, PandasDataFrame, RDKitMol
 from mordred import Calculator, descriptors
 import numpy as np
-from padelpy import from_sdf
+# from padelpy import from_sdf
+from padelpy import padeldescriptor
 import pandas as pd
 from rdkit import Chem
 from rdkit.Chem import AllChem, Descriptors, MACCSkeys, rdMHFPFingerprint
@@ -49,7 +50,8 @@ class DescriptorGenerator:
     """Molecular descriptor generator."""
 
     def __init__(self,
-                 mols: list,
+                 mols: list = None,
+                 mol_file: str = None,
                  desc_type: str = "mordred",
                  use_fragment: bool = True,
                  ipc_avg: bool = True,
@@ -60,6 +62,8 @@ class DescriptorGenerator:
         ----------
         mols : list
             A list of molecule RDKitMol objects.
+        mol_file : str, optional
+            A file containing a list of molecules.
         desc_type : str, optional
             Descriptor type name, which can be "mordred", "padel", "rdkit", "rdkit_frag",
             or the capitalized version. Default="mordred".
@@ -71,6 +75,7 @@ class DescriptorGenerator:
 
         """
         self.mols = mols
+        self.mol_file = mol_file
         self.desc_type = desc_type
         self.use_fragment = use_fragment
         self.ipc_avg = ipc_avg
@@ -81,14 +86,16 @@ class DescriptorGenerator:
                            ) -> PandasDataFrame:
         """Molecule descriptor generation."""
         if self.desc_type.lower() == "mordred":
-            df_features = self.mordred_descriptors(self.mols)
+            df_features = self.mordred_descriptors(self.mols, **kwargs)
         elif self.desc_type.lower() == "padel":
-            df_features = self.padelpy_descriptors(self.mols)
+            df_features = self.padelpy_descriptors(mol_file=self.mol_file,
+                                                   keep_csv=False,
+                                                   **kwargs)
         elif self.desc_type.lower() == "rdkit":
             df_features = self.rdkit_descriptors(self.mols,
                                                  use_fragment=self.use_fragment,
                                                  ipc_avg=self.ipc_avg,
-                                                 *kwargs)
+                                                 **kwargs)
         elif self.desc_type.lower() == "rdkit_frag":
             df_features = self.rdkit_fragment_descriptors(self.mols)
         else:
@@ -97,7 +104,7 @@ class DescriptorGenerator:
         return df_features
 
     @staticmethod
-    def mordred_descriptors(mols: list) -> PandasDataFrame:
+    def mordred_descriptors(mols: list, **kwargs: Any) -> PandasDataFrame:
         """Mordred molecular descriptor generation.
 
         Parameters
@@ -113,19 +120,26 @@ class DescriptorGenerator:
         """
         # if only compute 2D descriptors,
         # ignore_3D=True
-        calc = Calculator(descriptors, ignore_3D=False)
+        calc = Calculator(descriptors, **kwargs)
         df_features = pd.DataFrame(calc.pandas(mols))
 
         return df_features
 
     @staticmethod
-    def padelpy_descriptors(mols: list) -> PandasDataFrame:
+    def padelpy_descriptors(mol_file,
+                            keep_csv=False,
+                            **kwargs: Any) -> PandasDataFrame:
         """PADEL molecular descriptor generation.
 
         Parameters
         ----------
-        mols : list
-            A list of molecule RDKitMol objects.
+        mol_file : str
+            Molecule file name.
+        keep_csv : bool, optional
+            If True, the csv file is kept. Default=False.
+        **kwargs : Any
+            Additional keyword arguments.
+            See https://github.com/ecrl/padelpy/blob/master/padelpy/wrapper.py.
 
         Returns
         -------
@@ -137,20 +151,33 @@ class DescriptorGenerator:
         # ignore_3D=True
 
         # save file temporarily
-        writer = Chem.SDWriter("padelpy_out_tmp.sdf")
-        for mol in mols:
-            writer.write(mol)
-        writer.close()
+        # writer = Chem.SDWriter("padelpy_out_tmp.sdf")
+        # for mol in mols:
+        #     writer.write(mol)
+        # writer.close()
+        #
+        # desc = from_sdf(sdf_file="padelpy_out_tmp.sdf",
+        #                 output_csv=None,
+        #                 descriptors=True,
+        #                 fingerprints=False,
+        #                 timeout=None)
+        # df_features = pd.DataFrame(desc)
+        #
+        # # delete temporary file
+        # os.remove("padelpy_out_tmp.sdf")
 
-        desc = from_sdf(sdf_file="padelpy_out_tmp.sdf",
-                        output_csv=None,
-                        descriptors=True,
-                        fingerprints=False,
-                        timeout=None)
-        df_features = pd.DataFrame(desc)
+        csv_fname = os.path.basename(mol_file).split(".")[0] + "padel_descriptors.csv"
+        padeldescriptor(mol_dir=mol_file,
+                        d_file=csv_fname,
+                        d_2d=True,
+                        d_3d=True,
+                        retainorder=True,
+                        **kwargs)
 
-        # delete temporary file
-        os.remove("padelpy_out_tmp.sdf")
+        df_features = pd.read_csv(csv_fname, sep=",", index_col="Name")
+
+        if not keep_csv:
+            os.remove(csv_fname)
 
         return df_features
 
@@ -193,7 +220,7 @@ class DescriptorGenerator:
         # check initialization
         assert len(descriptor_types) == len(desc_list)
 
-        arr_features = [_rdkit_descriptors_low(mol, desc_list=desc_list, ipc_avg=ipc_avg, *kwargs)
+        arr_features = [_rdkit_descriptors_low(mol, desc_list=desc_list, ipc_avg=ipc_avg, **kwargs)
                         for mol in mols]
         df_features = pd.DataFrame(arr_features, columns=descriptor_types)
 
@@ -351,7 +378,7 @@ class FingerprintGenerator:
 
         # other cases
         else:
-            raise ValueError(f"{self.desc_type} is not an supported fingerprint type.")
+            raise ValueError(f"{self.fp_type} is not an supported fingerprint type.")
 
         df_fps = pd.DataFrame(np.array(fps), index=self.mol_names)
 
@@ -411,23 +438,28 @@ class FingerprintGenerator:
         """
         # SECFP: SMILES extended connectivity fingerprint
         # https://jcheminf.biomedcentral.com/articles/10.1186/s13321-018-0321-8
-        if fp_type == "SECFP":
-            secfp_encoder = rdMHFPFingerprint.MHFPEncoder(n_bits, random_seed)
+        if fp_type.upper() == "SECFP":
+            secfp_encoder = rdMHFPFingerprint.MHFPEncoder(random_seed)
             fp = secfp_encoder.EncodeSECFPMol(mol,
-                                              radius=radius, rings=rings, isomeric=isomeric,
-                                              kekulize=kekulize, min_radius=min_radius)
+                                              radius=radius,
+                                              rings=rings,
+                                              isomeric=isomeric,
+                                              kekulize=kekulize,
+                                              min_radius=min_radius,
+                                              length=n_bits,
+                                              )
         # ECFP
         # https://github.com/deepchem/deepchem/blob/1a2d2e9ff097fdbf58894d1f91359fe466c65810/deepchem/utils/rdkit_utils.py#L414
         # https://www.rdkit.org/docs/source/rdkit.Chem.rdMolDescriptors.html
-        elif fp_type == "ECFP":
+        elif fp_type.upper() == "ECFP":
             # radius=3 --> ECFP6
             fp = AllChem.GetMorganFingerprintAsBitVect(mol=mol, radius=radius, nBits=n_bits,
                                                        useChirality=isomeric, useFeatures=False)
-        elif fp_type == "Morgan":
+        elif fp_type.upper() == "MORGAN":
             fp = AllChem.GetMorganFingerprintAsBitVect(mol=mol, radius=radius, nBits=n_bits,
                                                        useChirality=isomeric, useFeatures=True)
         # https://www.rdkit.org/docs/source/rdkit.Chem.rdmolops.html#rdkit.Chem.rdmolops.RDKFingerprint
-        elif fp_type == "RDKFingerprint":
+        elif fp_type.upper() == "RDKFINGERPRINT":
             fp = Chem.rdmolops.RDKFingerprint(mol=mol,
                                               minPath=1,
                                               # maxPath=mol.GetNumBonds(),
@@ -540,9 +572,10 @@ def feature_reader(file_name: str,
         A `pandas.DataFrame` object with molecular features.
     """
 
-    if file_name.lower().endswith((".csv", ".txt")):
+    # use `str` function to support PosixPath
+    if str(file_name).lower().endswith((".csv", ".txt")):
         df = pd.read_csv(file_name, sep=sep, engine=engine, *kwargs)
-    elif file_name.lower().endswith((".xlsx", ".xls", "xlsb", ".odf", ".ods", ".odt")):
+    elif str(file_name).lower().endswith((".xlsx", ".xls", "xlsb", ".odf", ".ods", ".odt")):
         df = pd.read_excel(file_name, engine=engine, *kwargs)
 
     return df
@@ -550,9 +583,9 @@ def feature_reader(file_name: str,
 
 def get_features(sep: str = ",",
                  engine: str = "python",
-                 feature_type=None,
-                 mol_file=None,
-                 feature_file=None,
+                 feature_type: str = None,
+                 mol_file: str = None,
+                 feature_file: str = None,
                  **kwargs,
                  ) -> PandasDataFrame:
     """Compute molecular features.
@@ -583,6 +616,7 @@ def get_features(sep: str = ",",
         df_features = feature_reader(feature_file, sep=sep, engine=engine)
     # case: feature is None, mol is not None
     elif mol_file is not None and feature_file is None:
+        # todo: needs a fix here
         mols = mol_reader(file_name=mol_file)
         # compute descriptors
         if feature_type.lower() == "descriptor":
