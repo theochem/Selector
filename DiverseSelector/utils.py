@@ -66,12 +66,12 @@ def mol_reader(file_name: str,
 
     # SDF
     if file_name.lower().endswith(".sdf"):
-        suppl = Chem.SDMolSupplier(file_name, RemoveHs=remove_hydrogen, sanitize=True)
+        suppl = Chem.SDMolSupplier(file_name, removeHs=remove_hydrogen, sanitize=True)
         mols = [mol for mol in suppl]
     # SDF.GZ
     elif file_name.lower().endswith(".sdf.gz"):
         file_unzipped = gzip.open(file_name)
-        suppl = Chem.ForwardSDMolSupplier(file_unzipped, RemoveHs=remove_hydrogen, sanitize=True)
+        suppl = Chem.ForwardSDMolSupplier(file_unzipped, removeHs=remove_hydrogen, sanitize=True)
         mols = [mol for mol in suppl]
     # SMILES: *.smi, *.smiles, *.txt, *.csv
     elif file_name.lower().endswith((".smi", ".smiles", ".txt", ".csv")):
