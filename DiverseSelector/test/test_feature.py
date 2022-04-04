@@ -23,9 +23,6 @@
 
 """Testing for feature generation module."""
 
-import os
-
-import numpy as np
 import pandas as pd
 from numpy.testing import assert_equal, assert_almost_equal
 
@@ -36,7 +33,6 @@ try:
     from importlib_resources import path
 except ImportError:
     from importlib.resources import path
-data_dir = os.path.join(os.path.dirname(__file__), "data")
 
 
 def test_feature_desc_mordred_2d():
@@ -51,10 +47,12 @@ def test_feature_desc_mordred_2d():
                                          )
     df_mordred_desc = desc_generator.compute_descriptor(ignore_3D=True)
     # load the expected descriptor dataframe
-    df_mordred_desc_exp = pd.read_csv(os.path.join(data_dir, "drug_mols_desc_smi.csv"),
-                                      sep=",",
-                                      )
-    df_mordred_desc_exp.drop(columns=["name"], inplace=True)
+    with path("DiverseSelector.test.data", "drug_mols_desc_smi.csv") as smi_csv:
+        df_mordred_desc_exp = pd.read_csv(smi_csv,
+                                          sep=",",
+                                          )
+        df_mordred_desc_exp.drop(columns=["name"], inplace=True)
+
     # check if the dataframes are equal
     assert_equal(df_mordred_desc.shape, df_mordred_desc_exp.shape)
     assert_almost_equal(df_mordred_desc.to_numpy(float),
@@ -74,10 +72,11 @@ def test_feature_desc_mordred_3d():
                                          )
     df_mordred_desc = desc_generator.compute_descriptor(ignore_3D=False)
     # load the expected descriptor dataframe
-    df_mordred_desc_exp = pd.read_csv(os.path.join(data_dir, "drug_mols_desc_sdf_3d.csv"),
-                                      sep=",",
-                                      )
-    df_mordred_desc_exp.drop(columns=["name"], inplace=True)
+    with path("DiverseSelector.test.data", "drug_mols_desc_sdf_3d.csv") as sdf_csv:
+        df_mordred_desc_exp = pd.read_csv(sdf_csv,
+                                          sep=",",
+                                          )
+        df_mordred_desc_exp.drop(columns=["name"], inplace=True)
     # check if the dataframes are equal
     assert_equal(df_mordred_desc.shape, df_mordred_desc_exp.shape)
     assert_almost_equal(df_mordred_desc.to_numpy(float),
@@ -88,16 +87,20 @@ def test_feature_desc_mordred_3d():
 def test_feature_desc_padelpy_3d():
     """Testing molecular PaDEL descriptor with SMILES strings."""
     # generate molecular descriptors with the DescriptorGenerator
-    desc_generator = DescriptorGenerator(mol_file=os.path.join(data_dir, "drug_mols.sdf"),
-                                         desc_type="padel",
-                                         use_fragment=True,
-                                         ipc_avg=True,
-                                         )
-    df_padel_desc = desc_generator.compute_descriptor()
+    with path("DiverseSelector.test.data", "drug_mols.sdf") as sdf_drugs:
+        desc_generator = DescriptorGenerator(mol_file=sdf_drugs,
+                                             desc_type="padel",
+                                             use_fragment=True,
+                                             ipc_avg=True,
+                                             )
+        df_padel_desc = desc_generator.compute_descriptor()
+
     # load the expected descriptor dataframe
-    df_padel_desc_exp = pd.read_csv(os.path.join(data_dir, "drug_mols_desc_padel.csv"),
-                                    sep=",",
-                                    index_col="Name")
+    with path("DiverseSelector.test.data", "drug_mols_desc_padel.csv") as sdf_csv:
+        df_padel_desc_exp = pd.read_csv(sdf_csv,
+                                        sep=",",
+                                        index_col="Name")
+
     # check if the dataframes are equal
     assert_equal(df_padel_desc.shape, df_padel_desc_exp.shape)
     assert_almost_equal(df_padel_desc.to_numpy(float),
@@ -117,8 +120,9 @@ def test_feature_desc_rdkit():
                                          )
     df_rdkit_desc = desc_generator.compute_descriptor()
     # load the expected descriptor dataframe
-    df_rdkit_desc_exp = pd.read_csv(os.path.join(data_dir, "drug_mols_desc_rdkit.csv"),
-                                    sep=",")
+    with path("DiverseSelector.test.data", "drug_mols_desc_rdkit.csv") as rdkit_csv:
+        df_rdkit_desc_exp = pd.read_csv(rdkit_csv,
+                                        sep=",")
     # check if the dataframes are equal
     assert_equal(df_rdkit_desc.shape, df_rdkit_desc_exp.shape)
     assert_almost_equal(df_rdkit_desc.to_numpy(float),
@@ -138,8 +142,9 @@ def test_feature_desc_rdkit_frag():
                                          )
     df_rdkit_desc = desc_generator.compute_descriptor()
     # load the expected descriptor dataframe
-    df_rdkit_desc_exp = pd.read_csv(os.path.join(data_dir, "drug_mols_desc_rdkit_frag.csv"),
-                                    sep=",")
+    with path("DiverseSelector.test.data", "drug_mols_desc_rdkit_frag.csv") as rdkit_frag_csv:
+        df_rdkit_desc_exp = pd.read_csv(rdkit_frag_csv,
+                                        sep=",")
     # check if the dataframes are equal
     assert_equal(df_rdkit_desc.shape, df_rdkit_desc_exp.shape)
     assert_almost_equal(df_rdkit_desc.to_numpy(float),
