@@ -23,14 +23,16 @@
 
 """Testing for feature generation module."""
 
+import pandas as pd
+import pytest
+from numpy.testing import assert_almost_equal, assert_equal
+
 from DiverseSelector.feature import (DescriptorGenerator,
                                      feature_reader,
                                      FingerprintGenerator,
                                      get_features,
                                      )
 from DiverseSelector.test.common import load_testing_mols
-from numpy.testing import assert_almost_equal, assert_equal
-import pandas as pd
 
 try:
     from importlib_resources import path
@@ -155,6 +157,21 @@ def test_feature_desc_rdkit_frag():
                         decimal=7)
 
 
+def test_feature_desc_invalid():
+    """Testing invalid descriptor with 3D molecules."""
+    # load molecules
+    mols = load_testing_mols(mol_type="3d")
+    # generate molecular descriptors with the DescriptorGenerator
+    with pytest.raises(ValueError):
+        desc_generator = DescriptorGenerator(mols=mols,
+                                             desc_type="invalid_desc",
+                                             use_fragment=True,
+                                             ipc_avg=True,
+                                             )
+
+        desc_generator.compute_descriptor()
+
+
 def test_feature_fp_secfp6():
     """Testing SECFP6 fingerprints with 3D molecules."""
     # load molecules
@@ -265,6 +282,54 @@ def test_feature_fp_rdkit():
     assert_almost_equal(df_rdkit_fp.to_numpy(int),
                         df_rdkit_fp_exp.to_numpy(int),
                         )
+
+
+def test_feature_fp_maccskeys():
+    """Testing MaCCSKeys fingerprints with 3D molecules."""
+    # load molecules
+    mols = load_testing_mols(mol_type="3d")
+    # generate molecular descriptors with the DescriptorGenerator
+    fp_generator = FingerprintGenerator(mols=mols,
+                                        fp_type="MaCCSKeys",
+                                        n_bits=1024,
+                                        radius=3,
+                                        min_radius=1,
+                                        random_seed=42,
+                                        rings=True,
+                                        isomeric=True,
+                                        kekulize=False,
+                                        )
+    df_maccskeys_fp = fp_generator.compute_fingerprint()
+    # load the expected descriptor dataframe
+    with path("DiverseSelector.test.data", "drug_mols_MaCCSKeys.csv") as maccskeys_fp_csv:
+        df_maccskeys_fp_exp = pd.read_csv(maccskeys_fp_csv,
+                                          sep=",",
+                                          index_col=0)
+    # check if the dataframes are equal
+    assert_equal(df_maccskeys_fp.shape, df_maccskeys_fp_exp.shape)
+    assert_almost_equal(df_maccskeys_fp.to_numpy(int),
+                        df_maccskeys_fp_exp.to_numpy(int),
+                        )
+
+
+def test_feature_fp_invalid():
+    """Testing invalid fingerprints with 3D molecules."""
+    # load molecules
+    mols = load_testing_mols(mol_type="3d")
+    # generate molecular descriptors with the DescriptorGenerator
+    with pytest.raises(ValueError):
+        fp_generator = FingerprintGenerator(mols=mols,
+                                            fp_type="invalid_fp",
+                                            n_bits=1024,
+                                            radius=3,
+                                            min_radius=1,
+                                            random_seed=42,
+                                            rings=True,
+                                            isomeric=True,
+                                            kekulize=False,
+                                            )
+
+        fp_generator.compute_fingerprint()
 
 
 def test_feature_reader_csv():

@@ -378,7 +378,7 @@ class FingerprintGenerator:
 
         # other cases
         else:
-            raise ValueError(f"{self.desc_type} is not an supported fingerprint type.")
+            raise ValueError(f"{self.fp_type} is not an supported fingerprint type.")
 
         df_fps = pd.DataFrame(np.array(fps), index=self.mol_names)
 
