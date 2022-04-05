@@ -108,25 +108,6 @@ class ComputeDistanceMatrix:
         return function_dict[metric]
 
 
-def pairwise_dist(feature: np.array,
-                  metric: str = "euclidean") -> np.ndarray:
-    """Compute pairwise distance.
-
-    Parameters
-    ----------
-    feature : ndarray
-        feature matrix.
-    metric : str
-        method of calcualtion.
-
-    Returns
-    -------
-    arr_dist : ndarray
-        symmetric distance array.
-    """
-    return cdist(feature, feature, metric)
-
-
 def distance_to_similarity(x, dist: bool = True) -> np.ndarray:
     """Convert between distance and similarity matrix.
 
@@ -216,14 +197,13 @@ def bit_tanimoto(a ,b) -> int:
 
 
 def modified_tanimoto(a, b) -> int:
-    # incomplete
     n = len(a)
     n_11 = sum(a * b)
     n_00 = sum((1 - a) * (1 - b))
     if n_00 == n:
         t_1 = 1
     else:
-        t_1 = n_11 / (n_00 - n)
+        t_1 = n_11 / (n - n_00)
     if n_11 == n:
         t_0 = 1
     else:
@@ -231,29 +211,6 @@ def modified_tanimoto(a, b) -> int:
     p = ((n - n_00) + n_11) / (2 * n)
     mt = (((2 - p) / 3) * t_1) + (((1 + p) / 3) * t_0)
     return mt
-
-
-def gini(x):
-    # incomplet
-    # could be a wrong formula
-    for i in range(0, len(x)):
-        for j in range(0, len(x[0])):
-            if x[i,j] != 0:
-                x[i,j] = 1
-            else:
-                x[i,j] = 0
-    L = len(x[0])
-    frac_top = 0
-    frac_bottom = 0
-    val = []
-    for i in range(0, L):
-        val.append(sum(x[:,i]))
-    ans = np.sort(val)
-    for i in range(0, L):
-        frac_top += ((i + 1) * ans[i])
-        frac_bottom += ans[i]
-    G = (2 * ((frac_top) / (L * frac_bottom))) - ((L + 1) / L)
-    return G
 
 
 def entropy(x):
@@ -309,7 +266,7 @@ def explicit_diversity_index(x, mol: rdkit.Chem.rdchem.Mol):
 def logdet(x):
     mid = np.dot(np.transpose(x) , x )
     f_logdet = np.linalg.det(mid + np.identity(len(x[0])))
-    return f_logdet
+    return np.log10(f_logdet)
 
 
 def shannon_entropy(x):
@@ -320,7 +277,8 @@ def shannon_entropy(x):
         if inter < (0.36787944117):
             H_x += (-1 * inter ) * np.log10(inter)
         else:
-            raise ValueError
+            H_x += (-1 * inter ) * np.log10(inter)
+            # raise error
     return H_x
 
 
@@ -349,10 +307,11 @@ def total_diversity_Volume(x):
     k = len(x[:,0])
     # min_max normilization:
     max_x = (max(map(max, x)))
+    min_x = (min(map(min, x)))
     y = np.zeros((k, d))
-    for i in range(0, len(x[:,0])):
-        for j in range(0, len(x[0])):
-            y[i,j] = x[i,j] / max_x
+    for i in range(0, k):
+        for j in range(0, d):
+            y[i,j] = (x[i,j] - min_x ) / (max_x - min_x)
     # divesity
     r_o = d * np.sqrt(1 / k)
     g_s = 0
@@ -360,8 +319,9 @@ def total_diversity_Volume(x):
         for j in range((i + 1), k):
             dist = euclidean(y[i], y[j])
             if dist <= (2 * r_o) and dist != 0:
-                O_ij = min(100, (((2 * r_o) / dist) - 1))
+                O_ij = min(100, 2 * r_o / dist - 1)
                 g_s += O_ij
             else:
-                pass
+                O_ij = 0
+                g_s += O_ij
     return g_s
