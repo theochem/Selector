@@ -160,7 +160,7 @@ def pairwise_similarity_bit(feature: np.array, metric: str) -> np.ndarray:
     return pair_coeff
 
 
-def euc_bit(a, b):
+def euc_bit(a: np.array, b: np.array) -> float:
     """Compute Euclidean distance from bitstring.
 
     Parameters

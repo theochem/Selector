@@ -138,7 +138,7 @@ def test_shannon_entropy():
 
 def test_wdud():
     """Testing the Wasserstein Distance to Uniform Distribution (WDUD) with predefined matrix ."""
-    # incomplet
+    # incomplete
     # selected = wdud(sample3)
     # expected = (2 / 3)
     # assert_equal(expected, selected)
