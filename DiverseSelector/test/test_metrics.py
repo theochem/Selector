@@ -25,30 +25,22 @@
 
 # todo: fix this later
 # noqa: F401
-from DiverseSelector.metric import  (
-                                    bit_tanimoto,
-                                    distance_to_similarity,
-                                    pairwise_similarity_bit,
-                                    tanimoto,
+import numpy as np
+from numpy.testing import assert_almost_equal, assert_equal
+
+from DiverseSelector.metric import (bit_tanimoto,
                                     ComputeDistanceMatrix,
-                                    modified_tanimoto,
+                                    distance_to_similarity,
                                     entropy,
                                     logdet,
-                                    total_diversity_Volume,
+                                    modified_tanimoto,
+                                    pairwise_similarity_bit,
                                     shannon_entropy,
-                                    wdud,
+                                    tanimoto,
+                                    total_diversity_volume,
+                                    wdud
                                     )
-
-from DiverseSelector.test.common import (
-                                    bit_dice,
-                                    euc_bit,
-                                    bit_cosine,
-                                    cosine,
-                                    dice,
-                                    )
-
-import numpy as np
-from numpy.testing import assert_equal, assert_almost_equal
+from DiverseSelector.test.common import euc_bit
 
 
 # each row is a feature and each column is a molecule
@@ -65,21 +57,25 @@ sample2 = np.array([[1, 1, 0, 0, 0],
                     [0, 0, 0, 1, 0],
                     [0, 0, 0, 0, 1]])
 
+
 sample3 = np.array([[1, 4],
                     [3, 2]])
+
 
 sample4 = np.array([[1, 0, 1],
                     [0, 1, 1]])
 
 
-def test_Compute_Distance_Matrix_Euc_bit():
+def test_compute_distance_matrix_euc_bit():
+    """Testing the euclidean distance function with predefined feature matrix."""
     sci_dist = ComputeDistanceMatrix(sample2, "euclidean")
     selected = sci_dist.compute_distance()
     expected = pairwise_similarity_bit(sample2, euc_bit) - np.identity(len(sample2))
     assert_equal(expected, selected)
 
 
-def test_Compute_Distance_Matrix_Euc():
+def test_compute_distance_matrix_euc():
+    """Testing the euclidean distance function with predefined bit-string matrix."""
     sci_dist = ComputeDistanceMatrix(sample3, "euclidean")
     selected = sci_dist.compute_distance()
     expected = np.array([[0, 2.8284271],
@@ -88,6 +84,7 @@ def test_Compute_Distance_Matrix_Euc():
 
 
 def test_tanimoto_bit():
+    """Testing the tanimoto function with predefined bit-string matrix."""
     tani = pairwise_similarity_bit(sample2, bit_tanimoto)
     expceted = np.array([[1, (1 / 3), 0, 0],
                         [(1 / 3), 1, 0, 0],
@@ -97,6 +94,7 @@ def test_tanimoto_bit():
 
 
 def test_tanimoto():
+    """Testing the tanimoto function with predefined feature matrix."""
     tani = pairwise_similarity_bit(sample3, tanimoto)
     expceted = np.array([[1, (11 / 19)],
                         [(11 / 19), 1]])
@@ -104,14 +102,15 @@ def test_tanimoto():
 
 
 def test_dist_to_simi():
+    """Testing the distance to similarity function with predefined distance matrix."""
     dist = distance_to_similarity(sample3, dist=True)
-    expceted = np.array([[(1/2), (1 / 5)],
+    expceted = np.array([[(1 / 2), (1 / 5)],
                         [(1 / 4), (1 / 3)]])
     assert_equal(dist, expceted)
 
 
 def test_modifed_tanimoto():
-    # answer is negative 
+    """Testing the modified tanimoto function with predefined feature matrix."""
     mod_tani = pairwise_similarity_bit(sample4, modified_tanimoto)
     expceted = np.array([[1, (4 / 27)],
                         [(4 / 27), 1]])
@@ -119,24 +118,28 @@ def test_modifed_tanimoto():
 
 
 def test_entropy():
-    ent = entropy(sample4) 
+    """Testing the entropy function with predefined matrix."""
+    ent = entropy(sample4)
     expected = (2 / 3)
     assert_almost_equal(ent, expected)
 
 
 def test_logdet():
+    """Testing the log determinant function with predefined subset matrix."""
     sel = logdet(sample3)
     expected = np.log10(131)
     assert_almost_equal(sel, expected)
 
 
 def test_shannon_entropy():
+    """Testing the shannon entropy function with predefined matrix."""
     selected = shannon_entropy(sample4)
     expected = 0.301029995
     assert_almost_equal(selected, expected)
 
 
 def test_wdud():
+    """Testing the Wasserstein Distance to Uniform Distribution (WDUD) with predefined matrix ."""
     # incomplet
     selected = wdud(sample3)
     expected = (2 / 3)
@@ -144,6 +147,7 @@ def test_wdud():
 
 
 def test_total_diversity_volume():
-    selected = total_diversity_Volume(sample3)
+    """Testing the total diversity volume method with predefined matrix."""
+    selected = total_diversity_volume(sample3)
     expected = 2
     assert_almost_equal(selected, expected)

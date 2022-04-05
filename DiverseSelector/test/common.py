@@ -142,7 +142,7 @@ def load_testing_mols(mol_type: str = "2d") -> list:
     return mols
 
 
-def bit_cosine(a ,b):
+def bit_cosine(a, b):
     """Compute dice coefficient.
 
     Parameters
@@ -167,7 +167,7 @@ def bit_cosine(a ,b):
     return b_c
 
 
-def bit_dice(a ,b):
+def bit_dice(a, b):
     """Compute dice coefficient.
 
     Parameters
