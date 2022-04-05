@@ -25,7 +25,6 @@
 
 from typing import Any
 
-from DiverseSelector.test.common import euc_bit
 from DiverseSelector.utils import sklearn_supported_metrics
 import numpy as np
 import rdkit
@@ -34,10 +33,17 @@ from scipy.spatial.distance import euclidean, squareform
 from sklearn.metrics import pairwise_distances
 
 __all__ = [
-    "distance_to_similarity",
-    "pairwise_similarity_bit",
-    "tanimoto",
     "bit_tanimoto",
+    "ComputeDistanceMatrix",
+    "distance_to_similarity",
+    "entropy",
+    "euc_bit",
+    "logdet",
+    "modified_tanimoto",
+    "pairwise_similarity_bit",
+    "shannon_entropy",
+    "tanimoto",
+    "total_diversity_volume",
 ]
 
 
@@ -152,6 +158,31 @@ def pairwise_similarity_bit(feature: np.array, metric: str) -> np.ndarray:
             pair_simi.append(metric(feature[i], feature[j]))
     pair_coeff = (squareform(pair_simi) + np.identity(size))
     return pair_coeff
+
+
+def euc_bit(a, b):
+    """Compute Euclidean distance from bitstring.
+
+    Parameters
+    ----------
+    a : array_like
+        molecule A's features in bits.
+    b : array_like
+        molecules B's features in bits.
+
+    Returns
+    -------
+    e_d : int
+        Euclidean distance between molecule A and B.
+    """
+    a_feat = np.count_nonzero(a)
+    b_feat = np.count_nonzero(b)
+    c = 0
+    for idx, _ in enumerate(a):
+        if a[idx] == b[idx] and a[idx] != 0:
+            c += 1
+    e_d = (a_feat + b_feat - (2 * c)) ** 0.5
+    return e_d
 
 
 def tanimoto(a: np.array, b: np.array) -> int:

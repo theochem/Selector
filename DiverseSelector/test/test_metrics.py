@@ -29,6 +29,7 @@ from DiverseSelector.metric import (bit_tanimoto,
                                     ComputeDistanceMatrix,
                                     distance_to_similarity,
                                     entropy,
+                                    euc_bit,
                                     logdet,
                                     modified_tanimoto,
                                     pairwise_similarity_bit,
@@ -37,7 +38,6 @@ from DiverseSelector.metric import (bit_tanimoto,
                                     total_diversity_volume,
                                     # wdud
                                     )
-from DiverseSelector.test.common import euc_bit
 import numpy as np
 from numpy.testing import assert_almost_equal, assert_equal
 
