@@ -94,7 +94,7 @@ class ComputeDistanceMatrix:
         elif self.metric in built_in_metrics:
             func = self._select_function(self.metric)
             dist = func(self.feature)
-        print(dist)
+
         return dist
 
     @staticmethod
