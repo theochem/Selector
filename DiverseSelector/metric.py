@@ -108,7 +108,7 @@ class ComputeDistanceMatrix:
         return function_dict[metric]
 
 
-def distance_to_similarity(x, dist: bool = True) -> np.ndarray:
+def distance_to_similarity(x: np.ndarray, dist: bool = True) -> np.ndarray:
     """Convert between distance and similarity matrix.
 
     Parameters
@@ -130,7 +130,7 @@ def distance_to_similarity(x, dist: bool = True) -> np.ndarray:
     return y
 
 
-def pairwise_similarity_bit(feature: np.array, metric) -> np.ndarray:
+def pairwise_similarity_bit(feature: np.array, metric: str) -> np.ndarray:
     """Compute the pairwaise similarity coefficients.
 
     Parameters
@@ -154,7 +154,7 @@ def pairwise_similarity_bit(feature: np.array, metric) -> np.ndarray:
     return pair_coeff
 
 
-def tanimoto(a, b) -> int:
+def tanimoto(a: np.array, b: np.array) -> int:
     """Compute tanimoto coefficient.
 
     Parameters
@@ -173,7 +173,7 @@ def tanimoto(a, b) -> int:
     return coeff
 
 
-def bit_tanimoto(a, b) -> int:
+def bit_tanimoto(a: np.array, b: np.array) -> int:
     """Compute tanimoto coefficient.
 
     Parameters
@@ -198,7 +198,7 @@ def bit_tanimoto(a, b) -> int:
     return b_t
 
 
-def modified_tanimoto(a, b) -> int:
+def modified_tanimoto(a: np.array, b: np.array) -> int:
     """Compute the modified tanimoto coefficient.
 
     Parameters
