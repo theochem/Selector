@@ -31,6 +31,12 @@ from DiverseSelector.metric import  (
                                     pairwise_similarity_bit,
                                     tanimoto,
                                     ComputeDistanceMatrix,
+                                    modified_tanimoto,
+                                    entropy,
+                                    logdet,
+                                    total_diversity_Volume,
+                                    shannon_entropy,
+                                    wdud,
                                     )
 
 from DiverseSelector.test.common import (
@@ -42,7 +48,7 @@ from DiverseSelector.test.common import (
                                     )
 
 import numpy as np
-from numpy.testing import assert_equal
+from numpy.testing import assert_equal, assert_almost_equal
 
 
 # each row is a feature and each column is a molecule
@@ -74,28 +80,11 @@ def test_Compute_Distance_Matrix_Euc_bit():
 
 
 def test_Compute_Distance_Matrix_Euc():
-    # incomplet
-    sci_dist = ComputeDistanceMatrix(sample1, "euclidean")
+    sci_dist = ComputeDistanceMatrix(sample3, "euclidean")
     selected = sci_dist.compute_distance()
-    expected = 0
-    assert_equal(expected, selected)
-
-
-def test_Compute_Distance_Matrix_dice():
-    # incomplet
-    sci_dist = ComputeDistanceMatrix(sample4, "dice")
-    selected = sci_dist.compute_distance()
-    expected = np.array([[1, 0.5],
-                        [0.5, 1]])
-    assert_equal(expected, selected)
-
-
-def test_Compute_Distance_Matrix_cosine():
-    # incomplet
-    sci_dist = ComputeDistanceMatrix(sample3, "cosine")
-    selected = sci_dist.compute_distance()
-    expected = distance_to_similarity(pairwise_similarity_bit(sample3 ,cosine), False)
-    assert_equal(expected, selected)
+    expected = np.array([[0, 2.8284271],
+                        [2.8284271, 0]])
+    assert_almost_equal(expected, selected)
 
 
 def test_tanimoto_bit():
@@ -112,3 +101,49 @@ def test_tanimoto():
     expceted = np.array([[1, (11 / 19)],
                         [(11 / 19), 1]])
     assert_equal(expceted, tani)
+
+
+def test_dist_to_simi():
+    dist = distance_to_similarity(sample3, dist=True)
+    expceted = np.array([[(1/2), (1 / 5)],
+                        [(1 / 4), (1 / 3)]])
+    assert_equal(dist, expceted)
+
+
+def test_modifed_tanimoto():
+    # answer is negative 
+    mod_tani = pairwise_similarity_bit(sample4, modified_tanimoto)
+    expceted = np.array([[1, (4 / 27)],
+                        [(4 / 27), 1]])
+    assert_equal(mod_tani, expceted)
+
+
+def test_entropy():
+    ent = entropy(sample4) 
+    expected = (2 / 3)
+    assert_almost_equal(ent, expected)
+
+
+def test_logdet():
+    sel = logdet(sample3)
+    expected = np.log10(131)
+    assert_almost_equal(sel, expected)
+
+
+def test_shannon_entropy():
+    selected = shannon_entropy(sample4)
+    expected = 0.301029995
+    assert_almost_equal(selected, expected)
+
+
+def test_wdud():
+    # incomplet
+    selected = wdud(sample3)
+    expected = (2 / 3)
+    assert_equal(expected, selected)
+
+
+def test_total_diversity_volume():
+    selected = total_diversity_Volume(sample3)
+    expected = 2
+    assert_almost_equal(selected, expected)
