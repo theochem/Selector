@@ -142,6 +142,7 @@ def test_wdud():
     # selected = wdud(sample3)
     # expected = (2 / 3)
     # assert_equal(expected, selected)
+    pass
 
 
 def test_total_diversity_volume():
