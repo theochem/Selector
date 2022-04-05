@@ -64,7 +64,7 @@ sklearn_supported_metrics = ["cityblock",
                               "sokalsneath",
                               "sqeuclidean",
                               "yule",
-                              ]
+                            ]
 
 
 PandasDataFrame = TypeVar('DataFrame')
