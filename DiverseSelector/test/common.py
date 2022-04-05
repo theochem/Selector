@@ -192,31 +192,6 @@ def bit_dice(a, b):
     return b_d
 
 
-def euc_bit(a, b):
-    """Compute Euclidean distance from bitstring.
-
-    Parameters
-    ----------
-    a : array_like
-        molecule A's features in bits.
-    b : array_like
-        molecules B's features in bits.
-
-    Returns
-    -------
-    e_d : int
-        Euclidean distance between molecule A and B.
-    """
-    a_feat = np.count_nonzero(a)
-    b_feat = np.count_nonzero(b)
-    c = 0
-    for idx, _ in enumerate(a):
-        if a[idx] == b[idx] and a[idx] != 0:
-            c += 1
-    e_d = (a_feat + b_feat - (2 * c)) ** 0.5
-    return e_d
-
-
 def cosine(a, b):
     """Compute cosine coefficient.
 
