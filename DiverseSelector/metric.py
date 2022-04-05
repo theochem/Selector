@@ -25,11 +25,11 @@
 
 from typing import Any
 
+from DiverseSelector.test.common import euc_bit
+from DiverseSelector.utils import sklearn_supported_metrics
 import numpy as np
 import rdkit
 from rdkit.Chem import MCS
-from DiverseSelector.test.common import euc_bit
-from DiverseSelector.utils import sklearn_supported_metrics
 from scipy.spatial.distance import euclidean, squareform
 from sklearn.metrics import pairwise_distances
 
@@ -360,7 +360,7 @@ def shannon_entropy(x: np.ndarray) -> int:
     size = len(x[:, 0])
     h_x = 0
     for i in range(0, size):
-        inter =  np.count_nonzero(x[:, i]) / size
+        inter = np.count_nonzero(x[:, i]) / size
         if inter < (0.36787944117):
             h_x += (-1 * inter) * np.log10(inter)
         else:

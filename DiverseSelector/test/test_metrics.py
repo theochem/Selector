@@ -25,9 +25,6 @@
 
 # todo: fix this later
 # noqa: F401
-import numpy as np
-from numpy.testing import assert_almost_equal, assert_equal
-
 from DiverseSelector.metric import (bit_tanimoto,
                                     ComputeDistanceMatrix,
                                     distance_to_similarity,
@@ -41,7 +38,8 @@ from DiverseSelector.metric import (bit_tanimoto,
                                     wdud
                                     )
 from DiverseSelector.test.common import euc_bit
-
+import numpy as np
+from numpy.testing import assert_almost_equal, assert_equal
 
 # each row is a feature and each column is a molecule
 sample1 = np.array([[4, 2, 6],
