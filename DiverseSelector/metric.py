@@ -172,7 +172,7 @@ def euc_bit(a: np.array, b: np.array) -> float:
 
     Returns
     -------
-    e_d : int
+    e_d : float
         Euclidean distance between molecule A and B.
     """
     a_feat = np.count_nonzero(a)
@@ -185,7 +185,7 @@ def euc_bit(a: np.array, b: np.array) -> float:
     return e_d
 
 
-def tanimoto(a: np.array, b: np.array) -> int:
+def tanimoto(a: np.array, b: np.array) -> float:
     """Compute tanimoto coefficient.
 
     Parameters
@@ -197,14 +197,14 @@ def tanimoto(a: np.array, b: np.array) -> int:
 
     Returns
     -------
-    coeff : int
+    coeff : float
         Tanimoto coefficient for molecule A and B.
     """
     coeff = (sum(a * b)) / ((sum(a ** 2)) + (sum(b ** 2)) - (sum(a * b)))
     return coeff
 
 
-def bit_tanimoto(a: np.array, b: np.array) -> int:
+def bit_tanimoto(a: np.array, b: np.array) -> float:
     """Compute tanimoto coefficient.
 
     Parameters
@@ -216,7 +216,7 @@ def bit_tanimoto(a: np.array, b: np.array) -> int:
 
     Returns
     -------
-    coeff : int
+    coeff : float
         Tanimoto coefficient for molecule A and B.
     """
     a_feat = np.count_nonzero(a)
@@ -229,7 +229,7 @@ def bit_tanimoto(a: np.array, b: np.array) -> int:
     return b_t
 
 
-def modified_tanimoto(a: np.array, b: np.array) -> int:
+def modified_tanimoto(a: np.array, b: np.array) -> float:
     """Compute the modified tanimoto coefficient.
 
     Parameters
@@ -241,7 +241,7 @@ def modified_tanimoto(a: np.array, b: np.array) -> int:
 
     Returns
     -------
-    mt : int
+    mt : float
         Modified tanimoto coefficient for molecule A and B.
     """
     n = len(a)
@@ -260,7 +260,7 @@ def modified_tanimoto(a: np.array, b: np.array) -> int:
     return mt
 
 
-def entropy(x: np.ndarray) -> int:
+def entropy(x: np.ndarray) -> float:
     """Compute entropy of matrix.
 
     Parameters
@@ -270,7 +270,7 @@ def entropy(x: np.ndarray) -> int:
 
     Returns
     -------
-    e : int
+    e : float
         Entropy of matrix.
 
     Notes
@@ -300,7 +300,7 @@ def entropy(x: np.ndarray) -> int:
     return e
 
 
-def nearest_average_tanimoto(x: np.ndarray) -> int:
+def nearest_average_tanimoto(x: np.ndarray) -> float:
     """Computes the average tanimoto for nearest molecules.
 
     Parameters
@@ -310,7 +310,7 @@ def nearest_average_tanimoto(x: np.ndarray) -> int:
 
     Returns
     -------
-    nat : int
+    nat : float
         Average tanimoto of closest pairs.
 
     Notes
@@ -333,7 +333,7 @@ def nearest_average_tanimoto(x: np.ndarray) -> int:
     return nat
 
 
-def explicit_diversity_index(x: np.ndarray, mol: rdkit.Chem.rdchem.Mol) -> int:
+def explicit_diversity_index(x: np.ndarray, mol: rdkit.Chem.rdchem.Mol) -> float:
     """Computes the explicit diversity index.
 
     Parameters
@@ -345,7 +345,7 @@ def explicit_diversity_index(x: np.ndarray, mol: rdkit.Chem.rdchem.Mol) -> int:
 
     Returns
     -------
-    edi_scaled : int
+    edi_scaled : float
         Explicit diversity index.
     """
     cs = len(MCS.FindMCS(mol))
@@ -357,7 +357,7 @@ def explicit_diversity_index(x: np.ndarray, mol: rdkit.Chem.rdchem.Mol) -> int:
     return edi_scaled
 
 
-def logdet(x: np.ndarray) -> int:
+def logdet(x: np.ndarray) -> float:
     """Computes the log determinant function .
 
     Parameters
@@ -367,7 +367,7 @@ def logdet(x: np.ndarray) -> int:
 
     Returns
     -------
-    f_logdet: int
+    f_logdet: float
         The volume of parallelotope spand by the matrix.
     """
     mid = np.dot(np.transpose(x), x)
@@ -375,7 +375,7 @@ def logdet(x: np.ndarray) -> int:
     return f_logdet
 
 
-def shannon_entropy(x: np.ndarray) -> int:
+def shannon_entropy(x: np.ndarray) -> float:
     """Computes the shannon entrop of a matrix.
 
     Parameters
@@ -385,7 +385,7 @@ def shannon_entropy(x: np.ndarray) -> int:
 
     Returns
     -------
-    h_x: int
+    h_x: float
         The shannon entropy of the matrix.
     """
     size = len(x[:, 0])
@@ -400,7 +400,7 @@ def shannon_entropy(x: np.ndarray) -> int:
     return h_x
 
 
-def wdud(x: np.ndarray) -> int:
+def wdud(x: np.ndarray) -> float:
     """Computes the Wasserstein Distance to Uniform Distribution(WDUD).
 
     Parameters
@@ -410,7 +410,7 @@ def wdud(x: np.ndarray) -> int:
 
     Returns
     -------
-    h_x: int
+    h_x: float
         The WDUD of the matrix.
     """
     # min_max normilization:
@@ -433,7 +433,7 @@ def wdud(x: np.ndarray) -> int:
     return np.average(ans)
 
 
-def total_diversity_volume(x: np.ndarray) -> int:
+def total_diversity_volume(x: np.ndarray) -> float:
     """Computes the total diversity volume of the matrix.
 
     Parameters
@@ -443,7 +443,7 @@ def total_diversity_volume(x: np.ndarray) -> int:
 
     Returns
     -------
-    g_s: int
+    g_s: float
         The total diversity volume of the matrix.
     """
     d = len(x[0])
