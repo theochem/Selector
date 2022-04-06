@@ -26,6 +26,8 @@
 from DiverseSelector.base import SelectionBase
 from DiverseSelector.metric import ComputeDistanceMatrix
 import numpy as np
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
 
 __all__ = [
     "DissimilaritySelection",
@@ -46,16 +48,41 @@ class DissimilaritySelection(SelectionBase):
                  arr_dist=None,
                  method="maxmin",
                  r=1,
-                 k=2,
+                 k=10,
+                 cells=5,
+                 max_dim=2,
+                 grid_method="equisized_independent",
                  **kwargs,
                  ):
-        """Base class for dissimilarity based subset selection."""
+        """DissimilaritySelection Class initialization.
+
+        Parameters
+        ----------
+        initialization
+        metric
+        random_seed
+        feature_type
+        mol_file
+        feature_file
+        num_selected
+        arr_dist
+        method
+        r
+        k
+        cells
+        max_dim
+        grid_method
+        kwargs
+        """
         super().__init__(metric, random_seed, feature_type, mol_file, feature_file, num_selected)
         self.initialization = initialization
         self.arr_dist = arr_dist
         self.method = method
         self.r = r
         self.k = k
+        self.cells = cells
+        self.max_dim = max_dim
+        self.grid_method = grid_method
         # super(DissimilaritySelection, self).__init__(**kwargs)
         self.__dict__.update(kwargs)
 
@@ -94,11 +121,29 @@ class DissimilaritySelection(SelectionBase):
         pass
 
     def select(self, dissimilarity_function='brutestrength'):
-        """Select the subset molecules with optimal diversity.
+        """Select method containing all dissimilarity algorithms.
 
-        Algorithm is adapted from https://doi.org/10.1016/S1093-3263(98)80008-9
+        Parameters
+        ----------
+        dissimilarity_function
+
+        Returns
+        -------
+
         """
         def brutestrength(selected=None, n_selected=self.num_selected, method=self.method):
+            """Brute Strength dissimilarity algorithm with maxmin and maxsum methods.
+
+            Parameters
+            ----------
+            selected
+            n_selected
+            method
+
+            Returns
+            -------
+
+            """
             if selected is None:
                 selected = [self.starting_idx]
                 return brutestrength(selected, n_selected, method)
@@ -132,10 +177,131 @@ class DissimilaritySelection(SelectionBase):
             else:
                 raise ValueError(f"Method {method} not supported, choose maxmin or maxsum.")
 
-        def sphereexclusion(selected=None, n_selected=self.num_selected, r=self.r, order=None):
+        def gridpartitioning(selected=None, n_selected=self.num_selected, cells=self.cells, max_dim=self.max_dim,
+                             array=self.features, grid_method=self.grid_method):
+            """Grid partitioning dissimilarity algorithm with equifrequent/equisized and independent/dependent grid
+            partitioning methods.
+
+            Parameters
+            ----------
+            selected
+            n_selected
+            cells
+            max_dim
+            array
+            grid_method
+
+            Returns
+            -------
+
+            """
             if selected is None:
                 selected = []
-                return sphereexclusion(selected, n_selected, r, order)
+                return gridpartitioning(selected, n_selected, cells, max_dim, array, grid_method)
+
+            data_dim = len(array[0])
+            if data_dim > max_dim:
+                norm_data = StandardScaler().fit_transform(array)
+                pca = PCA(n_components=max_dim)
+                principalComponents = pca.fit_transform(norm_data)
+                return gridpartitioning(selected, n_selected, cells, max_dim, principalComponents, grid_method)
+
+            if grid_method == "equisized_independent":
+                axis_info = []
+                for i in range(data_dim):
+                    axis_min, axis_max = min(array[:, i]), max(array[:, i])
+                    cell_length = (axis_max - axis_min) / cells
+                    axis_info.append([axis_min, axis_max, cell_length])
+                bins = {}
+                for index, point in enumerate(array):
+                    point_bin = []
+                    for dim, value in enumerate(point):
+                        if value == axis_info[dim][0]:
+                            index_bin = 0
+                        elif value == axis_info[dim][1]:
+                            index_bin = cells - 1
+                        else:
+                            index_bin = int((value - axis_info[dim][0]) // axis_info[dim][2])
+                        point_bin.append(index_bin)
+                    bins.setdefault(tuple(point_bin), [])
+                    bins[tuple(point_bin)].append(index)
+
+            elif grid_method == "equisized_dependent":
+                bins = {}
+                for i in range(data_dim):
+                    if len(bins) == 0:
+                        axis_min, axis_max = min(array[:, i]), max(array[:, i])
+                        cell_length = (axis_max - axis_min) / cells
+                        axis_info = [axis_min, axis_max, cell_length]
+
+                        for index, point in enumerate(array):
+                            point_bin = []
+                            if point[i] == axis_info[0]:
+                                index_bin = 0
+                            elif point[i] == axis_info[1]:
+                                index_bin = cells - 1
+                            else:
+                                index_bin = int((point[i] - axis_info[0]) // axis_info[2])
+                            point_bin.append(index_bin)
+                            bins.setdefault(tuple(point_bin), [])
+                            bins[tuple(point_bin)].append(index)
+                    else:
+                        new_bins = {}
+                        for bin_idx in bins:
+                            axis_min, axis_max = min(array[bins[bin_idx], i]), max(array[bins[bin_idx], i])
+                            cell_length = (axis_max - axis_min) / cells
+                            axis_info = [axis_min, axis_max, cell_length]
+
+                            for point_idx in bins[bin_idx]:
+                                point_bin = [num for num in bin_idx]
+                                if array[point_idx][i] == axis_info[0]:
+                                    index_bin = 0
+                                elif array[point_idx][i] == axis_info[1]:
+                                    index_bin = cells - 1
+                                else:
+                                    index_bin = int((array[point_idx][i] - axis_info[0]) // axis_info[2])
+                                point_bin.append(index_bin)
+                                new_bins.setdefault(tuple(point_bin), [])
+                                new_bins[tuple(point_bin)].append(point_idx)
+                        bins = new_bins
+
+            elif grid_method == "equifrequent_independent":
+                raise NotImplemented(f"{grid_method} not implemented.")
+            elif grid_method == "equifrequent_dependent":
+                raise NotImplemented(f"{grid_method} not implemented.")
+            else:
+                raise ValueError(f"{grid_method} not a valid method")
+
+            old_len = 0
+            rng = np.random.default_rng(seed=42)
+            while len(selected) < n_selected:
+                for bin_idx in bins:
+                    if len(bins[bin_idx]) > 0:
+                        mol_id = bins[bin_idx].pop(rng.integers(low=0, high=len(bins[bin_idx]), size=1)[0])
+                        selected.append(mol_id)
+
+                if len(selected) == old_len:
+                    break
+                old_len = len(selected)
+            return selected
+
+        def sphereexclusion(selected=None, n_selected=12, s_max=1, order=None):
+            """Directed sphere exclusion dissimilarity algorithm.
+
+            Parameters
+            ----------
+            selected
+            n_selected
+            s_max
+            order
+
+            Returns
+            -------
+
+            """
+            if selected is None:
+                selected = []
+                return sphereexclusion(selected, n_selected, s_max, order)
 
             if order is None:
                 ref = [self.starting_idx]
@@ -146,11 +312,11 @@ class DissimilaritySelection(SelectionBase):
                     data_point = self.features[idx]
                     distance_sq = 0
                     for i, point in enumerate(ref_point):
-                        distance_sq += (ref_point[i] - point) ** 2
+                        distance_sq += (point - data_point[i]) ** 2
                     distances.append((distance_sq, idx))
                 distances.sort()
                 order = [idx for dist, idx in distances]
-                return sphereexclusion(selected, n_selected, r, order)
+                return sphereexclusion(selected, n_selected, s_max, order)
 
             for idx in order:
                 if len(selected) == 0:
@@ -161,11 +327,11 @@ class DissimilaritySelection(SelectionBase):
                     data_point = self.features[idx]
                     selected_point = self.features[selected_idx]
                     distance_sq = 0
-                    for i, point in enumerate(data_point):
-                        distance_sq += (selected_point[i] - point) ** 2
+                    for i in range(len(data_point)):
+                        distance_sq += (selected_point[i] - data_point[i]) ** 2
                     distances.append(np.sqrt(distance_sq))
                 min_dist = min(distances)
-                if min_dist > r:
+                if min_dist > s_max:
                     selected.append(idx)
                 if len(selected) == n_selected:
                     return selected
@@ -174,6 +340,20 @@ class DissimilaritySelection(SelectionBase):
 
         def optisim(selected=None, n_selected=self.num_selected, k=self.k,
                     r=self.r, recycling=None):
+            """Optisim dissimilarity algorithm.
+
+            Parameters
+            ----------
+            selected
+            n_selected
+            k
+            r
+            recycling
+
+            Returns
+            -------
+
+            """
             if selected is None:
                 selected = [self.starting_idx]
                 return optisim(selected, n_selected, k, r, recycling)
@@ -192,7 +372,9 @@ class DissimilaritySelection(SelectionBase):
                         selected.append(max(zip(subsample.values(), subsample.keys()))[1])
                         return optisim(selected, n_selected, k, r, recycling)
                     return selected
-                index_new = candidates[np.random.randint(0, len(candidates))]
+                rng = np.random.default_rng(seed=self.random_seed)
+                random_int = rng.integers(low=0, high=len(candidates), size=1)[0]
+                index_new = candidates[random_int]
                 distances = []
                 for selected_idx in selected:
                     data_point = self.features[index_new]
@@ -213,6 +395,7 @@ class DissimilaritySelection(SelectionBase):
             return optisim(selected, n_selected, k, r, recycling)
 
         algorithms = {'brutestrength': brutestrength,
+                      'gridpartitioning': gridpartitioning,
                       'sphereexclusion': sphereexclusion,
                       'optisim': optisim}
         return algorithms[dissimilarity_function]()
