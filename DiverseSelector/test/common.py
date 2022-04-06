@@ -140,3 +140,91 @@ def load_testing_mols(mol_type: str = "2d") -> list:
         raise ValueError("mol_type must be either '2d' or '3d'.")
 
     return mols
+
+
+def bit_cosine(a, b):
+    """Compute dice coefficient.
+
+    Parameters
+    ----------
+    a : array_like
+        molecule A's features in bit string.
+    b : array_like
+        molecules B's features in bit string.
+
+    Returns
+    -------
+    coeff : int
+        dice coefficient for molecule A and B.
+    """
+    a_feat = np.count_nonzero(a)
+    b_feat = np.count_nonzero(b)
+    c = 0
+    for idx, _ in enumerate(a):
+        if a[idx] == b[idx] and a[idx] != 0:
+            c += 1
+    b_c = c / ((a_feat * b_feat) ** 0.5)
+    return b_c
+
+
+def bit_dice(a, b):
+    """Compute dice coefficient.
+
+    Parameters
+    ----------
+    a : array_like
+        molecule A's features.
+    b : array_like
+        molecules B's features.
+
+    Returns
+    -------
+    coeff : int
+        dice coefficient for molecule A and B.
+    """
+    a_feat = np.count_nonzero(a)
+    b_feat = np.count_nonzero(b)
+    c = 0
+    for idx, _ in enumerate(a):
+        if a[idx] == b[idx] and a[idx] != 0:
+            c += 1
+    b_d = (2 * c) / (a_feat + b_feat)
+    return b_d
+
+
+def cosine(a, b):
+    """Compute cosine coefficient.
+
+    Parameters
+    ----------
+    a : array_like
+        molecule A's features.
+    b : array_like
+        molecules B's features.
+
+    Returns
+    -------
+    coeff : int
+        cosine coefficient for molecule A and B.
+    """
+    coeff = (sum(a * b)) / (((sum(a ** 2)) + (sum(b ** 2))) ** 0.5)
+    return coeff
+
+
+def dice(a, b):
+    """Compute dice coefficient.
+
+    Parameters
+    ----------
+    a : array_like
+        molecule A's features.
+    b : array_like
+        molecules B's features.
+
+    Returns
+    -------
+    coeff : int
+        dice coefficient for molecule A and B.
+    """
+    coeff = (2 * (sum(a * b))) / ((sum(a ** 2)) + (sum(b ** 2)))
+    return coeff
