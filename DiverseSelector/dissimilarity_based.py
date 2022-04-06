@@ -109,7 +109,7 @@ class DissimilaritySelection(SelectionBase):
             arr_dist_init = self.arr_dist
 
         elif self.initialization.lower() == "random":
-            rng = np.random.default_rng(self.random_seed)
+            rng = np.random.default_rng(seed=self.random_seed)
             starting_idx = rng.choice(np.arange(self.features.shape[0]), 1)
             arr_dist_init = self.arr_dist
 
@@ -248,13 +248,13 @@ class DissimilaritySelection(SelectionBase):
                             bins[tuple(point_bin)].append(index)
                     else:
                         new_bins = {}
-                        for bin_idx in bins:
-                            axis_min = min(array[bins[bin_idx], i])
-                            axis_max = max(array[bins[bin_idx], i])
+                        for bin_idx, bin_list in bins.items():
+                            axis_min = min(array[bin_list, i])
+                            axis_max = max(array[bin_list, i])
                             cell_length = (axis_max - axis_min) / cells
                             axis_info = [axis_min, axis_max, cell_length]
 
-                            for point_idx in bins[bin_idx]:
+                            for point_idx in bin_list:
                                 point_bin = [num for num in bin_idx]
                                 if array[point_idx][i] == axis_info[0]:
                                     index_bin = 0
@@ -276,12 +276,12 @@ class DissimilaritySelection(SelectionBase):
                 raise ValueError(f"{grid_method} not a valid method")
 
             old_len = 0
-            rng = np.random.default_rng(seed=42)
+            rng = np.random.default_rng(seed=self.random_seed)
             while len(selected) < n_selected:
-                for bin_idx in bins:
-                    if len(bins[bin_idx]) > 0:
-                        random_int = rng.integers(low=0, high=len(bins[bin_idx]), size=1)[0]
-                        mol_id = bins[bin_idx].pop(random_int)
+                for bin_idx, bin_list in bins.items():
+                    if len(bin_list) > 0:
+                        random_int = rng.integers(low=0, high=len(bin_list), size=1)[0]
+                        mol_id = bin_list.pop(random_int)
                         selected.append(mol_id)
 
                 if len(selected) == old_len:
@@ -331,8 +331,8 @@ class DissimilaritySelection(SelectionBase):
                     data_point = self.features[idx]
                     selected_point = self.features[selected_idx]
                     distance_sq = 0
-                    for i in range(len(data_point)):
-                        distance_sq += (selected_point[i] - data_point[i]) ** 2
+                    for i, point in enumerate(data_point):
+                        distance_sq += (selected_point[i] - point) ** 2
                     distances.append(np.sqrt(distance_sq))
                 min_dist = min(distances)
                 if min_dist > s_max:
