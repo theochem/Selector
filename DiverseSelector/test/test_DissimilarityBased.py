@@ -29,29 +29,84 @@ from DiverseSelector import DissimilaritySelection
 from DiverseSelector.test.common import generate_synthetic_data
 from numpy.testing import assert_equal
 
+coords, class_labels, arr_dist = generate_synthetic_data(n_samples=100,
+                                                         n_features=2,
+                                                         n_clusters=1,
+                                                         pairwise_dist=True,
+                                                         metric="euclidean",
+                                                         random_state=42)
 
-def test_minmax_selector_3_100():
-    """Testing the MinMax selection algorithm with predefined starting point."""
-    # in the function name:
-    # 3 means that the number of clusters is 3
-    # 100 means that the number of total data pints is 100
-    _, class_labels, arr_dist = generate_synthetic_data(n_samples=100,
-                                                        n_features=2,
-                                                        n_clusters=3,
-                                                        pairwise_dist=True,
-                                                        metric="euclidean",
-                                                        random_state=42)
-    model = DissimilaritySelection(num_selected=12,
+def test_brutestrength_maxmin():
+    """Testing brutestrength algorithm with maxmin."""
+    selector = DissimilaritySelection(num_selected=12,
                                    arr_dist=arr_dist,
                                    random_seed=42)
-    model.starting_idx = 0
-    selected = model.select()
+    selector.starting_idx = 0
+    selector.features = coords
+    selected_ids = selector.select()
 
     # make sure all the selected indices are the same with expectation
-    assert_equal([0, 94, 3, 50, 64, 85, 93, 83, 34, 59, 49, 72], selected)
+    assert_equal([0, 57, 95, 41, 67, 26, 3, 16, 12, 6, 62, 48], selected_ids)
 
-    # make sure number of selected molecules is correct in reach cluster
-    selected_labels_count = Counter(class_labels[selected])
-    assert_equal(selected_labels_count[0], 4)
-    assert_equal(selected_labels_count[1], 4)
-    assert_equal(selected_labels_count[2], 4)
+def test_brutestrength_maxsum():
+    """Testing brutestrength algorithm with maxsum."""
+    selector = DissimilaritySelection(num_selected=12,
+                                   arr_dist=arr_dist,
+                                   random_seed=42,
+                                   method="maxsum")
+    selector.starting_idx = 0
+    selector.features = coords
+    selected_ids = selector.select()
+
+    # make sure all the selected indices are the same with expectation
+    assert_equal([0, 57, 25, 41, 95, 9, 8, 21, 13, 68, 37, 54], selected_ids)
+
+def test_gridpartitioning_equisized_independent():
+    """Testing gridpartitioning algorithm with equisized independent partitioning method."""
+    selector = DissimilaritySelection(num_selected=12,
+                                   arr_dist=arr_dist,
+                                   random_seed=42)
+    selector.starting_idx = 0
+    selector.features = coords
+    selected_ids = selector.select("gridpartitioning")
+
+    # make sure all the selected indices are the same with expectation
+    assert_equal([15, 87, 70, 66, 49, 68, 8, 22, 10, 13, 19, 44, 76, 72, 25, 84, 73, 57, 65, 86], selected_ids)
+
+def test_gridpartitioning_equisized_dependent():
+    """Testing gridpartitioning algorithm with equisized dependent partitioning method."""
+    selector = DissimilaritySelection(num_selected=12,
+                                   arr_dist=arr_dist,
+                                   random_seed=42,
+                                   grid_method="equisized_dependent")
+    selector.starting_idx = 0
+    selector.features = coords
+    selected_ids = selector.select("gridpartitioning")
+
+    # make sure all the selected indices are the same with expectation
+    assert_equal([0, 87, 68, 59, 50, 79, 4, 41, 30, 33, 71, 98, 73, 80, 65, 19, 10, 25, 55, 54, 37, 57, 86],
+                 selected_ids)
+
+def test_sphereexclusion():
+    """Testing sphereexclusion algorithm."""
+    selector = DissimilaritySelection(num_selected=12,
+                                   arr_dist=arr_dist,
+                                   random_seed=42)
+    selector.starting_idx = 0
+    selector.features = coords
+    selected_ids = selector.select("sphereexclusion")
+
+    # make sure all the selected indices are the same with expectation
+    assert_equal([17, 31, 90, 6, 12, 76, 26, 81, 2, 14, 57], selected_ids)
+
+def test_optisim():
+    """Testing optisim algorithm."""
+    selector = DissimilaritySelection(num_selected=12,
+                                      arr_dist=arr_dist,
+                                      random_seed=42)
+    selector.starting_idx = 0
+    selector.features = coords
+    selected_ids = selector.select("optisim")
+
+    # make sure all the selected indices are the same with expectation
+    assert_equal([0, 13, 21, 9, 8, 18, 57, 39, 65, 25], selected_ids)
