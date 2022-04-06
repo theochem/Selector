@@ -24,7 +24,7 @@
 """Dissimilarity based diversity subset selection."""
 
 from DiverseSelector.base import SelectionBase
-from DiverseSelector.metric import pairwise_dist
+from DiverseSelector.metric import ComputeDistanceMatrix
 import numpy as np
 
 __all__ = [
@@ -62,8 +62,9 @@ class DissimilaritySelection(SelectionBase):
         # todo: current version only works for molecular descriptors
         # pair-wise distance matrix
         if self.arr_dist is None:
-            arr_dist_init = pairwise_dist(feature=self.features_norm,
-                                          metric="euclidean")
+            dist_1 = ComputeDistanceMatrix(feature=self.features_norm,
+                                           metric="euclidean")
+            arr_dist_init = dist_1.compute_distance()
 
         # use the molecule with maximum distance to initial medoid as  the starting molecule
         if self.initialization.lower() == "medoid":
