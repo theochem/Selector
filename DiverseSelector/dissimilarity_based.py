@@ -54,7 +54,7 @@ class DissimilaritySelection(SelectionBase):
                  grid_method="equisized_independent",
                  **kwargs,
                  ):
-        """DissimilaritySelection Class initialization.
+        """Initialization method for DissimilaritySelection class.
 
         Parameters
         ----------
@@ -129,7 +129,7 @@ class DissimilaritySelection(SelectionBase):
 
         Returns
         -------
-
+        Chosen dissimilarity function.
         """
         def brutestrength(selected=None, n_selected=self.num_selected, method=self.method):
             """Brute Strength dissimilarity algorithm with maxmin and maxsum methods.
@@ -142,7 +142,7 @@ class DissimilaritySelection(SelectionBase):
 
             Returns
             -------
-
+            Selected molecules.
             """
             if selected is None:
                 selected = [self.starting_idx]
@@ -177,10 +177,10 @@ class DissimilaritySelection(SelectionBase):
             else:
                 raise ValueError(f"Method {method} not supported, choose maxmin or maxsum.")
 
-        def gridpartitioning(selected=None, n_selected=self.num_selected, cells=self.cells, max_dim=self.max_dim,
-                             array=self.features, grid_method=self.grid_method):
-            """Grid partitioning dissimilarity algorithm with equifrequent/equisized and independent/dependent grid
-            partitioning methods.
+        def gridpartitioning(selected=None, n_selected=self.num_selected, cells=self.cells,
+                             max_dim=self.max_dim, array=self.features,
+                             grid_method=self.grid_method):
+            """Grid partitioning dissimilarity algorithm with various grid partitioning methods.
 
             Parameters
             ----------
@@ -193,7 +193,7 @@ class DissimilaritySelection(SelectionBase):
 
             Returns
             -------
-
+            Selected molecules.
             """
             if selected is None:
                 selected = []
@@ -203,8 +203,9 @@ class DissimilaritySelection(SelectionBase):
             if data_dim > max_dim:
                 norm_data = StandardScaler().fit_transform(array)
                 pca = PCA(n_components=max_dim)
-                principalComponents = pca.fit_transform(norm_data)
-                return gridpartitioning(selected, n_selected, cells, max_dim, principalComponents, grid_method)
+                principalcomponents = pca.fit_transform(norm_data)
+                return gridpartitioning(selected, n_selected, cells, max_dim,
+                                        principalcomponents, grid_method)
 
             if grid_method == "equisized_independent":
                 axis_info = []
@@ -248,7 +249,8 @@ class DissimilaritySelection(SelectionBase):
                     else:
                         new_bins = {}
                         for bin_idx in bins:
-                            axis_min, axis_max = min(array[bins[bin_idx], i]), max(array[bins[bin_idx], i])
+                            axis_min = min(array[bins[bin_idx], i])
+                            axis_max = max(array[bins[bin_idx], i])
                             cell_length = (axis_max - axis_min) / cells
                             axis_info = [axis_min, axis_max, cell_length]
 
@@ -259,16 +261,17 @@ class DissimilaritySelection(SelectionBase):
                                 elif array[point_idx][i] == axis_info[1]:
                                     index_bin = cells - 1
                                 else:
-                                    index_bin = int((array[point_idx][i] - axis_info[0]) // axis_info[2])
+                                    index_bin = int((array[point_idx][i] - axis_info[0]) //
+                                                    axis_info[2])
                                 point_bin.append(index_bin)
                                 new_bins.setdefault(tuple(point_bin), [])
                                 new_bins[tuple(point_bin)].append(point_idx)
                         bins = new_bins
 
             elif grid_method == "equifrequent_independent":
-                raise NotImplemented(f"{grid_method} not implemented.")
+                raise NotImplementedError(f"{grid_method} not implemented.")
             elif grid_method == "equifrequent_dependent":
-                raise NotImplemented(f"{grid_method} not implemented.")
+                raise NotImplementedError(f"{grid_method} not implemented.")
             else:
                 raise ValueError(f"{grid_method} not a valid method")
 
@@ -277,7 +280,8 @@ class DissimilaritySelection(SelectionBase):
             while len(selected) < n_selected:
                 for bin_idx in bins:
                     if len(bins[bin_idx]) > 0:
-                        mol_id = bins[bin_idx].pop(rng.integers(low=0, high=len(bins[bin_idx]), size=1)[0])
+                        random_int = rng.integers(low=0, high=len(bins[bin_idx]), size=1)[0]
+                        mol_id = bins[bin_idx].pop(random_int)
                         selected.append(mol_id)
 
                 if len(selected) == old_len:
@@ -297,7 +301,7 @@ class DissimilaritySelection(SelectionBase):
 
             Returns
             -------
-
+            Selected molecules.
             """
             if selected is None:
                 selected = []
@@ -352,7 +356,7 @@ class DissimilaritySelection(SelectionBase):
 
             Returns
             -------
-
+            Selected molecules.
             """
             if selected is None:
                 selected = [self.starting_idx]
