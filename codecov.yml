@@ -29,6 +29,7 @@ coverage:
     - .*/_version.py
     - "test_*.rb" # wildcards accepted
     - .*/data/.*
+    - .*/versioneer.py
     # - "**/*.pyc"         # glob accepted
 
 comment:
