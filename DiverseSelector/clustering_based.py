@@ -23,12 +23,24 @@
 
 """Clustering based compound selection."""
 
-from DiverseSelector.base import SelectionBase
-from DiverseSelector.feature import get_features
+from pathlib import PurePath
+from typing import Union
+
 import numpy as np
-from sklearn.cluster import AffinityPropagation, AgglomerativeClustering, Birch, DBSCAN, KMeans,\
-    MeanShift, OPTICS, SpectralClustering
+from sklearn.cluster import (AffinityPropagation,
+                             AgglomerativeClustering,
+                             Birch,
+                             DBSCAN,
+                             KMeans,
+                             MeanShift,
+                             OPTICS,
+                             SpectralClustering,
+                             )
+from DiverseSelector.base import SelectionBase
+from DiverseSelector.feature import compute_features
+from DiverseSelector.utils import PandasDataFrame
 from sklearn.mixture import GaussianMixture
+
 
 __all__ = [
     "ClusteringSelection",
@@ -41,29 +53,39 @@ class ClusteringSelection(SelectionBase):
     def __init__(self,
                  num_selected,
                  num_clusters,
+                 feature: Union[np.ndarray, PandasDataFrame, str, PurePath] = None,
+                 arr_dist: np.ndarray = None,
+                 normalize_features: bool = False,
+                 sep: str = ",",
+                 engine: str = "python",
                  clustering_method="k-means",
-                 metric="Tanimoto",
                  feature_file=None,
-                 feature_type=None,
-                 mol_file=None,
                  output=None,
-                 random_seed=None,
-                 arr_dist=None,
+                 random_seed: int = 42,
                  **kwargs
                  ):
         """Base class for clustering based subset selection."""
-        super().__init__(metric, random_seed, feature_type, mol_file, feature_file, num_selected)
-        self.arr_dist = arr_dist
+        #                  normalize_features: bool = False,
+        #                  sep: str = ",",
+        #                  engine: str = "python",
+        #                  random_seed: int = 42,
+
+        super().__init__(feature,
+                         arr_dist,
+                         num_selected,
+                         normalize_features,
+                         sep,
+                         engine,
+                         random_seed)
         self.num_selected = num_selected
         self.num_clusters = num_clusters
 
         # the number of molecules equals the number of clusters
         self.clustering_method = clustering_method
-        self.metric = metric
         self.feature_file = feature_file
         self.output = output
         if arr_dist is None:
-            self.features = get_features(feature_file)
+            self.features = compute_features(feature_file)
         self.arr_dist = arr_dist
         self.labels = None
 
@@ -148,7 +170,7 @@ class ClusteringSelection(SelectionBase):
 
         """
         unique_labels = np.unique(self.labels)
-        n = self.num_selected//self.num_clusters
+        n = self.num_selected // self.num_clusters
 
         selected_all = []
         for unique_label in unique_labels:

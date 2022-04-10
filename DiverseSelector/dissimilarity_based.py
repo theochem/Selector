@@ -22,9 +22,11 @@
 # --
 
 """Dissimilarity based diversity subset selection."""
+from pathlib import PurePath
+from typing import Union
 
 from DiverseSelector.base import SelectionBase
-from DiverseSelector.metric import ComputeDistanceMatrix
+from DiverseSelector.utils import PandasDataFrame
 import numpy as np
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
@@ -38,14 +40,14 @@ class DissimilaritySelection(SelectionBase):
     """Dissimilarity based diversity subset selection."""
 
     def __init__(self,
+                 feature: Union[np.ndarray, PandasDataFrame, str, PurePath] = None,
+                 arr_dist: np.ndarray = None,
+                 normalize_features: bool = False,
+                 sep: str = ",",
+                 engine: str = "python",
                  initialization="medoid",
-                 metric="Tanimoto",
                  random_seed=42,
-                 feature_type=None,
-                 mol_file=None,
-                 feature_file=None,
-                 num_selected=None,
-                 arr_dist=None,
+                 num_selected: int = None,
                  method="maxmin",
                  r=1,
                  k=10,
@@ -74,7 +76,16 @@ class DissimilaritySelection(SelectionBase):
         grid_method
         kwargs
         """
-        super().__init__(metric, random_seed, feature_type, mol_file, feature_file, num_selected)
+
+        super().__init__(feature,
+                         arr_dist,
+                         num_selected,
+                         normalize_features,
+                         sep,
+                         engine,
+                         random_seed,
+                         **kwargs,
+                         )
         self.initialization = initialization
         self.arr_dist = arr_dist
         self.method = method
@@ -91,12 +102,6 @@ class DissimilaritySelection(SelectionBase):
 
     def pick_initial_compounds(self):
         """Pick the initial compounds."""
-        # todo: current version only works for molecular descriptors
-        # pair-wise distance matrix
-        if self.arr_dist is None:
-            dist_1 = ComputeDistanceMatrix(feature=self.features_norm,
-                                           metric="euclidean")
-            arr_dist_init = dist_1.compute_distance()
 
         # use the molecule with maximum distance to initial medoid as  the starting molecule
         if self.initialization.lower() == "medoid":

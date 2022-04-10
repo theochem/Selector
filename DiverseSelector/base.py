@@ -24,8 +24,13 @@
 """Base class for diversity based subset selection."""
 
 from abc import ABC, abstractmethod
+from pathlib import PurePath
+from typing import Union
 
-from DiverseSelector.feature import get_features
+from DiverseSelector.feature import feature_reader
+from DiverseSelector.metric import ComputeDistanceMatrix
+from DiverseSelector.utils import PandasDataFrame
+import numpy as np
 from sklearn.preprocessing import StandardScaler
 
 
@@ -33,14 +38,13 @@ class SelectionBase(ABC):
     """Base class for subset selection."""
 
     def __init__(self,
-                 metric: str = "Tanimoto",
-                 random_seed: int = 42,
-                 feature_type: str = None,
-                 mol_file: str = None,
-                 feature_file: str = None,
-                 num_selected: str = None,
+                 feature: Union[np.ndarray, PandasDataFrame, str, PurePath] = None,
+                 arr_dist: np.array = None,
+                 num_selected: int = None,
                  normalize_features: bool = False,
-                 arr_dist=None,
+                 sep: str = ",",
+                 engine: str = "python",
+                 random_seed: int = 42,
                  **kwargs,
                  ):
         """Abstract class for other modules.
@@ -66,16 +70,30 @@ class SelectionBase(ABC):
             Array of distances between molecules. Default=None.
 
         """
-        self.metric = metric
-        self.random_seed = random_seed
-        self.feature_type = feature_type
-        self.mol_file = mol_file
-        self.feature_file = feature_file
         self.num_selected = num_selected
         self.normalize_features = normalize_features
         self.arr_dist = arr_dist
-        if arr_dist is not None:
-            self.features = self.load_data(**kwargs)
+        self.random_seed = random_seed
+
+        # feature loader if string is
+        # accepts string or pure path object
+        if isinstance(feature, (str, PurePath)):
+            self.feature = feature_reader(file_name=feature,
+                                          sep=sep,
+                                          engine=engine,
+                                          **kwargs)
+        else:
+            self.feature = feature
+        # normalize features
+        if normalize_features:
+            self.features = StandardScaler().fit_transform(self.feature)
+
+        # todo: current version only works for molecular descriptors
+        # pair-wise distance matrix
+        if arr_dist is None:
+            dist = ComputeDistanceMatrix(feature=self.features,
+                                         metric="euclidean")
+            self.arr_dist = dist.compute_distance()
 
     # abstract method, because we want in to be in both child classes
     @abstractmethod
@@ -108,18 +126,6 @@ class SelectionBase(ABC):
         """
         # todo: need to implement diversity measurement here
         pass
-
-    def load_data(self, **kwargs):
-        """Load dataset."""
-        self.features = get_features(feature_type=self.feature_type,
-                                     mol_file=self.mol_file,
-                                     feature_file=self.feature_file,
-                                     **kwargs)
-        # normalize the features when needed
-        if self.normalize_features:
-            self.features = StandardScaler().fit_transform(self.features)
-
-        return self.features
 
     def save_output(self):
         """Save output.
