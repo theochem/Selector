@@ -26,16 +26,15 @@ import os
 import sys
 from typing import Any
 
+from DiverseSelector.utils import ExplicitBitVector, mol_loader, PandasDataFrame, RDKitMol
+from mordred import Calculator, descriptors
 import numpy as np
 import pandas as pd
-from mordred import Calculator, descriptors
 # from padelpy import from_sdf
 from padelpy import padeldescriptor
 from rdkit import Chem
 from rdkit.Chem import AllChem, Descriptors, MACCSkeys, rdMHFPFingerprint
 from sklearn.preprocessing import StandardScaler
-
-from DiverseSelector.utils import ExplicitBitVector, mol_loader, PandasDataFrame, RDKitMol
 
 __all__ = [
     "DescriptorGenerator",
