@@ -172,7 +172,7 @@ class DescriptorGenerator:
             raise ValueError("Attention: a mol_file is required for padel descriptor calculations.")
 
         csv_fname = str(os.path.basename(mol_file)).split(".", maxsplit=1)[0] + \
-                    "padel_descriptors.csv"
+            "padel_descriptors.csv"
 
         padeldescriptor(mol_dir=mol_file,
                         d_file=csv_fname,
