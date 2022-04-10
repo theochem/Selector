@@ -28,7 +28,7 @@ from typing import Any
 from DiverseSelector.utils import sklearn_supported_metrics
 import numpy as np
 import rdkit
-from rdkit.Chem import MCS
+from rdkit.Chem import rdFMCS
 from scipy.spatial.distance import euclidean, squareform
 from sklearn.metrics import pairwise_distances
 
@@ -85,7 +85,6 @@ class ComputeDistanceMatrix:
         built_in_metrics = [
             "tanimoto",
             "modified_tanimoto",
-
         ]
 
         if self.metric in sklearn_supported_metrics:
@@ -100,6 +99,8 @@ class ComputeDistanceMatrix:
         elif self.metric in built_in_metrics:
             func = self._select_function(self.metric)
             dist = func(self.feature)
+        else:
+            raise ValueError(f"Metric {self.metric} is not supported by the library.")
 
         return dist
 
@@ -348,7 +349,7 @@ def explicit_diversity_index(x: np.ndarray, mol: rdkit.Chem.rdchem.Mol) -> float
     edi_scaled : float
         Explicit diversity index.
     """
-    cs = len(MCS.FindMCS(mol))
+    cs = len(rdFMCS.FindMCS(mol))
     nc = len(x)
     sdi = (1 - nearest_average_tanimoto(x)) / (0.8047 - (0.065 * (np.log(nc))))
     cr = -1 * np.log10(nc / (cs ** 2))
