@@ -40,7 +40,7 @@ class DissimilaritySelection(SelectionBase):
     """Dissimilarity based diversity subset selection."""
 
     def __init__(self,
-                 feature: Union[np.ndarray, PandasDataFrame, str, PurePath] = None,
+                 features: Union[np.ndarray, PandasDataFrame, str, PurePath] = None,
                  arr_dist: np.ndarray = None,
                  normalize_features: bool = False,
                  sep: str = ",",
@@ -77,7 +77,7 @@ class DissimilaritySelection(SelectionBase):
         kwargs
         """
 
-        super().__init__(feature,
+        super().__init__(features,
                          arr_dist,
                          num_selected,
                          normalize_features,
@@ -98,7 +98,7 @@ class DissimilaritySelection(SelectionBase):
         self.__dict__.update(kwargs)
 
         # the initial compound index
-        self.arr_dist, self.starting_idx = self.pick_initial_compounds()
+        self.starting_idx = self.pick_initial_compounds()
 
     def pick_initial_compounds(self):
         """Pick the initial compounds."""
@@ -111,14 +111,14 @@ class DissimilaritySelection(SelectionBase):
             medoid_idx = np.argmin(self.arr_dist.sum(axis=0))
             # selected molecule with maximum distance to medoid
             starting_idx = np.argmax(self.arr_dist[medoid_idx, :])
-            arr_dist_init = self.arr_dist
 
         elif self.initialization.lower() == "random":
             rng = np.random.default_rng(seed=self.random_seed)
             starting_idx = rng.choice(np.arange(self.features.shape[0]), 1)
-            arr_dist_init = self.arr_dist
+        else:
+            raise ValueError(f"Initialization method {self.initialization} is not supported.")
 
-        return arr_dist_init, starting_idx
+        return starting_idx
 
     def compute_diversity(self):
         """Compute the distance metrics."""
