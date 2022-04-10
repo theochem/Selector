@@ -38,7 +38,7 @@ class SelectionBase(ABC):
     """Base class for subset selection."""
 
     def __init__(self,
-                 feature: Union[np.ndarray, PandasDataFrame, str, PurePath] = None,
+                 features: Union[np.ndarray, PandasDataFrame, str, PurePath] = None,
                  arr_dist: np.array = None,
                  num_selected: int = None,
                  normalize_features: bool = False,
@@ -72,21 +72,21 @@ class SelectionBase(ABC):
         """
         self.num_selected = num_selected
         self.normalize_features = normalize_features
-        self.arr_dist = arr_dist
         self.random_seed = random_seed
 
         # feature loader if string is
         # accepts string or pure path object
-        if isinstance(feature, (str, PurePath)):
-            self.feature = feature_reader(file_name=feature,
-                                          sep=sep,
-                                          engine=engine,
-                                          **kwargs)
+        if features is not None:
+            if isinstance(features, (str, PurePath)) and features is not None:
+                self.features = feature_reader(file_name=features,
+                                               sep=sep,
+                                               engine=engine,
+                                               **kwargs)
+            # normalize features
+            if normalize_features:
+                self.features = StandardScaler().fit_transform(self.features)
         else:
-            self.feature = feature
-        # normalize features
-        if normalize_features:
-            self.features = StandardScaler().fit_transform(self.feature)
+            self.features = features
 
         # todo: current version only works for molecular descriptors
         # pair-wise distance matrix
@@ -94,6 +94,8 @@ class SelectionBase(ABC):
             dist = ComputeDistanceMatrix(feature=self.features,
                                          metric="euclidean")
             self.arr_dist = dist.compute_distance()
+        else:
+            self.arr_dist = arr_dist
 
     # abstract method, because we want in to be in both child classes
     @abstractmethod
