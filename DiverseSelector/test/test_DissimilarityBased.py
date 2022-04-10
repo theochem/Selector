@@ -35,14 +35,14 @@ coords, class_labels, arr_dist = generate_synthetic_data(n_samples=100,
                                                          random_state=42)
 
 
-def test_brutestrength_maxmin():
+def test_brute_strength_maxmin():
     """Testing brutestrength algorithm with maxmin."""
     selector = DissimilaritySelection(num_selected=12,
                                       arr_dist=arr_dist,
                                       random_seed=42)
     selector.starting_idx = 0
     selector.features = coords
-    selected_ids = selector.select()
+    selected_ids = selector.select("brute_strength")
 
     # make sure all the selected indices are the same with expectation
     assert_equal([0, 57, 95, 41, 67, 26, 3, 16, 12, 6, 62, 48], selected_ids)
@@ -69,7 +69,7 @@ def test_gridpartitioning_equisized_independent():
                                       random_seed=42)
     selector.starting_idx = 0
     selector.features = coords
-    selected_ids = selector.select("gridpartitioning")
+    selected_ids = selector.select("grid_partitioning")
 
     # make sure all the selected indices are the same with expectation
     assert_equal([15, 87, 70, 66, 49, 68, 8, 22, 10, 13,
@@ -84,7 +84,7 @@ def test_gridpartitioning_equisized_dependent():
                                       grid_method="equisized_dependent")
     selector.starting_idx = 0
     selector.features = coords
-    selected_ids = selector.select("gridpartitioning")
+    selected_ids = selector.select("grid_partitioning")
 
     # make sure all the selected indices are the same with expectation
     assert_equal([0, 87, 68, 59, 50, 79, 4, 41, 30, 33, 71,
@@ -98,7 +98,7 @@ def test_sphereexclusion():
                                       random_seed=42)
     selector.starting_idx = 0
     selector.features = coords
-    selected_ids = selector.select("sphereexclusion")
+    selected_ids = selector.select("sphere_exclusion")
 
     # make sure all the selected indices are the same with expectation
     assert_equal([17, 31, 90, 6, 12, 76, 26, 81, 2, 14, 57], selected_ids)
