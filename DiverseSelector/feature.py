@@ -29,9 +29,9 @@ from typing import Any
 from DiverseSelector.utils import ExplicitBitVector, mol_loader, PandasDataFrame, RDKitMol
 from mordred import Calculator, descriptors
 import numpy as np
+from padelpy import padeldescriptor
 import pandas as pd
 # from padelpy import from_sdf
-from padelpy import padeldescriptor
 from rdkit import Chem
 from rdkit.Chem import AllChem, Descriptors, MACCSkeys, rdMHFPFingerprint
 from sklearn.preprocessing import StandardScaler
@@ -171,7 +171,8 @@ class DescriptorGenerator:
         if mol_file is None:
             raise ValueError("Attention: a mol_file is required for padel descriptor calculations.")
 
-        csv_fname = str(os.path.basename(mol_file)).split(".")[0] + "padel_descriptors.csv"
+        csv_fname = str(os.path.basename(mol_file)).split(".", maxsplit=1)[0] + \
+                    "padel_descriptors.csv"
 
         padeldescriptor(mol_dir=mol_file,
                         d_file=csv_fname,
@@ -688,7 +689,7 @@ def compute_features(mol_file: str,
 
     # save features to output file
     if feature_output is None:
-        feature_output = str(os.path.basename(mol_file)).split(".")[0] + "_features.csv"
+        feature_output = str(os.path.basename(mol_file)).split(".", maxsplit=1)[0] + "_features.csv"
     df_features_valid.to_csv(feature_output, sep=sep, index=False)
 
     return df_features_valid
