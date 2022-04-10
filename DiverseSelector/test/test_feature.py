@@ -29,9 +29,9 @@ from DiverseSelector.feature import (compute_features,
                                      FingerprintGenerator,
                                      )
 from DiverseSelector.test.common import load_testing_mols
+from numpy.testing import assert_almost_equal, assert_equal
 import pandas as pd
 import pytest
-from numpy.testing import assert_almost_equal, assert_equal
 
 try:
     from importlib_resources import path

@@ -26,6 +26,9 @@
 from pathlib import PurePath
 from typing import Union
 
+from DiverseSelector.base import SelectionBase
+from DiverseSelector.feature import compute_features
+from DiverseSelector.utils import PandasDataFrame
 import numpy as np
 from sklearn.cluster import (AffinityPropagation,
                              AgglomerativeClustering,
@@ -36,9 +39,6 @@ from sklearn.cluster import (AffinityPropagation,
                              OPTICS,
                              SpectralClustering,
                              )
-from DiverseSelector.base import SelectionBase
-from DiverseSelector.feature import compute_features
-from DiverseSelector.utils import PandasDataFrame
 from sklearn.mixture import GaussianMixture
 
 
