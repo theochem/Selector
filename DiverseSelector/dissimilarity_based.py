@@ -41,8 +41,8 @@ class DissimilaritySelection(SelectionBase):
     """Dissimilarity based diversity subset selection."""
 
     def __init__(self,
-                 features: Union[np.ndarr_features, PandasDataFrame, str, PurePath] = None,
-                 arr_dist: np.ndarr_features = None,
+                 features: Union[np.ndarray, PandasDataFrame, str, PurePath] = None,
+                 arr_dist: np.ndarray = None,
                  normalize_features: bool = False,
                  sep: str = ",",
                  engine: str = "python",

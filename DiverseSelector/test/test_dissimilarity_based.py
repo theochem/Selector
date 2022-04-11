@@ -72,7 +72,7 @@ def test_brute_strength_maxsum():
 def test_grid_partitioning_equisized_independent():
     """Testing grid_partitioning algorithm with equisized independent partitioning method."""
     selector = DissimilaritySelection(num_selected=12,
-                                      arr_dist=arr_dist,
+                                      features=arr_dist,
                                       dissim_func="grid_partitioning",
                                       random_seed=42)
     selector.starting_idx = 0
@@ -87,7 +87,7 @@ def test_grid_partitioning_equisized_independent():
 def test_grid_partitioning_equisized_dependent():
     """Testing grid_partitioning algorithm with equisized dependent partitioning method."""
     selector = DissimilaritySelection(num_selected=12,
-                                      arr_dist=arr_dist,
+                                      features=coords,
                                       random_seed=42,
                                       dissim_func="grid_partitioning",
                                       grid_method="equisized_dependent")
@@ -103,7 +103,7 @@ def test_grid_partitioning_equisized_dependent():
 def test_sphere_exclusion():
     """Testing sphereexclusion algorithm."""
     selector = DissimilaritySelection(num_selected=12,
-                                      arr_dist=arr_dist,
+                                      features=coords,
                                       dissim_func="sphere_exclusion",
                                       random_seed=42)
     selector.starting_idx = 0
@@ -117,7 +117,7 @@ def test_sphere_exclusion():
 def test_optisim():
     """Testing optisim algorithm."""
     selector = DissimilaritySelection(num_selected=12,
-                                      arr_dist=arr_dist,
+                                      features=coords,
                                       dissim_func="optisim",
                                       random_seed=42)
     selector.starting_idx = 0
