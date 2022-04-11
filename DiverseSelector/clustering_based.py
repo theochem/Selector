@@ -86,7 +86,6 @@ class ClusteringSelection(SelectionBase):
         self.output = output
         if arr_dist is None:
             self.features = compute_features(feature_file)
-        self.arr_dist = arr_dist
         self.labels = None
 
         if random_seed is None:
