@@ -34,14 +34,17 @@ coords, class_labels, arr_dist = generate_synthetic_data(n_samples=100,
                                                          metric="euclidean",
                                                          random_state=42)
 
+# todo: test the algorithm with feature matrix and distance matrix both
+
 
 def test_brute_strength_maxmin():
-    """Testing brutestrength algorithm with maxmin."""
-    selector = DissimilaritySelection(num_selected=12,
+    """Testing brute_strength algorithm with maxmin."""
+    selector = DissimilaritySelection(features=None,
                                       arr_dist=arr_dist,
+                                      num_selected=12,
+                                      brute_strength_type="maxmin",
                                       random_seed=42)
     selector.starting_idx = 0
-    selector.features = coords
     selected_ids = selector.select("brute_strength")
 
     # make sure all the selected indices are the same with expectation
@@ -50,10 +53,12 @@ def test_brute_strength_maxmin():
 
 def test_brutestrength_maxsum():
     """Testing brutestrength algorithm with maxsum."""
-    selector = DissimilaritySelection(num_selected=12,
+    selector = DissimilaritySelection(features=None,
                                       arr_dist=arr_dist,
+                                      num_selected=12,
+                                      brute_strength_type="maxsum",
                                       random_seed=42,
-                                      method="maxsum")
+                                      )
     selector.starting_idx = 0
     selector.features = coords
     selected_ids = selector.select()
