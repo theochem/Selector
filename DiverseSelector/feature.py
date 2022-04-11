@@ -26,20 +26,22 @@ import os
 import sys
 from typing import Any
 
-from DiverseSelector.utils import ExplicitBitVector, mol_reader, PandasDataFrame, RDKitMol
+from DiverseSelector.utils import ExplicitBitVector, mol_loader, PandasDataFrame, RDKitMol
 from mordred import Calculator, descriptors
 import numpy as np
-# from padelpy import from_sdf
 from padelpy import padeldescriptor
 import pandas as pd
+# from padelpy import from_sdf
 from rdkit import Chem
 from rdkit.Chem import AllChem, Descriptors, MACCSkeys, rdMHFPFingerprint
+from sklearn.preprocessing import StandardScaler
 
 __all__ = [
     "DescriptorGenerator",
     "FingerprintGenerator",
     "feature_filtering",
-    "get_features",
+    "feature_reader",
+    "compute_features",
 ]
 
 cwd = os.path.dirname(os.path.abspath(__file__))
@@ -86,13 +88,13 @@ class DescriptorGenerator:
                            ) -> PandasDataFrame:
         """Molecule descriptor generation."""
         if self.desc_type.lower() == "mordred":
-            df_features = self.mordred_descriptors(self.mols, **kwargs)
+            df_features = self.mordred_descriptors(mols=self.mols, **kwargs)
         elif self.desc_type.lower() == "padel":
             df_features = self.padelpy_descriptors(mol_file=self.mol_file,
                                                    keep_csv=False,
                                                    **kwargs)
         elif self.desc_type.lower() == "rdkit":
-            df_features = self.rdkit_descriptors(self.mols,
+            df_features = self.rdkit_descriptors(mols=self.mols,
                                                  use_fragment=self.use_fragment,
                                                  ipc_avg=self.ipc_avg,
                                                  **kwargs)
@@ -166,7 +168,12 @@ class DescriptorGenerator:
         # # delete temporary file
         # os.remove("padelpy_out_tmp.sdf")
 
-        csv_fname = os.path.basename(mol_file).split(".")[0] + "padel_descriptors.csv"
+        if mol_file is None:
+            raise ValueError("Attention: a mol_file is required for padel descriptor calculations.")
+
+        csv_fname = str(os.path.basename(mol_file)).split(".", maxsplit=1)[0] + \
+            "padel_descriptors.csv"
+
         padeldescriptor(mol_dir=mol_file,
                         d_file=csv_fname,
                         d_2d=True,
@@ -581,62 +588,108 @@ def feature_reader(file_name: str,
     return df
 
 
-def get_features(sep: str = ",",
-                 engine: str = "python",
-                 feature_type: str = None,
-                 mol_file: str = None,
-                 feature_file: str = None,
-                 **kwargs,
-                 ) -> PandasDataFrame:
+def compute_features(mol_file: str,
+                     feature_name: str = "padel",
+                     sep: str = ",",
+                     n_bits: int = 2048,
+                     radius: int = 3,
+                     min_radius: int = 1,
+                     random_seed: int = 12345,
+                     rings: bool = True,
+                     isomeric: bool = True,
+                     kekulize: bool = False,
+                     use_fragment: bool = True,
+                     ipc_avg: bool = True,
+                     normalize_features: bool = False,
+                     feature_output: str = None,
+                     **kwargs,
+                     ) -> PandasDataFrame:
     """Compute molecular features.
 
     Parameters
     ----------
+    mol_file : str
+        SDF file name that provides molecules. Default=None.
+    feature_name : str, optional
+        Name of the feature to compute where "mordred", "padel", "rdkit", "rdkit_frag" denote
+        molecular descriptors and "SECFP", "ECFP", "MORGAN", "RDKFINGERPRINT", "MACCSKEYS" denote
+        molecular fingerprints. It is case insensitive. Default="padel".
     sep : str, optional
-        Separator used for parsing feature file if text stle file provided. Default=",".
-    engine : str, optional
-        Separator used for parsing feature file with `pandas`. Default="python".
-    feature_type : str, optional
-        Feature type: "descriptor" or "fingerprint". Default=None.
-    mol_file : str, optional
-        Molecule file name. Default=None.
-    feature_file : str, optional
-        Feature file name. Default=None.
+        Separator use for CSV like files. Default=",".
+    n_bits : int, optional
+        Number of bits to use for fingerprint. Default=2048.
+    radius : int, optional
+        Radius of the fingerprint. Default=3.
+    min_radius : int, optional
+        Minimum radius of the fingerprint. Default=1.
+    random_seed : int, optional
+        Random seed for the random number generator. Default=12345.
+    rings : bool, optional
+        Whether the rings (SSSR) are extracted from the molecule and added to the shingling.
+        Default=True.
+    isomeric : bool, optional
+        Whether the SMILES added to the shingling are isomeric. Default=False.
+    kekulize : bool, optional
+        Whether the SMILES added to the shingling are kekulized. Default=False.
+    use_fragment : bool, optional
+        Whether the fragments are used to compute the molecular features. Default=True.
+    ipc_avg : bool, optional
+        Whether the IPC average is used to compute the molecular features. Default=True.
+    normalize_features : bool, optional
+        Whether the features are normalized. Default=True.
+    feature_output : str, optional
+        CSV file name to save the computed features. Default=None.
     **kwargs:
         Other keyword arguments.
 
-    Notes
-    -----
-    The user needs to specify at least one of `mol_file` and `feature_file`.
-
     """
-    # todo: can be refactored to run faster
-    # case: feature is not None, mol is None
-    if mol_file is None and feature_file is not None:
-        df_features = feature_reader(feature_file, sep=sep, engine=engine)
-    # case: feature is None, mol is not None
-    elif mol_file is not None and feature_file is None:
-        # todo: needs a fix here
-        mols = mol_reader(file_name=mol_file)
-        # compute descriptors
-        if feature_type.lower() == "descriptor":
-            descriptor_gen = DescriptorGenerator(mols, **kwargs)
-            df_features = descriptor_gen.compute_descriptor()
-        # compute fingerprints
-        elif feature_type.lower() == "fingerprint":
-            # todo: e3fp requires 3D coordinates
-            # todo: other fingerprints need 2D only
-            # change molecule 3D coordinate generation accordingly
-            fp_gen = FingerprintGenerator(mols, **kwargs)
-            df_features = fp_gen.compute_fingerprint()
-        else:
-            raise ValueError(f"{feature_type} is not supported.")
+    # load molecules
+    mols = mol_loader(file_name=mol_file, remove_hydrogen=False)
 
-    # case: feature is not None, mol is not None
-    elif mol_file is not None and feature_file is not None:
-        df_features = feature_reader(feature_file)
-    # case: feature is None, mol is None
+    # compute descriptors
+    if feature_name.lower() in ["mordred",
+                                "padel",
+                                "rdkit",
+                                "rdkit_frag",
+                                ]:
+        descriptor_gen = DescriptorGenerator(mols=mols,
+                                             mol_file=mol_file,
+                                             desc_type=feature_name,
+                                             use_fragment=use_fragment,
+                                             ipc_avg=ipc_avg,
+                                             )
+        df_features = descriptor_gen.compute_descriptor(**kwargs)
+    # compute fingerprints
+    elif feature_name.upper() in ["SECFP", "ECFP", "MORGAN", "RDKFINGERPRINT", "MACCSKEYS"]:
+        # todo: e3fp requires 3D coordinates
+        # todo: other fingerprints need 2D only
+        # change molecule 3D coordinate generation accordingly
+        fp_gen = FingerprintGenerator(mols=mols,
+                                      fp_type=feature_name,
+                                      n_bits=n_bits,
+                                      radius=radius,
+                                      min_radius=min_radius,
+                                      random_seed=random_seed,
+                                      rings=rings,
+                                      isomeric=isomeric,
+                                      kekulize=kekulize,
+                                      )
+        df_features = fp_gen.compute_fingerprint()
     else:
-        raise ValueError("It is required to define the input molecule file or feature file.")
+        raise ValueError(f"{feature_name} is not supported.")
 
-    return df_features
+    # drop infinities columns
+    df_features_valid = df_features[np.isfinite(df_features).all(axis=1)]
+    # impute missing values with zeros
+    df_features_valid.fillna(0, inplace=True)
+
+    # normalize the features when needed
+    if normalize_features:
+        df_features_valid.iloc[:, :] = StandardScaler().fit_transform(df_features_valid)
+
+    # save features to output file
+    if feature_output is None:
+        feature_output = str(os.path.basename(mol_file)).split(".", maxsplit=1)[0] + "_features.csv"
+    df_features_valid.to_csv(feature_output, sep=sep, index=False)
+
+    return df_features_valid

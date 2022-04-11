@@ -1,5 +1,6 @@
 # Codecov configuration to make it a bit less noisy
 codecov:
+  token: 39967d37-3c8d-4b80-8999-4cf51d7da7f2
   notify:
     require_ci_to_pass: yes
 
