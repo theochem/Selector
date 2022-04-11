@@ -217,9 +217,9 @@ class DissimilaritySelection(SelectionBase):
             if data_dim > max_dim:
                 norm_data = StandardScaler().fit_transform(array)
                 pca = PCA(n_components=max_dim)
-                principalcomponents = pca.fit_transform(norm_data)
+                principal_components = pca.fit_transform(norm_data)
                 return grid_partitioning(selected, n_selected, cells, max_dim,
-                                        principalcomponents, grid_method)
+                                         principal_components, grid_method)
 
             if grid_method == "equisized_independent":
                 axis_info = []
