@@ -77,16 +77,19 @@ class SelectionBase(ABC):
         # feature loader if string is
         # accepts string or pure path object
         if features is not None:
-            if isinstance(features, (str, PurePath)) and features is not None:
+            if isinstance(features, (str, PurePath)):
                 self.features = feature_reader(file_name=features,
                                                sep=sep,
                                                engine=engine,
                                                **kwargs)
+            else:
+                self.features = features
             # normalize features
             if normalize_features:
                 self.features = StandardScaler().fit_transform(self.features)
+        # feature is None
         else:
-            self.features = features
+            self.features = None
 
         # todo: current version only works for molecular descriptors
         # pair-wise distance matrix
@@ -96,6 +99,9 @@ class SelectionBase(ABC):
             self.arr_dist = dist.compute_distance()
         else:
             self.arr_dist = arr_dist
+
+        if self.features is None and self.arr_dist is None:
+            raise ValueError("Features or distance matrix must be provided")
 
     # abstract method, because we want in to be in both child classes
     @abstractmethod

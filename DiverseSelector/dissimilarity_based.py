@@ -48,7 +48,7 @@ class DissimilaritySelection(SelectionBase):
                  initialization="medoid",
                  random_seed=42,
                  num_selected: int = None,
-                 method="maxmin",
+                 brute_strength_type="maxmin",
                  r=1,
                  k=10,
                  cells=5,
@@ -56,7 +56,7 @@ class DissimilaritySelection(SelectionBase):
                  grid_method="equisized_independent",
                  **kwargs,
                  ):
-        """Initialization method for DissimilaritySelection class.
+        """Initialization brute_strength_type for DissimilaritySelection class.
 
         Parameters
         ----------
@@ -68,7 +68,7 @@ class DissimilaritySelection(SelectionBase):
         feature_file
         num_selected
         arr_dist
-        method
+        brute_strength_type
         r
         k
         cells
@@ -87,15 +87,14 @@ class DissimilaritySelection(SelectionBase):
                          **kwargs,
                          )
         self.initialization = initialization
-        self.arr_dist = arr_dist
-        self.method = method
+        self.brute_strength_type = brute_strength_type
         self.r = r
         self.k = k
         self.cells = cells
         self.max_dim = max_dim
         self.grid_method = grid_method
         # super(DissimilaritySelection, self).__init__(**kwargs)
-        self.__dict__.update(kwargs)
+        # self.__dict__.update(kwargs)
 
         # the initial compound index
         self.starting_idx = self.pick_initial_compounds()
@@ -126,13 +125,13 @@ class DissimilaritySelection(SelectionBase):
         pass
 
     def select(self,
-               dissimilarity_function="brute_strength",
+               dissim_func="brute_strength",
                ):
-        """Select method containing all dissimilarity algorithms.
+        """Select brute_strength_type containing all dissimilarity algorithms.
 
         Parameters
         ----------
-        dissimilarity_function
+        dissim_func
 
         Returns
         -------
@@ -140,7 +139,7 @@ class DissimilaritySelection(SelectionBase):
         """
         def brute_strength(selected=None,
                            n_selected=self.num_selected,
-                           method=self.method,
+                           brute_strength_type=self.brute_strength_type,
                            ):
             """Brute Strength dissimilarity algorithm with maxmin and maxsum methods.
 
@@ -148,7 +147,7 @@ class DissimilaritySelection(SelectionBase):
             ----------
             selected
             n_selected
-            method
+            brute_strength_type
 
             Returns
             -------
@@ -156,13 +155,13 @@ class DissimilaritySelection(SelectionBase):
             """
             if selected is None:
                 selected = [self.starting_idx]
-                return brute_strength(selected, n_selected, method)
+                return brute_strength(selected, n_selected, brute_strength_type)
 
             # if we all selected all n_selected molecules then return list of selected mols
             if len(selected) == n_selected:
                 return selected
 
-            if method == "maxmin":
+            if brute_strength_type == "maxmin":
                 # calculate min distances from each mol to the selected mols
                 min_distances = np.min(self.arr_dist[selected], axis=0)
 
@@ -172,9 +171,9 @@ class DissimilaritySelection(SelectionBase):
                 # add selected molecule to the selected list
                 selected.append(new_id)
 
-                # call method again with an updated list of selected molecules
-                return brute_strength(selected, n_selected, method)
-            elif method == "maxsum":
+                # call brute_strength_type again with an updated list of selected molecules
+                return brute_strength(selected, n_selected, brute_strength_type)
+            elif brute_strength_type == "maxsum":
                 sum_distances = np.sum(self.arr_dist[selected], axis=0)
                 while True:
                     new_id = np.argmax(sum_distances)
@@ -183,9 +182,10 @@ class DissimilaritySelection(SelectionBase):
                     else:
                         break
                 selected.append(new_id)
-                return brute_strength(selected, n_selected, method)
+                return brute_strength(selected, n_selected, brute_strength_type)
             else:
-                raise ValueError(f"Method {method} not supported, choose maxmin or maxsum.")
+                raise ValueError(f"""Method {brute_strength_type} is not supported, choose """
+                                 f"""maxmin" or "maxsum".""")
 
         def grid_partitioning(selected=None,
                               n_selected=self.num_selected,
@@ -287,7 +287,7 @@ class DissimilaritySelection(SelectionBase):
             elif grid_method == "equifrequent_dependent":
                 raise NotImplementedError(f"{grid_method} not implemented.")
             else:
-                raise ValueError(f"{grid_method} not a valid method")
+                raise ValueError(f"{grid_method} not a valid brute_strength_type")
 
             old_len = 0
             rng = np.random.default_rng(seed=self.random_seed)
@@ -424,4 +424,4 @@ class DissimilaritySelection(SelectionBase):
                       "grid_partitioning": grid_partitioning,
                       "sphere_exclusion": sphere_exclusion,
                       "optisim": optisim}
-        return algorithms[dissimilarity_function]()
+        return algorithms[dissim_func]()
