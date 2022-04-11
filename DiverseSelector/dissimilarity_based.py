@@ -28,6 +28,7 @@ from typing import Union
 from DiverseSelector.base import SelectionBase
 from DiverseSelector.utils import PandasDataFrame
 import numpy as np
+import pandas as pd
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 
@@ -40,8 +41,8 @@ class DissimilaritySelection(SelectionBase):
     """Dissimilarity based diversity subset selection."""
 
     def __init__(self,
-                 features: Union[np.ndarray, PandasDataFrame, str, PurePath] = None,
-                 arr_dist: np.ndarray = None,
+                 features: Union[np.ndarr_features, PandasDataFrame, str, PurePath] = None,
+                 arr_dist: np.ndarr_features = None,
                  normalize_features: bool = False,
                  sep: str = ",",
                  engine: str = "python",
@@ -97,6 +98,18 @@ class DissimilaritySelection(SelectionBase):
         self.brute_strength_type = brute_strength_type
         # super(DissimilaritySelection, self).__init__(**kwargs)
         # self.__dict__.update(kwargs)
+
+        # data type checking
+        if self.dissim_func in ["grid_partitioning",
+                                "sphere_exclusion",
+                                "optisim",
+                                ]:
+            # feature is required for grid partitioning methods
+            if self.features is None:
+                raise ValueError(f"Features must be provided for {self.dissim_func} method.")
+            # convert pandas dataframe to numpy array
+            if isinstance(self.features, pd.DataFrame):
+                self.features = self.features.to_numpy()
 
         # the initial compound index
         self.starting_idx = self.pick_initial_compounds()
@@ -191,7 +204,7 @@ class DissimilaritySelection(SelectionBase):
                               n_selected=self.num_selected,
                               cells=self.cells,
                               max_dim=self.max_dim,
-                              array=self.features,
+                              arr_features=self.features,
                               grid_method=self.grid_method,
                               ):
             """Grid partitioning dissimilarity algorithm with various grid partitioning methods.
@@ -202,20 +215,21 @@ class DissimilaritySelection(SelectionBase):
             n_selected
             cells
             max_dim
-            array
+            arr_features
             grid_method
 
             Returns
             -------
             Selected molecules.
             """
+
             if selected is None:
                 selected = []
-                return grid_partitioning(selected, n_selected, cells, max_dim, array, grid_method)
+                return grid_partitioning(selected, n_selected, cells, max_dim, arr_features, grid_method)
 
-            data_dim = len(array[0])
+            data_dim = len(arr_features[0])
             if data_dim > max_dim:
-                norm_data = StandardScaler().fit_transform(array)
+                norm_data = StandardScaler().fit_transform(arr_features)
                 pca = PCA(n_components=max_dim)
                 principal_components = pca.fit_transform(norm_data)
                 return grid_partitioning(selected, n_selected, cells, max_dim,
@@ -224,11 +238,11 @@ class DissimilaritySelection(SelectionBase):
             if grid_method == "equisized_independent":
                 axis_info = []
                 for i in range(data_dim):
-                    axis_min, axis_max = min(array[:, i]), max(array[:, i])
+                    axis_min, axis_max = min(arr_features[:, i]), max(arr_features[:, i])
                     cell_length = (axis_max - axis_min) / cells
                     axis_info.append([axis_min, axis_max, cell_length])
                 bins = {}
-                for index, point in enumerate(array):
+                for index, point in enumerate(arr_features):
                     point_bin = []
                     for dim, value in enumerate(point):
                         if value == axis_info[dim][0]:
@@ -245,11 +259,11 @@ class DissimilaritySelection(SelectionBase):
                 bins = {}
                 for i in range(data_dim):
                     if len(bins) == 0:
-                        axis_min, axis_max = min(array[:, i]), max(array[:, i])
+                        axis_min, axis_max = min(arr_features[:, i]), max(arr_features[:, i])
                         cell_length = (axis_max - axis_min) / cells
                         axis_info = [axis_min, axis_max, cell_length]
 
-                        for index, point in enumerate(array):
+                        for index, point in enumerate(arr_features):
                             point_bin = []
                             if point[i] == axis_info[0]:
                                 index_bin = 0
@@ -263,19 +277,19 @@ class DissimilaritySelection(SelectionBase):
                     else:
                         new_bins = {}
                         for bin_idx, bin_list in bins.items():
-                            axis_min = min(array[bin_list, i])
-                            axis_max = max(array[bin_list, i])
+                            axis_min = min(arr_features[bin_list, i])
+                            axis_max = max(arr_features[bin_list, i])
                             cell_length = (axis_max - axis_min) / cells
                             axis_info = [axis_min, axis_max, cell_length]
 
                             for point_idx in bin_list:
                                 point_bin = [num for num in bin_idx]
-                                if array[point_idx][i] == axis_info[0]:
+                                if arr_features[point_idx][i] == axis_info[0]:
                                     index_bin = 0
-                                elif array[point_idx][i] == axis_info[1]:
+                                elif arr_features[point_idx][i] == axis_info[1]:
                                     index_bin = cells - 1
                                 else:
-                                    index_bin = int((array[point_idx][i] - axis_info[0]) //
+                                    index_bin = int((arr_features[point_idx][i] - axis_info[0]) //
                                                     axis_info[2])
                                 point_bin.append(index_bin)
                                 new_bins.setdefault(tuple(point_bin), [])
