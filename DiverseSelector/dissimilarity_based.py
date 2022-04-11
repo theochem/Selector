@@ -225,7 +225,8 @@ class DissimilaritySelection(SelectionBase):
 
             if selected is None:
                 selected = []
-                return grid_partitioning(selected, n_selected, cells, max_dim, arr_features, grid_method)
+                return grid_partitioning(selected, n_selected, cells,
+                                         max_dim, arr_features, grid_method)
 
             data_dim = len(arr_features[0])
             if data_dim > max_dim:
