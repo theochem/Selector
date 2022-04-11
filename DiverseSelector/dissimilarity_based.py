@@ -48,6 +48,7 @@ class DissimilaritySelection(SelectionBase):
                  initialization="medoid",
                  random_seed=42,
                  num_selected: int = None,
+                 dissim_func="brute_strength",
                  brute_strength_type="maxmin",
                  r=1,
                  k=10,
@@ -87,12 +88,13 @@ class DissimilaritySelection(SelectionBase):
                          **kwargs,
                          )
         self.initialization = initialization
-        self.brute_strength_type = brute_strength_type
         self.r = r
         self.k = k
         self.cells = cells
         self.max_dim = max_dim
         self.grid_method = grid_method
+        self.dissim_func = dissim_func
+        self.brute_strength_type = brute_strength_type
         # super(DissimilaritySelection, self).__init__(**kwargs)
         # self.__dict__.update(kwargs)
 
@@ -124,9 +126,7 @@ class DissimilaritySelection(SelectionBase):
         # for iterative selection and final subset both
         pass
 
-    def select(self,
-               dissim_func="brute_strength",
-               ):
+    def select(self):
         """Select brute_strength_type containing all dissimilarity algorithms.
 
         Parameters
@@ -420,8 +420,8 @@ class DissimilaritySelection(SelectionBase):
 
             return optisim(selected, n_selected, k, r, recycling)
 
-        algorithms = {"brute_strength": brute_strength,
-                      "grid_partitioning": grid_partitioning,
-                      "sphere_exclusion": sphere_exclusion,
-                      "optisim": optisim}
-        return algorithms[dissim_func]()
+        select_algorithms = {"brute_strength": brute_strength,
+                             "grid_partitioning": grid_partitioning,
+                             "sphere_exclusion": sphere_exclusion,
+                             "optisim": optisim}
+        return select_algorithms[self.dissim_func]()

@@ -42,20 +42,22 @@ def test_brute_strength_maxmin():
     selector = DissimilaritySelection(features=None,
                                       arr_dist=arr_dist,
                                       num_selected=12,
+                                      dissim_func="brute_strength",
                                       brute_strength_type="maxmin",
                                       random_seed=42)
     selector.starting_idx = 0
-    selected_ids = selector.select("brute_strength")
+    selected_ids = selector.select()
 
     # make sure all the selected indices are the same with expectation
     assert_equal([0, 57, 95, 41, 67, 26, 3, 16, 12, 6, 62, 48], selected_ids)
 
 
-def test_brutestrength_maxsum():
-    """Testing brutestrength algorithm with maxsum."""
+def test_brute_strength_maxsum():
+    """Testing brute strength algorithm with maxsum."""
     selector = DissimilaritySelection(features=None,
                                       arr_dist=arr_dist,
                                       num_selected=12,
+                                      dissim_func="brute_strength",
                                       brute_strength_type="maxsum",
                                       random_seed=42,
                                       )
@@ -67,43 +69,46 @@ def test_brutestrength_maxsum():
     assert_equal([0, 57, 25, 41, 95, 9, 8, 21, 13, 68, 37, 54], selected_ids)
 
 
-def test_gridpartitioning_equisized_independent():
-    """Testing gridpartitioning algorithm with equisized independent partitioning method."""
+def test_grid_partitioning_equisized_independent():
+    """Testing grid_partitioning algorithm with equisized independent partitioning method."""
     selector = DissimilaritySelection(num_selected=12,
                                       arr_dist=arr_dist,
+                                      dissim_func="grid_partitioning",
                                       random_seed=42)
     selector.starting_idx = 0
     selector.features = coords
-    selected_ids = selector.select("grid_partitioning")
+    selected_ids = selector.select()
 
     # make sure all the selected indices are the same with expectation
     assert_equal([15, 87, 70, 66, 49, 68, 8, 22, 10, 13,
                   19, 44, 76, 72, 25, 84, 73, 57, 65, 86], selected_ids)
 
 
-def test_gridpartitioning_equisized_dependent():
-    """Testing gridpartitioning algorithm with equisized dependent partitioning method."""
+def test_grid_partitioning_equisized_dependent():
+    """Testing grid_partitioning algorithm with equisized dependent partitioning method."""
     selector = DissimilaritySelection(num_selected=12,
                                       arr_dist=arr_dist,
                                       random_seed=42,
+                                      dissim_func="grid_partitioning",
                                       grid_method="equisized_dependent")
     selector.starting_idx = 0
     selector.features = coords
-    selected_ids = selector.select("grid_partitioning")
+    selected_ids = selector.select()
 
     # make sure all the selected indices are the same with expectation
     assert_equal([0, 87, 68, 59, 50, 79, 4, 41, 30, 33, 71,
                   98, 73, 80, 65, 19, 10, 25, 55, 54, 37, 57, 86], selected_ids)
 
 
-def test_sphereexclusion():
+def test_sphere_exclusion():
     """Testing sphereexclusion algorithm."""
     selector = DissimilaritySelection(num_selected=12,
                                       arr_dist=arr_dist,
+                                      dissim_func="sphere_exclusion",
                                       random_seed=42)
     selector.starting_idx = 0
     selector.features = coords
-    selected_ids = selector.select("sphere_exclusion")
+    selected_ids = selector.select()
 
     # make sure all the selected indices are the same with expectation
     assert_equal([17, 31, 90, 6, 12, 76, 26, 81, 2, 14, 57], selected_ids)
@@ -113,10 +118,11 @@ def test_optisim():
     """Testing optisim algorithm."""
     selector = DissimilaritySelection(num_selected=12,
                                       arr_dist=arr_dist,
+                                      dissim_func="optisim",
                                       random_seed=42)
     selector.starting_idx = 0
     selector.features = coords
-    selected_ids = selector.select("optisim")
+    selected_ids = selector.select()
 
     # make sure all the selected indices are the same with expectation
     assert_equal([0, 13, 21, 9, 8, 18, 57, 39, 65, 25], selected_ids)
