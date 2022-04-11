@@ -37,7 +37,7 @@ __all__ = [
     "ExplicitBitVect",
     "RDKitMol",
     "PandasDataFrame",
-    "mol_reader",
+    "mol_loader",
 ]
 
 
@@ -72,7 +72,7 @@ RDKitMol = TypeVar('Mol')
 ExplicitBitVector = TypeVar("ExplicitBitVect")
 
 
-def mol_reader(file_name: str,
+def mol_loader(file_name: str,
                remove_hydrogen: bool = False,
                # force_field: str = None,
                ) -> list:
@@ -107,6 +107,8 @@ def mol_reader(file_name: str,
         with open(file_name, "r", encoding="utf8") as f:
             for line in f:
                 mols.append(Chem.MolFromSmiles(line.strip()))
+    else:
+        raise ValueError("Unsupported file type.")
 
     # todo:
     # check if needed to add Hs
