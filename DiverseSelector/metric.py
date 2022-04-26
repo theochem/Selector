@@ -175,6 +175,12 @@ def euc_bit(a: np.array, b: np.array) -> float:
     -------
     e_d : float
         Euclidean distance between molecule A and B.
+
+    Notes
+    -----
+    Bajusz, D., Rácz, A., and Héberger, K.. (2015)
+    Why is Tanimoto index an appropriate choice for fingerprint-based similarity calculations?.
+    Journal of Cheminformatics 7.
     """
     a_feat = np.count_nonzero(a)
     b_feat = np.count_nonzero(b)
@@ -200,6 +206,12 @@ def tanimoto(a: np.array, b: np.array) -> float:
     -------
     coeff : float
         Tanimoto coefficient for molecule A and B.
+
+    Notes
+    -----
+    Bajusz, D., Rácz, A., and Héberger, K.. (2015)
+    Why is Tanimoto index an appropriate choice for fingerprint-based similarity calculations?.
+    Journal of Cheminformatics 7.
     """
     coeff = (sum(a * b)) / ((sum(a ** 2)) + (sum(b ** 2)) - (sum(a * b)))
     return coeff
@@ -219,6 +231,12 @@ def bit_tanimoto(a: np.array, b: np.array) -> float:
     -------
     coeff : float
         Tanimoto coefficient for molecule A and B.
+
+    Notes
+    -----
+    Bajusz, D., Rácz, A., and Héberger, K.. (2015)
+    Why is Tanimoto index an appropriate choice for fingerprint-based similarity calculations?.
+    Journal of Cheminformatics 7.
     """
     a_feat = np.count_nonzero(a)
     b_feat = np.count_nonzero(b)
@@ -244,6 +262,13 @@ def modified_tanimoto(a: np.array, b: np.array) -> float:
     -------
     mt : float
         Modified tanimoto coefficient for molecule A and B.
+
+    Notes
+    -----
+    Fligner, M. A., Verducci, J. S., and Blower, P. E.. (2002)
+    A Modification of the Jaccard-Tanimoto Similarity Index for
+    Diverse Selection of Chemical Compounds Using Binary Strings.
+    Technometrics 44, 110-119.
     """
     n = len(a)
     n_11 = sum(a * b)
@@ -278,6 +303,9 @@ def entropy(x: np.ndarray) -> float:
     -----
     Feature matrixs are converted to bits,
     so we lose any information associated with num in matrix.
+    Weidlich, I. E., and Filippov, I. V. (2016)
+    Using the Gini coefficient to measure the chemical diversity of small-molecule libraries.
+    Journal of Computational Chemistry 37, 2091-2097.
     """
     for i in range(0, len(x)):
         for j in range(0, len(x[0])):
@@ -318,6 +346,10 @@ def nearest_average_tanimoto(x: np.ndarray) -> float:
     -----
     This computes the tanimoto of pairs with the shortest distances,
     this is explictly for explicit diversity index.
+    Papp, Á., Gulyás-Forró, A., Gulyás, Z., Dormán, G., Ürge, L.,
+    and Darvas, F.. (2006) Explicit Diversity Index (EDI):
+    A Novel Measure for Assessing the Diversity of Compound Databases.
+    Journal of Chemical Information and Modeling 46, 1898-1904.
     """
     tani = []
     for idx, _ in enumerate(x):
@@ -348,6 +380,14 @@ def explicit_diversity_index(x: np.ndarray, mol: rdkit.Chem.rdchem.Mol) -> float
     -------
     edi_scaled : float
         Explicit diversity index.
+
+    Notes
+    -----
+    This method hasn't been tested.
+    Papp, Á., Gulyás-Forró, A., Gulyás, Z., Dormán, G., Ürge, L.,
+    and Darvas, F.. (2006) Explicit Diversity Index (EDI):
+    A Novel Measure for Assessing the Diversity of Compound Databases.
+    Journal of Chemical Information and Modeling 46, 1898-1904.
     """
     cs = len(rdFMCS.FindMCS(mol))
     nc = len(x)
@@ -370,6 +410,13 @@ def logdet(x: np.ndarray) -> float:
     -------
     f_logdet: float
         The volume of parallelotope spand by the matrix.
+
+    Notes
+    -----
+    Nakamura, T., Sakaue, S., Fujii, K., Harabuchi, Y., Maeda, S., and Iwata, S.. (2022)
+    Selecting molecules with diverse structures and properties by maximizing
+    submodular functions of descriptors learned with graph neural networks.
+    Scientific Reports 12.
     """
     mid = np.dot(np.transpose(x), x)
     f_logdet = np.log10(np.linalg.det(mid + np.identity(len(x[0]))))
@@ -388,6 +435,13 @@ def shannon_entropy(x: np.ndarray) -> float:
     -------
     h_x: float
         The shannon entropy of the matrix.
+
+    Notes
+    -----
+    Leguy, J., Glavatskikh, M., Cauchy, T., and Benoit. (2021)
+    Scalable estimator of the diversity for de novo molecular generation resulting
+    in a more robust QM dataset (OD9) and a more efficient molecular optimization.
+    Journal of Cheminformatics 13.
     """
     size = len(x[:, 0])
     h_x = 0
@@ -413,6 +467,14 @@ def wdud(x: np.ndarray) -> float:
     -------
     h_x: float
         The WDUD of the matrix.
+
+    Notes
+    -----
+    Unclear if this method is implmented correctly.
+    Nakamura, T., Sakaue, S., Fujii, K., Harabuchi, Y., Maeda, S., and Iwata, S.. (2022)
+    Selecting molecules with diverse structures and properties by maximizing
+    submodular functions of descriptors learned with graph neural networks.
+    Scientific Reports 12.
     """
     # min_max normilization:
     d = len(x[0])
@@ -446,6 +508,11 @@ def total_diversity_volume(x: np.ndarray) -> float:
     -------
     g_s: float
         The total diversity volume of the matrix.
+
+    Notes
+    -----
+    Agrafiotis, D. K.. (1997) Stochastic Algorithms for Maximizing Molecular Diversity.
+    Journal of Chemical Information and Computer Sciences 37, 841-851.
     """
     d = len(x[0])
     k = len(x[:, 0])
