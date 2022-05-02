@@ -64,12 +64,35 @@ class ClusteringSelection(SelectionBase):
                  random_seed: int = 42,
                  **kwargs
                  ):
-        """Base class for clustering based subset selection."""
-        #                  normalize_features: bool = False,
-        #                  sep: str = ",",
-        #                  engine: str = "python",
-        #                  random_seed: int = 42,
+        """
 
+        Parameters
+        ----------
+        num_selected: int, optional
+            Number of molecules to select. Default=None.
+        num_clusters: int
+            Number of clusters in the dataset.
+        feature: tuple
+            Selected feature.
+        arr_dist: np.ndarray
+            2d numpy array of pairwise distances.
+        normalize_features: bool, optional
+            Normalize features or not. Default=False.
+        sep: str
+            Separating symbol in the file-to-read.
+        engine: str
+            Engine to use.
+        clustering_method: str
+            Method for performing clustering.
+        feature_file: str
+            Name of the file that contains features.
+        output: str
+            Name of the output file.
+        random_seed: int
+            Random seed for random sampling.
+        kwargs:
+            Additional arguments for performing clustering.
+        """
         super().__init__(feature,
                          arr_dist,
                          num_selected,
