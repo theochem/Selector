@@ -64,7 +64,7 @@ class ClusteringSelection(SelectionBase):
                  random_seed: int = 42,
                  **kwargs
                  ):
-        """
+        """Initializing class.
 
         Parameters
         ----------
