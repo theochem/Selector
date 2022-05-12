@@ -24,6 +24,7 @@
 """The main DiverseSelector Package."""
 
 from DiverseSelector.dissimilarity_based import DissimilaritySelection
+from DiverseSelector.clustering_based import ClusteringSelection
 
 # Handle versioneer
 from ._version import get_versions
