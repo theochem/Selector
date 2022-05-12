@@ -27,7 +27,6 @@ from pathlib import PurePath
 from typing import Union
 
 from DiverseSelector.base import SelectionBase
-from DiverseSelector.feature import compute_features
 from DiverseSelector.utils import PandasDataFrame
 import numpy as np
 from sklearn.cluster import (AffinityPropagation,
@@ -53,13 +52,12 @@ class ClusteringSelection(SelectionBase):
     def __init__(self,
                  num_selected,
                  num_clusters,
-                 feature: Union[np.ndarray, PandasDataFrame, str, PurePath] = None,
+                 features: Union[np.ndarray, PandasDataFrame, str, PurePath] = None,
                  arr_dist: np.ndarray = None,
                  normalize_features: bool = False,
                  sep: str = ",",
                  engine: str = "python",
                  clustering_method="k-means",
-                 feature_file=None,
                  output=None,
                  random_seed: int = 42,
                  **kwargs
@@ -72,8 +70,8 @@ class ClusteringSelection(SelectionBase):
             Number of molecules to select. Default=None.
         num_clusters: int
             Number of clusters in the dataset.
-        feature: tuple
-            Selected feature.
+        features: tuple
+            Input feature data.
         arr_dist: np.ndarray
             2d numpy array of pairwise distances.
         normalize_features: bool, optional
@@ -84,8 +82,6 @@ class ClusteringSelection(SelectionBase):
             Engine to use.
         clustering_method: str
             Method for performing clustering.
-        feature_file: str
-            Name of the file that contains features.
         output: str
             Name of the output file.
         random_seed: int
@@ -93,7 +89,7 @@ class ClusteringSelection(SelectionBase):
         kwargs:
             Additional arguments for performing clustering.
         """
-        super().__init__(feature,
+        super().__init__(features,
                          arr_dist,
                          num_selected,
                          normalize_features,
@@ -105,10 +101,9 @@ class ClusteringSelection(SelectionBase):
 
         # the number of molecules equals the number of clusters
         self.clustering_method = clustering_method
-        self.feature_file = feature_file
         self.output = output
-        if arr_dist is None:
-            self.features = compute_features(feature_file)
+        if arr_dist is None and features is None:
+            raise ValueError("Features or distance matrix must be provided")
         self.labels = None
 
         if random_seed is None:
@@ -118,9 +113,6 @@ class ClusteringSelection(SelectionBase):
 
         self.__dict__.update(kwargs)
 
-        # check if number of clusters is less than number of selected molecules
-        if self.num_clusters > self.arr_dist.shape[0]:
-            raise ValueError("The number of clusters is great than number of molecules.")
         # check if we have valid number of clusters because selecting 1.5 molecules is not practical
         if int(self.num_selected / self.num_clusters) - self.num_selected / self.num_clusters != 0:
             raise ValueError("The number of molecules in each cluster should be an integer.")
