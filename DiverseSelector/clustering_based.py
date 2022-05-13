@@ -186,7 +186,8 @@ class ClusteringSelection(SelectionBase):
         selected_all = []
         totally_used = []
 
-        amount_molecules = np.array([len(np.where(self.labels == unique_label)[0]) for unique_label in unique_labels])
+        amount_molecules = np.array(
+            [len(np.where(self.labels == unique_label)[0]) for unique_label in unique_labels])
         n = (self.num_selected - len(selected_all)) // (self.num_clusters - len(totally_used))
         while np.any(amount_molecules <= n):
             for unique_label in unique_labels:
@@ -200,8 +201,9 @@ class ClusteringSelection(SelectionBase):
             amount_molecules = np.delete(amount_molecules, totally_used)
 
             warnings.warn(f"Number of molecules in one cluster is less than"
-                          f" {self.num_selected}/{self.num_clusters}.\nNumber of selected molecules might be less"
-                          f"than desired.\nIn order to avoid this problem. Try to use less number of clusters")
+                          f" {self.num_selected}/{self.num_clusters}.\nNumber of selected "
+                          f"molecules might be less than desired.\nIn order to avoid this "
+                          f"problem. Try to use less number of clusters")
 
         for unique_label in unique_labels:
             if unique_label not in totally_used:
