@@ -22,9 +22,9 @@
 # --
 
 """Clustering based compound selection."""
-
 from pathlib import PurePath
 from typing import Union
+import warnings
 
 from DiverseSelector.base import SelectionBase
 from DiverseSelector.utils import PandasDataFrame
@@ -39,7 +39,6 @@ from sklearn.cluster import (AffinityPropagation,
                              SpectralClustering,
                              )
 from sklearn.mixture import GaussianMixture
-
 
 __all__ = [
     "ClusteringSelection",
@@ -184,15 +183,34 @@ class ClusteringSelection(SelectionBase):
 
         """
         unique_labels = np.unique(self.labels)
-        n = self.num_selected // self.num_clusters
-
         selected_all = []
+        totally_used = []
+
+        amount_molecules = np.array(
+            [len(np.where(self.labels == unique_label)[0]) for unique_label in unique_labels])
+        n = (self.num_selected - len(selected_all)) // (self.num_clusters - len(totally_used))
+        while np.any(amount_molecules <= n):
+            for unique_label in unique_labels:
+                if unique_label not in totally_used:
+                    cluster_ids = np.where(self.labels == unique_label)[0]
+                    if len(cluster_ids) <= n:
+                        selected_all.append(cluster_ids)
+                        totally_used.append(unique_label)
+
+            n = (self.num_selected - len(selected_all)) // (self.num_clusters - len(totally_used))
+            amount_molecules = np.delete(amount_molecules, totally_used)
+
+            warnings.warn(f"Number of molecules in one cluster is less than"
+                          f" {self.num_selected}/{self.num_clusters}.\nNumber of selected "
+                          f"molecules might be less than desired.\nIn order to avoid this "
+                          f"problem. Try to use less number of clusters")
+
         for unique_label in unique_labels:
-            cluster_ids = np.where(self.labels == unique_label)[0]
+            if unique_label not in totally_used:
+                cluster_ids = np.where(self.labels == unique_label)[0]
+                np.random.seed(self.random_seed)
+                selected = np.random.choice(cluster_ids, size=n, replace=False)
+                selected_all.append(selected)
 
-            np.random.seed(self.random_seed)
-            selected = np.random.choice(cluster_ids, size=n, replace=False)
-            selected_all.append(selected)
-
-        selected_all = np.array(selected_all).flatten()
+        selected_all = np.hstack(selected_all).flatten()
         return selected_all
