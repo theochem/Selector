@@ -22,9 +22,9 @@
 # --
 
 """Clustering based compound selection."""
-import warnings
 from pathlib import PurePath
 from typing import Union
+import warnings
 
 from DiverseSelector.base import SelectionBase
 from DiverseSelector.utils import PandasDataFrame
