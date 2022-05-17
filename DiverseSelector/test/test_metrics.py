@@ -40,7 +40,7 @@ from DiverseSelector.metric import (bit_tanimoto,
                                     # wdud
                                     )
 import numpy as np
-from numpy.testing import assert_almost_equal, assert_equal
+from numpy.testing import assert_almost_equal, assert_equal, assert_raises
 
 # each row is a feature and each column is a molecule
 sample1 = np.array([[4, 2, 6],
@@ -165,6 +165,10 @@ def test_gini_coefficient_of_non_diverse_set():
     result = gini_coefficient(finger_prints)
     # Since they are all the same, then gini coefficient should be zero.
     assert_almost_equal(result, 0.0, decimal=8)
+
+    # Test raises as well.
+    assert_raises(ValueError, gini_coefficient, np.array([[1, 2], [0, 1]]))
+    assert_raises(ValueError, gini_coefficient, np.array([1, 0, 0, 0]))
 
 
 def test_gini_coefficient_of_most_diverse_set():

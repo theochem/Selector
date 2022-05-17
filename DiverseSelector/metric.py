@@ -557,11 +557,10 @@ def gini_coefficient(a: np.ndarray):
     a : ndarray(N, L)
         Molecule features in L bits with N molecules.
 
-
     Returns
     -------
     float :
-        Value between zero and one, where closer to zero indicates more diversity.
+        Gini coefficient between zero and one, where closer to zero indicates more diversity.
 
     References
     ----------
@@ -572,6 +571,8 @@ def gini_coefficient(a: np.ndarray):
     # Check that `a` is a bit-wise fingerprint.
     if np.any(np.abs(np.sort(np.unique(a)) - np.array([0, 1])) > 1e-8):
         raise ValueError("Attribute `a` should have binary values.")
+    if a.ndim != 2:
+        raise ValueError(f"Attribute `a` should have dimension two rather than {a.ndim}.")
 
     numb_moles = a.shape[0]
     # Take the bit-count of each row/molecule.
