@@ -26,8 +26,8 @@
 from DiverseSelector import clustering_based
 from DiverseSelector.test.common import generate_synthetic_data
 import numpy as np
-from numpy.testing import assert_allclose
 import os
+from numpy.testing import assert_allclose
 
 coords, class_labels, arr_dist = generate_synthetic_data(n_samples=100,
                                                          n_features=2,
@@ -191,7 +191,8 @@ def test_save_output():
 
     with open('test.json', 'r') as f:
         text = f.read()
-    t_text = '''{"0":40,"1":41,"2":47,"3":56,"4":58,"5":63,"6":67,"7":81,"8":83,"9":85,"10":86,"11":93}'''
+    t_text = "{\"0\":40,\"1\":41,\"2\":47,\"3\":56,\"4\":58,\"5\":63," \
+             "\"6\":67,\"7\":81,\"8\":83,\"9\":85,\"10\":86,\"11\":93}"
     assert text == t_text
     os.remove('test.json')
 
