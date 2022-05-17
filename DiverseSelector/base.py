@@ -193,7 +193,7 @@ class SelectionBase(ABC):
 
         return score
 
-    def save_output(self, selected, fname, format='txt', sep=' ', **kwargs):
+    def save_output(self, selected, fname, frmt='txt', sep=' ', **kwargs):
         """
         Save the selected ids of molecules to file.
 
@@ -217,11 +217,11 @@ class SelectionBase(ABC):
         None.
         """
         series = pd.Series(selected)
-        if format == 'txt' or format == 'csv':
+        if frmt in ('txt', 'csv'):
             series.to_csv(fname, sep, index=False)
-        elif format == 'json':
+        elif frmt == 'json':
             series.to_json(fname, **kwargs)
-        elif format == 'excel':
+        elif frmt == 'excel':
             series.to_excel(fname, index=False, **kwargs)
         else:
             raise ValueError("Wrong file format")
