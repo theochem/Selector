@@ -58,8 +58,13 @@ class ComputeDiversity:
         ----------
         features : np.ndarray
             Feature matrix.
-        div_type : str
-            Method of calculation diversity.
+        div_type : str, optional
+            Method of calculation diversity for a given molecule set, which
+            includes "explicit_diversity_index", "entropy", "logdet", "shannon_entropy", "wdud", and
+            "total_diversity_volume". Default is "total_diversity_volume".
+        mols : List[rdkit.Chem.rdchem.Mol], optional
+            List of RDKit molecule objects. This is only needed when using the
+            "explicit_diversity_index" method. Default=None.
         """
         self.features = features
         self.div_type = div_type
