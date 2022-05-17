@@ -193,7 +193,8 @@ class SelectionBase(ABC):
 
         return score
 
-    def save_output(self, selected, fname, frmt='txt', sep=' ', **kwargs):
+    @staticmethod
+    def save_output(selected, fname, frmt='txt', sep=' ', **kwargs):
         """
         Save the selected ids of molecules to file.
 
