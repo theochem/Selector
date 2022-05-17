@@ -71,7 +71,12 @@ class ComputeDiversity:
         self.mols = mols
 
     def compute_diversity(self) -> float:
-        """Compute the molecule diversity."""
+        """Compute the molecule diversity.
+
+        Returns
+        -------
+        float, computed diversity.
+        """
         # entropy explicit_diversity_index logdet shannon_entropy wdud total_diversity_volume
 
         func_dict = {
