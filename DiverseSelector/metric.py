@@ -38,6 +38,7 @@ __all__ = [
     "distance_to_similarity",
     "entropy",
     "euc_bit",
+    "gini_coefficient",
     "logdet",
     "modified_tanimoto",
     "pairwise_similarity_bit",
@@ -536,3 +537,52 @@ def total_diversity_volume(x: np.ndarray) -> float:
                 o_ij = 0
                 g_s += o_ij
     return g_s
+
+
+def gini_coefficient(a: np.ndarray):
+    r"""
+    Gini coefficient of bit-wise fingerprints of a database of molecules.
+
+    Measures the chemical diversity of a database of molecules defined by
+    the following formula:
+
+    .. math::
+        G = \frac{2 \sum_{i=1}^N i ||y_i||_1 }{N \sum_{i=1}^N ||y_i||_1} - \frac{N+1}{N},
+
+    where :math:`y_i \in \{0, 1\}^L` is a vector of zero and ones of length :math:`L`,
+    and :math:`N` is the number of molecules.
+
+    Parameters
+    ----------
+    a : ndarray(N, L)
+        Molecule features in L bits with N molecules.
+
+    Returns
+    -------
+    float :
+        Gini coefficient between zero and one, where closer to zero indicates more diversity.
+
+    References
+    ----------
+    .. [1] Weidlich, Iwona E., and Igor V. Filippov. "Using the gini coefficient to measure the
+           chemical diversity of small‐molecule libraries." (2016): 2091-2097.
+
+    """
+    # Check that `a` is a bit-wise fingerprint.
+    if np.any(np.abs(np.sort(np.unique(a)) - np.array([0, 1])) > 1e-8):
+        raise ValueError("Attribute `a` should have binary values.")
+    if a.ndim != 2:
+        raise ValueError(f"Attribute `a` should have dimension two rather than {a.ndim}.")
+
+    numb_moles = a.shape[0]
+    # Take the bit-count of each row/molecule.
+    bit_count = np.sum(a, axis=1)
+
+    # Sort the bit-count since Gini coefficients relies on cumulative distribution.
+    bit_count = np.sort(bit_count)
+
+    # Mean of denominator
+    denominator = numb_moles * np.sum(bit_count)
+    numerator = np.sum(np.arange(1, numb_moles + 1) * bit_count)
+
+    return 2.0 * numerator / denominator - (numb_moles + 1) / numb_moles
