@@ -184,12 +184,12 @@ def test_save_output():
     selected_ids = sorted(selector.select())
     selector.save_output(selected_ids, 'test.txt', 'txt')
     selector.save_output(selected_ids, 'test.json', 'json')
-    with open('test.txt', 'r') as f:
+    with open('test.txt', 'r', encoding='utf-8') as f:
         text = f.read()
     assert text == "0\n40\n41\n47\n56\n58\n63\n67\n81\n83\n85\n86\n93\n"
     os.remove('test.txt')
 
-    with open('test.json', 'r') as f:
+    with open('test.json', 'r', encoding='utf-8') as f:
         text = f.read()
     t_text = "{\"0\":40,\"1\":41,\"2\":47,\"3\":56,\"4\":58,\"5\":63," \
              "\"6\":67,\"7\":81,\"8\":83,\"9\":85,\"10\":86,\"11\":93}"
