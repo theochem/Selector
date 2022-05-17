@@ -23,7 +23,7 @@
 
 """Metric calculation module."""
 
-from typing import Any
+from typing import Any, List
 
 from DiverseSelector.utils import sklearn_supported_metrics
 import numpy as np
@@ -33,20 +33,70 @@ from scipy.spatial.distance import euclidean, squareform
 from sklearn.metrics import pairwise_distances
 
 __all__ = [
-    "bit_tanimoto",
+    "ComputeDiversity",
     "ComputeDistanceMatrix",
+    "bit_tanimoto",
     "distance_to_similarity",
-    "entropy",
     "euc_bit",
-    "gini_coefficient",
-    "logdet",
     "modified_tanimoto",
     "pairwise_similarity_bit",
-    "shannon_entropy",
     "tanimoto",
     "total_diversity_volume",
     "wdud"
 ]
+
+
+class ComputeDiversity:
+    """Compute diversity metrics."""
+
+    def __init__(self,
+                 features: np.array,
+                 div_type: str = "total_diversity_volume",
+                 mols: List[rdkit.Chem.rdchem.Mol] = None,
+                 ) -> None:
+        """Initialize the ComputeDiversity class.
+
+        Parameters
+        ----------
+        features : np.ndarray
+            Feature matrix.
+        div_type : str, optional
+            Method of calculation diversity for a given molecule set, which
+            includes "explicit_diversity_index", "entropy", "logdet", "shannon_entropy", "wdud",
+            gini_coefficient" and "total_diversity_volume". Default is "total_diversity_volume".
+        mols : List[rdkit.Chem.rdchem.Mol], optional
+            List of RDKit molecule objects. This is only needed when using the
+            "explicit_diversity_index" method. Default=None.
+        """
+        self.features = features
+        self.div_type = div_type
+        self.mols = mols
+
+    def compute_diversity(self) -> float:
+        """Compute the molecule diversity.
+
+        Returns
+        -------
+        float, computed diversity.
+
+        """
+        func_dict = {
+            "explicit_diversity_index": explicit_diversity_index,
+            "entropy": entropy,
+            "logdet": logdet,
+            "shannon_entropy": shannon_entropy,
+            "wdud": wdud,
+            "total_diversity_volume": total_diversity_volume,
+            "gini_coefficient": gini_coefficient,
+        }
+
+        if self.div_type in ["entropy", "shannon_entropy", "logdet",
+                             "wdud", "total_diversity_volume", "gini_coefficient"]:
+            return func_dict[self.div_type](self.features)
+        elif self.div_type == "explicit_diversity_index":
+            return explicit_diversity_index(self.features, self.mols)
+        else:
+            raise ValueError(f"Diversity type {self.div_type} not supported.")
 
 
 class ComputeDistanceMatrix:
@@ -368,14 +418,16 @@ def nearest_average_tanimoto(x: np.ndarray) -> float:
     return nat
 
 
-def explicit_diversity_index(x: np.ndarray, mol: rdkit.Chem.rdchem.Mol) -> float:
+def explicit_diversity_index(x: np.ndarray,
+                             mols: List[rdkit.Chem.rdchem.Mol],
+                             ) -> float:
     """Computes the explicit diversity index.
 
     Parameters
     ----------
     x : ndarray
         Feature matrix.
-    mol: rdkit.Chem.rdchem.Mol
+    mols: List[rdkit.Chem.rdchem.Mol]
         Molecules from feature matrix.
 
     Returns
@@ -391,7 +443,7 @@ def explicit_diversity_index(x: np.ndarray, mol: rdkit.Chem.rdchem.Mol) -> float
     A Novel Measure for Assessing the Diversity of Compound Databases.
     Journal of Chemical Information and Modeling 46, 1898-1904.
     """
-    cs = len(rdFMCS.FindMCS(mol))
+    cs = len(rdFMCS.FindMCS(mols))
     nc = len(x)
     sdi = (1 - nearest_average_tanimoto(x)) / (0.8047 - (0.065 * (np.log(nc))))
     cr = -1 * np.log10(nc / (cs ** 2))
