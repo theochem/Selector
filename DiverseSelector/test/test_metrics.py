@@ -28,14 +28,14 @@
 from DiverseSelector.metric import (bit_tanimoto,
                                     ComputeDistanceMatrix,
                                     distance_to_similarity,
-                                    entropy,
                                     euc_bit,
-                                    logdet,
                                     modified_tanimoto,
                                     pairwise_similarity_bit,
-                                    shannon_entropy,
                                     tanimoto,
-                                    total_diversity_volume,
+                                    _shannon_entropy,
+                                    _entropy,
+                                    _logdet,
+                                    _total_diversity_volume,
                                     # wdud
                                     )
 import numpy as np
@@ -117,21 +117,21 @@ def test_modifed_tanimoto():
 
 def test_entropy():
     """Testing the entropy function with predefined matrix."""
-    ent = entropy(sample4)
+    ent = _entropy(sample4)
     expected = (2 / 3)
     assert_almost_equal(ent, expected)
 
 
 def test_logdet():
     """Testing the log determinant function with predefined subset matrix."""
-    sel = logdet(sample3)
+    sel = _logdet(sample3)
     expected = np.log10(131)
     assert_almost_equal(sel, expected)
 
 
 def test_shannon_entropy():
     """Testing the shannon entropy function with predefined matrix."""
-    selected = shannon_entropy(sample4)
+    selected = _shannon_entropy(sample4)
     expected = 0.301029995
     assert_almost_equal(selected, expected)
 
@@ -147,6 +147,6 @@ def test_wdud():
 
 def test_total_diversity_volume():
     """Testing the total diversity volume method with predefined matrix."""
-    selected = total_diversity_volume(sample3)
+    selected = _total_diversity_volume(sample3)
     expected = 2
     assert_almost_equal(selected, expected)

@@ -23,7 +23,7 @@
 
 """Metric calculation module."""
 
-from typing import Any
+from typing import Any, List
 
 from DiverseSelector.utils import sklearn_supported_metrics
 import numpy as np
@@ -33,18 +33,58 @@ from scipy.spatial.distance import euclidean, squareform
 from sklearn.metrics import pairwise_distances
 
 __all__ = [
-    "bit_tanimoto",
+    "ComputeDiversity",
     "ComputeDistanceMatrix",
+    "bit_tanimoto",
     "distance_to_similarity",
-    "entropy",
     "euc_bit",
-    "logdet",
     "modified_tanimoto",
     "pairwise_similarity_bit",
-    "shannon_entropy",
     "tanimoto",
-    "total_diversity_volume",
 ]
+
+
+class ComputeDiversity:
+    """Compute diversity metrics."""
+
+    def __init__(self,
+                 features: np.array,
+                 div_type: str = "total_diversity_volume",
+                 mols: List[rdkit.Chem.rdchem.Mol] = None,
+                 ) -> None:
+        """Initialize the ComputeDiversity class.
+
+        Parameters
+        ----------
+        features : np.ndarray
+            Feature matrix.
+        div_type : str
+            Method of calculation diversity.
+        """
+        self.features = features
+        self.div_type = div_type
+        self.mols = mols
+
+    def compute_diversity(self) -> float:
+        """Compute the molecule diversity."""
+        # entropy explicit_diversity_index logdet shannon_entropy wdud total_diversity_volume
+
+        func_dict = {
+            "explicit_diversity_index": _explicit_diversity_index,
+            "entropy": _entropy,
+            "logdet": _logdet,
+            "shannon_entropy": _shannon_entropy,
+            "wdud": _wdud,
+            "total_diversity_volume": _total_diversity_volume,
+        }
+
+        if self.div_type in ["entropy", "shannon_entropy", "logdet",
+                             "wdud", "total_diversity_volume"]:
+            return func_dict[self.div_type](self.features)
+        elif self.div_type == "explicit_diversity_index":
+            return _explicit_diversity_index(self.features, self.mols)
+        else:
+            raise ValueError(f"Diversity type {self.div_type} not supported.")
 
 
 class ComputeDistanceMatrix:
@@ -138,7 +178,7 @@ def distance_to_similarity(x: np.ndarray, dist: bool = True) -> np.ndarray:
 
 
 def pairwise_similarity_bit(feature: np.array, metric: str) -> np.ndarray:
-    """Compute the pairwaise similarity coefficients.
+    """Compute the pairwise similarity coefficients.
 
     Parameters
     ----------
@@ -150,7 +190,7 @@ def pairwise_similarity_bit(feature: np.array, metric: str) -> np.ndarray:
     Returns
     -------
     pair_coeff : ndarray
-        Similairty coefficients for all molecule pairs in feature matrix.
+        Similarity coefficients for all molecule pairs in feature matrix.
     """
     pair_simi = []
     size = len(feature)
@@ -286,7 +326,44 @@ def modified_tanimoto(a: np.array, b: np.array) -> float:
     return mt
 
 
-def entropy(x: np.ndarray) -> float:
+def nearest_average_tanimoto(x: np.ndarray) -> float:
+    """Computes the average tanimoto for nearest molecules.
+
+    Parameters
+    ----------
+    x : ndarray
+        Feature matrix.
+
+    Returns
+    -------
+    nat : float
+        Average tanimoto of closest pairs.
+
+    Notes
+    -----
+    This computes the tanimoto of pairs with the shortest distances,
+    this is explictly for explicit diversity index.
+    Papp, Á., Gulyás-Forró, A., Gulyás, Z., Dormán, G., Ürge, L.,
+    and Darvas, F.. (2006) Explicit Diversity Index (EDI):
+    A Novel Measure for Assessing the Diversity of Compound Databases.
+    Journal of Chemical Information and Modeling 46, 1898-1904.
+    """
+    tani = []
+    for idx, _ in enumerate(x):
+        short = 100  # arbitary distance
+        a = 0
+        b = 0
+        for jdx, _ in enumerate(x):
+            if euc_bit(x[idx], x[jdx]) < short and idx != jdx:
+                short = euc_bit(x[idx], x[jdx])
+                a = idx
+                b = jdx
+        tani.append(bit_tanimoto(x[a], x[b]))
+    nat = np.average(tani)
+    return nat
+
+
+def _entropy(x: np.ndarray) -> float:
     """Compute entropy of matrix.
 
     Parameters
@@ -329,51 +406,15 @@ def entropy(x: np.ndarray) -> float:
     return e
 
 
-def nearest_average_tanimoto(x: np.ndarray) -> float:
-    """Computes the average tanimoto for nearest molecules.
-
-    Parameters
-    ----------
-    x : ndarray
-        Feature matrix.
-
-    Returns
-    -------
-    nat : float
-        Average tanimoto of closest pairs.
-
-    Notes
-    -----
-    This computes the tanimoto of pairs with the shortest distances,
-    this is explictly for explicit diversity index.
-    Papp, Á., Gulyás-Forró, A., Gulyás, Z., Dormán, G., Ürge, L.,
-    and Darvas, F.. (2006) Explicit Diversity Index (EDI):
-    A Novel Measure for Assessing the Diversity of Compound Databases.
-    Journal of Chemical Information and Modeling 46, 1898-1904.
-    """
-    tani = []
-    for idx, _ in enumerate(x):
-        short = 100  # arbitary distance
-        a = 0
-        b = 0
-        for jdx, _ in enumerate(x):
-            if euc_bit(x[idx], x[jdx]) < short and idx != jdx:
-                short = euc_bit(x[idx], x[jdx])
-                a = idx
-                b = jdx
-        tani.append(bit_tanimoto(x[a], x[b]))
-    nat = np.average(tani)
-    return nat
-
-
-def explicit_diversity_index(x: np.ndarray, mol: rdkit.Chem.rdchem.Mol) -> float:
+def _explicit_diversity_index(x: np.ndarray,
+                              mols: List[rdkit.Chem.rdchem.Mol]) -> float:
     """Computes the explicit diversity index.
 
     Parameters
     ----------
     x : ndarray
         Feature matrix.
-    mol: rdkit.Chem.rdchem.Mol
+    mols: List[rdkit.Chem.rdchem.Mol]
         Molecules from feature matrix.
 
     Returns
@@ -389,7 +430,7 @@ def explicit_diversity_index(x: np.ndarray, mol: rdkit.Chem.rdchem.Mol) -> float
     A Novel Measure for Assessing the Diversity of Compound Databases.
     Journal of Chemical Information and Modeling 46, 1898-1904.
     """
-    cs = len(rdFMCS.FindMCS(mol))
+    cs = len(rdFMCS.FindMCS(mols))
     nc = len(x)
     sdi = (1 - nearest_average_tanimoto(x)) / (0.8047 - (0.065 * (np.log(nc))))
     cr = -1 * np.log10(nc / (cs ** 2))
@@ -398,7 +439,7 @@ def explicit_diversity_index(x: np.ndarray, mol: rdkit.Chem.rdchem.Mol) -> float
     return edi_scaled
 
 
-def logdet(x: np.ndarray) -> float:
+def _logdet(x: np.ndarray) -> float:
     """Computes the log determinant function .
 
     Parameters
@@ -423,7 +464,7 @@ def logdet(x: np.ndarray) -> float:
     return f_logdet
 
 
-def shannon_entropy(x: np.ndarray) -> float:
+def _shannon_entropy(x: np.ndarray) -> float:
     """Computes the shannon entrop of a matrix.
 
     Parameters
@@ -455,7 +496,7 @@ def shannon_entropy(x: np.ndarray) -> float:
     return h_x
 
 
-def wdud(x: np.ndarray) -> float:
+def _wdud(x: np.ndarray) -> float:
     """Computes the Wasserstein Distance to Uniform Distribution(WDUD).
 
     Parameters
@@ -496,7 +537,7 @@ def wdud(x: np.ndarray) -> float:
     return np.average(ans)
 
 
-def total_diversity_volume(x: np.ndarray) -> float:
+def _total_diversity_volume(x: np.ndarray) -> float:
     """Computes the total diversity volume of the matrix.
 
     Parameters
@@ -516,14 +557,14 @@ def total_diversity_volume(x: np.ndarray) -> float:
     """
     d = len(x[0])
     k = len(x[:, 0])
-    # min_max normilization:
+    # min_max normalization:
     max_x = (max(map(max, x)))
     min_x = (min(map(min, x)))
     y = np.zeros((k, d))
     for i in range(0, k):
         for j in range(0, d):
             y[i, j] = (x[i, j] - min_x) / (max_x - min_x)
-    # divesity
+    # diversity
     r_o = d * np.sqrt(1 / k)
     g_s = 0
     for i in range(0, (k - 1)):
