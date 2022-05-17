@@ -25,17 +25,17 @@
 
 # todo: fix this later
 # noqa: F401
-from DiverseSelector.metric import (bit_tanimoto,
+from DiverseSelector.metric import (_entropy,
+                                    _logdet,
+                                    _shannon_entropy,
+                                    _total_diversity_volume,
+                                    bit_tanimoto,
                                     ComputeDistanceMatrix,
                                     distance_to_similarity,
                                     euc_bit,
                                     modified_tanimoto,
                                     pairwise_similarity_bit,
-                                    tanimoto,
-                                    _shannon_entropy,
-                                    _entropy,
-                                    _logdet,
-                                    _total_diversity_volume,
+                                    tanimoto
                                     # wdud
                                     )
 import numpy as np
