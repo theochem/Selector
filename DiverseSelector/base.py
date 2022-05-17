@@ -30,8 +30,8 @@ from typing import Union
 import pandas as pd
 
 from DiverseSelector.feature import feature_reader
-from DiverseSelector.metric import ComputeDistanceMatrix, gini_coefficient, entropy, logdet, total_diversity_volume,\
-    shannon_entropy,wdud
+from DiverseSelector.metric import ComputeDistanceMatrix, entropy,\
+    gini_coefficient, logdet, shannon_entropy, total_diversity_volume, wdud
 from DiverseSelector.utils import PandasDataFrame
 import numpy as np
 from sklearn.preprocessing import StandardScaler
@@ -165,7 +165,8 @@ class SelectionBase(ABC):
             diversity volume.
         metric: str
             metric for calculating diversity. Default is 'diversity volume'.
-            Other options are 'entropy', 'diversity index', 'logdet', 'shannon entropy', 'wdud', 'gini'.
+            Other options are 'entropy', 'diversity index', 'logdet',
+             'shannon entropy', 'wdud', 'gini'.
 
         Notes
         -----
@@ -209,7 +210,8 @@ class SelectionBase(ABC):
         sep: str
             separator between lines.
         kwargs: dict
-            other arguments for supporting the json and excel file formats, that are accepted by pandas.
+            other arguments for supporting the json and excel file formats,
+            that are accepted by pandas.
 
         Returns
         -------
