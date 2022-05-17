@@ -165,7 +165,7 @@ class SelectionBase(ABC):
             diversity volume.
         metric: str
             metric for calculating diversity. Default is 'diversity volume'.
-            Other options are 'entropy', 'diversity index', 'logdet', 'shannon entropy', 'wdud'.
+            Other options are 'entropy', 'diversity index', 'logdet', 'shannon entropy', 'wdud', 'gini'.
 
         Notes
         -----
@@ -188,6 +188,8 @@ class SelectionBase(ABC):
             score = shannon_entropy(mtrx)
         elif metric == 'wdud':
             score = wdud(mtrx)
+        elif metric == 'gini':
+            score = gini_coefficient(mtrx)
 
         return score
 
