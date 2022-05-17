@@ -30,6 +30,7 @@ from DiverseSelector.metric import (bit_tanimoto,
                                     distance_to_similarity,
                                     entropy,
                                     euc_bit,
+                                    gini_coefficient,
                                     logdet,
                                     modified_tanimoto,
                                     pairwise_similarity_bit,
@@ -150,3 +151,49 @@ def test_total_diversity_volume():
     selected = total_diversity_volume(sample3)
     expected = 2
     assert_almost_equal(selected, expected)
+
+
+def test_gini_coefficient_of_non_diverse_set():
+    r"""Test Gini coefficient of the worst diverse set is zero."""
+    # Finger-prints where they are all the same
+    numb_molecules = 10
+    single_fingerprint = list(np.random.choice([0, 1], size=(numb_molecules,)))
+    finger_prints = np.array([
+        single_fingerprint
+    ] * numb_molecules)
+
+    result = gini_coefficient(finger_prints)
+    # Since they are all the same, then gini coefficient should be zero.
+    assert_almost_equal(result, 0.0, decimal=8)
+
+
+def test_gini_coefficient_of_most_diverse_set():
+    r"""Test Gini coefficient of the most diverse set."""
+    #  Finger-prints where one molecule has more `wealth` than all others.
+    finger_prints = np.array([
+        [1, 1, 1, 1, 1, 1, 1],
+
+    ] + [[0, 0, 0, 0, 0, 0, 0]] * 100000)
+    result = gini_coefficient(finger_prints)
+    # Since they are all the same, then gini coefficient should be zero.
+    assert_almost_equal(result, 1.0, decimal=4)
+
+
+def test_gini_coefficient_with_alternative_definition():
+    r"""Test Gini coefficient with alternative definition."""
+    # Finger-prints where they are all different
+    numb_molecules = 4
+    finger_prints = np.array([
+        [1, 1, 1, 1],
+        [0, 1, 1, 1],
+        [0, 0, 1, 1],
+        [0, 0, 0, 1]
+    ])
+    result = gini_coefficient(finger_prints)
+
+    # Alternative definition from wikipedia
+    b = numb_molecules + 1
+    desired = (
+        numb_molecules + 1 - 2 * ((b - 1) + (b - 2) * 2 + (b - 3) * 3 + (b - 4) * 4) / (10)
+    ) / numb_molecules
+    assert_almost_equal(result, desired)
