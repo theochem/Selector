@@ -22,11 +22,11 @@
 # --
 
 """Testing for the clustering-based selection algorithms."""
+import os
 
 from DiverseSelector import clustering_based
 from DiverseSelector.test.common import generate_synthetic_data
 import numpy as np
-import os
 from numpy.testing import assert_allclose
 
 coords, class_labels, arr_dist = generate_synthetic_data(n_samples=100,
