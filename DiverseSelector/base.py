@@ -30,11 +30,11 @@ from typing import Union
 import pandas as pd
 
 from DiverseSelector.feature import feature_reader
-from DiverseSelector.metric import *
+from DiverseSelector.metric import ComputeDistanceMatrix, gini_coefficient, entropy, logdet, total_diversity_volume,\
+    shannon_entropy,wdud
 from DiverseSelector.utils import PandasDataFrame
 import numpy as np
 from sklearn.preprocessing import StandardScaler
-import json
 
 
 class SelectionBase(ABC):
