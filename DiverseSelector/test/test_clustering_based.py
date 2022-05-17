@@ -27,7 +27,6 @@ from DiverseSelector import clustering_based
 from DiverseSelector.test.common import generate_synthetic_data
 import numpy as np
 from numpy.testing import assert_allclose
-from unittest.mock import patch, mock_open
 import os
 
 coords, class_labels, arr_dist = generate_synthetic_data(n_samples=100,
