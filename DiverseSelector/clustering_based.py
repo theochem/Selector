@@ -40,6 +40,7 @@ from sklearn.cluster import (AffinityPropagation,
                              )
 from sklearn.mixture import GaussianMixture
 
+
 __all__ = [
     "ClusteringSelection",
 ]
@@ -133,8 +134,7 @@ class ClusteringSelection(SelectionBase):
         Returns
         -------
         None:
-            updates the labels of the molecules
-
+            updates the labels of the molecules.
         """
         if self.clustering_method == 'k-means':
             algorithm = KMeans(n_clusters=self.num_clusters,
@@ -179,8 +179,7 @@ class ClusteringSelection(SelectionBase):
         Returns
         -------
         selected_all: np.ndarray
-            array of selected molecules
-
+            array of selected molecules.
         """
         unique_labels = np.unique(self.labels)
         selected_all = []
@@ -213,4 +212,5 @@ class ClusteringSelection(SelectionBase):
                 selected_all.append(selected)
 
         selected_all = np.hstack(selected_all).flatten()
+        self.selected = selected_all
         return selected_all
