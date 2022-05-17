@@ -26,13 +26,11 @@
 from abc import ABC, abstractmethod
 from pathlib import PurePath
 from typing import Union
-
-import pandas as pd
-
 from DiverseSelector.feature import feature_reader
 from DiverseSelector.metric import ComputeDistanceMatrix, entropy,\
     gini_coefficient, logdet, shannon_entropy, total_diversity_volume, wdud
 from DiverseSelector.utils import PandasDataFrame
+import pandas as pd
 import numpy as np
 from sklearn.preprocessing import StandardScaler
 
