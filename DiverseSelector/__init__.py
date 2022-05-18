@@ -23,7 +23,7 @@
 
 """The main DiverseSelector Package."""
 
-from DiverseSelector.Selectors import *
+from DiverseSelector.selectors import *
 
 # Handle versioneer
 from ._version import get_versions
