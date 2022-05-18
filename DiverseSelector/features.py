@@ -80,7 +80,7 @@ class DescriptorGenerator:
         return df_features
 
     def padelpy_desc(self,
-                     mol_file,
+                     mol_file: str,
                      keep_csv: bool = False,
                      maxruntime: int = -1,
                      waitingjobs: int = -1,
@@ -192,8 +192,18 @@ class DescriptorGenerator:
         # check initialization
         assert len(descriptor_types) == len(desc_list)
 
-        arr_features = [_rdkit_descriptors_low(mol, desc_list=desc_list, ipc_avg=ipc_avg)
-                        for mol in self.mols]
+        arr_features = []
+        for mol in self.mols:
+            # this part is modified from
+            # https://github.com/deepchem/deepchem/blob/master/deepchem/feat/molecule_featurizers/
+            # rdkit_descriptors.py#L11-L98
+            for desc_name, function in desc_list:
+                if desc_name == "Ipc" and ipc_avg:
+                    feature = function(mol, avg=True)
+                else:
+                    feature = function(mol)
+                arr_features.append(feature)
+
         df_features = pd.DataFrame(arr_features, columns=descriptor_types)
 
         return df_features
@@ -221,44 +231,6 @@ class DescriptorGenerator:
         df_features = pd.DataFrame(data=frag_features, columns=feature_names)
 
         return df_features
-
-
-# this part is modified from
-# https://github.com/deepchem/deepchem/blob/master/deepchem/feat/molecule_featurizers/
-# rdkit_descriptors.py#L11-L98
-def _rdkit_descriptors_low(mol: RDKitMol,
-                           desc_list: list,
-                           ipc_avg: bool = True,
-                           ) -> list:
-    """Calculate RDKit descriptors.
-
-    Parameters
-    ----------
-    mol : rdkit.Chem.rdchem.Mol
-        RDKit Mol object.
-    desc_list: list
-        A list of tuples, which contain descriptor types and functions.
-    use_fragment : bool, optional
-        If True, the return value includes the fragment binary descriptors like "fr_XXX".
-        Default=True.
-    ipc_avg : bool, optional
-        If True, the IPC descriptor calculates with avg=True option. Default=True
-
-    Returns
-    -------
-    features : list
-        1D list of RDKit descriptors for `mol`. The length is `len(descriptors)`.
-    """
-
-    features = []
-    for desc_name, function in desc_list:
-        if desc_name == "Ipc" and ipc_avg:
-            feature = function(mol, avg=True)
-        else:
-            feature = function(mol)
-        features.append(feature)
-
-    return features
 
 
 # feature selection
