@@ -28,7 +28,7 @@ from pathlib import PurePath
 from typing import Union
 
 from DiverseSelector.feature import feature_reader
-from DiverseSelector.metric import ComputeDistanceMatrix, entropy,\
+from DiverseSelector.metric import compute_distance_matrix, entropy,\
     gini_coefficient, logdet, shannon_entropy, total_diversity_volume, wdud
 from DiverseSelector.utils import PandasDataFrame
 import numpy as np
@@ -96,9 +96,8 @@ class SelectionBase(ABC):
         # todo: current version only works for molecular descriptors
         # pair-wise distance matrix
         if arr_dist is None:
-            dist = ComputeDistanceMatrix(feature=self.features,
-                                         metric="euclidean")
-            self.arr_dist = dist.compute_distance()
+            self.arr_dist = compute_distance_matrix(features=self.features,
+                                                    metric="euclidean")
         else:
             self.arr_dist = arr_dist
 

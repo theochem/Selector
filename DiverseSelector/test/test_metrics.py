@@ -26,7 +26,7 @@
 # todo: fix this later
 # noqa: F401
 from DiverseSelector.metric import (bit_tanimoto,
-                                    ComputeDistanceMatrix,
+                                    compute_distance_matrix,
                                     distance_to_similarity,
                                     entropy,
                                     euc_bit,
@@ -67,19 +67,17 @@ sample4 = np.array([[1, 0, 1],
 
 def test_compute_distance_matrix_euc_bit():
     """Testing the euclidean distance function with predefined feature matrix."""
-    sci_dist = ComputeDistanceMatrix(sample2, "euclidean")
-    selected = sci_dist.compute_distance()
+    sci_dist = compute_distance_matrix(sample2, "euclidean")
     expected = pairwise_similarity_bit(sample2, euc_bit) - np.identity(len(sample2))
-    assert_equal(expected, selected)
+    assert_equal(expected, sci_dist)
 
 
 def test_compute_distance_matrix_euc():
     """Testing the euclidean distance function with predefined bit-string matrix."""
-    sci_dist = ComputeDistanceMatrix(sample3, "euclidean")
-    selected = sci_dist.compute_distance()
+    sci_dist = compute_distance_matrix(sample3, "euclidean")
     expected = np.array([[0, 2.8284271],
                         [2.8284271, 0]])
-    assert_almost_equal(expected, selected)
+    assert_almost_equal(expected, sci_dist)
 
 
 def test_tanimoto_bit():
