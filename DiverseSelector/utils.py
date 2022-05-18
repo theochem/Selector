@@ -23,6 +23,7 @@
 
 """Utils module."""
 import gzip
+import numpy as np
 from typing import TypeVar
 
 import numpy as np
@@ -133,6 +134,28 @@ def mol_loader(file_name: str,
 
     return mols
 
+def pick_initial_compounds(arr_dist):
+    """
+    Pick the initial compounds using medioid.
+
+    Parameters
+    ----------
+    arr_dist: np.ndarray
+
+    Returns
+    -------
+    starting_idx: int
+        center of the medioid
+    """
+    # use the molecule with maximum distance to initial medoid as  the starting molecule
+    # https://www.sciencedirect.com/science/article/abs/pii/S1093326399000145?via%3Dihub
+    # J. Mol. Graphics Mod., 1998, Vol. 16,
+    # DISSIM: A program for the analysis of chemical diversity
+    medoid_idx = np.argmin(arr_dist.sum(axis=0))
+
+    # selected molecule with maximum distance to medoid
+    starting_idx = np.argmax(arr_dist[medoid_idx, :])
+    return starting_idx
 
 def dump_mol():
     """Save molecules."""
