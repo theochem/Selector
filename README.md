@@ -9,13 +9,54 @@
 [![codecov](https://codecov.io/gh/theochem/DiverseSelector/branch/main/graph/badge.svg?token=0UJixrJfNJ)](https://codecov.io/gh/theochem/DiverseSelector)
 [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/theochem/DiverseSelector.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/theochem/DiverseSelector/context:python)
 
-Methods for selecting diverse subset from molecular datasets.
+The DiverseSelector library provides methods for selecting a diverse subset of a (molecular) dataset.
 
-Template adapted from 
-- https://github.com/MolSSI/cookiecutter-cms
-- https://github.com/theochem/iodata
-- https://github.com/theochem/DiverseSelector
 
-Contribution guidelines are listed in [How to contribute](.github/CONTRIBUTING.md).
+Citation
+--------
 
-*Please note that this package is under active development and the API is subject to change.*
+Please use the following citation in any publication using DiverseSelector library:
+
+```md
+@article{
+}
+```
+
+Dependencies
+------------
+
+The following dependencies are required to run DiverseSelector properly,
+
+* Python >= 3.6: http://www.python.org/
+* NumPy >= 1.21.5: http://www.numpy.org/
+* SciPy >= 1.5.0: http://www.scipy.org/
+* PyTest >= 5.3.4: https://docs.pytest.org/
+* PyTest-Cov >= 2.8.0: https://pypi.org/project/pytest-cov/
+
+
+Installation
+------------
+
+To install DiverseSelector using the conda package management system, install
+[miniconda](https://conda.io/miniconda.html) or [anaconda](https://www.anaconda.com/download)
+first, and then:
+
+```bash
+    # Create and activate myenv conda environment (optional, but recommended)
+    conda create -n myenv python=3.6
+    conda activate myenv
+
+    # Install the stable release.
+    conda install -c theochem qc-
+```
+
+To install DiverseSelector with pip, you may want to create a
+[virtual environment](https://docs.python.org/3/tutorial/venv.html), and then:
+
+
+```bash
+    # Install the stable release.
+    pip install qc-
+```
+
+See HTML for full details.
