@@ -28,9 +28,11 @@ from pathlib import PurePath
 from typing import Union
 
 from DiverseSelector.feature import feature_reader
-from DiverseSelector.metric import ComputeDistanceMatrix
+from DiverseSelector.metric import ComputeDistanceMatrix, entropy,\
+    gini_coefficient, logdet, shannon_entropy, total_diversity_volume, wdud
 from DiverseSelector.utils import PandasDataFrame
 import numpy as np
+import pandas as pd
 from sklearn.preprocessing import StandardScaler
 
 
@@ -110,44 +112,117 @@ class SelectionBase(ABC):
         pass
 
     # concrete method, because we want in to be in both child classes, and it should act
-    @property
-    def subset_diversity(self):
-        """Calculate diversity of the subset."""
-        # todo: need to implement diversity measurement here
-        pass
-
-    # concrete method, because we want in to be in both child classes, and it should act
-    @property
-    def all_diversity(self):
+    def subset_diversity(self, indices, metric):
         """
-        Calculate diversity of the original dataset.
+        Calculate diversity of the subset.
 
         Parameters
         ----------
-        div_metric:
-            metric for calculating diversity of the subset ("Gini", "Entropy" etc.)
+        indices: np.ndarray
+            indices of the subset diversity of which one wants to calculate.
+        metric: str
+            metric for calculating diversity. Default is 'diversity volume'.
+            Other options are 'entropy', 'diversity index', 'logdet', 'shannon entropy', 'wdud'.
 
         Returns
         -------
-            Scale should be discussed (0 to 1, or 0 to 100 or -1 to 1 or anything else).
-
-        """
-        # todo: need to implement diversity measurement here
-        pass
-
-    def save_output(self):
-        """Save output.
+        score: float
+            diversity volume
 
         Notes
         -----
-        csv or other text
-        excel
-        sdf
-
-        save :
-        1. index
-        2. selected features
-        3. selected molecules
-
+        Agrafiotis, D. K.. (1997) Stochastic Algorithms for Maximizing Molecular Diversity.
+        Journal of Chemical Information and Computer Sciences 37, 841-851.
         """
-        pass
+        if isinstance(self.features, np.ndarray):
+            mtrx = self.features[indices]
+        elif isinstance(self.features, pd.DataFrame):
+            mtrx = self.features.iloc[indices, :].to_numpy()
+        else:
+            raise ValueError("features should be a numpy.ndarray or pandas.DataFrame object")
+
+        if metric == 'diversity volume':
+            score = total_diversity_volume(mtrx)
+        elif metric == 'entropy':
+            score = entropy(mtrx)
+        elif metric == 'logdet':
+            score = logdet(mtrx)
+        elif metric == 'shannon entropy':
+            score = shannon_entropy(mtrx)
+        elif metric == 'wdud':
+            score = wdud(mtrx)
+        return score
+
+    # concrete method, because we want in to be in both child classes, and it should act
+    def all_diversity(self, metric='diversity volume'):
+        """
+        Calculate diversity of the original dataset.
+
+        Returns
+        -------
+        score: float
+            diversity volume.
+        metric: str
+            metric for calculating diversity. Default is 'diversity volume'.
+            Other options are 'entropy', 'diversity index', 'logdet',
+             'shannon entropy', 'wdud', 'gini'.
+
+        Notes
+        -----
+        All methods have references in the metric.py file
+        """
+        if isinstance(self.features, np.ndarray):
+            mtrx = self.features
+        elif isinstance(self.features, pd.DataFrame):
+            mtrx = self.features.to_numpy()
+        else:
+            raise ValueError("features should be a numpy.ndarray or pandas.DataFrame object")
+
+        if metric == 'diversity volume':
+            score = total_diversity_volume(mtrx)
+        elif metric == 'entropy':
+            score = entropy(mtrx)
+        elif metric == 'logdet':
+            score = logdet(mtrx)
+        elif metric == 'shannon entropy':
+            score = shannon_entropy(mtrx)
+        elif metric == 'wdud':
+            score = wdud(mtrx)
+        elif metric == 'gini':
+            score = gini_coefficient(mtrx)
+
+        return score
+
+    @staticmethod
+    def save_output(selected, fname, frmt='txt', sep=' ', **kwargs):
+        """
+        Save the selected ids of molecules to file.
+
+        Parameters
+        ----------
+        selected: np.ndarray
+            numpy array of selected molecules.
+        fname: str
+            filename to save output; must include the extension.
+        format: str
+            'txt', 'json', 'csv', 'excel' file format of the output file.
+            If 'txt' format is chosen, then sep can be specified is a separation character.
+        sep: str
+            separator between lines.
+        kwargs: dict
+            other arguments for supporting the json and excel file formats,
+            that are accepted by pandas.
+
+        Returns
+        -------
+        None.
+        """
+        series = pd.Series(selected)
+        if frmt in ('txt', 'csv'):
+            series.to_csv(fname, sep, index=False)
+        elif frmt == 'json':
+            series.to_json(fname, **kwargs)
+        elif frmt == 'excel':
+            series.to_excel(fname, index=False, **kwargs)
+        else:
+            raise ValueError("Wrong file format")

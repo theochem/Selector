@@ -22,10 +22,12 @@
 # --
 
 """Testing for the clustering-based selection algorithms."""
+import os
 
 from DiverseSelector import clustering_based
 from DiverseSelector.test.common import generate_synthetic_data
 import numpy as np
+from numpy.testing import assert_allclose
 
 coords, class_labels, arr_dist = generate_synthetic_data(n_samples=100,
                                                          n_features=2,
@@ -168,3 +170,56 @@ def test_gmm():
     labels_seleted = np.array([class_labels[elem] for elem in selected_ids])
     for i in range(3):
         assert len(labels_seleted[labels_seleted == i]) == 4
+
+
+def test_save_output():
+    """Testing the save_output method."""
+    selector = clustering_based.ClusteringSelection(num_selected=12,
+                                                    num_clusters=3,
+                                                    clustering_method="k-means",
+                                                    metric='euclidean',
+                                                    arr_dist=arr_dist)
+    selector.features = coords
+    selector.cluster()
+    selected_ids = sorted(selector.select())
+    selector.save_output(selected_ids, 'test.txt', 'txt')
+    selector.save_output(selected_ids, 'test.json', 'json')
+    with open('test.txt', 'r', encoding='utf-8') as f:
+        text = f.read()
+    assert text == "0\n40\n41\n47\n56\n58\n63\n67\n81\n83\n85\n86\n93\n"
+    os.remove('test.txt')
+
+    with open('test.json', 'r', encoding='utf-8') as f:
+        text = f.read()
+    t_text = "{\"0\":40,\"1\":41,\"2\":47,\"3\":56,\"4\":58,\"5\":63," \
+             "\"6\":67,\"7\":81,\"8\":83,\"9\":85,\"10\":86,\"11\":93}"
+    assert text == t_text
+    os.remove('test.json')
+
+
+def test_subset_diversity():
+    """Testing subset_diversity method from the base.py file."""
+    selector = clustering_based.ClusteringSelection(num_selected=12,
+                                                    num_clusters=3,
+                                                    clustering_method="k-means",
+                                                    metric='euclidean',
+                                                    arr_dist=arr_dist)
+    selector.features = coords
+    selector.cluster()
+    selected_ids = selector.select()
+    selected_diversity = selector.subset_diversity(selected_ids, metric='diversity volume')
+    assert_allclose(selected_diversity, 225.60, rtol=1e-3)
+
+
+def test_all_diversity():
+    """Testing all_diversity property from the base.py file."""
+    selector = clustering_based.ClusteringSelection(num_selected=12,
+                                                    num_clusters=3,
+                                                    clustering_method="k-means",
+                                                    metric='euclidean',
+                                                    arr_dist=arr_dist)
+    selector.features = coords
+    diversity = []
+    for metric in ['diversity volume', 'entropy']:
+        diversity.append(selector.all_diversity(metric))
+    assert_allclose(diversity, [9514.79, 0], rtol=1e-3)
