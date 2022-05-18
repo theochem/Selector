@@ -29,9 +29,25 @@ from DiverseSelector.base import SelectionBase
 
 
 class MaxMin(SelectionBase):
-    """Selecting compounds using MinMax algorithm."""
+    """Selecting compounds using MinMax algorithm.
+
+    Initial point is chosen as medoid center. The second point is
+    the furthest point away. All the following points are selected
+    using the rule:
+    1. Find minimum distance from every point to the selected once.
+    2. Select a point the has the maximum distance among calculated
+       on the previous step.
+    """
     def __init__(self, func_distance=None):
-        """Initializing class"""
+        """
+        Initializing class.
+
+        Parameters
+        ----------
+        func_distance: callable
+            function for calculating the pairwise distance between instances of the array.
+            Default is None.
+        """
         self.arr_dist = None
         self.n_mols = None
         self.func_distance = func_distance
@@ -75,11 +91,12 @@ class MaxMin(SelectionBase):
 
 
 class OptiSim(SelectionBase):
-    def __init__(self, r=None, k=10):
+    def __init__(self, r=None, k=10, func_distance=lambda x, y: np.linalg.norm(x-y)):
         self.r = r
         self.k = k
         self.random_seed = 42
         self.starting_idx = 0
+        self.func_distance = func_distance
 
     def optisim(self, arr):
         selected = [self.starting_idx]
@@ -100,10 +117,10 @@ class OptiSim(SelectionBase):
                 for selected_idx in selected:
                     data_point = arr[index_new]
                     selected_point = arr[selected_idx]
-                    distance_sq = 0
+                    distance = 0
                     for i, point in enumerate(data_point):
-                        distance_sq += (selected_point[i] - point) ** 2
-                    distances.append(np.sqrt(distance_sq))
+                        distance += self.func_distance(selected_point[i], point)
+                    distances.append(distance)
                 min_dist = min(distances)
                 if min_dist > self.r:
                     subsample[index_new] = min_dist
@@ -153,10 +170,11 @@ class OptiSim(SelectionBase):
 
 
 class DirectedSphereExclusion(SelectionBase):
-    def __init__(self, r=None):
+    def __init__(self, r=None, func_distance=lambda x, y: np.linalg.norm(x-y)):
         self.r = r
         self.random_seed = 42
         self.starting_idx = 0
+        self.func_distance = func_distance
 
     def sphere_exclusion(self, arr):
         selected = []
@@ -224,3 +242,105 @@ class DirectedSphereExclusion(SelectionBase):
             return result
         else:
             return self.sphere_exclusion(arr)
+
+
+class GridPartitioning(SelectionBase):
+    """Selecting compounds using MinMax algorithm."""
+
+    def __init__(self, num_selected, cells, max_dim, grid_method):
+        """Initializing class"""
+        self.random_seed = 42
+        self.num_selected = num_selected
+        self.cells = cells
+        self.max_dim = max_dim
+        self.grid_method = grid_method
+
+    def select_from_cluster(self, arr, num_selected, indices=None):
+        selected = []
+        data_dim = len(arr[0])
+        if data_dim > self.max_dim:
+            norm_data = StandardScaler().fit_transform(arr)
+            pca = PCA(n_components=self.max_dim)
+            arr = pca.fit_transform(norm_data)
+
+        if self.grid_method == "equisized_independent":
+            axis_info = []
+            for i in range(data_dim):
+                axis_min, axis_max = min(arr[:, i]), max(arr[:, i])
+                cell_length = (axis_max - axis_min) / self.cells
+                axis_info.append([axis_min, axis_max, cell_length])
+            bins = {}
+            for index, point in enumerate(arr):
+                point_bin = []
+                for dim, value in enumerate(point):
+                    if value == axis_info[dim][0]:
+                        index_bin = 0
+                    elif value == axis_info[dim][1]:
+                        index_bin = self.cells - 1
+                    else:
+                        index_bin = int((value - axis_info[dim][0]) // axis_info[dim][2])
+                    point_bin.append(index_bin)
+                bins.setdefault(tuple(point_bin), [])
+                bins[tuple(point_bin)].append(index)
+
+        elif self.grid_method == "equisized_dependent":
+            bins = {}
+            for i in range(data_dim):
+                if len(bins) == 0:
+                    axis_min, axis_max = min(arr[:, i]), max(arr[:, i])
+                    cell_length = (axis_max - axis_min) / self.cells
+                    axis_info = [axis_min, axis_max, cell_length]
+
+                    for index, point in enumerate(arr):
+                        point_bin = []
+                        if point[i] == axis_info[0]:
+                            index_bin = 0
+                        elif point[i] == axis_info[1]:
+                            index_bin = self.cells - 1
+                        else:
+                            index_bin = int((point[i] - axis_info[0]) // axis_info[2])
+                        point_bin.append(index_bin)
+                        bins.setdefault(tuple(point_bin), [])
+                        bins[tuple(point_bin)].append(index)
+                else:
+                    new_bins = {}
+                    for bin_idx, bin_list in bins.items():
+                        axis_min = min(arr[bin_list, i])
+                        axis_max = max(arr[bin_list, i])
+                        cell_length = (axis_max - axis_min) / self.cells
+                        axis_info = [axis_min, axis_max, cell_length]
+
+                        for point_idx in bin_list:
+                            point_bin = [num for num in bin_idx]
+                            if arr[point_idx][i] == axis_info[0]:
+                                index_bin = 0
+                            elif arr[point_idx][i] == axis_info[1]:
+                                index_bin = self.cells - 1
+                            else:
+                                index_bin = int((arr[point_idx][i] - axis_info[0]) //
+                                                axis_info[2])
+                            point_bin.append(index_bin)
+                            new_bins.setdefault(tuple(point_bin), [])
+                            new_bins[tuple(point_bin)].append(point_idx)
+                    bins = new_bins
+
+        elif self.grid_method == "equifrequent_independent":
+            raise NotImplementedError(f"{self.grid_method} not implemented.")
+        elif self.grid_method == "equifrequent_dependent":
+            raise NotImplementedError(f"{self.grid_method} not implemented.")
+        else:
+            raise ValueError(f"{self.grid_method} not a valid grid_method")
+
+        old_len = 0
+        rng = np.random.default_rng(seed=self.random_seed)
+        while len(selected) < self.num_selected:
+            for bin_idx, bin_list in bins.items():
+                if len(bin_list) > 0:
+                    random_int = rng.integers(low=0, high=len(bin_list), size=1)[0]
+                    mol_id = bin_list.pop(random_int)
+                    selected.append(mol_id)
+
+            if len(selected) == old_len:
+                break
+            old_len = len(selected)
+        return selected
