@@ -53,5 +53,3 @@ def test_maxmin():
     selected_ids = selector.select(arr=arr_dist, num_selected=12)
     # make sure all the selected indices are the same with expectation
     assert_equal(selected_ids, [85, 57, 41, 25, 9, 62, 29, 65, 81, 61, 60, 97])
-
-test_maxmin()
