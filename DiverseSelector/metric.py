@@ -33,8 +33,8 @@ from scipy.spatial.distance import euclidean, squareform
 from sklearn.metrics import pairwise_distances
 
 __all__ = [
-    "ComputeDiversity",
-    "ComputeDistanceMatrix",
+    "compute_diversity",
+    "compute_distance_matrix",
     "bit_tanimoto",
     "distance_to_similarity",
     "euc_bit",
@@ -46,126 +46,97 @@ __all__ = [
 ]
 
 
-class ComputeDiversity:
-    """Compute diversity metrics."""
+def compute_diversity(features: np.array,
+                      div_type: str = "total_diversity_volume",
+                      mols: List[rdkit.Chem.rdchem.Mol] = None,
+                      ) -> float:
+    """Compute diversity metrics.
 
-    def __init__(self,
-                 features: np.array,
-                 div_type: str = "total_diversity_volume",
-                 mols: List[rdkit.Chem.rdchem.Mol] = None,
-                 ) -> None:
-        """Initialize the ComputeDiversity class.
+    Parameters
+    ----------
+    features : np.ndarray
+        Feature matrix.
+    div_type : str, optional
+        Method of calculation diversity for a given molecule set, which
+        includes "explicit_diversity_index", "entropy", "logdet", "shannon_entropy", "wdud",
+        gini_coefficient" and "total_diversity_volume". Default is "total_diversity_volume".
+    mols : List[rdkit.Chem.rdchem.Mol], optional
+        List of RDKit molecule objects. This is only needed when using the
+        "explicit_diversity_index" method. Default=None.
 
-        Parameters
-        ----------
-        features : np.ndarray
-            Feature matrix.
-        div_type : str, optional
-            Method of calculation diversity for a given molecule set, which
-            includes "explicit_diversity_index", "entropy", "logdet", "shannon_entropy", "wdud",
-            gini_coefficient" and "total_diversity_volume". Default is "total_diversity_volume".
-        mols : List[rdkit.Chem.rdchem.Mol], optional
-            List of RDKit molecule objects. This is only needed when using the
-            "explicit_diversity_index" method. Default=None.
-        """
-        self.features = features
-        self.div_type = div_type
-        self.mols = mols
+    Returns
+    -------
+    float, computed diversity.
 
-    def compute_diversity(self) -> float:
-        """Compute the molecule diversity.
-
-        Returns
-        -------
-        float, computed diversity.
-
-        """
-        func_dict = {
-            "explicit_diversity_index": explicit_diversity_index,
-            "entropy": entropy,
-            "logdet": logdet,
-            "shannon_entropy": shannon_entropy,
-            "wdud": wdud,
-            "total_diversity_volume": total_diversity_volume,
-            "gini_coefficient": gini_coefficient,
-        }
-
-        if self.div_type in ["entropy", "shannon_entropy", "logdet",
-                             "wdud", "total_diversity_volume", "gini_coefficient"]:
-            return func_dict[self.div_type](self.features)
-        elif self.div_type == "explicit_diversity_index":
-            return explicit_diversity_index(self.features, self.mols)
-        else:
-            raise ValueError(f"Diversity type {self.div_type} not supported.")
-
-
-class ComputeDistanceMatrix:
-    """Compute distance matrix.
-
-    This class is just a demo and not finished yet.
     """
+    func_dict = {
+        "explicit_diversity_index": explicit_diversity_index,
+        "entropy": entropy,
+        "logdet": logdet,
+        "shannon_entropy": shannon_entropy,
+        "wdud": wdud,
+        "total_diversity_volume": total_diversity_volume,
+        "gini_coefficient": gini_coefficient,
+    }
 
-    def __init__(self,
-                 feature: np.ndarray,
-                 metric: str = "euclidean",
-                 n_jobs: int = -1,
-                 force_all_finite: bool = True,
-                 **kwargs: Any,
-                 ):
-        """Compute pairwise distance given a feature matrix.
+    if div_type in ["entropy", "shannon_entropy", "logdet",
+                    "wdud", "total_diversity_volume", "gini_coefficient"]:
+        return func_dict[div_type](features)
+    elif div_type == "explicit_diversity_index":
+        return explicit_diversity_index(features, mols)
+    else:
+        raise ValueError(f"Diversity type {div_type} not supported.")
 
-        Parameters
-        ----------
-        feature : np.ndarray
-            Molecule feature matrix.
-        metric : str, optional
-            Distance metric.
 
-        Returns
-        -------
-        dist : ndarray
-            Symmetric distance array.
-        """
-        self.feature = feature
-        self.metric = metric
-        self.n_jobs = n_jobs
-        self.force_all_finite = force_all_finite
-        self.kwargs = kwargs
+def compute_distance_matrix(features: np.ndarray,
+                            metric: str = "euclidean",
+                            n_jobs: int = -1,
+                            force_all_finite: bool = True,
+                            **kwargs: Any, ):
+    """Compute pairwise distance given a feature matrix.
 
-    def compute_distance(self):
-        """Compute the distance matrix."""
-        built_in_metrics = [
-            "tanimoto",
-            "modified_tanimoto",
-        ]
+    Parameters
+    ----------
+    features : np.ndarray
+        Molecule feature matrix.
+    metric : str, optional
+        Distance metric.
+    n_jobs : int, optional
+        Number of jobs to run in parallel. Default=-1, which means all CPUs.
+    force_all_finite : bool, optional
+        Whether to raise an error on np.inf and np.nan in X. Default=True.
 
-        if self.metric in sklearn_supported_metrics:
-            dist = pairwise_distances(
-                X=self.feature,
-                Y=None,
-                metric=self.metric,
-                n_jobs=self.n_jobs,
-                force_all_finite=self.force_all_finite,
-                **self.kwargs,
-            )
-        elif self.metric in built_in_metrics:
-            func = self._select_function(self.metric)
-            dist = func(self.feature)
-        else:
-            raise ValueError(f"Metric {self.metric} is not supported by the library.")
+    Returns
+    -------
+    dist : ndarray
+        Symmetric distance array.
+    """
+    # todo: add more metrics implemented here
+    built_in_metrics = [
+        "tanimoto",
+        "modified_tanimoto",
+    ]
 
-        return dist
-
-    @staticmethod
-    def _select_function(metric: str) -> Any:
-        """Select the function to compute the distance matrix."""
+    if metric in sklearn_supported_metrics:
+        dist = pairwise_distances(
+            X=features,
+            Y=None,
+            metric=metric,
+            n_jobs=n_jobs,
+            force_all_finite=force_all_finite,
+            **kwargs,
+        )
+    elif metric in built_in_metrics:
         function_dict = {
-            "tanimoto": tanimoto,
-            "modified_tanimoto": modified_tanimoto,
-        }
+                "tanimoto": tanimoto,
+                "modified_tanimoto": modified_tanimoto,
+            }
 
-        return function_dict[metric]
+        dist = function_dict[metric](features)
+    else:
+        raise ValueError(f"Metric {metric} is not supported by the library.")
 
+    return dist
 
 def distance_to_similarity(x: np.ndarray, dist: bool = True) -> np.ndarray:
     """Convert between distance and similarity matrix.
