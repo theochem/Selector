@@ -22,9 +22,9 @@
 # --
 
 """Feature generation module."""
+
 import os
 import sys
-from typing import Any
 
 from DiverseSelector.utils import ExplicitBitVector, mol_loader, PandasDataFrame, RDKitMol
 from mordred import Calculator, descriptors
@@ -35,6 +35,7 @@ import pandas as pd
 from rdkit import Chem
 from rdkit.Chem import AllChem, Descriptors, MACCSkeys, rdMHFPFingerprint
 from sklearn.preprocessing import StandardScaler
+
 
 __all__ = [
     "DescriptorGenerator",
@@ -49,70 +50,22 @@ sys.path.append(os.path.join(cwd, "padelpy"))
 
 
 class DescriptorGenerator:
-    """Molecular descriptor generator."""
+    """Compute molecular features."""
 
     def __init__(self,
-                 mols: list = None,
-                 mol_file: str = None,
-                 desc_type: str = "mordred",
-                 use_fragment: bool = True,
-                 ipc_avg: bool = True,
-                 ) -> None:
-        """Molecular descriptor calculations.
-
-        Parameters
-        ----------
-        mols : list
-            A list of molecule RDKitMol objects.
-        mol_file : str, optional
-            A file containing a list of molecules.
-        desc_type : str, optional
-            Descriptor type name, which can be "mordred", "padel", "rdkit", "rdkit_frag",
-            or the capitalized version. Default="mordred".
-        use_fragment : bool, optional
-            If True, the return value includes the fragment binary descriptors like "fr_XXX".
-            Default=True.
-        ipc_avg : bool, optional
-            If True, the IPC descriptor calculates with avg=True option. Default=True.
-
-        """
+                 mols: list,
+                 ):
         self.mols = mols
-        self.mol_file = mol_file
-        self.desc_type = desc_type
-        self.use_fragment = use_fragment
-        self.ipc_avg = ipc_avg
-        # self.__dict__.update(kwargs)
 
-    def compute_descriptor(self,
-                           **kwargs: Any,
-                           ) -> PandasDataFrame:
-        """Molecule descriptor generation."""
-        if self.desc_type.lower() == "mordred":
-            df_features = self.mordred_descriptors(mols=self.mols, **kwargs)
-        elif self.desc_type.lower() == "padel":
-            df_features = self.padelpy_descriptors(mol_file=self.mol_file,
-                                                   keep_csv=False,
-                                                   **kwargs)
-        elif self.desc_type.lower() == "rdkit":
-            df_features = self.rdkit_descriptors(mols=self.mols,
-                                                 use_fragment=self.use_fragment,
-                                                 ipc_avg=self.ipc_avg,
-                                                 **kwargs)
-        elif self.desc_type.lower() == "rdkit_frag":
-            df_features = self.rdkit_fragment_descriptors(self.mols)
-        else:
-            raise ValueError(f"Unknown descriptor type {self.desc_type}.")
-
-        return df_features
-
-    @staticmethod
-    def mordred_descriptors(mols: list, **kwargs: Any) -> PandasDataFrame:
+    def mordred_desc(self,
+                     ignore_3D: bool = False,
+                     ) -> PandasDataFrame:
         """Mordred molecular descriptor generation.
 
         Parameters
         ----------
-        mols : list
-            A list of molecule RDKitMol objects.
+        ignore_3D : bool, optional
+            Ignore 3D coordinates. The default=False.
 
         Returns
         -------
@@ -120,17 +73,37 @@ class DescriptorGenerator:
             A `pandas.DataFrame` object with compute Mordred descriptors.
 
         """
-        # if only compute 2D descriptors,
-        # ignore_3D=True
-        calc = Calculator(descriptors, **kwargs)
-        df_features = pd.DataFrame(calc.pandas(mols))
+        # if only compute 2D descriptors, set ignore_3D=True
+        calc = Calculator(descs=descriptors, ignore_3D=ignore_3D)
+        df_features = pd.DataFrame(calc.pandas(self.mols))
 
         return df_features
 
-    @staticmethod
-    def padelpy_descriptors(mol_file,
-                            keep_csv=False,
-                            **kwargs: Any) -> PandasDataFrame:
+    def padelpy_desc(self,
+                     mol_file: str,
+                     keep_csv: bool = False,
+                     maxruntime: int = -1,
+                     waitingjobs: int = -1,
+                     threads: int = -1,
+                     d_2d: bool = False,
+                     d_3d: bool = False,
+                     config: str = None,
+                     convert3d: bool = False,
+                     descriptortypes: str = None,
+                     detectaromaticity: bool = False,
+                     d_file: str = None,
+                     fingerprints: bool = False,
+                     log: bool = False,
+                     maxcpdperfile: int = 0,
+                     removesalt: bool = False,
+                     retain3d: bool = False,
+                     retainorder: bool = False,
+                     standardizenitro: bool = False,
+                     standardizetautomers: bool = False,
+                     tautomerlist: str = None,
+                     usefilenameasmolname: bool = False,
+                     sp_timeout: int = None,
+                     headless: bool = True) -> PandasDataFrame:
         """PADEL molecular descriptor generation.
 
         Parameters
@@ -139,7 +112,7 @@ class DescriptorGenerator:
             Molecule file name.
         keep_csv : bool, optional
             If True, the csv file is kept. Default=False.
-        **kwargs : Any
+        maxruntime : int, optional
             Additional keyword arguments.
             See https://github.com/ecrl/padelpy/blob/master/padelpy/wrapper.py.
 
@@ -152,34 +125,33 @@ class DescriptorGenerator:
         # if only compute 2D descriptors,
         # ignore_3D=True
 
-        # save file temporarily
-        # writer = Chem.SDWriter("padelpy_out_tmp.sdf")
-        # for mol in mols:
-        #     writer.write(mol)
-        # writer.close()
-        #
-        # desc = from_sdf(sdf_file="padelpy_out_tmp.sdf",
-        #                 output_csv=None,
-        #                 descriptors=True,
-        #                 fingerprints=False,
-        #                 timeout=None)
-        # df_features = pd.DataFrame(desc)
-        #
-        # # delete temporary file
-        # os.remove("padelpy_out_tmp.sdf")
-
-        if mol_file is None:
-            raise ValueError("Attention: a mol_file is required for padel descriptor calculations.")
-
         csv_fname = str(os.path.basename(mol_file)).split(".", maxsplit=1)[0] + \
-            "padel_descriptors.csv"
+                    "_padel_descriptors.csv"
 
-        padeldescriptor(mol_dir=mol_file,
-                        d_file=csv_fname,
-                        d_2d=True,
-                        d_3d=True,
-                        retainorder=True,
-                        **kwargs)
+        padeldescriptor(maxruntime=maxruntime,
+                        waitingjobs=waitingjobs,
+                        threads=threads,
+                        d_2d=d_2d,
+                        d_3d=d_3d,
+                        config=config,
+                        convert3d=convert3d,
+                        descriptortypes=descriptortypes,
+                        detectaromaticity=detectaromaticity,
+                        mol_dir=mol_file,
+                        d_file=d_file,
+                        fingerprints=fingerprints,
+                        log=log,
+                        maxcpdperfile=maxcpdperfile,
+                        removesalt=removesalt,
+                        retain3d=retain3d,
+                        retainorder=retainorder,
+                        standardizenitro=standardizenitro,
+                        standardizetautomers=standardizetautomers,
+                        tautomerlist=tautomerlist,
+                        usefilenameasmolname=usefilenameasmolname,
+                        sp_timeout=sp_timeout,
+                        headless=headless,
+                        )
 
         df_features = pd.read_csv(csv_fname, sep=",", index_col="Name")
 
@@ -188,26 +160,19 @@ class DescriptorGenerator:
 
         return df_features
 
-    @staticmethod
-    def rdkit_descriptors(mols: list,
-                          use_fragment: bool = True,
-                          ipc_avg: bool = True,
-                          **kwargs,
-                          ) -> PandasDataFrame:
+    def rdkit_desc(self,
+                   use_fragment: bool = True,
+                   ipc_avg: bool = True,
+                   ) -> PandasDataFrame:
         # noqa: D403
         """RDKit molecular descriptor generation.
 
         Parameters
         ----------
-        mols : list
-            A list of molecule RDKitMol objects.
         use_fragment : bool, optional
             If True, the return value includes the fragment binary descriptors like "fr_XXX".
-            Default=True.
         ipc_avg : bool, optional
-            If True, the IPC descriptor calculates with avg=True option. Default=True
-        **kwargs : Any, optional
-            Other parameters that can be passed to `_rdkit_descriptors_low()`.
+            If True, the IPC descriptor calculates with avg=True option.
 
         Returns
         -------
@@ -227,21 +192,25 @@ class DescriptorGenerator:
         # check initialization
         assert len(descriptor_types) == len(desc_list)
 
-        arr_features = [_rdkit_descriptors_low(mol, desc_list=desc_list, ipc_avg=ipc_avg, **kwargs)
-                        for mol in mols]
+        arr_features = []
+        for mol in self.mols:
+            # this part is modified from
+            # https://github.com/deepchem/deepchem/blob/master/deepchem/feat/molecule_featurizers/
+            # rdkit_descriptors.py#L11-L98
+            for desc_name, function in desc_list:
+                if desc_name == "Ipc" and ipc_avg:
+                    feature = function(mol, avg=True)
+                else:
+                    feature = function(mol)
+                arr_features.append(feature)
+
         df_features = pd.DataFrame(arr_features, columns=descriptor_types)
 
         return df_features
 
-    @staticmethod
-    def rdkit_fragment_descriptors(mols: list) -> PandasDataFrame:
+    def rdkit_frag_desc(self) -> PandasDataFrame:
         # noqa: D403
         """RDKit fragment features.
-
-        Parameters
-        ----------
-        mols : list
-            A list of molecule RDKitMol objects.
 
         Returns
         -------
@@ -253,8 +222,8 @@ class DescriptorGenerator:
         # this implementation is taken from https://github.com/Ryan-Rhys/FlowMO/blob/
         # e221d989914f906501e1ad19cd3629d88eac1785/property_prediction/data_utils.py#L111
         fragments = {d[0]: d[1] for d in Descriptors.descList[115:]}
-        frag_features = np.zeros((len(mols), len(fragments)))
-        for idx, mol in enumerate(mols):
+        frag_features = np.zeros((len(self.mols), len(fragments)))
+        for idx, mol in enumerate(self.mols):
             features = [fragments[d](mol) for d in fragments]
             frag_features[idx, :] = features
 
@@ -262,48 +231,6 @@ class DescriptorGenerator:
         df_features = pd.DataFrame(data=frag_features, columns=feature_names)
 
         return df_features
-
-
-# this part is modified from
-# https://github.com/deepchem/deepchem/blob/master/deepchem/feat/molecule_featurizers/
-# rdkit_descriptors.py#L11-L98
-def _rdkit_descriptors_low(mol: RDKitMol,
-                           desc_list: list,
-                           ipc_avg: bool = True,
-                           **kwargs) -> list:
-    """Calculate RDKit descriptors.
-
-    Parameters
-    ----------
-    mol : rdkit.Chem.rdchem.Mol
-        RDKit Mol object.
-    desc_list: list
-        A list of tuples, which contain descriptor types and functions.
-    use_fragment : bool, optional
-        If True, the return value includes the fragment binary descriptors like "fr_XXX".
-        Default=True.
-    ipc_avg : bool, optional
-        If True, the IPC descriptor calculates with avg=True option. Default=True
-
-    Returns
-    -------
-    features : list
-        1D list of RDKit descriptors for `mol`. The length is `len(descriptors)`.
-    """
-    if "mol" in kwargs:
-        mol = kwargs.get("mol")
-        raise DeprecationWarning(
-            "Mol is being phased out as a parameter, please pass RDKit mol object instead.")
-
-    features = []
-    for desc_name, function in desc_list:
-        if desc_name == "Ipc" and ipc_avg:
-            feature = function(mol, avg=True)
-        else:
-            feature = function(mol)
-        features.append(feature)
-    # return np.asarray(features)
-    return features
 
 
 # feature selection
@@ -318,14 +245,6 @@ class FingerprintGenerator:
 
     def __init__(self,
                  mols: list,
-                 fp_type: str = "SECFP",
-                 n_bits: int = 2048,
-                 radius: int = 3,
-                 min_radius: int = 1,
-                 random_seed: int = 12345,
-                 rings: bool = True,
-                 isomeric: bool = True,
-                 kekulize: bool = False,
                  ) -> None:
         """Fingerprint generator.
 
@@ -333,6 +252,28 @@ class FingerprintGenerator:
         ----------
         mols : RDKitMol
             Molecule object.
+        """
+        self.mols = mols
+
+        # molecule names
+        mol_names = [Chem.MolToSmiles(mol) if mol.GetPropsAsDict().get("_Name") is None
+                     else mol.GetProp("_Name") for mol in mols]
+        self.mol_names = mol_names
+
+    def compute_fingerprint(self,
+                            fp_type: str = "SECFP",
+                            n_bits: int = 2048,
+                            radius: int = 3,
+                            min_radius: int = 1,
+                            random_seed: int = 12345,
+                            rings: bool = True,
+                            isomeric: bool = True,
+                            kekulize: bool = False,
+                            ) -> PandasDataFrame:
+        """Compute fingerprints.
+
+        Parameters
+        ----------
         fp_type : str, optional
             Supported fingerprints: SECFP, ECFP, Morgan, RDKitFingerprint and MACCSkeys.
             Default="SECFP".
@@ -351,41 +292,23 @@ class FingerprintGenerator:
             Whether the SMILES added to the shingling are isomeric. Default=False.
         kekulize : bool, optional
             Whether the SMILES added to the shingling are kekulized. Default=True.
-
         """
-        self.mols = mols
-        self.fp_type = fp_type
-        self.n_bits = n_bits
-        self.radius = radius
-        self.min_radius = min_radius
-        self.random_seed = random_seed
-        self.rings = rings
-        self.isomeric = isomeric
-        self.kekulize = kekulize
-
-        # molecule names
-        mol_names = [Chem.MolToSmiles(mol) if mol.GetPropsAsDict().get("_Name") is None
-                     else mol.GetProp("_Name") for mol in mols]
-        self.mol_names = mol_names
-
-    def compute_fingerprint(self) -> PandasDataFrame:
-        """Compute fingerprints."""
-        if self.fp_type.upper() in ["SECFP", "ECFP", "MORGAN", "RDKFINGERPRINT", "MACCSKEYS"]:
+        if fp_type.upper() in ["SECFP", "ECFP", "MORGAN", "RDKFINGERPRINT", "MACCSKEYS"]:
             fps = [self.rdkit_fingerprint_low(mol,
-                                              fp_type=self.fp_type,
-                                              n_bits=self.n_bits,
-                                              radius=self.radius,
-                                              min_radius=self.min_radius,
-                                              random_seed=self.random_seed,
-                                              rings=self.rings,
-                                              isomeric=self.isomeric,
-                                              kekulize=self.kekulize,
+                                              fp_type=fp_type,
+                                              n_bits=n_bits,
+                                              radius=radius,
+                                              min_radius=min_radius,
+                                              random_seed=random_seed,
+                                              rings=rings,
+                                              isomeric=isomeric,
+                                              kekulize=kekulize,
                                               ) for mol in self.mols]
         # todo: add support of e3fp
 
         # other cases
         else:
-            raise ValueError(f"{self.fp_type} is not an supported fingerprint type.")
+            raise ValueError(f"{fp_type} is not an supported fingerprint type.")
 
         df_fps = pd.DataFrame(np.array(fps), index=self.mol_names)
 
@@ -491,62 +414,6 @@ class FingerprintGenerator:
             raise NotImplementedError(f"{fp_type} is not implemented yet.")
 
         return fp
-
-    # todo: add support of e3fp fingerprint
-    # @staticmethod
-    # def e3fp_fingerprint(mols,
-    #                      n_bits=2048,
-    #                      radius=3,
-    #                      isomeric=True,
-    #                      ):
-    #     """E3FP fingerprint."""
-    #
-    #     for mol in mols:
-    #         mol_name = Chem.MolToSmiles(mol, isomericSmiles=True)
-    #         try:
-    #             mol.GetProp("_Name")
-    #         except KeyError:
-    #             mol.SetProp("_Name", mol_name)
-    #
-    #     # requires 3D molecule
-    #     # cannot work with planer molecules
-    #     # filter out molecules with only two atoms as /e3fp/fingerprint/fprinter.py line 547,
-    #     # requires a 2-dimensional array
-    #     # in __init__
-    #     #     distance_matrix = array_ops.make_distance_matrix(atom_coords)
-    #     mols_doable = [mol for mol in mols if mol.GetNumAtoms() != 2]
-    #     mols_not_doable = [mol for mol in mols if mol.GetNumAtoms() == 2]
-    #     # molecular name for diatomic molecule
-    #     mol_names_doable = [mol.GetProp("_Name") for mol in mols_doable]
-    #     # molecular name for molecules with one atom or more than two atoms
-    #     mol_names_two_atoms = [mol.GetProp("_Name") for mol in mols_not_doable]
-    #
-    #     # e3fp configuration
-    #     # https://e3fp.readthedocs.io/en/latest/usage/config.html#configuration
-    #     # https://e3fp.readthedocs.io/en/latest/_modules/e3fp/fingerprint/generate.html
-    #     fprint_params = {"bits": n_bits,
-    #                      "radius_multiplier": radius,
-    #                      "first": 1,
-    #                      "stereo": isomeric,
-    #                      "counts": False,
-    #                      # Use the atom invariants used by RDKit for its Morgan fingerprint
-    #                      "rdkit_invariants": False,
-    #                      "level": -1,
-    #                      "include_disconnected": False,
-    #                      "remove_duplicate_substructs": True,
-    #                      "exclude_floating": True,
-    #                      "overwrite": True,
-    #                      }
-    #
-    #     # generate e3fp fingerprint from SDF files
-    #     # fps = map(fprints_from_mol, mols, fprint_params)
-    #     fps = [fprints_from_mol(mol, fprint_params=fprint_params) for mol in mols_doable]
-    #     fps_folded = np.array([fp[0].fold().to_vector(sparse=False, dtype=int) for fp in fps])
-    #
-    #     # convert to pandas.DataFrame
-    #     df_e3fp = pd.DataFrame(data=fps_folded, index=mol_names_doable)
-    #
-    #     return df_e3fp, mol_names_doable, mol_names_two_atoms
 
 
 def feature_reader(file_name: str,
