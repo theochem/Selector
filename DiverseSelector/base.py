@@ -44,7 +44,7 @@ class SelectionBase(ABC):
         self.arr_dist = None
         self.n_mols = None
 
-    def select(self, arr, num_selected, func_distance=None, labels=None):
+    def select(self, arr, num_selected, labels=None):
         """
          MinMax algorithm for selecting points.
 
@@ -67,12 +67,6 @@ class SelectionBase(ABC):
         selected: list
             list of ids of selected molecules
         """
-        self.n_mols = arr.shape[0]
-        if func_distance is not None:
-            self.arr_dist = func_distance(arr)
-        else:
-            self.arr_dist = arr
-
         if labels is not None:
             unique_labels = np.unique(labels)
             num_clusters = len(unique_labels)
@@ -107,7 +101,7 @@ class SelectionBase(ABC):
                     selected_all.append(cluster_ids[selected])
             return np.hstack(selected_all).flatten().tolist()
         else:
-            selected = self.select_from_cluster(self.arr_dist, num_selected)
+            selected = self.select_from_cluster(arr, num_selected)
             return selected
 
     @staticmethod
