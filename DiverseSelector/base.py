@@ -53,9 +53,6 @@ class SelectionBase(ABC):
         arr: np.ndarray
             Array of features if fun_distance is provided.
             Otherwise, treated as distance matrix.
-        func_distance: callable
-            function for calculating the pairwise distance between instances of the array.
-            Default is None.
         num_selected: int
             number of points that need to be selected
         labels: np.ndarray
