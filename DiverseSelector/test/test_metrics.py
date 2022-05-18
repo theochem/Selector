@@ -25,20 +25,23 @@
 
 # todo: fix this later
 # noqa: F401
-from DiverseSelector.metric import (bit_tanimoto,
-                                    compute_distance_matrix,
-                                    distance_to_similarity,
-                                    entropy,
-                                    euc_bit,
-                                    gini_coefficient,
-                                    logdet,
-                                    modified_tanimoto,
-                                    pairwise_similarity_bit,
-                                    shannon_entropy,
-                                    tanimoto,
-                                    total_diversity_volume,
-                                    # wdud
+from DiverseSelector.distance import (bit_tanimoto,
+                                      compute_distance_matrix,
+                                      distance_to_similarity,
+                                      euc_bit,
+                                      modified_tanimoto,
+                                      pairwise_similarity_bit,
+                                      tanimoto,
+                                      # wdud
                                     )
+from DiverseSelector.diversity import (# compute_diversity_matrix,
+                                       entropy,
+                                       gini_coefficient,
+                                       logdet,
+                                       shannon_entropy,
+                                       total_diversity_volume,
+                                       # wdud,
+                                       )
 import numpy as np
 from numpy.testing import assert_almost_equal, assert_equal, assert_raises
 
