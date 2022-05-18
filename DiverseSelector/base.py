@@ -62,7 +62,6 @@ class SelectionBase(ABC):
             number of points that need to be selected
         labels: np.ndarray
             labels for performing algorithm withing clusters.
-            Default is None.
 
         Returns
         -------
