@@ -33,7 +33,6 @@ from sklearn.metrics import pairwise_distances
 __all__ = [
     "compute_distance_matrix",
     "bit_tanimoto",
-    "distance_to_similarity",
     "euc_bit",
     "modified_tanimoto",
     "pairwise_similarity_bit",
