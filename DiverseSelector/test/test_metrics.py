@@ -27,7 +27,6 @@
 # noqa: F401
 from DiverseSelector.distance import (bit_tanimoto,
                                       compute_distance_matrix,
-                                      distance_to_similarity,
                                       euc_bit,
                                       modified_tanimoto,
                                       pairwise_similarity_bit,
@@ -42,6 +41,7 @@ from DiverseSelector.diversity import (# compute_diversity_matrix,
                                        total_diversity_volume,
                                        # wdud,
                                        )
+from DiverseSelector.utils import distance_to_similarity
 import numpy as np
 from numpy.testing import assert_almost_equal, assert_equal, assert_raises
 
