@@ -24,21 +24,7 @@
 """Base class for diversity based subset selection."""
 
 from abc import ABC, abstractmethod
-from pathlib import PurePath
-from typing import Union
-
-from DiverseSelector.distance import compute_distance_matrix
-from DiverseSelector.diversity import (entropy,
-                                       gini_coefficient,
-                                       logdet,
-                                       shannon_entropy,
-                                       total_diversity_volume,
-                                       wdud)
-from DiverseSelector.feature import feature_reader
-from DiverseSelector.utils import PandasDataFrame
 import numpy as np
-import pandas as pd
-from sklearn.preprocessing import StandardScaler
 import warnings
 
 
