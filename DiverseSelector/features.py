@@ -128,8 +128,8 @@ class DescriptorGenerator:
         # if only compute 2D descriptors,
         # ignore_3D=True
 
-        csv_fname = str(os.path.basename(self.mol_file)).split(".", maxsplit=1)[0] + \
-                    "padel_descriptors.csv"
+        csv_fname = str(os.path.basename(mol_file)).split(".", maxsplit=1)[0] + \
+                    "_padel_descriptors.csv"
 
         padeldescriptor(maxruntime=maxruntime,
                         waitingjobs=waitingjobs,

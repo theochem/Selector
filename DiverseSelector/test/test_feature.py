@@ -23,11 +23,10 @@
 
 """Testing for feature generation module."""
 
-from DiverseSelector.feature import (compute_features,
-                                     DescriptorGenerator,
-                                     feature_reader,
-                                     FingerprintGenerator,
-                                     )
+from DiverseSelector.features import (DescriptorGenerator,
+                                      feature_reader,
+                                      FingerprintGenerator,
+                                      )
 from DiverseSelector.test.common import load_testing_mols
 from numpy.testing import assert_almost_equal, assert_equal
 import pandas as pd
@@ -44,12 +43,8 @@ def test_feature_desc_mordred_2d():
     # load molecules
     mols = load_testing_mols(mol_type="2d")
     # generate molecular descriptors with the DescriptorGenerator
-    desc_generator = DescriptorGenerator(mols=mols,
-                                         desc_type="mordred",
-                                         use_fragment=True,
-                                         ipc_avg=True,
-                                         )
-    df_mordred_desc = desc_generator.compute_descriptor(ignore_3D=True)
+    df_mordred_desc = DescriptorGenerator(mols).mordred_desc(ignore_3D=True)
+
     # load the expected descriptor dataframe
     with path("DiverseSelector.test.data", "drug_mols_desc_smi.csv") as smi_csv:
         df_mordred_desc_exp = pd.read_csv(smi_csv,
@@ -69,12 +64,8 @@ def test_feature_desc_mordred_3d():
     # load molecules
     mols = load_testing_mols(mol_type="3d")
     # generate molecular descriptors with the DescriptorGenerator
-    desc_generator = DescriptorGenerator(mols=mols,
-                                         desc_type="mordred",
-                                         use_fragment=True,
-                                         ipc_avg=True,
-                                         )
-    df_mordred_desc = desc_generator.compute_descriptor(ignore_3D=False)
+    df_mordred_desc = DescriptorGenerator(mols=mols).mordred_desc(ignore_3D=False)
+
     # load the expected descriptor dataframe
     with path("DiverseSelector.test.data", "drug_mols_desc_sdf_3d.csv") as sdf_csv:
         df_mordred_desc_exp = pd.read_csv(sdf_csv,
@@ -92,12 +83,7 @@ def test_feature_desc_padelpy_3d():
     """Testing molecular PaDEL descriptor with SMILES strings."""
     # generate molecular descriptors with the DescriptorGenerator
     with path("DiverseSelector.test.data", "drug_mols.sdf") as sdf_drugs:
-        desc_generator = DescriptorGenerator(mol_file=sdf_drugs,
-                                             desc_type="padel",
-                                             use_fragment=True,
-                                             ipc_avg=True,
-                                             )
-        df_padel_desc = desc_generator.compute_descriptor()
+        df_padel_desc = DescriptorGenerator(mols=None).padelpy_desc(mol_file=sdf_drugs)
 
     # load the expected descriptor dataframe
     with path("DiverseSelector.test.data", "drug_mols_desc_padel.csv") as sdf_csv:
@@ -117,12 +103,8 @@ def test_feature_desc_rdkit():
     # load molecules
     mols = load_testing_mols(mol_type="3d")
     # generate molecular descriptors with the DescriptorGenerator
-    desc_generator = DescriptorGenerator(mols=mols,
-                                         desc_type="rdkit",
-                                         use_fragment=True,
-                                         ipc_avg=True,
-                                         )
-    df_rdkit_desc = desc_generator.compute_descriptor()
+    df_rdkit_desc = DescriptorGenerator(mols=mols).rdkit_desc(use_fragment=True,
+                                                              ipc_avg=True)
     # load the expected descriptor dataframe
     with path("DiverseSelector.test.data", "drug_mols_desc_rdkit.csv") as rdkit_csv:
         df_rdkit_desc_exp = pd.read_csv(rdkit_csv,
@@ -139,36 +121,16 @@ def test_feature_desc_rdkit_frag():
     # load molecules
     mols = load_testing_mols(mol_type="3d")
     # generate molecular descriptors with the DescriptorGenerator
-    desc_generator = DescriptorGenerator(mols=mols,
-                                         desc_type="rdkit_frag",
-                                         use_fragment=True,
-                                         ipc_avg=True,
-                                         )
-    df_rdkit_desc = desc_generator.compute_descriptor()
+    df_rdkit_frag_desc = DescriptorGenerator(mols=mols).rdkit_frag_desc()
     # load the expected descriptor dataframe
     with path("DiverseSelector.test.data", "drug_mols_desc_rdkit_frag.csv") as rdkit_frag_csv:
         df_rdkit_desc_exp = pd.read_csv(rdkit_frag_csv,
                                         sep=",")
     # check if the dataframes are equal
-    assert_equal(df_rdkit_desc.shape, df_rdkit_desc_exp.shape)
-    assert_almost_equal(df_rdkit_desc.to_numpy(float),
+    assert_equal(df_rdkit_frag_desc.shape, df_rdkit_desc_exp.shape)
+    assert_almost_equal(df_rdkit_frag_desc.to_numpy(float),
                         df_rdkit_desc_exp.to_numpy(float),
                         decimal=7)
-
-
-def test_feature_desc_invalid():
-    """Testing invalid descriptor with 3D molecules."""
-    # load molecules
-    mols = load_testing_mols(mol_type="3d")
-    # generate molecular descriptors with the DescriptorGenerator
-    with pytest.raises(ValueError):
-        desc_generator = DescriptorGenerator(mols=mols,
-                                             desc_type="invalid_desc",
-                                             use_fragment=True,
-                                             ipc_avg=True,
-                                             )
-
-        desc_generator.compute_descriptor()
 
 
 def test_feature_fp_secfp6():
@@ -176,17 +138,15 @@ def test_feature_fp_secfp6():
     # load molecules
     mols = load_testing_mols(mol_type="3d")
     # generate molecular descriptors with the DescriptorGenerator
-    fp_generator = FingerprintGenerator(mols=mols,
-                                        fp_type="SECFP",
-                                        n_bits=1024,
-                                        radius=3,
-                                        min_radius=1,
-                                        random_seed=42,
-                                        rings=True,
-                                        isomeric=True,
-                                        kekulize=False,
-                                        )
-    df_secfp6 = fp_generator.compute_fingerprint()
+    df_secfp6 = FingerprintGenerator(mols=mols).compute_fingerprint(fp_type="SECFP",
+                                                                    n_bits=1024,
+                                                                    radius=3,
+                                                                    min_radius=1,
+                                                                    random_seed=42,
+                                                                    rings=True,
+                                                                    isomeric=True,
+                                                                    kekulize=False)
+
     # load the expected descriptor dataframe
     with path("DiverseSelector.test.data", "drug_mols_secfp6.csv") as secfp6_csv:
         df_secfp6_exp = pd.read_csv(secfp6_csv,
@@ -204,17 +164,14 @@ def test_feature_fp_ecfp6():
     # load molecules
     mols = load_testing_mols(mol_type="3d")
     # generate molecular descriptors with the DescriptorGenerator
-    fp_generator = FingerprintGenerator(mols=mols,
-                                        fp_type="ECFP",
-                                        n_bits=1024,
-                                        radius=3,
-                                        min_radius=1,
-                                        random_seed=42,
-                                        rings=True,
-                                        isomeric=True,
-                                        kekulize=False,
-                                        )
-    df_ecfp6 = fp_generator.compute_fingerprint()
+    df_ecfp6 = FingerprintGenerator(mols=mols).compute_fingerprint(fp_type="ECFP",
+                                                                   n_bits=1024,
+                                                                   radius=3,
+                                                                   min_radius=1,
+                                                                   random_seed=42,
+                                                                   rings=True,
+                                                                   isomeric=True,
+                                                                   kekulize=False)
     # load the expected descriptor dataframe
     with path("DiverseSelector.test.data", "drug_mols_ecfp6.csv") as ecfp6_csv:
         df_ecfp6_exp = pd.read_csv(ecfp6_csv,
@@ -232,17 +189,14 @@ def test_feature_fp_morgan():
     # load molecules
     mols = load_testing_mols(mol_type="3d")
     # generate molecular descriptors with the DescriptorGenerator
-    fp_generator = FingerprintGenerator(mols=mols,
-                                        fp_type="Morgan",
-                                        n_bits=1024,
-                                        radius=3,
-                                        min_radius=1,
-                                        random_seed=42,
-                                        rings=True,
-                                        isomeric=True,
-                                        kekulize=False,
-                                        )
-    df_morgan = fp_generator.compute_fingerprint()
+    df_morgan = FingerprintGenerator(mols=mols).compute_fingerprint(fp_type="Morgan",
+                                                                    n_bits=1024,
+                                                                    radius=3,
+                                                                    min_radius=1,
+                                                                    random_seed=42,
+                                                                    rings=True,
+                                                                    isomeric=True,
+                                                                    kekulize=False)
     # load the expected descriptor dataframe
     with path("DiverseSelector.test.data", "drug_mols_morgan.csv") as morgan_csv:
         df_morgan_exp = pd.read_csv(morgan_csv,
@@ -260,17 +214,14 @@ def test_feature_fp_rdkit():
     # load molecules
     mols = load_testing_mols(mol_type="3d")
     # generate molecular descriptors with the DescriptorGenerator
-    fp_generator = FingerprintGenerator(mols=mols,
-                                        fp_type="RDkFingerprint",
-                                        n_bits=1024,
-                                        radius=3,
-                                        min_radius=1,
-                                        random_seed=42,
-                                        rings=True,
-                                        isomeric=True,
-                                        kekulize=False,
-                                        )
-    df_rdkit_fp = fp_generator.compute_fingerprint()
+    df_rdkit_fp = FingerprintGenerator(mols=mols).compute_fingerprint(fp_type="RDkFingerprint",
+                                                                      n_bits=1024,
+                                                                      radius=3,
+                                                                      min_radius=1,
+                                                                      random_seed=42,
+                                                                      rings=True,
+                                                                      isomeric=True,
+                                                                      kekulize=False, )
     # load the expected descriptor dataframe
     with path("DiverseSelector.test.data", "drug_mols_RDKitfp.csv") as rdkit_fp_csv:
         df_rdkit_fp_exp = pd.read_csv(rdkit_fp_csv,
@@ -288,17 +239,14 @@ def test_feature_fp_maccskeys():
     # load molecules
     mols = load_testing_mols(mol_type="3d")
     # generate molecular descriptors with the DescriptorGenerator
-    fp_generator = FingerprintGenerator(mols=mols,
-                                        fp_type="MaCCSKeys",
-                                        n_bits=1024,
-                                        radius=3,
-                                        min_radius=1,
-                                        random_seed=42,
-                                        rings=True,
-                                        isomeric=True,
-                                        kekulize=False,
-                                        )
-    df_maccskeys_fp = fp_generator.compute_fingerprint()
+    df_maccskeys_fp = FingerprintGenerator(mols=mols).compute_fingerprint(fp_type="MaCCSKeys",
+                                                                          n_bits=1024,
+                                                                          radius=3,
+                                                                          min_radius=1,
+                                                                          random_seed=42,
+                                                                          rings=True,
+                                                                          isomeric=True,
+                                                                          kekulize=False)
     # load the expected descriptor dataframe
     with path("DiverseSelector.test.data", "drug_mols_MaCCSKeys.csv") as maccskeys_fp_csv:
         df_maccskeys_fp_exp = pd.read_csv(maccskeys_fp_csv,
@@ -317,18 +265,7 @@ def test_feature_fp_invalid():
     mols = load_testing_mols(mol_type="3d")
     # generate molecular descriptors with the DescriptorGenerator
     with pytest.raises(ValueError):
-        fp_generator = FingerprintGenerator(mols=mols,
-                                            fp_type="invalid_fp",
-                                            n_bits=1024,
-                                            radius=3,
-                                            min_radius=1,
-                                            random_seed=42,
-                                            rings=True,
-                                            isomeric=True,
-                                            kekulize=False,
-                                            )
-
-        fp_generator.compute_fingerprint()
+        FingerprintGenerator(mols=mols).compute_fingerprint(fp_type="invalid_fp")
 
 
 def test_feature_reader_csv():
@@ -401,18 +338,14 @@ def test_feature_get_features_load():
 
 def test_feature_get_features_fp_generate():
     """Testing the feature getter function by computing features."""
-    with path("DiverseSelector.test.data", "drug_mols.sdf") as sdf_drugs:
-        df_secfp6 = compute_features(feature_name="SECFP",
-                                     mol_file=str(sdf_drugs),
-                                     feature_file=None,
-                                     n_bits=1024,
-                                     radius=3,
-                                     min_radius=1,
-                                     random_seed=42,
-                                     rings=True,
-                                     isomeric=True,
-                                     kekulize=False,
-                                     )
+    mols = load_testing_mols(mol_type="3d")
+    df_secfp6 = FingerprintGenerator(mols=mols).compute_fingerprint(n_bits=1024,
+                                                                    radius=3,
+                                                                    min_radius=1,
+                                                                    random_seed=42,
+                                                                    rings=True,
+                                                                    isomeric=True,
+                                                                    kekulize=False)
     with path("DiverseSelector.test.data", "drug_mols_secfp6.csv") as secfp6_csv:
         df_secfp6_exp = pd.read_csv(secfp6_csv,
                                     sep=",",
@@ -427,12 +360,9 @@ def test_feature_get_features_fp_generate():
 
 def test_feature_get_features_desc_generate():
     """Testing the feature getter function by computing features."""
-    with path("DiverseSelector.test.data", "drug_mols.sdf") as sdf_drugs:
-        df_desc_rdkit_frag = compute_features(mol_file=str(sdf_drugs),
-                                              feature_name="rdkit_frag",
-                                              use_fragment=True,
-                                              ipc_avg=True,
-                                              )
+    mols = load_testing_mols(mol_type="3d")
+    df_desc_rdkit_frag = DescriptorGenerator(mols=mols).rdkit_frag_desc()
+
     with path("DiverseSelector.test.data", "drug_mols_desc_rdkit_frag.csv") as desc_csv:
         df_desc_rdkit_frag_exp = pd.read_csv(desc_csv,
                                              sep=",",
