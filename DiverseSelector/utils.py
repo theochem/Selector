@@ -26,6 +26,7 @@ import gzip
 import numpy as np
 from typing import TypeVar
 
+import numpy as np
 # pylint: disable=W0611
 from pandas.core.frame import DataFrame
 from rdkit import Chem
@@ -166,3 +167,25 @@ def dump_feature():
 
 # todo: dump_selected_index
 # todo: add index of selected molecules in base.py
+
+
+def distance_to_similarity(x: np.ndarray, dist: bool = True) -> np.ndarray:
+    """Convert between distance and similarity matrix.
+
+    Parameters
+    ----------
+    x : ndarray
+        Symmetric distance or similarity array.
+    dist : bool
+        Confirms the matrix is distance.
+
+    Returns
+    -------
+    y : ndarray
+        Symmetric distance or similarity array.
+    """
+    if dist is True:
+        y = 1 / (1 + x)
+    else:
+        y = (1 / x) - 1
+    return y
