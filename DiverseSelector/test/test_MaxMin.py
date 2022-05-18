@@ -47,9 +47,11 @@ def test_maxmin():
     selector = MaxMin()
     selected_ids = selector.select(arr=arr_dist_cluster, num_selected=12, labels=class_labels_cluster)
     # make sure all the selected indices are the same with expectation
-    assert_equal(selected_ids, [34, 59, 94, 73, 50, 3, 93, 49, 64, 0, 83, 72])
+    assert_equal(selected_ids, [41, 34, 94, 85, 51, 50, 66, 78, 21, 64, 29, 83])
 
     selector = MaxMin()
     selected_ids = selector.select(arr=arr_dist, num_selected=12)
     # make sure all the selected indices are the same with expectation
-    assert_equal(selected_ids, [57, 25, 68, 8, 53, 9, 95, 60, 76, 66, 69, 20])
+    assert_equal(selected_ids, [85, 57, 41, 25, 9, 62, 29, 65, 81, 61, 60, 97])
+
+test_maxmin()
