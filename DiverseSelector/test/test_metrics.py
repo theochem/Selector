@@ -32,7 +32,8 @@ from DiverseSelector.distance import (bit_tanimoto,
                                       pairwise_similarity_bit,
                                       tanimoto,
                                       )
-from DiverseSelector.diversity import (# compute_diversity_matrix,
+from DiverseSelector.diversity import (
+                                       # compute_diversity_matrix,
                                        entropy,
                                        gini_coefficient,
                                        logdet,
