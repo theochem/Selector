@@ -39,6 +39,7 @@ __all__ = [
     "RDKitMol",
     "PandasDataFrame",
     "mol_loader",
+    "distance_to_similarity",
 ]
 
 
