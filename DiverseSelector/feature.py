@@ -26,6 +26,9 @@ import os
 import sys
 from typing import Any
 
+import sklearn.metrics.pairwise
+
+import DiverseSelector.distance
 from DiverseSelector.utils import ExplicitBitVector, mol_loader, PandasDataFrame, RDKitMol
 from mordred import Calculator, descriptors
 import numpy as np
@@ -693,3 +696,7 @@ def compute_features(mol_file: str,
     df_features_valid.to_csv(feature_output, sep=sep, index=False)
 
     return df_features_valid
+
+
+func_dist = lambda x: sklearn.metrics.pairwise_distance(x, metric='euclidian')
+func_dist = DiverseSelector.distance.compute_distance_matrix
