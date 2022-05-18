@@ -25,20 +25,23 @@
 
 # todo: fix this later
 # noqa: F401
-from DiverseSelector.metric import (bit_tanimoto,
-                                    compute_distance_matrix,
-                                    distance_to_similarity,
-                                    entropy,
-                                    euc_bit,
-                                    gini_coefficient,
-                                    logdet,
-                                    modified_tanimoto,
-                                    pairwise_similarity_bit,
-                                    shannon_entropy,
-                                    tanimoto,
-                                    total_diversity_volume,
-                                    # wdud
-                                    )
+from DiverseSelector.distance import (bit_tanimoto,
+                                      compute_distance_matrix,
+                                      euc_bit,
+                                      modified_tanimoto,
+                                      pairwise_similarity_bit,
+                                      tanimoto,
+                                      )
+from DiverseSelector.diversity import (
+                                       # compute_diversity_matrix,
+                                       entropy,
+                                       gini_coefficient,
+                                       logdet,
+                                       shannon_entropy,
+                                       total_diversity_volume,
+                                       # wdud,
+                                       )
+from DiverseSelector.utils import distance_to_similarity
 import numpy as np
 from numpy.testing import assert_almost_equal, assert_equal, assert_raises
 
@@ -49,17 +52,14 @@ sample1 = np.array([[4, 2, 6],
                     [2, 0, 9],
                     [5, 3, 0]])
 
-
 # each row is a molecule and each colume is a feature (scipy)
 sample2 = np.array([[1, 1, 0, 0, 0],
                     [0, 1, 1, 0, 0],
                     [0, 0, 0, 1, 0],
                     [0, 0, 0, 0, 1]])
 
-
 sample3 = np.array([[1, 4],
                     [3, 2]])
-
 
 sample4 = np.array([[1, 0, 1],
                     [0, 1, 1]])
@@ -76,7 +76,7 @@ def test_compute_distance_matrix_euc():
     """Testing the euclidean distance function with predefined bit-string matrix."""
     sci_dist = compute_distance_matrix(sample3, "euclidean")
     expected = np.array([[0, 2.8284271],
-                        [2.8284271, 0]])
+                         [2.8284271, 0]])
     assert_almost_equal(expected, sci_dist)
 
 
@@ -84,9 +84,9 @@ def test_tanimoto_bit():
     """Testing the tanimoto function with predefined bit-string matrix."""
     tani = pairwise_similarity_bit(sample2, bit_tanimoto)
     expceted = np.array([[1, (1 / 3), 0, 0],
-                        [(1 / 3), 1, 0, 0],
-                        [0, 0, 1, 0],
-                        [0, 0, 0, 1]])
+                         [(1 / 3), 1, 0, 0],
+                         [0, 0, 1, 0],
+                         [0, 0, 0, 1]])
     assert_equal(expceted, tani)
 
 
@@ -94,7 +94,7 @@ def test_tanimoto():
     """Testing the tanimoto function with predefined feature matrix."""
     tani = pairwise_similarity_bit(sample3, tanimoto)
     expceted = np.array([[1, (11 / 19)],
-                        [(11 / 19), 1]])
+                         [(11 / 19), 1]])
     assert_equal(expceted, tani)
 
 
@@ -102,7 +102,7 @@ def test_dist_to_simi():
     """Testing the distance to similarity function with predefined distance matrix."""
     dist = distance_to_similarity(sample3, dist=True)
     expceted = np.array([[(1 / 2), (1 / 5)],
-                        [(1 / 4), (1 / 3)]])
+                         [(1 / 4), (1 / 3)]])
     assert_equal(dist, expceted)
 
 
@@ -110,7 +110,7 @@ def test_modifed_tanimoto():
     """Testing the modified tanimoto function with predefined feature matrix."""
     mod_tani = pairwise_similarity_bit(sample4, modified_tanimoto)
     expceted = np.array([[1, (4 / 27)],
-                        [(4 / 27), 1]])
+                         [(4 / 27), 1]])
     assert_equal(mod_tani, expceted)
 
 
@@ -159,8 +159,8 @@ def test_gini_coefficient_of_non_diverse_set():
     # Transpose so that the columns are all the same, note first made the rows all same
     single_fingerprint = list(np.random.choice([0, 1], size=(numb_features,)))
     finger_prints = np.array([
-        single_fingerprint
-    ] * numb_molecules).T
+                                 single_fingerprint
+                             ] * numb_molecules).T
 
     result = gini_coefficient(finger_prints)
     # Since they are all the same, then gini coefficient should be zero.
@@ -176,9 +176,9 @@ def test_gini_coefficient_of_most_diverse_set():
     #  Finger-prints where one feature has more `wealth` than all others.
     #  Note transpose is done so one column has all ones.
     finger_prints = np.array([
-        [1, 1, 1, 1, 1, 1, 1],
+                                 [1, 1, 1, 1, 1, 1, 1],
 
-    ] + [[0, 0, 0, 0, 0, 0, 0]] * 100000).T
+                             ] + [[0, 0, 0, 0, 0, 0, 0]] * 100000).T
     result = gini_coefficient(finger_prints)
     # Since they are all the same, then gini coefficient should be zero.
     assert_almost_equal(result, 1.0, decimal=4)
@@ -199,6 +199,7 @@ def test_gini_coefficient_with_alternative_definition():
     # Alternative definition from wikipedia
     b = numb_features + 1
     desired = (
-        numb_features + 1 - 2 * ((b - 1) + (b - 2) * 2 + (b - 3) * 3 + (b - 4) * 4) / (10)
-    ) / numb_features
+                      numb_features + 1 - 2 * (
+                          (b - 1) + (b - 2) * 2 + (b - 3) * 3 + (b - 4) * 4) / (10)
+              ) / numb_features
     assert_almost_equal(result, desired)
