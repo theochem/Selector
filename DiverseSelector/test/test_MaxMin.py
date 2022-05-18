@@ -24,7 +24,7 @@
 """Testing for the MaxMin selection algorithms."""
 
 from DiverseSelector.test.common import generate_synthetic_data
-from DiverseSelector.MaxMin import MaxMin
+from DiverseSelector.Selectors import MaxMin
 from numpy.testing import assert_equal
 
 coords, class_labels, arr_dist = generate_synthetic_data(n_samples=100,
