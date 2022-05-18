@@ -22,9 +22,9 @@
 # --
 
 """Feature generation module."""
+
 import os
 import sys
-from typing import Any
 
 import sklearn.metrics.pairwise
 
@@ -38,6 +38,7 @@ import pandas as pd
 from rdkit import Chem
 from rdkit.Chem import AllChem, Descriptors, MACCSkeys, rdMHFPFingerprint
 from sklearn.preprocessing import StandardScaler
+
 
 __all__ = [
     "DescriptorGenerator",
@@ -55,11 +56,9 @@ class DescriptorGenerator:
     """Compute molecular features."""
 
     def __init__(self,
-                 mols: list = None,
-                 mol_file: str = None,
+                 mols: list,
                  ):
         self.mols = mols
-        self.mol_file = mol_file
 
     def mordred_desc(self,
                      ignore_3D: bool = False,
@@ -84,6 +83,7 @@ class DescriptorGenerator:
         return df_features
 
     def padelpy_desc(self,
+                     mol_file,
                      keep_csv: bool = False,
                      maxruntime: int = -1,
                      waitingjobs: int = -1,
@@ -128,10 +128,6 @@ class DescriptorGenerator:
         # if only compute 2D descriptors,
         # ignore_3D=True
 
-        if self.mol_file is None:
-            raise ValueError("Attention: a molecule file is required for padel descriptor "
-                             "calculations.")
-
         csv_fname = str(os.path.basename(self.mol_file)).split(".", maxsplit=1)[0] + \
                     "padel_descriptors.csv"
 
@@ -144,7 +140,7 @@ class DescriptorGenerator:
                         convert3d=convert3d,
                         descriptortypes=descriptortypes,
                         detectaromaticity=detectaromaticity,
-                        mol_dir=self.mol_file,
+                        mol_dir=mol_file,
                         d_file=d_file,
                         fingerprints=fingerprints,
                         log=log,
@@ -178,9 +174,8 @@ class DescriptorGenerator:
         ----------
         use_fragment : bool, optional
             If True, the return value includes the fragment binary descriptors like "fr_XXX".
-            Default=True.
         ipc_avg : bool, optional
-            If True, the IPC descriptor calculates with avg=True option. Default=True
+            If True, the IPC descriptor calculates with avg=True option.
 
         Returns
         -------
@@ -209,11 +204,6 @@ class DescriptorGenerator:
     def rdkit_frag_desc(self) -> PandasDataFrame:
         # noqa: D403
         """RDKit fragment features.
-
-        Parameters
-        ----------
-        mols : list
-            A list of molecule RDKitMol objects.
 
         Returns
         -------
@@ -293,25 +283,6 @@ class FingerprintGenerator:
         ----------
         mols : RDKitMol
             Molecule object.
-        fp_type : str, optional
-            Supported fingerprints: SECFP, ECFP, Morgan, RDKitFingerprint and MACCSkeys.
-            Default="SECFP".
-        n_bits : int, optional
-            Number of bits of fingerprint. Default=2048.
-        radius : int, optional
-            The maximum radius of the substructure that is generated at each atom. Default=3.
-        min_radius : int, optional
-            The minimum radius that is used to extract n-grams.
-        random_seed : int, optional
-            The random seed number. Default=12345.
-        rings : bool, optional
-            Whether the rings (SSSR) are extracted from the molecule and added to the shingling.
-            Default=True.
-        isomeric : bool, optional
-            Whether the SMILES added to the shingling are isomeric. Default=False.
-        kekulize : bool, optional
-            Whether the SMILES added to the shingling are kekulized. Default=True.
-
         """
         self.mols = mols
 
@@ -330,7 +301,29 @@ class FingerprintGenerator:
                             isomeric: bool = True,
                             kekulize: bool = False,
                             ) -> PandasDataFrame:
-        """Compute fingerprints."""
+        """Compute fingerprints.
+
+        Parameters
+        ----------
+        fp_type : str, optional
+            Supported fingerprints: SECFP, ECFP, Morgan, RDKitFingerprint and MACCSkeys.
+            Default="SECFP".
+        n_bits : int, optional
+            Number of bits of fingerprint. Default=2048.
+        radius : int, optional
+            The maximum radius of the substructure that is generated at each atom. Default=3.
+        min_radius : int, optional
+            The minimum radius that is used to extract n-grams.
+        random_seed : int, optional
+            The random seed number. Default=12345.
+        rings : bool, optional
+            Whether the rings (SSSR) are extracted from the molecule and added to the shingling.
+            Default=True.
+        isomeric : bool, optional
+            Whether the SMILES added to the shingling are isomeric. Default=False.
+        kekulize : bool, optional
+            Whether the SMILES added to the shingling are kekulized. Default=True.
+        """
         if fp_type.upper() in ["SECFP", "ECFP", "MORGAN", "RDKFINGERPRINT", "MACCSKEYS"]:
             fps = [self.rdkit_fingerprint_low(mol,
                                               fp_type=fp_type,
