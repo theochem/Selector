@@ -138,6 +138,7 @@ def compute_distance_matrix(features: np.ndarray,
 
     return dist
 
+
 def distance_to_similarity(x: np.ndarray, dist: bool = True) -> np.ndarray:
     """Convert between distance and similarity matrix.
 
