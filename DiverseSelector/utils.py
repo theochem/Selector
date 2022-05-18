@@ -23,8 +23,10 @@
 
 """Utils module."""
 import gzip
+import numpy as np
 from typing import TypeVar
 
+import numpy as np
 # pylint: disable=W0611
 from pandas.core.frame import DataFrame
 from rdkit import Chem
@@ -38,6 +40,7 @@ __all__ = [
     "RDKitMol",
     "PandasDataFrame",
     "mol_loader",
+    "distance_to_similarity",
 ]
 
 
@@ -131,6 +134,28 @@ def mol_loader(file_name: str,
 
     return mols
 
+def pick_initial_compounds(arr_dist):
+    """
+    Pick the initial compounds using medioid.
+
+    Parameters
+    ----------
+    arr_dist: np.ndarray
+
+    Returns
+    -------
+    starting_idx: int
+        center of the medioid
+    """
+    # use the molecule with maximum distance to initial medoid as  the starting molecule
+    # https://www.sciencedirect.com/science/article/abs/pii/S1093326399000145?via%3Dihub
+    # J. Mol. Graphics Mod., 1998, Vol. 16,
+    # DISSIM: A program for the analysis of chemical diversity
+    medoid_idx = np.argmin(arr_dist.sum(axis=0))
+
+    # selected molecule with maximum distance to medoid
+    starting_idx = np.argmax(arr_dist[medoid_idx, :])
+    return starting_idx
 
 def dump_mol():
     """Save molecules."""
@@ -143,3 +168,25 @@ def dump_feature():
 
 # todo: dump_selected_index
 # todo: add index of selected molecules in base.py
+
+
+def distance_to_similarity(x: np.ndarray, dist: bool = True) -> np.ndarray:
+    """Convert between distance and similarity matrix.
+
+    Parameters
+    ----------
+    x : ndarray
+        Symmetric distance or similarity array.
+    dist : bool
+        Confirms the matrix is distance.
+
+    Returns
+    -------
+    y : ndarray
+        Symmetric distance or similarity array.
+    """
+    if dist is True:
+        y = 1 / (1 + x)
+    else:
+        y = (1 / x) - 1
+    return y
