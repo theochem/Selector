@@ -24,6 +24,9 @@
 
 
 import numpy as np
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
+
 from DiverseSelector.utils import pick_initial_compounds
 from DiverseSelector.base import SelectionBase
 
@@ -34,7 +37,7 @@ class MaxMin(SelectionBase):
     Initial point is chosen as medoid center. The second point is
     the furthest point away. All the following points are selected
     using the rule:
-    1. Find minimum distance from every point to the selected once.
+    1. Find minimum distance from every point to the selected ones.
     2. Select a point the has the maximum distance among calculated
        on the previous step.
     """
@@ -46,7 +49,6 @@ class MaxMin(SelectionBase):
         ----------
         func_distance: callable
             function for calculating the pairwise distance between instances of the array.
-            Default is None.
         """
         self.arr_dist = None
         self.n_mols = None
@@ -70,7 +72,6 @@ class MaxMin(SelectionBase):
         -------
         selected: list
             list of ids of selected molecules
-
         """
         self.n_mols = arr.shape[0]
         if self.func_distance is not None:
@@ -82,6 +83,7 @@ class MaxMin(SelectionBase):
             arr_dist = self.arr_dist[indices][:, indices]
         else:
             arr_dist = self.arr_dist
+        # choosing initial point as the medoid
         selected = [np.argmin(np.sum(arr_dist, axis=0))]
         while len(selected) < num_selected:
             min_distances = np.min(arr_dist[selected], axis=0)
@@ -91,15 +93,15 @@ class MaxMin(SelectionBase):
 
 
 class OptiSim(SelectionBase):
-    def __init__(self, r=None, k=10, func_distance=lambda x, y: np.linalg.norm(x-y)):
+    def __init__(self, r=None, k=10, func_distance=lambda x, y: np.linalg.norm(x-y), start_id=0, random_seed=42):
         self.r = r
         self.k = k
-        self.random_seed = 42
-        self.starting_idx = 0
+        self.random_seed = random_seed
+        self.start_id = start_id
         self.func_distance = func_distance
 
     def optisim(self, arr):
-        selected = [self.starting_idx]
+        selected = [self.start_id]
         recycling = []
 
         candidates = np.delete(np.arange(0, len(arr)), selected + recycling)
@@ -199,10 +201,10 @@ class DirectedSphereExclusion(SelectionBase):
             for selected_idx in selected:
                 data_point = arr[idx]
                 selected_point = arr[selected_idx]
-                distance_sq = 0
+                distance = 0
                 for i, point in enumerate(data_point):
-                    distance_sq += (selected_point[i] - point) ** 2
-                distances.append(np.sqrt(distance_sq))
+                    distance += self.func_distance(selected_point[i], point)
+                distances.append(np.sqrt(distance))
             min_dist = min(distances)
             if min_dist > self.r:
                 selected.append(idx)
@@ -258,7 +260,7 @@ class GridPartitioning(SelectionBase):
     def select_from_cluster(self, arr, num_selected, indices=None):
         selected = []
         data_dim = len(arr[0])
-        if data_dim > self.max_dim:
+        if self.max_dim is not None and data_dim > self.max_dim:
             norm_data = StandardScaler().fit_transform(arr)
             pca = PCA(n_components=self.max_dim)
             arr = pca.fit_transform(norm_data)
