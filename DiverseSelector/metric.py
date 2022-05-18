@@ -45,6 +45,7 @@ __all__ = [
     "shannon_entropy",
     "tanimoto",
     "total_diversity_volume",
+    "wdud"
 ]
 
 
@@ -480,8 +481,8 @@ def wdud(x: np.ndarray) -> float:
     # min_max normilization:
     d = len(x[0])
     n = len(x[:, 0])
-    max_x = (max(map(max, x)))
-    min_x = (min(map(min, x)))
+    max_x = np.max(x)
+    min_x = np.min(x)
     y = np.zeros((n, d))
     for i in range(0, len(x[:, 0])):
         for j in range(0, len(x[0])):
