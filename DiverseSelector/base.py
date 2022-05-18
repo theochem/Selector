@@ -28,12 +28,14 @@ from pathlib import PurePath
 from typing import Union
 
 from DiverseSelector.distance import compute_distance_matrix
-from DiverseSelector.diversity import (entropy,
-                                       gini_coefficient,
-                                       logdet,
-                                       shannon_entropy,
-                                       total_diversity_volume,
-                                       wdud)
+from DiverseSelector.diversity import (
+    entropy,
+    gini_coefficient,
+    logdet,
+    shannon_entropy,
+    total_diversity_volume,
+    wdud,
+)
 from DiverseSelector.feature import feature_reader
 from DiverseSelector.utils import PandasDataFrame
 import numpy as np
@@ -75,7 +77,11 @@ class SelectionBase(ABC):
             totally_used = []
 
             amount_molecules = np.array(
-                [len(np.where(labels == unique_label)[0]) for unique_label in unique_labels])
+                [
+                    len(np.where(labels == unique_label)[0])
+                    for unique_label in unique_labels
+                ]
+            )
 
             n = (num_selected - len(selected_all)) // (num_clusters - len(totally_used))
 
@@ -87,13 +93,17 @@ class SelectionBase(ABC):
                             selected_all.append(cluster_ids)
                             totally_used.append(unique_label)
 
-                n = (num_selected - len(selected_all)) // (num_clusters - len(totally_used))
+                n = (num_selected - len(selected_all)) // (
+                    num_clusters - len(totally_used)
+                )
                 amount_molecules = np.delete(amount_molecules, totally_used)
 
-                warnings.warn(f"Number of molecules in one cluster is less than"
-                              f" {num_selected}/{num_clusters}.\nNumber of selected "
-                              f"molecules might be less than desired.\nIn order to avoid this "
-                              f"problem. Try to use less number of clusters")
+                warnings.warn(
+                    f"Number of molecules in one cluster is less than"
+                    f" {num_selected}/{num_clusters}.\nNumber of selected "
+                    f"molecules might be less than desired.\nIn order to avoid this "
+                    f"problem. Try to use less number of clusters"
+                )
 
             for unique_label in unique_labels:
                 if unique_label not in totally_used:

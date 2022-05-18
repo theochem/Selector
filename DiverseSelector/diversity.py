@@ -36,10 +36,11 @@ __all__ = [
 ]
 
 
-def compute_diversity(features: np.array,
-                      div_type: str = "total_diversity_volume",
-                      mols: List[rdkit.Chem.rdchem.Mol] = None,
-                      ) -> float:
+def compute_diversity(
+    features: np.array,
+    div_type: str = "total_diversity_volume",
+    mols: List[rdkit.Chem.rdchem.Mol] = None,
+) -> float:
     """Compute diversity metrics.
 
     Parameters
@@ -69,8 +70,14 @@ def compute_diversity(features: np.array,
         "gini_coefficient": gini_coefficient,
     }
 
-    if div_type in ["entropy", "shannon_entropy", "logdet",
-                    "wdud", "total_diversity_volume", "gini_coefficient"]:
+    if div_type in [
+        "entropy",
+        "shannon_entropy",
+        "logdet",
+        "wdud",
+        "total_diversity_volume",
+        "gini_coefficient",
+    ]:
         return func_dict[div_type](features)
     elif div_type == "explicit_diversity_index":
         return explicit_diversity_index(features, mols)
@@ -121,9 +128,9 @@ def entropy(x: np.ndarray) -> float:
     return e
 
 
-def explicit_diversity_index(x: np.ndarray,
-                             mols: List[rdkit.Chem.rdchem.Mol],
-                             ) -> float:
+def explicit_diversity_index(
+    x: np.ndarray, mols: List[rdkit.Chem.rdchem.Mol],
+) -> float:
     """Computes the explicit diversity index.
 
     Parameters
@@ -246,7 +253,7 @@ def wdud(x: np.ndarray) -> float:
     ans = []
     for i in range(0, d):
         h = -np.sort(-y[:, i])
-        wdu = ((-1 / d) - h[0])
+        wdu = (-1 / d) - h[0]
         for j in range(1, len(h)):
             wdu -= np.absolute(((j - 1) / d) - h[j])
         ans.append(wdu)
@@ -274,8 +281,8 @@ def total_diversity_volume(x: np.ndarray) -> float:
     d = len(x[0])
     k = len(x[:, 0])
     # min_max normilization:
-    max_x = (max(map(max, x)))
-    min_x = (min(map(min, x)))
+    max_x = max(map(max, x))
+    min_x = min(map(min, x))
     y = np.zeros((k, d))
     for i in range(0, k):
         for j in range(0, d):
@@ -328,7 +335,9 @@ def gini_coefficient(a: np.ndarray):
     if np.any(np.abs(np.sort(np.unique(a)) - np.array([0, 1])) > 1e-8):
         raise ValueError("Attribute `a` should have binary values.")
     if a.ndim != 2:
-        raise ValueError(f"Attribute `a` should have dimension two rather than {a.ndim}.")
+        raise ValueError(
+            f"Attribute `a` should have dimension two rather than {a.ndim}."
+        )
 
     numb_features = a.shape[1]
     # Take the bit-count of each column/molecule.
