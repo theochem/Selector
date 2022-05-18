@@ -29,20 +29,21 @@ from DiverseSelector.base import SelectionBase
 
 class MaxMin(SelectionBase):
     """Selecting compounds using MinMax algorithm."""
-    def __init__(self):
+    def __init__(self, func_distance=None):
         """Initializing class"""
         self.arr_dist = None
         self.n_mols = None
+        self.func_distance = func_distance
 
-    @staticmethod
-    def select_from_cluster(arr_dist, num_selected, indices=None):
+    def select_from_cluster(self, arr, num_selected, indices=None):
         """
         MinMax algorithm for selecting points from cluster.
 
         Parameters
         ----------
-        arr_dist: np.ndarray
-            distance matrix for points that needs to be selected
+        arr: np.ndarray
+            distance matrix for points that needs to be selected if func_distance is None.
+            Otherwise, treated as coordinates array.
         num_selected: int
             number of molecules that need to be selected
         indices: np.ndarray
@@ -54,8 +55,16 @@ class MaxMin(SelectionBase):
             list of ids of selected molecules
 
         """
+        self.n_mols = arr.shape[0]
+        if self.func_distance is not None:
+            self.arr_dist = self.func_distance(arr)
+        else:
+            self.arr_dist = arr
+
         if indices is not None:
-            arr_dist = arr_dist[indices][:, indices]
+            arr_dist = self.arr_dist[indices][:, indices]
+        else:
+            arr_dist = self.arr_dist
         selected = [pick_initial_compounds(arr_dist)]
         while len(selected) < num_selected:
             min_distances = np.min(arr_dist[selected], axis=0)
