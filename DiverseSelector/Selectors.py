@@ -82,7 +82,7 @@ class MaxMin(SelectionBase):
             arr_dist = self.arr_dist[indices][:, indices]
         else:
             arr_dist = self.arr_dist
-        selected = [pick_initial_compounds(arr_dist)]
+        selected = [np.argmin(np.sum(arr_dist, axis=0))]
         while len(selected) < num_selected:
             min_distances = np.min(arr_dist[selected], axis=0)
             new_id = np.argmax(min_distances)
