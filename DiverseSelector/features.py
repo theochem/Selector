@@ -36,7 +36,6 @@ from mordred import Calculator, descriptors
 import numpy as np
 from padelpy import padeldescriptor
 import pandas as pd
-
 # from padelpy import from_sdf
 from rdkit import Chem
 from rdkit.Chem import AllChem, Descriptors, MACCSkeys, rdMHFPFingerprint

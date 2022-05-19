@@ -23,8 +23,8 @@
 
 """Testing for the MaxMin selection algorithms."""
 
-from DiverseSelector.test.common import generate_synthetic_data
 from DiverseSelector.selectors import MaxMin, OptiSim
+from DiverseSelector.test.common import generate_synthetic_data
 from numpy.testing import assert_equal
 
 coords, class_labels, arr_dist = generate_synthetic_data(n_samples=100,
@@ -45,7 +45,9 @@ coords_cluster, class_labels_cluster, arr_dist_cluster = generate_synthetic_data
 def test_maxmin():
     """Testing the MinMax class."""
     selector = MaxMin()
-    selected_ids = selector.select(arr=arr_dist_cluster, num_selected=12, labels=class_labels_cluster)
+    selected_ids = selector.select(arr=arr_dist_cluster,
+                                   num_selected=12,
+                                   labels=class_labels_cluster)
     # make sure all the selected indices are the same with expectation
     assert_equal(selected_ids, [41, 34, 94, 85, 51, 50, 66, 78, 21, 64, 29, 83])
 
