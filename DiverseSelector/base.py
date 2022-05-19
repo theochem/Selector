@@ -50,50 +50,50 @@ class SelectionBase(ABC):
         selected: list
             list of ids of selected molecules
         """
-        if labels is not None:
-            unique_labels = np.unique(labels)
-            num_clusters = len(unique_labels)
-            selected_all = []
-            totally_used = []
+        if labels is None:
+            return self.select_from_cluster(arr, num_selected)
 
-            amount_molecules = np.array(
-                [
-                    len(np.where(labels == unique_label)[0])
-                    for unique_label in unique_labels
-                ]
-            )
+        unique_labels = np.unique(labels)
+        num_clusters = len(unique_labels)
+        selected_all = []
+        totally_used = []
 
-            n = (num_selected - len(selected_all)) // (num_clusters - len(totally_used))
+        amount_molecules = np.array(
+            [
+                len(np.where(labels == unique_label)[0])
+                for unique_label in unique_labels
+            ]
+        )
 
-            while np.any(amount_molecules <= n):
-                for unique_label in unique_labels:
-                    if unique_label not in totally_used:
-                        cluster_ids = np.where(labels == unique_label)[0]
-                        if len(cluster_ids) <= n:
-                            selected_all.append(cluster_ids)
-                            totally_used.append(unique_label)
+        n = (num_selected - len(selected_all)) // (num_clusters - len(totally_used))
 
-                n = (num_selected - len(selected_all)) // (
-                    num_clusters - len(totally_used)
-                )
-                amount_molecules = np.delete(amount_molecules, totally_used)
-
-                warnings.warn(
-                    f"Number of molecules in one cluster is less than"
-                    f" {num_selected}/{num_clusters}.\nNumber of selected "
-                    f"molecules might be less than desired.\nIn order to avoid this "
-                    f"problem. Try to use less number of clusters"
-                )
-
+        while np.any(amount_molecules <= n):
             for unique_label in unique_labels:
                 if unique_label not in totally_used:
                     cluster_ids = np.where(labels == unique_label)[0]
-                    selected = self.select_from_cluster(arr, n, cluster_ids)
-                    selected_all.append(cluster_ids[selected])
-            return np.hstack(selected_all).flatten().tolist()
-        else:
-            selected = self.select_from_cluster(arr, num_selected)
-            return selected
+                    if len(cluster_ids) <= n:
+                        selected_all.append(cluster_ids)
+                        totally_used.append(unique_label)
+
+            n = (num_selected - len(selected_all)) // (
+                num_clusters - len(totally_used)
+            )
+            amount_molecules = np.delete(amount_molecules, totally_used)
+
+            warnings.warn(
+                f"Number of molecules in one cluster is less than"
+                f" {num_selected}/{num_clusters}.\nNumber of selected "
+                f"molecules might be less than desired.\nIn order to avoid this "
+                f"problem. Try to use less number of clusters"
+            )
+
+        for unique_label in unique_labels:
+            if unique_label not in totally_used:
+                cluster_ids = np.where(labels == unique_label)[0]
+                selected = self.select_from_cluster(arr, n, cluster_ids)
+                selected_all.append(cluster_ids[selected])
+
+        return np.hstack(selected_all).flatten().tolist()
 
     @staticmethod
     @abstractmethod
