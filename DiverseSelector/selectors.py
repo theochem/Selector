@@ -177,9 +177,9 @@ class OptiSim(SelectionBase):
 
 
 class DirectedSphereExclusion(SelectionBase):
-    def __init__(self, r=None, func_distance=lambda x, y: np.linalg.norm(x - y)):
+    def __init__(self, r=None, func_distance=lambda x, y: np.linalg.norm(x - y), random_seed=42):
         self.r = r
-        self.random_seed = 42
+        self.random_seed = random_seed
         self.starting_idx = 0
         self.func_distance = func_distance
 
@@ -251,9 +251,9 @@ class DirectedSphereExclusion(SelectionBase):
 class GridPartitioning(SelectionBase):
     """Selecting compounds using MinMax algorithm."""
 
-    def __init__(self, cells, grid_method="equisized_independent", max_dim=None):
+    def __init__(self, cells, grid_method="equisized_independent", max_dim=None, random_seed=42):
         """Initializing class"""
-        self.random_seed = 42
+        self.random_seed = random_seed
         self.cells = cells
         self.max_dim = max_dim
         self.grid_method = grid_method
@@ -284,9 +284,7 @@ class GridPartitioning(SelectionBase):
                     elif value == axis_info[dim][1]:
                         index_bin = self.cells - 1
                     else:
-                        index_bin = int(
-                            (value - axis_info[dim][0]) // axis_info[dim][2]
-                        )
+                        index_bin = int((value - axis_info[dim][0]) // axis_info[dim][2])
                     point_bin.append(index_bin)
                 bins.setdefault(tuple(point_bin), [])
                 bins[tuple(point_bin)].append(index)
@@ -325,9 +323,7 @@ class GridPartitioning(SelectionBase):
                             elif arr[point_idx][i] == axis_info[1]:
                                 index_bin = self.cells - 1
                             else:
-                                index_bin = int(
-                                    (arr[point_idx][i] - axis_info[0]) // axis_info[2]
-                                )
+                                index_bin = int((arr[point_idx][i] - axis_info[0]) // axis_info[2])
                             point_bin.append(index_bin)
                             new_bins.setdefault(tuple(point_bin), [])
                             new_bins[tuple(point_bin)].append(point_idx)
