@@ -24,6 +24,7 @@
 """Base class for diversity based subset selection."""
 
 from abc import ABC, abstractmethod
+
 import numpy as np
 import warnings
 
@@ -95,23 +96,24 @@ class SelectionBase(ABC):
 
         return np.hstack(selected_all).flatten().tolist()
 
-    @staticmethod
     @abstractmethod
-    def select_from_cluster(arr_dist, num_selected):
+    def select_from_cluster(self, arr, num_selected, cluster_ids=None):
         """
         Algorithm for selecting points from cluster.
 
         Parameters
         ----------
-        arr_dist: np.ndarray
+        arr: np.ndarray
             distance matrix for points that needs to be selected
         num_selected: int
             number of molecules that need to be selected
+        cluster_ids: np.array
+
 
         Returns
         -------
         selected: list
-            list of ids of selected molecules
+            list of ids of molecules that are belonged to the one cluster
 
         """
         pass
