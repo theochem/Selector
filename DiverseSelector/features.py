@@ -92,7 +92,6 @@ class DescriptorGenerator:
         convert3d: bool = False,
         descriptortypes: str = None,
         detectaromaticity: bool = False,
-        d_file: str = None,
         fingerprints: bool = False,
         log: bool = False,
         maxcpdperfile: int = 0,
@@ -134,6 +133,7 @@ class DescriptorGenerator:
             str(os.path.basename(mol_file)).split(".", maxsplit=1)[0]
             + "_padel_descriptors.csv"
         )
+        print("csv_fname:", csv_fname)
 
         padeldescriptor(
             maxruntime=maxruntime,
@@ -146,7 +146,7 @@ class DescriptorGenerator:
             descriptortypes=descriptortypes,
             detectaromaticity=detectaromaticity,
             mol_dir=mol_file,
-            d_file=d_file,
+            d_file=csv_fname,
             fingerprints=fingerprints,
             log=log,
             maxcpdperfile=maxcpdperfile,
