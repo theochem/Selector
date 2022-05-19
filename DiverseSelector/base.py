@@ -66,7 +66,7 @@ class SelectionBase(ABC):
         # this is needed when some clusters do not have enough samples in them (pop < n) and
         # needs to be done iteratively until all remaining clusters have at least n samples
         selected_ids = []
-        while np.any([value <= n for value in pop_clusters.values()]):
+        while np.any([value <= n for value in pop_clusters.values() if value != 0]):
             for unique_label in unique_labels:
                 if pop_clusters[unique_label] != 0:
                     # get index of sample labelled with unique_label
@@ -76,8 +76,9 @@ class SelectionBase(ABC):
                         selected_ids.append(cluster_ids)
                         pop_clusters[unique_label] = 0
             # update number of samples to be selected from each cluster
-            totally_used_clusters = pop_clusters.values().count(0)
-            n = (num_selected - len(selected_ids)) // (num_clusters - totally_used_clusters)
+            totally_used_clusters = list(pop_clusters.values()).count(0)
+            n = (num_selected - len(np.hstack(selected_ids))) // \
+                (num_clusters - totally_used_clusters)
 
             warnings.warn(
                 f"Number of molecules in one cluster is less than"
