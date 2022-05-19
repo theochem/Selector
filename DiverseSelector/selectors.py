@@ -186,10 +186,10 @@ class DirectedSphereExclusion(SelectionBase):
         for idx in candidates:
             ref_point = arr[ref[0]]
             data_point = arr[idx]
-            distance_sq = 0
+            distance = 0
             for i, point in enumerate(ref_point):
-                distance_sq += (point - data_point[i]) ** 2
-            distances.append((distance_sq, idx))
+                distance = self.func_distance(point, data_point[i])
+            distances.append((distance, idx))
         distances.sort()
         order = [idx for dist, idx in distances]
 
