@@ -169,9 +169,10 @@ class DescriptorGenerator:
 
         return df_features
 
-    def rdkit_desc(
-        self, use_fragment: bool = True, ipc_avg: bool = True,
-    ) -> PandasDataFrame:
+    def rdkit_desc(self,
+                   use_fragment: bool = True,
+                   ipc_avg: bool = True,
+                   ) -> PandasDataFrame:
         # noqa: D403
         """RDKit molecular descriptor generation.
 
@@ -189,6 +190,7 @@ class DescriptorGenerator:
 
         """
         # parsing descriptor information
+        # parsing descriptor information
         desc_list = []
         descriptor_types = []
         for descriptor, function in Descriptors.descList:
@@ -200,17 +202,19 @@ class DescriptorGenerator:
         # check initialization
         assert len(descriptor_types) == len(desc_list)
 
-        arr_features = []
-        for mol in self.mols:
+        arr_features = np.full(shape=(len(self.mols), len(desc_list)),
+                               fill_value=np.nan)
+
+        for idx_row, mol in enumerate(self.mols):
             # this part is modified from
             # https://github.com/deepchem/deepchem/blob/master/deepchem/feat/molecule_featurizers/
             # rdkit_descriptors.py#L11-L98
-            for desc_name, function in desc_list:
+            for idx_col, (desc_name, function) in enumerate(desc_list):
                 if desc_name == "Ipc" and ipc_avg:
                     feature = function(mol, avg=True)
                 else:
                     feature = function(mol)
-                arr_features.append(feature)
+                arr_features[idx_row, idx_col] = feature
 
         df_features = pd.DataFrame(arr_features, columns=descriptor_types)
 
