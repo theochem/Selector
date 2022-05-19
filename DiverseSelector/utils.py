@@ -27,9 +27,11 @@ import numpy as np
 from typing import TypeVar
 
 import numpy as np
+
 # pylint: disable=W0611
 from pandas.core.frame import DataFrame
 from rdkit import Chem
+
 # pylint: disable=W0611
 from rdkit.Chem.rdchem import Mol
 from rdkit.DataStructs.cDataStructs import ExplicitBitVect
@@ -44,41 +46,43 @@ __all__ = [
 ]
 
 
-sklearn_supported_metrics = ["cityblock",
-                             "cosine",
-                             "euclidean",
-                             "l1",
-                             "l2",
-                             "manhattan",
-                             "braycurtis",
-                             "canberra",
-                             "chebyshev",
-                             "correlation",
-                             "dice",
-                             "hamming",
-                             "jaccard",
-                             "kulsinski",
-                             "mahalanobis",
-                             "minkowski",
-                             "rogerstanimoto",
-                             "russellrao",
-                             "seuclidean",
-                             "sokalmichener",
-                             "sokalsneath",
-                             "sqeuclidean",
-                             "yule",
-                             ]
+sklearn_supported_metrics = [
+    "cityblock",
+    "cosine",
+    "euclidean",
+    "l1",
+    "l2",
+    "manhattan",
+    "braycurtis",
+    "canberra",
+    "chebyshev",
+    "correlation",
+    "dice",
+    "hamming",
+    "jaccard",
+    "kulsinski",
+    "mahalanobis",
+    "minkowski",
+    "rogerstanimoto",
+    "russellrao",
+    "seuclidean",
+    "sokalmichener",
+    "sokalsneath",
+    "sqeuclidean",
+    "yule",
+]
 
 
-PandasDataFrame = TypeVar('DataFrame')
-RDKitMol = TypeVar('Mol')
+PandasDataFrame = TypeVar("DataFrame")
+RDKitMol = TypeVar("Mol")
 ExplicitBitVector = TypeVar("ExplicitBitVect")
 
 
-def mol_loader(file_name: str,
-               remove_hydrogen: bool = False,
-               # force_field: str = None,
-               ) -> list:
+def mol_loader(
+    file_name: str,
+    remove_hydrogen: bool = False,
+    # force_field: str = None,
+) -> list:
     """Load molecules as RDKit object.
 
     Parameters
@@ -102,7 +106,9 @@ def mol_loader(file_name: str,
     # SDF.GZ
     elif str(file_name).lower().endswith(".sdf.gz"):
         file_unzipped = gzip.open(file_name)
-        suppl = Chem.ForwardSDMolSupplier(file_unzipped, removeHs=remove_hydrogen, sanitize=True)
+        suppl = Chem.ForwardSDMolSupplier(
+            file_unzipped, removeHs=remove_hydrogen, sanitize=True
+        )
         mols = [mol for mol in suppl]
     # SMILES: *.smi, *.smiles, *.txt, *.csv
     elif str(file_name).lower().endswith((".smi", ".smiles", ".txt", ".csv")):
@@ -134,6 +140,7 @@ def mol_loader(file_name: str,
 
     return mols
 
+
 def pick_initial_compounds(arr_dist):
     """
     Pick the initial compounds using medioid.
@@ -157,6 +164,7 @@ def pick_initial_compounds(arr_dist):
     starting_idx = np.argmax(arr_dist[medoid_idx, :])
     return starting_idx
 
+
 def dump_mol():
     """Save molecules."""
     pass
@@ -165,6 +173,7 @@ def dump_mol():
 def dump_feature():
     """Save selected molecule with features."""
     pass
+
 
 # todo: dump_selected_index
 # todo: add index of selected molecules in base.py
