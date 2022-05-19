@@ -22,19 +22,12 @@
 # --
 
 """Utils module."""
+
 import gzip
-import numpy as np
 from typing import TypeVar
-
 import numpy as np
-
 # pylint: disable=W0611
-from pandas.core.frame import DataFrame
 from rdkit import Chem
-
-# pylint: disable=W0611
-from rdkit.Chem.rdchem import Mol
-from rdkit.DataStructs.cDataStructs import ExplicitBitVect
 
 
 __all__ = [
