@@ -54,32 +54,29 @@ class SelectionBase(ABC):
         if labels is None:
             return self.select_from_cluster(arr, num_selected)
 
+        # compute the number of samples (i.e. population or pop) in each cluster
         unique_labels = np.unique(labels)
         num_clusters = len(unique_labels)
-        selected_all = []
-        totally_used = []
+        pop_clusters = {unique_label: labels.count(unique_label) for unique_label in unique_labels}
+        # compute number of samples to be selected from each cluster
+        n = num_selected // num_clusters
 
-        amount_molecules = np.array(
-            [
-                len(np.where(labels == unique_label)[0])
-                for unique_label in unique_labels
-            ]
-        )
-
-        n = (num_selected - len(selected_all)) // (num_clusters - len(totally_used))
-
-        while np.any(amount_molecules <= n):
+        # update number of samples to select from each cluster based on the cluster population.
+        # this is needed when some clusters do not have enough samples in them (pop < n) and
+        # needs to be done iteratively until all remaining clusters have at least n samples
+        selected_ids = []
+        while np.any([value <= n for value in pop_clusters.values()]):
             for unique_label in unique_labels:
-                if unique_label not in totally_used:
+                if pop_clusters[unique_label] != 0:
+                    # get index of sample labelled with unique_label
                     cluster_ids = np.where(labels == unique_label)[0]
                     if len(cluster_ids) <= n:
-                        selected_all.append(cluster_ids)
-                        totally_used.append(unique_label)
-
-            n = (num_selected - len(selected_all)) // (
-                num_clusters - len(totally_used)
-            )
-            amount_molecules = np.delete(amount_molecules, totally_used)
+                        # all samples in the cluster are selected & population becomes zero
+                        selected_ids.append(cluster_ids)
+                        pop_clusters[unique_label] = 0
+            # update number of samples to be selected from each cluster
+            totally_used_clusters = pop_clusters.values().count(0)
+            n = (num_selected - len(selected_ids)) // (num_clusters - totally_used_clusters)
 
             warnings.warn(
                 f"Number of molecules in one cluster is less than"
@@ -89,12 +86,13 @@ class SelectionBase(ABC):
             )
 
         for unique_label in unique_labels:
-            if unique_label not in totally_used:
+            if pop_clusters[unique_label] != 0:
+                # sample n ids from cluster labeled unique_label
                 cluster_ids = np.where(labels == unique_label)[0]
                 selected = self.select_from_cluster(arr, n, cluster_ids)
-                selected_all.append(cluster_ids[selected])
+                selected_ids.append(cluster_ids[selected])
 
-        return np.hstack(selected_all).flatten().tolist()
+        return np.hstack(selected_ids).flatten().tolist()
 
     @abstractmethod
     def select_from_cluster(self, arr, num_selected, cluster_ids=None):
