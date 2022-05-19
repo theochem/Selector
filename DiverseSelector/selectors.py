@@ -211,7 +211,7 @@ class DirectedSphereExclusion(SelectionBase):
                 distance = 0
                 for i, point in enumerate(data_point):
                     distance += self.func_distance(selected_point[i], point)
-                distances.append(np.sqrt(distance))
+                distances.append(distance)
             min_dist = min(distances)
             if min_dist > self.r:
                 selected.append(idx)
