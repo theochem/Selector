@@ -23,8 +23,10 @@
 
 """Feature generation module."""
 
+from pathlib import PurePath
 import os
 import sys
+from typing import Union
 
 from DiverseSelector.utils import (
     ExplicitBitVector,
@@ -59,7 +61,7 @@ class DescriptorGenerator:
     """Compute molecular features."""
 
     def __init__(
-        self, mols: list,
+        self, mols: list = None,
     ):
         self.mols = mols
 
@@ -85,7 +87,7 @@ class DescriptorGenerator:
 
     def padelpy_desc(
         self,
-        mol_file: str,
+        mol_file: Union[str, PurePath],
         keep_csv: bool = False,
         maxruntime: int = -1,
         waitingjobs: int = -1,
