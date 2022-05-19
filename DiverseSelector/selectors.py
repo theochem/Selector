@@ -50,8 +50,6 @@ class MaxMin(SelectionBase):
         func_distance: callable
             function for calculating the pairwise distance between instances of the array.
         """
-        self.arr_dist = None
-        self.n_mols = None
         self.func_distance = func_distance
 
     def select_from_cluster(self, arr, num_selected, indices=None):
@@ -73,16 +71,14 @@ class MaxMin(SelectionBase):
         selected: list
             list of ids of selected molecules
         """
-        self.n_mols = arr.shape[0]
         if self.func_distance is not None:
-            self.arr_dist = self.func_distance(arr)
+            arr_dist = self.func_distance(arr)
         else:
-            self.arr_dist = arr
+            arr_dist = arr
 
         if indices is not None:
-            arr_dist = self.arr_dist[indices][:, indices]
-        else:
-            arr_dist = self.arr_dist
+            arr_dist = arr_dist[indices][:, indices]
+
         # choosing initial point as the medoid
         selected = [np.argmin(np.sum(arr_dist, axis=0))]
         while len(selected) < num_selected:
