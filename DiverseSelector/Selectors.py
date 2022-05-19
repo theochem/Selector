@@ -27,7 +27,6 @@ import numpy as np
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 
-from DiverseSelector.utils import pick_initial_compounds
 from DiverseSelector.base import SelectionBase
 
 
