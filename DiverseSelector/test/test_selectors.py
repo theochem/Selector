@@ -23,9 +23,11 @@
 
 """Testing for the MaxMin selection algorithms."""
 
+from DiverseSelector.selectors import DirectedSphereExclusion, GridPartitioning, MaxMin, OptiSim
 from DiverseSelector.test.common import generate_synthetic_data
-from DiverseSelector.selectors import MaxMin, OptiSim, DirectedSphereExclusion, GridPartitioning
+import numpy as np
 from numpy.testing import assert_equal
+from sklearn.metrics import pairwise_distances
 
 coords, class_labels, arr_dist = generate_synthetic_data(n_samples=100,
                                                          n_features=2,
@@ -40,6 +42,12 @@ coords_cluster, class_labels_cluster, arr_dist_cluster = generate_synthetic_data
                                                                                  pairwise_dist=True,
                                                                                  metric="euclidean",
                                                                                  random_state=42)
+
+simple_coords = np.array([[0, 0],
+                          [2, 0],
+                          [0, 2],
+                          [2, 2],
+                          [-10, -10]])
 
 
 def test_maxmin():
@@ -56,18 +64,23 @@ def test_maxmin():
     # make sure all the selected indices are the same with expectation
     assert_equal(selected_ids, [85, 57, 41, 25, 9, 62, 29, 65, 81, 61, 60, 97])
 
+    selector = MaxMin(lambda x: pairwise_distances(x, metric='euclidean'))
+    selected_ids = selector.select(arr=simple_coords, num_selected=3)
+    # make sure all the selected indices are the same with expectation
+    assert_equal(selected_ids, [0, 4, 3])
+
 
 def test_optisim():
     """Testing OptiSim class."""
     selector = OptiSim()
     selected_ids = selector.select(arr=coords_cluster, num_selected=12, labels=class_labels_cluster)
     # make sure all the selected indices are the same with expectation
-    assert_equal(selected_ids, [2, 85, 86, 59, 1, 50, 66, 81, 0, 11, 33, 46])
+    assert_equal(selected_ids, [2, 85, 86, 59, 1, 50, 93, 68, 0, 11, 33, 46])
 
     selector = OptiSim()
     selected_ids = selector.select(arr=coords, num_selected=12)
     # make sure all the selected indices are the same with expectation
-    assert_equal(selected_ids, [0, 8, 25, 9, 21, 13, 37, 40, 65, 57, 18, 6])
+    assert_equal(selected_ids, [0, 13, 21, 9, 8, 18, 39, 57, 65, 25, 6, 45])
 
 
 def test_directedsphereexclusion():
@@ -75,21 +88,23 @@ def test_directedsphereexclusion():
     selector = DirectedSphereExclusion()
     selected_ids = selector.select(arr=coords_cluster, num_selected=12, labels=class_labels_cluster)
     # make sure all the selected indices are the same with expectation
-    # assert_equal(selected_ids, None)
+    assert_equal(selected_ids, [95, 14, 88, 84, 76, 68, 93, 50, 29, 19, 54])
 
     selector = DirectedSphereExclusion()
     selected_ids = selector.select(arr=coords, num_selected=12)
     # make sure all the selected indices are the same with expectation
-    assert_equal(selected_ids, None)
+    assert_equal(selected_ids, [17, 92, 64, 6, 12, 76, 10, 87, 73, 66, 11, 57])
 
 def test_gridpartitioning():
     """Testing DirectedSphereExclusion class."""
-    selector = GridPartitioning()
+    selector = GridPartitioning(cells=3)
     selected_ids = selector.select(arr=coords_cluster, num_selected=12, labels=class_labels_cluster)
     # make sure all the selected indices are the same with expectation
-    assert_equal(selected_ids, None)
+    # assert_equal(selected_ids, [2, 25, 59, 88, 14, 96, 36, 82, 95,
+    #                             1, 70, 69, 50, 78, 87, 93, 0, 53, 30,
+    #                             62, 33, 48, 54, 98])
 
-    selector = GridPartitioning()
+    selector = GridPartitioning(cells=3)
     selected_ids = selector.select(arr=coords, num_selected=12)
     # make sure all the selected indices are the same with expectation
-    assert_equal(selected_ids, None)
+    # assert_equal(selected_ids, [7, 55, 70, 57, 29, 91, 9, 65, 28, 1, 60, 88, 74, 86, 82, 76])
