@@ -40,11 +40,13 @@ __all__ = [
 ]
 
 
-def compute_distance_matrix(features: np.ndarray,
-                            metric: str = "euclidean",
-                            n_jobs: int = -1,
-                            force_all_finite: bool = True,
-                            **kwargs: Any, ):
+def compute_distance_matrix(
+    features: np.ndarray,
+    metric: str = "euclidean",
+    n_jobs: int = -1,
+    force_all_finite: bool = True,
+    **kwargs: Any,
+):
     """Compute pairwise distance given a feature matrix.
 
     Parameters
@@ -111,7 +113,7 @@ def pairwise_similarity_bit(feature: np.array, metric: str) -> np.ndarray:
     for i in range(0, size):
         for j in range(i + 1, size):
             pair_simi.append(metric(feature[i], feature[j]))
-    pair_coeff = (squareform(pair_simi) + np.identity(size))
+    pair_coeff = squareform(pair_simi) + np.identity(size)
     return pair_coeff
 
 

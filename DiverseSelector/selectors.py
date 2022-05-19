@@ -41,6 +41,7 @@ class MaxMin(SelectionBase):
     2. Select a point the has the maximum distance among calculated
        on the previous step.
     """
+
     def __init__(self, func_distance=None):
         """
         Initializing class.
@@ -93,7 +94,14 @@ class MaxMin(SelectionBase):
 
 
 class OptiSim(SelectionBase):
-    def __init__(self, r=None, k=10, func_distance=lambda x, y: np.linalg.norm(x-y), start_id=0, random_seed=42):
+    def __init__(
+        self,
+        r=None,
+        k=10,
+        func_distance=lambda x, y: np.linalg.norm(x - y),
+        start_id=0,
+        random_seed=42,
+    ):
         self.r = r
         self.k = k
         self.random_seed = random_seed
@@ -128,8 +136,10 @@ class OptiSim(SelectionBase):
                     subsample[index_new] = min_dist
                 else:
                     recycling.append(index_new)
-                candidates = np.delete(np.arange(0, len(arr)),
-                                       selected + recycling + list(subsample.keys()))
+                candidates = np.delete(
+                    np.arange(0, len(arr)),
+                    selected + recycling + list(subsample.keys()),
+                )
             selected.append(max(zip(subsample.values(), subsample.keys()))[1])
             candidates = np.delete(np.arange(0, len(arr)), selected + recycling)
             subsample = {}
@@ -141,8 +151,10 @@ class OptiSim(SelectionBase):
             arr = arr[indices]
         if self.r is None:
             # Use numpy.optimize.bisect instead
-            arr_range = (max(arr[:, 0]) - min(arr[:, 0]),
-                         max(arr[:, 1]) - min(arr[:, 1]))
+            arr_range = (
+                max(arr[:, 0]) - min(arr[:, 0]),
+                max(arr[:, 1]) - min(arr[:, 1]),
+            )
             rg = max(arr_range) / num_select * 3
             self.r = rg
             result = self.optisim(arr)
@@ -172,7 +184,7 @@ class OptiSim(SelectionBase):
 
 
 class DirectedSphereExclusion(SelectionBase):
-    def __init__(self, r=None, func_distance=lambda x, y: np.linalg.norm(x-y)):
+    def __init__(self, r=None, func_distance=lambda x, y: np.linalg.norm(x - y)):
         self.r = r
         self.random_seed = 42
         self.starting_idx = 0
@@ -216,8 +228,10 @@ class DirectedSphereExclusion(SelectionBase):
             arr = arr[indices]
         if self.r is None:
             # Use numpy.optimize.bisect instead
-            arr_range = (max(arr[:, 0]) - min(arr[:, 0]),
-                         max(arr[:, 1]) - min(arr[:, 1]))
+            arr_range = (
+                max(arr[:, 0]) - min(arr[:, 0]),
+                max(arr[:, 1]) - min(arr[:, 1]),
+            )
             rg = max(arr_range) / num_selected * 3
             self.r = rg
             result = self.sphere_exclusion(arr)
@@ -280,7 +294,9 @@ class GridPartitioning(SelectionBase):
                     elif value == axis_info[dim][1]:
                         index_bin = self.cells - 1
                     else:
-                        index_bin = int((value - axis_info[dim][0]) // axis_info[dim][2])
+                        index_bin = int(
+                            (value - axis_info[dim][0]) // axis_info[dim][2]
+                        )
                     point_bin.append(index_bin)
                 bins.setdefault(tuple(point_bin), [])
                 bins[tuple(point_bin)].append(index)
@@ -319,8 +335,9 @@ class GridPartitioning(SelectionBase):
                             elif arr[point_idx][i] == axis_info[1]:
                                 index_bin = self.cells - 1
                             else:
-                                index_bin = int((arr[point_idx][i] - axis_info[0]) //
-                                                axis_info[2])
+                                index_bin = int(
+                                    (arr[point_idx][i] - axis_info[0]) // axis_info[2]
+                                )
                             point_bin.append(index_bin)
                             new_bins.setdefault(tuple(point_bin), [])
                             new_bins[tuple(point_bin)].append(point_idx)
@@ -384,7 +401,9 @@ class GridPartitioning(SelectionBase):
                     elif value == axis_info[dim][1]:
                         index_bin = self.cells - 1
                     else:
-                        index_bin = int((value - axis_info[dim][0]) // axis_info[dim][2])
+                        index_bin = int(
+                            (value - axis_info[dim][0]) // axis_info[dim][2]
+                        )
                     point_bin.append(index_bin)
                 bins.setdefault(tuple(point_bin), [])
                 bins[tuple(point_bin)].append(index)
@@ -423,8 +442,9 @@ class GridPartitioning(SelectionBase):
                             elif arr[point_idx][i] == axis_info[1]:
                                 index_bin = self.cells - 1
                             else:
-                                index_bin = int((arr[point_idx][i] - axis_info[0]) //
-                                                axis_info[2])
+                                index_bin = int(
+                                    (arr[point_idx][i] - axis_info[0]) // axis_info[2]
+                                )
                             point_bin.append(index_bin)
                             new_bins.setdefault(tuple(point_bin), [])
                             new_bins[tuple(point_bin)].append(point_idx)
