@@ -25,6 +25,7 @@
 
 import gzip
 from typing import TypeVar
+
 import numpy as np
 # pylint: disable=W0611
 from rdkit import Chem
