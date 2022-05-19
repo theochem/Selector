@@ -121,9 +121,7 @@ class OptiSim(SelectionBase):
                 for selected_idx in selected:
                     data_point = arr[index_new]
                     selected_point = arr[selected_idx]
-                    distance = 0
-                    for i, point in enumerate(data_point):
-                        distance += self.func_distance(selected_point[i], point)
+                    distance = self.func_distance(selected_point, data_point)
                     distances.append(distance)
                 min_dist = min(distances)
                 if min_dist > self.r:
@@ -193,9 +191,7 @@ class DirectedSphereExclusion(SelectionBase):
         for idx in candidates:
             ref_point = arr[ref[0]]
             data_point = arr[idx]
-            distance = 0
-            for i, point in enumerate(ref_point):
-                distance = self.func_distance(point, data_point[i])
+            distance = self.func_distance(ref_point, data_point)
             distances.append((distance, idx))
         distances.sort()
         order = [idx for dist, idx in distances]
@@ -208,9 +204,7 @@ class DirectedSphereExclusion(SelectionBase):
             for selected_idx in selected:
                 data_point = arr[idx]
                 selected_point = arr[selected_idx]
-                distance = 0
-                for i, point in enumerate(data_point):
-                    distance += self.func_distance(selected_point[i], point)
+                distance = self.func_distance(data_point, selected_point)
                 distances.append(distance)
             min_dist = min(distances)
             if min_dist > self.r:
