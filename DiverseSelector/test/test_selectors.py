@@ -65,4 +65,3 @@ def test_optisim():
     selected_ids = selector.select(arr=coords, num_selected=12)
     # make sure all the selected indices are the same with expectation
     assert_equal(selected_ids, [0, 8, 25, 9, 21, 13, 37, 40, 65, 57, 18, 6])
-
