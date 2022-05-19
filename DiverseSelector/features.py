@@ -31,7 +31,7 @@ from DiverseSelector.utils import (
     mol_loader,
     PandasDataFrame,
     RDKitMol,
-
+)
 from mordred import Calculator, descriptors
 import numpy as np
 from padelpy import padeldescriptor

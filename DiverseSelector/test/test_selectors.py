@@ -54,7 +54,6 @@ def test_maxmin():
     # make sure all the selected indices are the same with expectation
     assert_equal(selected_ids, [85, 57, 41, 25, 9, 62, 29, 65, 81, 61, 60, 97])
 
-
 def test_optisim():
     """Testing OptiSim class."""
     selector = OptiSim()
