@@ -224,7 +224,6 @@ class DirectedSphereExclusion(SelectionBase):
             arr = arr[indices]
         if self.r is not None:
             return self.sphere_exclusion(arr)
-
         # Use numpy.optimize.bisect instead
         arr_range = (
             max(arr[:, 0]) - min(arr[:, 0]),
@@ -254,7 +253,6 @@ class DirectedSphereExclusion(SelectionBase):
             count += 1
         self.r = None
         return result
-
 
 class GridPartitioning(SelectionBase):
     """Selecting compounds using MinMax algorithm."""
