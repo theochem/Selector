@@ -34,11 +34,8 @@ from DiverseSelector.utils import (
     PandasDataFrame,
     RDKitMol,
 )
-from mordred import Calculator, descriptors
 import numpy as np
-from padelpy import padeldescriptor
 import pandas as pd
-# from padelpy import from_sdf
 from rdkit import Chem
 from rdkit.Chem import AllChem, Descriptors, MACCSkeys, rdMHFPFingerprint
 from sklearn.preprocessing import StandardScaler
@@ -51,9 +48,6 @@ __all__ = [
     "feature_reader",
     "compute_features",
 ]
-
-cwd = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(os.path.join(cwd, "padelpy"))
 
 
 class DescriptorGenerator:
@@ -78,6 +72,7 @@ class DescriptorGenerator:
             A `pandas.DataFrame` object with compute Mordred descriptors.
 
         """
+        from mordred import Calculator, descriptors
         # if only compute 2D descriptors, set ignore_3D=True
         calc = Calculator(descs=descriptors, ignore_3D=ignore_3D)
         df_features = pd.DataFrame(calc.pandas(self.mols))
@@ -129,6 +124,9 @@ class DescriptorGenerator:
             A `pandas.DataFrame` object with compute Mordred descriptors.
 
         """
+        cwd = os.path.dirname(os.path.abspath(__file__))
+        sys.path.append(os.path.join(cwd, "padelpy"))
+        from padelpy import padeldescriptor
         # if only compute 2D descriptors,
         # ignore_3D=True
 
