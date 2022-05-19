@@ -23,11 +23,10 @@
 """Selectors classes for different choices of subset selection."""
 
 
+from DiverseSelector.base import SelectionBase
 import numpy as np
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
-
-from DiverseSelector.base import SelectionBase
 
 
 class MaxMin(SelectionBase):
@@ -52,9 +51,9 @@ class MaxMin(SelectionBase):
         """
         self.func_distance = func_distance
 
-    def select_from_cluster(self, arr, num_selected, indices=None):
+    def select_from_cluster(self, arr, num_selected, cluster_ids=None):
         """
-        MinMax algorithm for selecting points from cluster.
+        Algorithm MinMax for selecting points from cluster.
 
         Parameters
         ----------
@@ -63,7 +62,7 @@ class MaxMin(SelectionBase):
             Otherwise, treated as coordinates array.
         num_selected: int
             number of molecules that need to be selected
-        indices: np.ndarray
+        cluster_ids: np.ndarray
             indices of molecules that form a cluster
 
         Returns
@@ -76,8 +75,8 @@ class MaxMin(SelectionBase):
         else:
             arr_dist = arr
 
-        if indices is not None:
-            arr_dist = arr_dist[indices][:, indices]
+        if cluster_ids is not None:
+            arr_dist = arr_dist[cluster_ids][:, cluster_ids]
 
         # choosing initial point as the medoid
         selected = [np.argmin(np.sum(arr_dist, axis=0))]
