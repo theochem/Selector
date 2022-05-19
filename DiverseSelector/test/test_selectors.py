@@ -58,11 +58,12 @@ def test_maxmin():
 def test_optisim():
     """Testing OptiSim class."""
     selector = OptiSim()
-    selected_ids = selector.select(arr=arr_dist_cluster, num_selected=12, labels=class_labels_cluster)
+    selected_ids = selector.select(arr=coords_cluster, num_selected=12, labels=class_labels_cluster)
     # make sure all the selected indices are the same with expectation
-    assert_equal(selected_ids, [2, 85, 94, 34, 1, 50, 93, 5, 0, 11, 18, 64])
+    assert_equal(selected_ids, [2, 85, 86, 59, 1, 50, 66, 81, 0, 11, 33, 46])
 
     selector = OptiSim()
-    selected_ids = selector.select(arr=arr_dist, num_selected=12)
+    selected_ids = selector.select(arr=coords, num_selected=12)
     # make sure all the selected indices are the same with expectation
-    assert_equal(selected_ids, [0, 13, 21, 9, 23, 37, 57, 32, 65, 74, 8, 55])
+    assert_equal(selected_ids, [0, 8, 25, 9, 21, 13, 37, 40, 65, 57, 18, 6])
+
