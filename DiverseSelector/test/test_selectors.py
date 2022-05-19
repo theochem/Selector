@@ -23,8 +23,8 @@
 
 """Testing for the MaxMin selection algorithms."""
 
-from DiverseSelector.selectors import MaxMin, OptiSim
 from DiverseSelector.test.common import generate_synthetic_data
+from DiverseSelector.selectors import MaxMin, OptiSim, DirectedSphereExclusion, GridPartitioning
 from numpy.testing import assert_equal
 
 coords, class_labels, arr_dist = generate_synthetic_data(n_samples=100,
@@ -56,6 +56,7 @@ def test_maxmin():
     # make sure all the selected indices are the same with expectation
     assert_equal(selected_ids, [85, 57, 41, 25, 9, 62, 29, 65, 81, 61, 60, 97])
 
+
 def test_optisim():
     """Testing OptiSim class."""
     selector = OptiSim()
@@ -67,3 +68,28 @@ def test_optisim():
     selected_ids = selector.select(arr=coords, num_selected=12)
     # make sure all the selected indices are the same with expectation
     assert_equal(selected_ids, [0, 8, 25, 9, 21, 13, 37, 40, 65, 57, 18, 6])
+
+
+def test_directedsphereexclusion():
+    """Testing DirectedSphereExclusion class."""
+    selector = DirectedSphereExclusion()
+    selected_ids = selector.select(arr=coords_cluster, num_selected=12, labels=class_labels_cluster)
+    # make sure all the selected indices are the same with expectation
+    # assert_equal(selected_ids, None)
+
+    selector = DirectedSphereExclusion()
+    selected_ids = selector.select(arr=coords, num_selected=12)
+    # make sure all the selected indices are the same with expectation
+    assert_equal(selected_ids, None)
+
+def test_gridpartitioning():
+    """Testing DirectedSphereExclusion class."""
+    selector = GridPartitioning()
+    selected_ids = selector.select(arr=coords_cluster, num_selected=12, labels=class_labels_cluster)
+    # make sure all the selected indices are the same with expectation
+    assert_equal(selected_ids, None)
+
+    selector = GridPartitioning()
+    selected_ids = selector.select(arr=coords, num_selected=12)
+    # make sure all the selected indices are the same with expectation
+    assert_equal(selected_ids, None)
