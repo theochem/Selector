@@ -27,7 +27,6 @@ import numpy as np
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 
-from DiverseSelector.utils import pick_initial_compounds
 from DiverseSelector.base import SelectionBase
 
 
@@ -51,8 +50,6 @@ class MaxMin(SelectionBase):
         func_distance: callable
             function for calculating the pairwise distance between instances of the array.
         """
-        self.arr_dist = None
-        self.n_mols = None
         self.func_distance = func_distance
 
     def select_from_cluster(self, arr, num_selected, indices=None):
@@ -74,16 +71,14 @@ class MaxMin(SelectionBase):
         selected: list
             list of ids of selected molecules
         """
-        self.n_mols = arr.shape[0]
         if self.func_distance is not None:
-            self.arr_dist = self.func_distance(arr)
+            arr_dist = self.func_distance(arr)
         else:
-            self.arr_dist = arr
+            arr_dist = arr
 
         if indices is not None:
-            arr_dist = self.arr_dist[indices][:, indices]
-        else:
-            arr_dist = self.arr_dist
+            arr_dist = arr_dist[indices][:, indices]
+
         # choosing initial point as the medoid
         selected = [np.argmin(np.sum(arr_dist, axis=0))]
         while len(selected) < num_selected:
@@ -149,38 +144,39 @@ class OptiSim(SelectionBase):
     def select_from_cluster(self, arr, num_select, indices=None):
         if indices is not None:
             arr = arr[indices]
-        if self.r is None:
-            # Use numpy.optimize.bisect instead
-            arr_range = (
-                max(arr[:, 0]) - min(arr[:, 0]),
-                max(arr[:, 1]) - min(arr[:, 1]),
-            )
-            rg = max(arr_range) / num_select * 3
+
+        if self.r is not None:
+            return self.optisim(arr)
+
+        # Use numpy.optimize.bisect instead
+        arr_range = (
+            max(arr[:, 0]) - min(arr[:, 0]),
+            max(arr[:, 1]) - min(arr[:, 1]),
+        )
+        rg = max(arr_range) / num_select * 3
+        self.r = rg
+        result = self.optisim(arr)
+        if len(result) == num_select:
+            return result
+
+        low = rg if len(result) > num_select else 0
+        high = rg if low == 0 else None
+        bounds = [low, high]
+        count = 0
+        while len(result) != num_select and count < 20:
+            if bounds[1] is None:
+                rg = bounds[0] * 2
+            else:
+                rg = (bounds[0] + bounds[1]) / 2
             self.r = rg
             result = self.optisim(arr)
-            if len(result) == num_select:
-                return result
-
-            low = rg if len(result) > num_select else 0
-            high = rg if low == 0 else None
-            bounds = [low, high]
-            count = 0
-            while len(result) != num_select and count < 20:
-                if bounds[1] is None:
-                    rg = bounds[0] * 2
-                else:
-                    rg = (bounds[0] + bounds[1]) / 2
-                self.r = rg
-                result = self.optisim(arr)
-                if len(result) > num_select:
-                    bounds[0] = rg
-                else:
-                    bounds[1] = rg
-                count += 1
-            self.r = None
-            return result
-        else:
-            return self.optisim(arr)
+            if len(result) > num_select:
+                bounds[0] = rg
+            else:
+                bounds[1] = rg
+            count += 1
+        self.r = None
+        return result
 
 
 class DirectedSphereExclusion(SelectionBase):
@@ -226,38 +222,38 @@ class DirectedSphereExclusion(SelectionBase):
     def select_from_cluster(self, arr, num_selected, indices=None):
         if indices is not None:
             arr = arr[indices]
-        if self.r is None:
-            # Use numpy.optimize.bisect instead
-            arr_range = (
-                max(arr[:, 0]) - min(arr[:, 0]),
-                max(arr[:, 1]) - min(arr[:, 1]),
-            )
-            rg = max(arr_range) / num_selected * 3
+        if self.r is not None:
+            return self.sphere_exclusion(arr)
+
+        # Use numpy.optimize.bisect instead
+        arr_range = (
+            max(arr[:, 0]) - min(arr[:, 0]),
+            max(arr[:, 1]) - min(arr[:, 1]),
+        )
+        rg = max(arr_range) / num_selected * 3
+        self.r = rg
+        result = self.sphere_exclusion(arr)
+        if len(result) == num_selected:
+            return result
+
+        low = rg if len(result) > num_selected else 0
+        high = rg if low == 0 else None
+        bounds = [low, high]
+        count = 0
+        while len(result) != num_selected and count < 20:
+            if bounds[1] is None:
+                rg = bounds[0] * 2
+            else:
+                rg = (bounds[0] + bounds[1]) / 2
             self.r = rg
             result = self.sphere_exclusion(arr)
-            if len(result) == num_selected:
-                return result
-
-            low = rg if len(result) > num_selected else 0
-            high = rg if low == 0 else None
-            bounds = [low, high]
-            count = 0
-            while len(result) != num_selected and count < 20:
-                if bounds[1] is None:
-                    rg = bounds[0] * 2
-                else:
-                    rg = (bounds[0] + bounds[1]) / 2
-                self.r = rg
-                result = self.sphere_exclusion(arr)
-                if len(result) > num_selected:
-                    bounds[0] = rg
-                else:
-                    bounds[1] = rg
-                count += 1
-            self.r = None
-            return result
-        else:
-            return self.sphere_exclusion(arr)
+            if len(result) > num_selected:
+                bounds[0] = rg
+            else:
+                bounds[1] = rg
+            count += 1
+        self.r = None
+        return result
 
 
 class GridPartitioning(SelectionBase):
