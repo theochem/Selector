@@ -69,6 +69,24 @@ def test_maxmin():
     # make sure all the selected indices are the same with expectation
     assert_equal(selected_ids, [0, 4, 3])
 
+    # generating mocked clusters
+    np.random.seed(42)
+    cluster_one = np.random.normal(0, 1, (3, 2))
+    cluster_two = np.random.normal(10, 1, (6, 2))
+    cluster_three = np.random.normal(20, 1, (10, 2))
+    labels_mocked = np.hstack([[0 for i in range(3)],
+                               [1 for i in range(6)],
+                               [2 for i in range(10)]])
+
+    mocked_cluster_coords = np.vstack([cluster_one, cluster_two, cluster_three])
+
+    # selecting molecules
+    selector = MaxMin(lambda x: pairwise_distances(x, metric='euclidean'))
+    selected_mocked = selector.select(mocked_cluster_coords,
+                                      num_selected=15,
+                                      labels=labels_mocked)
+    assert_equal(selected_mocked, [0, 1, 2, 3, 4, 5, 6, 7, 8, 16, 15, 10, 13, 9, 18])
+
 
 def test_optisim():
     """Testing OptiSim class."""
