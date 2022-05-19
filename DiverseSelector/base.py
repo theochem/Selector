@@ -31,10 +31,6 @@ import warnings
 class SelectionBase(ABC):
     """Base class for subset selection."""
 
-    def __init__(self):
-        self.arr_dist = None
-        self.n_mols = None
-
     def select(self, arr, num_selected, labels=None):
         """
          MinMax algorithm for selecting points.
