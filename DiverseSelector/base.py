@@ -24,9 +24,9 @@
 """Base class for diversity based subset selection."""
 
 from abc import ABC, abstractmethod
+import warnings
 
 import numpy as np
-import warnings
 
 
 class SelectionBase(ABC):
@@ -34,7 +34,7 @@ class SelectionBase(ABC):
 
     def select(self, arr, num_selected, labels=None):
         """
-         MinMax algorithm for selecting points.
+         Algorithm for selecting points.
 
         Parameters
         ----------
@@ -57,7 +57,8 @@ class SelectionBase(ABC):
         # compute the number of samples (i.e. population or pop) in each cluster
         unique_labels = np.unique(labels)
         num_clusters = len(unique_labels)
-        pop_clusters = {unique_label: labels.count(unique_label) for unique_label in unique_labels}
+        pop_clusters = {unique_label: len(np.where(labels == unique_label)[0])
+                        for unique_label in unique_labels}
         # compute number of samples to be selected from each cluster
         n = num_selected // num_clusters
 
