@@ -23,8 +23,8 @@
 
 """Feature generation module."""
 
-from pathlib import PurePath
 import os
+from pathlib import PurePath
 import sys
 from typing import Union
 
@@ -37,7 +37,6 @@ import numpy as np
 import pandas as pd
 from rdkit import Chem
 from rdkit.Chem import AllChem, Descriptors, MACCSkeys, rdMHFPFingerprint
-from sklearn.preprocessing import StandardScaler
 
 
 __all__ = [
@@ -51,12 +50,12 @@ __all__ = [
 class DescriptorGenerator:
     """Compute molecular features."""
 
-    def __init__(
-        self, mols: list = None,
-    ):
+    def __init__(self,
+                 mols: list = None,):
+        """Coinstructor of DescriptorGenerator."""
         self.mols = mols
 
-    def mordred_desc(self, ignore_3D: bool = False,) -> PandasDataFrame:
+    def mordred_desc(self, ignore_3D: bool = False,) -> PandasDataFrame:  # noqa: N803
         """Mordred molecular descriptor generation.
 
         Parameters
@@ -70,38 +69,36 @@ class DescriptorGenerator:
             A `pandas.DataFrame` object with compute Mordred descriptors.
 
         """
-        from mordred import Calculator, descriptors
+        from mordred import Calculator, descriptors  # noqa: C0415
         # if only compute 2D descriptors, set ignore_3D=True
         calc = Calculator(descs=descriptors, ignore_3D=ignore_3D)
         df_features = pd.DataFrame(calc.pandas(self.mols))
 
         return df_features
 
-    def padelpy_desc(
-        self,
-        mol_file: Union[str, PurePath],
-        keep_csv: bool = False,
-        maxruntime: int = -1,
-        waitingjobs: int = -1,
-        threads: int = -1,
-        d_2d: bool = True,
-        d_3d: bool = True,
-        config: str = None,
-        convert3d: bool = False,
-        descriptortypes: str = None,
-        detectaromaticity: bool = False,
-        fingerprints: bool = False,
-        log: bool = False,
-        maxcpdperfile: int = 0,
-        removesalt: bool = False,
-        retain3d: bool = False,
-        standardizenitro: bool = False,
-        standardizetautomers: bool = False,
-        tautomerlist: str = None,
-        usefilenameasmolname: bool = False,
-        sp_timeout: int = None,
-        headless: bool = True,
-    ) -> PandasDataFrame:
+    def padelpy_desc(self,
+                     mol_file: Union[str, PurePath],
+                     keep_csv: bool = False,
+                     maxruntime: int = -1,
+                     waitingjobs: int = -1,
+                     threads: int = -1,
+                     d_2d: bool = True,
+                     d_3d: bool = True,
+                     config: str = None,
+                     convert3d: bool = False,
+                     descriptortypes: str = None,
+                     detectaromaticity: bool = False,
+                     fingerprints: bool = False,
+                     log: bool = False,
+                     maxcpdperfile: int = 0,
+                     removesalt: bool = False,
+                     retain3d: bool = False,
+                     standardizenitro: bool = False,
+                     standardizetautomers: bool = False,
+                     tautomerlist: str = None,
+                     usefilenameasmolname: bool = False,
+                     sp_timeout: int = None,
+                     headless: bool = True) -> PandasDataFrame:
         """PADEL molecular descriptor generation.
 
         Parameters
@@ -122,7 +119,8 @@ class DescriptorGenerator:
         """
         cwd = os.path.dirname(os.path.abspath(__file__))
         sys.path.append(os.path.join(cwd, "padelpy"))
-        from padelpy import padeldescriptor
+
+        from padelpy import padeldescriptor  # noqa: C0415
         # if only compute 2D descriptors,
         # ignore_3D=True
 
@@ -169,7 +167,6 @@ class DescriptorGenerator:
                    use_fragment: bool = True,
                    ipc_avg: bool = True,
                    ) -> PandasDataFrame:
-        # noqa: D403
         """RDKit molecular descriptor generation.
 
         Parameters
@@ -217,7 +214,6 @@ class DescriptorGenerator:
         return df_features
 
     def rdkit_frag_desc(self) -> PandasDataFrame:
-        # noqa: D403
         """RDKit fragment features.
 
         Returns
