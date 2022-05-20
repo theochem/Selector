@@ -32,7 +32,7 @@ from rdkit import Chem
 
 
 __all__ = [
-    "ExplicitBitVect",
+    "ExplicitBitVect",  # pylint: disable=F822
     "RDKitMol",
     "PandasDataFrame",
     "mol_loader",
