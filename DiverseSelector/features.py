@@ -30,7 +30,6 @@ from typing import Union
 
 from DiverseSelector.utils import (
     ExplicitBitVector,
-    mol_loader,
     PandasDataFrame,
     RDKitMol,
 )
@@ -46,7 +45,6 @@ __all__ = [
     "FingerprintGenerator",
     "feature_filtering",
     "feature_reader",
-    "compute_features",
 ]
 
 
