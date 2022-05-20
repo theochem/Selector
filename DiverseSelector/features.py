@@ -69,7 +69,7 @@ class DescriptorGenerator:
             A `pandas.DataFrame` object with compute Mordred descriptors.
 
         """
-        from mordred import Calculator, descriptors  # noqa: C0415
+        from mordred import Calculator, descriptors  # pylint: disable=C0415
         # if only compute 2D descriptors, set ignore_3D=True
         calc = Calculator(descs=descriptors, ignore_3D=ignore_3D)
         df_features = pd.DataFrame(calc.pandas(self.mols))
@@ -98,7 +98,7 @@ class DescriptorGenerator:
                      tautomerlist: str = None,
                      usefilenameasmolname: bool = False,
                      sp_timeout: int = None,
-                     headless: bool = True) -> PandasDataFrame:
+                     headless: bool = True) -> PandasDataFrame:  # pylint: disable=R0201
         """PADEL molecular descriptor generation.
 
         Parameters
@@ -120,7 +120,7 @@ class DescriptorGenerator:
         cwd = os.path.dirname(os.path.abspath(__file__))
         sys.path.append(os.path.join(cwd, "padelpy"))
 
-        from padelpy import padeldescriptor  # noqa: C0415
+        from padelpy import padeldescriptor  # pylint: disable=C0415
         # if only compute 2D descriptors,
         # ignore_3D=True
 
@@ -128,7 +128,6 @@ class DescriptorGenerator:
             str(os.path.basename(mol_file)).split(".", maxsplit=1)[0]
             + "_padel_descriptors.csv"
         )
-        print("csv_fname:", csv_fname)
 
         padeldescriptor(
             maxruntime=maxruntime,
