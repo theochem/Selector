@@ -76,8 +76,8 @@ class DescriptorGenerator:
 
         return df_features
 
-    def padelpy_desc(self,
-                     mol_file: Union[str, PurePath],
+    @staticmethod
+    def padelpy_desc(mol_file: Union[str, PurePath],
                      keep_csv: bool = False,
                      maxruntime: int = -1,
                      waitingjobs: int = -1,
@@ -166,7 +166,7 @@ class DescriptorGenerator:
                    use_fragment: bool = True,
                    ipc_avg: bool = True,
                    ) -> PandasDataFrame:
-        """RDKit molecular descriptor generation.
+        """Generation RDKit molecular descriptors.
 
         Parameters
         ----------
@@ -213,7 +213,7 @@ class DescriptorGenerator:
         return df_features
 
     def rdkit_frag_desc(self) -> PandasDataFrame:
-        """RDKit fragment features.
+        """Generation of the RDKit fragment features.
 
         Returns
         -------
