@@ -23,14 +23,13 @@
 
 """Feature generation module."""
 
-from pathlib import PurePath
 import os
+from pathlib import PurePath
 import sys
 from typing import Union
 
 from DiverseSelector.utils import (
     ExplicitBitVector,
-    mol_loader,
     PandasDataFrame,
     RDKitMol,
 )
@@ -38,7 +37,6 @@ import numpy as np
 import pandas as pd
 from rdkit import Chem
 from rdkit.Chem import AllChem, Descriptors, MACCSkeys, rdMHFPFingerprint
-from sklearn.preprocessing import StandardScaler
 
 
 __all__ = [
@@ -46,19 +44,18 @@ __all__ = [
     "FingerprintGenerator",
     "feature_filtering",
     "feature_reader",
-    "compute_features",
 ]
 
 
 class DescriptorGenerator:
     """Compute molecular features."""
 
-    def __init__(
-        self, mols: list = None,
-    ):
+    def __init__(self,
+                 mols: list = None,):
+        """Coinstructor of DescriptorGenerator."""
         self.mols = mols
 
-    def mordred_desc(self, ignore_3D: bool = False,) -> PandasDataFrame:
+    def mordred_desc(self, ignore_3D: bool = False,) -> PandasDataFrame:  # noqa: N803
         """Mordred molecular descriptor generation.
 
         Parameters
@@ -72,40 +69,36 @@ class DescriptorGenerator:
             A `pandas.DataFrame` object with compute Mordred descriptors.
 
         """
-        from mordred import Calculator, descriptors
+        from mordred import Calculator, descriptors  # pylint: disable=C0415
         # if only compute 2D descriptors, set ignore_3D=True
         calc = Calculator(descs=descriptors, ignore_3D=ignore_3D)
         df_features = pd.DataFrame(calc.pandas(self.mols))
 
         return df_features
 
-    def padelpy_desc(
-        self,
-        mol_file: Union[str, PurePath],
-        keep_csv: bool = False,
-        maxruntime: int = -1,
-        waitingjobs: int = -1,
-        threads: int = -1,
-        d_2d: bool = False,
-        d_3d: bool = False,
-        config: str = None,
-        convert3d: bool = False,
-        descriptortypes: str = None,
-        detectaromaticity: bool = False,
-        d_file: str = None,
-        fingerprints: bool = False,
-        log: bool = False,
-        maxcpdperfile: int = 0,
-        removesalt: bool = False,
-        retain3d: bool = False,
-        retainorder: bool = False,
-        standardizenitro: bool = False,
-        standardizetautomers: bool = False,
-        tautomerlist: str = None,
-        usefilenameasmolname: bool = False,
-        sp_timeout: int = None,
-        headless: bool = True,
-    ) -> PandasDataFrame:
+    def padelpy_desc(self,
+                     mol_file: Union[str, PurePath],
+                     keep_csv: bool = False,
+                     maxruntime: int = -1,
+                     waitingjobs: int = -1,
+                     threads: int = -1,
+                     d_2d: bool = True,
+                     d_3d: bool = True,
+                     config: str = None,
+                     convert3d: bool = False,
+                     descriptortypes: str = None,
+                     detectaromaticity: bool = False,
+                     fingerprints: bool = False,
+                     log: bool = False,
+                     maxcpdperfile: int = 0,
+                     removesalt: bool = False,
+                     retain3d: bool = False,
+                     standardizenitro: bool = False,
+                     standardizetautomers: bool = False,
+                     tautomerlist: str = None,
+                     usefilenameasmolname: bool = False,
+                     sp_timeout: int = None,
+                     headless: bool = True) -> PandasDataFrame:  # pylint: disable=R0201
         """PADEL molecular descriptor generation.
 
         Parameters
@@ -126,7 +119,8 @@ class DescriptorGenerator:
         """
         cwd = os.path.dirname(os.path.abspath(__file__))
         sys.path.append(os.path.join(cwd, "padelpy"))
-        from padelpy import padeldescriptor
+
+        from padelpy import padeldescriptor  # pylint: disable=C0415
         # if only compute 2D descriptors,
         # ignore_3D=True
 
@@ -146,13 +140,13 @@ class DescriptorGenerator:
             descriptortypes=descriptortypes,
             detectaromaticity=detectaromaticity,
             mol_dir=mol_file,
-            d_file=d_file,
+            d_file=csv_fname,
             fingerprints=fingerprints,
             log=log,
             maxcpdperfile=maxcpdperfile,
             removesalt=removesalt,
             retain3d=retain3d,
-            retainorder=retainorder,
+            retainorder=True,
             standardizenitro=standardizenitro,
             standardizetautomers=standardizetautomers,
             tautomerlist=tautomerlist,
@@ -172,7 +166,6 @@ class DescriptorGenerator:
                    use_fragment: bool = True,
                    ipc_avg: bool = True,
                    ) -> PandasDataFrame:
-        # noqa: D403
         """RDKit molecular descriptor generation.
 
         Parameters
@@ -220,7 +213,6 @@ class DescriptorGenerator:
         return df_features
 
     def rdkit_frag_desc(self) -> PandasDataFrame:
-        # noqa: D403
         """RDKit fragment features.
 
         Returns
@@ -492,122 +484,3 @@ def feature_reader(
         df = pd.read_excel(file_name, engine=engine, *kwargs)
 
     return df
-
-
-def compute_features(
-    mol_file: str,
-    feature_name: str = "padel",
-    sep: str = ",",
-    n_bits: int = 2048,
-    radius: int = 3,
-    min_radius: int = 1,
-    random_seed: int = 12345,
-    rings: bool = True,
-    isomeric: bool = True,
-    kekulize: bool = False,
-    use_fragment: bool = True,
-    ipc_avg: bool = True,
-    normalize_features: bool = False,
-    feature_output: str = None,
-    **kwargs,
-) -> PandasDataFrame:
-    """Compute molecular features.
-
-    Parameters
-    ----------
-    mol_file : str
-        SDF file name that provides molecules. Default=None.
-    feature_name : str, optional
-        Name of the feature to compute where "mordred", "padel", "rdkit", "rdkit_frag" denote
-        molecular descriptors and "SECFP", "ECFP", "MORGAN", "RDKFINGERPRINT", "MACCSKEYS" denote
-        molecular fingerprints. It is case insensitive. Default="padel".
-    sep : str, optional
-        Separator use for CSV like files. Default=",".
-    n_bits : int, optional
-        Number of bits to use for fingerprint. Default=2048.
-    radius : int, optional
-        Radius of the fingerprint. Default=3.
-    min_radius : int, optional
-        Minimum radius of the fingerprint. Default=1.
-    random_seed : int, optional
-        Random seed for the random number generator. Default=12345.
-    rings : bool, optional
-        Whether the rings (SSSR) are extracted from the molecule and added to the shingling.
-        Default=True.
-    isomeric : bool, optional
-        Whether the SMILES added to the shingling are isomeric. Default=False.
-    kekulize : bool, optional
-        Whether the SMILES added to the shingling are kekulized. Default=False.
-    use_fragment : bool, optional
-        Whether the fragments are used to compute the molecular features. Default=True.
-    ipc_avg : bool, optional
-        Whether the IPC average is used to compute the molecular features. Default=True.
-    normalize_features : bool, optional
-        Whether the features are normalized. Default=True.
-    feature_output : str, optional
-        CSV file name to save the computed features. Default=None.
-    **kwargs:
-        Other keyword arguments.
-
-    """
-    # load molecules
-    mols = mol_loader(file_name=mol_file, remove_hydrogen=False)
-
-    # compute descriptors
-    if feature_name.lower() in [
-        "mordred",
-        "padel",
-        "rdkit",
-        "rdkit_frag",
-    ]:
-        descriptor_gen = DescriptorGenerator(
-            mols=mols,
-            mol_file=mol_file,
-            desc_type=feature_name,
-            use_fragment=use_fragment,
-            ipc_avg=ipc_avg,
-        )
-        df_features = descriptor_gen.compute_descriptor(**kwargs)
-    # compute fingerprints
-    elif feature_name.upper() in [
-        "SECFP",
-        "ECFP",
-        "MORGAN",
-        "RDKFINGERPRINT",
-        "MACCSKEYS",
-    ]:
-        # todo: e3fp requires 3D coordinates
-        # todo: other fingerprints need 2D only
-        # change molecule 3D coordinate generation accordingly
-        fp_gen = FingerprintGenerator(
-            mols=mols,
-            fp_type=feature_name,
-            n_bits=n_bits,
-            radius=radius,
-            min_radius=min_radius,
-            random_seed=random_seed,
-            rings=rings,
-            isomeric=isomeric,
-            kekulize=kekulize,
-        )
-        df_features = fp_gen.compute_fingerprint()
-    else:
-        raise ValueError(f"{feature_name} is not supported.")
-
-    # drop infinities columns
-    df_features_valid = df_features[np.isfinite(df_features).all(axis=1)]
-    # impute missing values with zeros
-    df_features_valid.fillna(0, inplace=True)
-
-    # normalize the features when needed
-    if normalize_features:
-        df_features_valid.iloc[:, :] = StandardScaler().fit_transform(df_features_valid)
-
-    # save features to output file
-    if feature_output is None:
-        feature_output = (
-            str(os.path.basename(mol_file)).split(".", maxsplit=1)[0] + "_features.csv"
-        )
-    df_features_valid.to_csv(feature_output, sep=sep, index=False)
-
-    return df_features_valid

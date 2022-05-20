@@ -158,9 +158,7 @@ def test_gini_coefficient_of_non_diverse_set():
     numb_features = 10
     # Transpose so that the columns are all the same, note first made the rows all same
     single_fingerprint = list(np.random.choice([0, 1], size=(numb_features,)))
-    finger_prints = np.array([
-                                 single_fingerprint
-                             ] * numb_molecules).T
+    finger_prints = np.array([single_fingerprint] * numb_molecules).T
 
     result = gini_coefficient(finger_prints)
     # Since they are all the same, then gini coefficient should be zero.
