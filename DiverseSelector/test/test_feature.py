@@ -83,7 +83,29 @@ def test_feature_desc_padelpy_3d():
     """Testing molecular PaDEL descriptor with SMILES strings."""
     # generate molecular descriptors with the DescriptorGenerator
     with path("DiverseSelector.test.data", "drug_mols.sdf") as sdf_drugs:
-        df_padel_desc = DescriptorGenerator(mols=None).padelpy_desc(mol_file=sdf_drugs)
+        df_padel_desc = DescriptorGenerator(mols=None).padelpy_desc(mol_file=sdf_drugs,
+                                                                    keep_csv=False,
+                                                                    maxruntime=-1,
+                                                                    waitingjobs=-1,
+                                                                    threads=-1,
+                                                                    d_2d=True,
+                                                                    d_3d=True,
+                                                                    config=None,
+                                                                    convert3d=False,
+                                                                    descriptortypes=None,
+                                                                    detectaromaticity=False,
+                                                                    fingerprints=False,
+                                                                    log=False,
+                                                                    maxcpdperfile=0,
+                                                                    removesalt=False,
+                                                                    retain3d=False,
+                                                                    standardizenitro=False,
+                                                                    standardizetautomers=False,
+                                                                    tautomerlist=None,
+                                                                    usefilenameasmolname=False,
+                                                                    sp_timeout=None,
+                                                                    headless=True
+                                                                    )
 
     # load the expected descriptor dataframe
     with path("DiverseSelector.test.data", "drug_mols_desc_padel.csv") as sdf_csv:
