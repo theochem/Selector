@@ -23,11 +23,13 @@
 
 """Testing for feature generation module."""
 
-from DiverseSelector.features import (DescriptorGenerator,
+from DiverseSelector.features import (aug_features,
+                                      DescriptorGenerator,
                                       feature_reader,
                                       FingerprintGenerator,
                                       )
 from DiverseSelector.test.common import load_testing_mols
+import numpy as np
 from numpy.testing import assert_almost_equal, assert_equal
 import pandas as pd
 import pytest
@@ -395,3 +397,33 @@ def test_feature_get_features_desc_generate():
     assert_almost_equal(df_desc_rdkit_frag.to_numpy(float),
                         df_desc_rdkit_frag_exp.to_numpy(float),
                         )
+
+
+def test_aug_features():
+    """Testing feature augmenting for stratified sampling."""
+    # generate random feature matrix
+    features = np.array([[0.1, 0.2, 0.3, 0.4],
+                         [0.2, 0.3, 0.4, 0.5],
+                         [0.3, 0.4, 0.5, 0.6],
+                         [0.4, 0.5, 0.6, 0.7]])
+    target_pop = np.arange(8).reshape(4, 2)
+
+    # test augmentation without defining weights
+    new_features_no_weights = aug_features(features=features,
+                                           target_prop=target_pop,
+                                           weight=None)
+    features_exp = np.array([[0.1, 0.2, 0.3, 0.4, 0., 1.],
+                             [0.2, 0.3, 0.4, 0.5, 2., 3.],
+                             [0.3, 0.4, 0.5, 0.6, 4., 5.],
+                             [0.4, 0.5, 0.6, 0.7, 6., 7.]])
+    assert_equal(features_exp, new_features_no_weights)
+
+    # test augmentation without defining weights
+    new_features_with_weights = aug_features(features=features,
+                                             target_prop=target_pop,
+                                             weight=0.5)
+    features_exp = np.array([[0.1, 0.2, 0.3, 0.4, 0., 0., 1., 1.],
+                             [0.2, 0.3, 0.4, 0.5, 2., 2., 3., 3.],
+                             [0.3, 0.4, 0.5, 0.6, 4., 4., 5., 5.],
+                             [0.4, 0.5, 0.6, 0.7, 6., 6., 7., 7.]])
+    assert_equal(features_exp, new_features_with_weights)
