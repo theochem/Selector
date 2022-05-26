@@ -318,7 +318,7 @@ class FingerprintGenerator:
         else:
             raise ValueError(f"{fp_type} is not an supported fingerprint type.")
 
-        df_fps = pd.DataFrame(np.ndarray(fps), index=self.mol_names)
+        df_fps = pd.DataFrame(np.array(fps), index=self.mol_names)
 
         return df_fps
 
@@ -480,7 +480,7 @@ def feature_reader(
 
 def aug_features(features: Union[np.ndarray, PandasDataFrame],
                  target_prop: Union[np.ndarray, PandasDataFrame],
-                 weight: np.ndarray = None,
+                 weight: Union[np.ndarray, float, int] = None,
                  ) -> np.ndarray:
     r"""Augmented features.
 
