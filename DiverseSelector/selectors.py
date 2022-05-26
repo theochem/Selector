@@ -23,12 +23,13 @@
 """Selectors classes for different choices of subset selection."""
 
 
+from typing import Union
+
 from DiverseSelector.base import SelectionBase
 from DiverseSelector.diversity import compute_diversity
 import numpy as np
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
-from typing import Union
 
 
 class MaxMin(SelectionBase):
@@ -92,10 +93,10 @@ class MaxMin(SelectionBase):
 class OptiSim(SelectionBase):
     """Selecting compounds using OptiSim algorithm.
 
-    Initial point is chosen as medoid center. Points are randomly chosen and added to a subsample if outside of radius r
-    from all previously selected points, and discarded otherwise. Once k number of points are added to the subsample,
-    the point with the greatest minimum distance to previously selected points is selected and the subsample is
-    cleared and the process repeats.
+    Initial point is chosen as medoid center. Points are randomly chosen and added to a subsample
+    if outside of radius r from all previously selected points, and discarded otherwise. Once k
+    number of points are added to the subsample, the point with the greatest minimum distance to
+    previously selected points is selected and the subsample is cleared and the process repeats.
     """
 
     def __init__(
@@ -112,9 +113,11 @@ class OptiSim(SelectionBase):
         Parameters
         ----------
         r: float
-            radius for optisim algorithm, no points within r distance to an already selected point can be selected.
+            radius for optisim algorithm, no points within r distance to an already selected point
+            can be selected.
         k: int
-            amount of points to add to subsample before selecting one of the points with the greatest minimum distance
+            amount of points to add to subsample before selecting one of the points with the
+            greatest minimum distance
             to the previously selected points.
         func_distance: callable
             function for calculating the pairwise distance between instances of the array.
@@ -181,6 +184,7 @@ class OptiSim(SelectionBase):
     def select_from_cluster(self, arr, num_selected, cluster_ids=None):
         """
         Algorithm that uses optisim for selecting points from cluster.
+
         Parameters
         ----------
         arr: np.ndarray
@@ -201,21 +205,24 @@ class OptiSim(SelectionBase):
 class DirectedSphereExclusion(SelectionBase):
     """Selecting points using Directed Sphere Exclusion algorithm.
 
-    Starting point is chosen as the reference point and not included in the selected molecules. The distance of each
-    point is calculated to the reference point and the points are then sorted based on the ascending order of distances.
-    The points are then evaluated in their sorted order, and are selected if their distance to all the other selected
-    points is at least r away. Euclidian distance is used by default and the r value is automatically generated if
-    not passed to satisfy the number of molecules requested.
+    Starting point is chosen as the reference point and not included in the selected molecules. The
+    distance of each point is calculated to the reference point and the points are then sorted based
+    on the ascending order of distances. The points are then evaluated in their sorted order, and
+    are selected if their distance to all the other selected points is at least r away. Euclidian
+    distance is used by default and the r value is automatically generated if not passed to satisfy
+    the number of molecules requested.
     """
-    def __init__(self, r=None, func_distance=lambda x, y: np.linalg.norm(x - y), start_id=0, random_seed=42):
+
+    def __init__(self, r=None, func_distance=lambda x, y: np.linalg.norm(x - y), start_id=0,
+                 random_seed=42):
         """
         Initializing class.
 
         Parameters
         ----------
         r: float
-            radius for directed sphere exclusion algorithm, no points within r distance to an already selected point can
-             be selected.
+            radius for directed sphere exclusion algorithm, no points within r distance to an
+            already selected point can be selected.
         func_distance: callable
             function for calculating the pairwise distance between instances of the array.
         start_id: int
@@ -273,6 +280,7 @@ class DirectedSphereExclusion(SelectionBase):
     def select_from_cluster(self, arr, num_selected, cluster_ids=None):
         """
         Algorithm that uses sphere_exclusion for selecting points from cluster.
+
         Parameters
         ----------
         arr: np.ndarray
@@ -293,11 +301,12 @@ class DirectedSphereExclusion(SelectionBase):
 class GridPartitioning(SelectionBase):
     """Selecting points using the Grid Partitioning algorithm.
 
-    Points are partitioned into grids using an algorithm (equisized independent or equisized dependent). A point is
-    selected from each of the grids while the number of selected points is less than the number requested and while the
-    grid has available points remaining, looping until the number of requested points is satisfied. If at the end, the
-    number of points needed is less than the number of grids available to select from, the points are chosen from the
-    grids with the greatest diversity.
+    Points are partitioned into grids using an algorithm (equisized independent or equisized
+    dependent). A point is selected from each of the grids while the number of selected points is
+    less than the number requested and while the grid has available points remaining, looping until
+    the number of requested points is satisfied. If at the end, the number of points needed is less
+    than the number of grids available to select from, the points are chosen from the grids with the
+    greatest diversity.
     """
 
     def __init__(self, cells, grid_method="equisized_independent", max_dim=None, random_seed=42):
@@ -307,14 +316,14 @@ class GridPartitioning(SelectionBase):
         Parameters
         ----------
         cells: int
-            number of cells to partition each axis into, the number of resulting grids is cells to the power of the
-            dimensionality of the coordinate array.
+            number of cells to partition each axis into, the number of resulting grids is cells to
+            the power of the dimensionality of the coordinate array.
         grid_method: str
-            grid method used to partition the points into grids. "equisized_independent" and "equisized_dependent" are
-            supported options.
+            grid method used to partition the points into grids. "equisized_independent" and
+            "equisized_dependent" are supported options.
         max_dim: int
-            maximum dimensionality of coordinate array, if the dimensionality is greater than the max_dim provided
-            then dimensionality reduction is done using PCA.
+            maximum dimensionality of coordinate array, if the dimensionality is greater than the
+            max_dim provided then dimensionality reduction is done using PCA.
         random_seed: int
             seed for random selection of points to be selected from each grid.
         """
@@ -450,9 +459,11 @@ class GridPartitioning(SelectionBase):
         return selected
 
 
-def predict_radius(obj: Union[DirectedSphereExclusion, OptiSim], arr, num_selected, cluster_ids=None):
+def predict_radius(obj: Union[DirectedSphereExclusion, OptiSim], arr, num_selected,
+                   cluster_ids=None):
     """
     Algorithm that uses sphere_exclusion for selecting points from cluster.
+
     Parameters
     ----------
     obj: object
@@ -495,7 +506,7 @@ def predict_radius(obj: Union[DirectedSphereExclusion, OptiSim], arr, num_select
             rg = (bounds[0] + bounds[1]) / 2
         obj.r = rg
         result = obj.algorithm(arr)
-        if len(result) > num_selected:
+        if len(result) > num_selected: # noqa
             bounds[0] = rg
         else:
             bounds[1] = rg
