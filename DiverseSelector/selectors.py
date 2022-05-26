@@ -485,11 +485,7 @@ def predict_radius(obj: Union[DirectedSphereExclusion, OptiSim], arr, num_select
     if obj.r is not None:
         return obj.algorithm(arr)
     # Use numpy.optimize.bisect instead
-    arr_range = (
-        max(arr[:, 0]) - min(arr[:, 0]),
-        max(arr[:, 1]) - min(arr[:, 1]),
-    )
-    rg = max(arr_range) / num_selected * 3
+    rg = max(np.ptp(arr, axis=0)) / num_selected * 3
     obj.r = rg
     result = obj.algorithm(arr)
     if len(result) == num_selected:
