@@ -113,16 +113,15 @@ def test_directedsphereexclusion():
     # make sure all the selected indices are the same with expectation
     assert_equal(selected_ids, [17, 92, 64, 6, 12, 76, 10, 87, 73, 66, 11, 57])
 
+
 def test_gridpartitioning():
     """Testing DirectedSphereExclusion class."""
     selector = GridPartitioning(cells=3)
     selected_ids = selector.select(arr=coords_cluster, num_selected=12, labels=class_labels_cluster)
     # make sure all the selected indices are the same with expectation
-    # assert_equal(selected_ids, [2, 25, 59, 88, 14, 96, 36, 82, 95,
-    #                             1, 70, 69, 50, 78, 87, 93, 0, 53, 30,
-    #                             62, 33, 48, 54, 98])
+    assert_equal(selected_ids, [2, 25, 84, 56, 8, 70, 58, 78, 4, 46, 65, 29])
 
     selector = GridPartitioning(cells=3)
     selected_ids = selector.select(arr=coords, num_selected=12)
     # make sure all the selected indices are the same with expectation
-    # assert_equal(selected_ids, [7, 55, 70, 57, 29, 91, 9, 65, 28, 1, 60, 88, 74, 86, 82, 76])
+    assert_equal(selected_ids, [7, 55, 70, 57, 29, 91, 9, 65, 28, 11, 54, 88])
