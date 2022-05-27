@@ -97,12 +97,15 @@ class OptiSim(SelectionBase):
     if outside of radius r from all previously selected points, and discarded otherwise. Once k
     number of points are added to the subsample, the point with the greatest minimum distance to
     previously selected points is selected and the subsample is cleared and the process repeats.
+
+    Addapted from  https://doi.org/10.1021/ci970282v
     """
 
     def __init__(
         self,
         r=None,
         k=10,
+        tolerance=5.0,
         func_distance=lambda x, y: np.linalg.norm(x - y),
         start_id=0,
         random_seed=42,
@@ -112,6 +115,9 @@ class OptiSim(SelectionBase):
 
         Parameters
         ----------
+        tolerance: float
+            percentage error of number of molecules actually selected from number of molecules
+            requested.
         r: float
             radius for optisim algorithm, no points within r distance to an already selected point
             can be selected.
@@ -128,11 +134,12 @@ class OptiSim(SelectionBase):
         """
         self.r = r
         self.k = k
-        self.random_seed = random_seed
-        self.start_id = start_id
+        self.tolerance = tolerance
         self.func_distance = func_distance
+        self.start_id = start_id
+        self.random_seed = random_seed
 
-    def algorithm(self, arr):
+    def algorithm(self, arr) -> list:
         """
         Optisim algorithm logic.
 
@@ -211,10 +218,12 @@ class DirectedSphereExclusion(SelectionBase):
     are selected if their distance to all the other selected points is at least r away. Euclidian
     distance is used by default and the r value is automatically generated if not passed to satisfy
     the number of molecules requested.
+
+    Adapted from https://doi.org/10.1021/ci025554v
     """
 
-    def __init__(self, r=None, func_distance=lambda x, y: np.linalg.norm(x - y), start_id=0,
-                 random_seed=42):
+    def __init__(self, r=None, tolerance=5.0, func_distance=lambda x, y: np.linalg.norm(x - y),
+                 start_id=0, random_seed=42):
         """
         Initializing class.
 
@@ -223,6 +232,9 @@ class DirectedSphereExclusion(SelectionBase):
         r: float
             radius for directed sphere exclusion algorithm, no points within r distance to an
             already selected point can be selected.
+        tolerance: float
+            percentage error of number of molecules actually selected from number of molecules
+            requested.
         func_distance: callable
             function for calculating the pairwise distance between instances of the array.
         start_id: int
@@ -231,9 +243,10 @@ class DirectedSphereExclusion(SelectionBase):
             seed for random selection of points be evaluated.
         """
         self.r = r
-        self.random_seed = random_seed
-        self.starting_idx = start_id
+        self.tolerance = tolerance
         self.func_distance = func_distance
+        self.starting_idx = start_id
+        self.random_seed = random_seed
 
     def algorithm(self, arr):
         """
@@ -307,6 +320,8 @@ class GridPartitioning(SelectionBase):
     the number of requested points is satisfied. If at the end, the number of points needed is less
     than the number of grids available to select from, the points are chosen from the grids with the
     greatest diversity.
+
+    Adapted from https://doi.org/10.1016/S1093-3263(99)00016-9.
     """
 
     def __init__(self, cells, grid_method="equisized_independent", max_dim=None, random_seed=42):
@@ -480,6 +495,9 @@ def predict_radius(obj: Union[DirectedSphereExclusion, OptiSim], arr, num_select
     selected: list
         list of ids of selected molecules
     """
+    if not (isinstance(obj, DirectedSphereExclusion) or isinstance(obj, OptiSim)):
+        raise ValueError("Not valid class for function.")
+
     if cluster_ids is not None:
         arr = arr[cluster_ids]
     if obj.r is not None:
@@ -495,14 +513,15 @@ def predict_radius(obj: Union[DirectedSphereExclusion, OptiSim], arr, num_select
     high = rg if low == 0 else None
     bounds = [low, high]
     count = 0
-    while len(result) != num_selected and count < 20:
+    error = num_selected * obj.tolerance / 100
+    while (len(result) < num_selected - error or len(result) > num_selected + error) and count < 20:
         if bounds[1] is None:
             rg = bounds[0] * 2
         else:
             rg = (bounds[0] + bounds[1]) / 2
         obj.r = rg
         result = obj.algorithm(arr)
-        if len(result) > num_selected: # noqa
+        if len(result) > num_selected:
             bounds[0] = rg
         else:
             bounds[1] = rg
