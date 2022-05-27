@@ -495,7 +495,7 @@ def predict_radius(obj: Union[DirectedSphereExclusion, OptiSim], arr, num_select
     selected: list
         list of ids of selected molecules
     """
-    if not (isinstance(obj, DirectedSphereExclusion) or isinstance(obj, OptiSim)):
+    if not isinstance(obj, (DirectedSphereExclusion, OptiSim)):
         raise ValueError("Not valid class for function.")
 
     if cluster_ids is not None:
