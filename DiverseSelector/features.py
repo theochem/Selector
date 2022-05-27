@@ -50,11 +50,11 @@ class DescriptorGenerator:
     """Compute molecular features."""
 
     def __init__(self,
-                 mols: list = None, ):
+                 mols: list = None):
         """Coinstructor of DescriptorGenerator."""
         self.mols = mols
 
-    def mordred_desc(self, ignore_3D: bool = False, ) -> PandasDataFrame:  # noqa: N803
+    def mordred_desc(self, ignore_3D: bool = False) -> PandasDataFrame:  # noqa: N803
         """Mordred molecular descriptor generation.
 
         Parameters
@@ -163,8 +163,7 @@ class DescriptorGenerator:
 
     def rdkit_desc(self,
                    use_fragment: bool = True,
-                   ipc_avg: bool = True,
-                   ) -> PandasDataFrame:
+                   ipc_avg: bool = True) -> PandasDataFrame:
         """Generation RDKit molecular descriptors.
 
         Parameters
@@ -238,7 +237,7 @@ class DescriptorGenerator:
 class FingerprintGenerator:
     """Fingerprint generator."""
 
-    def __init__(self, mols: list, ) -> None:
+    def __init__(self, mols: list) -> None:
         """Fingerprint generator.
 
         Parameters
@@ -437,10 +436,11 @@ class FingerprintGenerator:
         return fp
 
 
-def feature_reader(
-    file_name: str, sep: str = ",", engine: str = "python", **kwargs,
-) -> PandasDataFrame:
-    r"""Load molecule features/descriptors.
+def feature_reader(file_name: str,
+                   sep: str = ",",
+                   engine: str = "python",
+                   **kwargs) -> PandasDataFrame:
+    """Load molecule features/descriptors.
 
     Parameters
     ----------
@@ -480,8 +480,7 @@ def feature_reader(
 
 def aug_features(features: Union[np.ndarray, PandasDataFrame],
                  target_prop: Union[np.ndarray, PandasDataFrame],
-                 weight: Union[np.ndarray, float, int] = None,
-                 ) -> np.ndarray:
+                 weight: Union[np.ndarray, float, int] = None) -> np.ndarray:
     r"""Augmented features.
 
     Parameters
