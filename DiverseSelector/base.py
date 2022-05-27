@@ -42,14 +42,14 @@ class SelectionBase(ABC):
             Array of features if fun_distance is provided.
             Otherwise, treated as distance matrix.
         num_selected: int
-            number of points that need to be selected
+            Number of points that need to be selected
         labels: np.ndarray
-            labels for performing algorithm withing clusters.
+            Labels for performing algorithm withing clusters.
 
         Returns
         -------
         selected: list
-            list of ids of selected molecules
+            List of ids of selected molecules
         """
         if labels is None:
             return self.select_from_cluster(arr, num_selected)
@@ -104,16 +104,16 @@ class SelectionBase(ABC):
         Parameters
         ----------
         arr: np.ndarray
-            distance matrix for points that needs to be selected
+            Distance matrix for points that needs to be selected
         num_selected: int
-            number of molecules that need to be selected
+            Number of molecules that need to be selected
         cluster_ids: np.array
 
 
         Returns
         -------
         selected: list
-            list of ids of molecules that are belonged to the one cluster
+            List of ids of molecules that are belonged to the one cluster
 
         """
         pass
