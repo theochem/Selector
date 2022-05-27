@@ -50,7 +50,7 @@ class MaxMin(SelectionBase):
         Parameters
         ----------
         func_distance: callable
-            function for calculating the pairwise distance between instances of the array.
+            Function for calculating the pairwise distance between instances of the array.
         """
         self.func_distance = func_distance
 
@@ -61,17 +61,17 @@ class MaxMin(SelectionBase):
         Parameters
         ----------
         arr: np.ndarray
-            distance matrix for points that needs to be selected if func_distance is None.
+            Distance matrix for points that needs to be selected if func_distance is None.
             Otherwise, treated as coordinates array.
         num_selected: int
-            number of molecules that need to be selected
+            Number of molecules that need to be selected
         cluster_ids: np.ndarray
-            indices of molecules that form a cluster
+            Indices of molecules that form a cluster
 
         Returns
         -------
         selected: list
-            list of ids of selected molecules
+            List of ids of selected molecules
         """
         if self.func_distance is not None:
             arr_dist = self.func_distance(arr)
@@ -116,21 +116,21 @@ class OptiSim(SelectionBase):
         Parameters
         ----------
         tolerance: float
-            percentage error of number of molecules actually selected from number of molecules
+            Percentage error of number of molecules actually selected from number of molecules
             requested.
         r: float
-            radius for optisim algorithm, no points within r distance to an already selected point
+            Radius for optisim algorithm, no points within r distance to an already selected point
             can be selected.
         k: int
-            amount of points to add to subsample before selecting one of the points with the
+            Amount of points to add to subsample before selecting one of the points with the
             greatest minimum distance
             to the previously selected points.
         func_distance: callable
-            function for calculating the pairwise distance between instances of the array.
+            Function for calculating the pairwise distance between instances of the array.
         start_id: int
-            index for the first point to be selected.
+            Index for the first point to be selected.
         random_seed: int
-            seed for random selection of points be evaluated.
+            Seed for random selection of points be evaluated.
         """
         self.r = r
         self.k = k
@@ -146,12 +146,12 @@ class OptiSim(SelectionBase):
         Parameters
         ----------
         arr: np.ndarray
-            coordinate array of points.
+            Coordinate array of points.
 
         Returns
         -------
         selected: list
-            list of ids of selected molecules
+            List of ids of selected molecules
         """
         selected = [self.start_id]
         recycling = []
@@ -195,16 +195,16 @@ class OptiSim(SelectionBase):
         Parameters
         ----------
         arr: np.ndarray
-            coordinate array of points
+            Coordinate array of points
         num_selected: int
-            number of molecules that need to be selected.
+            Number of molecules that need to be selected.
         cluster_ids: np.ndarray
-            indices of molecules that form a cluster
+            Indices of molecules that form a cluster
 
         Returns
         -------
         selected: list
-            list of ids of selected molecules
+            List of ids of selected molecules
         """
         return predict_radius(self, arr, num_selected, cluster_ids)
 
@@ -230,17 +230,17 @@ class DirectedSphereExclusion(SelectionBase):
         Parameters
         ----------
         r: float
-            radius for directed sphere exclusion algorithm, no points within r distance to an
+            Radius for directed sphere exclusion algorithm, no points within r distance to an
             already selected point can be selected.
         tolerance: float
-            percentage error of number of molecules actually selected from number of molecules
+            Percentage error of number of molecules actually selected from number of molecules
             requested.
         func_distance: callable
-            function for calculating the pairwise distance between instances of the array.
+            Function for calculating the pairwise distance between instances of the array.
         start_id: int
-            index for the first point to be selected.
+            Index for the first point to be selected.
         random_seed: int
-            seed for random selection of points be evaluated.
+            Seed for random selection of points be evaluated.
         """
         self.r = r
         self.tolerance = tolerance
@@ -255,12 +255,12 @@ class DirectedSphereExclusion(SelectionBase):
         Parameters
         ----------
         arr: np.ndarray
-            coordinate array of points.
+            Coordinate array of points.
 
         Returns
         -------
         selected: list
-            list of ids of selected molecules
+            List of ids of selected molecules
         """
         selected = []
         ref = [self.starting_idx]
@@ -297,16 +297,16 @@ class DirectedSphereExclusion(SelectionBase):
         Parameters
         ----------
         arr: np.ndarray
-            coordinate array of points
+            Coordinate array of points
         num_selected: int
-            number of molecules that need to be selected.
+            Number of molecules that need to be selected.
         cluster_ids: np.ndarray
-            indices of molecules that form a cluster
+            Indices of molecules that form a cluster
 
         Returns
         -------
         selected: list
-            list of ids of selected molecules
+            List of ids of selected molecules
         """
         return predict_radius(self, arr, num_selected, cluster_ids)
 
@@ -331,16 +331,16 @@ class GridPartitioning(SelectionBase):
         Parameters
         ----------
         cells: int
-            number of cells to partition each axis into, the number of resulting grids is cells to
+            Number of cells to partition each axis into, the number of resulting grids is cells to
             the power of the dimensionality of the coordinate array.
         grid_method: str
-            grid method used to partition the points into grids. "equisized_independent" and
+            Grid method used to partition the points into grids. "equisized_independent" and
             "equisized_dependent" are supported options.
         max_dim: int
-            maximum dimensionality of coordinate array, if the dimensionality is greater than the
+            Maximum dimensionality of coordinate array, if the dimensionality is greater than the
             max_dim provided then dimensionality reduction is done using PCA.
         random_seed: int
-            seed for random selection of points to be selected from each grid.
+            Seed for random selection of points to be selected from each grid.
         """
         self.random_seed = random_seed
         self.cells = cells
@@ -354,16 +354,16 @@ class GridPartitioning(SelectionBase):
         Parameters
         ----------
         arr: np.ndarray
-            coordinate array of points
+            Coordinate array of points
         num_selected: int
-            number of molecules that need to be selected.
+            Number of molecules that need to be selected.
         cluster_ids: np.ndarray
-            indices of molecules that form a cluster
+            Indices of molecules that form a cluster
 
         Returns
         -------
         selected: list
-            list of ids of selected molecules
+            List of ids of selected molecules
         """
         if cluster_ids is not None:
             arr = arr[cluster_ids]
@@ -482,18 +482,18 @@ def predict_radius(obj: Union[DirectedSphereExclusion, OptiSim], arr, num_select
     Parameters
     ----------
     obj: object
-        instance of dissimilarity selection class
+        Instance of dissimilarity selection class
     arr: np.ndarray
-        coordinate array of points
+        Coordinate array of points
     num_selected: int
-        number of molecules that need to be selected.
+        Number of molecules that need to be selected.
     cluster_ids: np.ndarray
-        indices of molecules that form a cluster
+        Indices of molecules that form a cluster
 
     Returns
     -------
     selected: list
-        list of ids of selected molecules
+        List of ids of selected molecules
     """
     if not isinstance(obj, (DirectedSphereExclusion, OptiSim)):
         raise ValueError("Not valid class for function.")
