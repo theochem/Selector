@@ -4,4 +4,9 @@ API Documentation
 .. autosummary::
    :toctree: autosummary
 
-   DiverseSelector.canvas
+   DiverseSelector.base
+   DiverseSelector.selectors
+   DiverseSelector.distance
+   DiverseSelector.diversity
+   DiverseSelector.features
+   DiverseSelector.utils
