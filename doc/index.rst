@@ -11,7 +11,11 @@ Welcome to DiverseSelector's documentation!
    :caption: Contents:
 
    getting_started
-   api
+
+.. toctree::
+   :maxdepth: 1
+
+   api/api_index.rst
 
 
 

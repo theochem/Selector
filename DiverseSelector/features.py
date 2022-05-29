@@ -42,7 +42,6 @@ from rdkit.Chem import AllChem, Descriptors, MACCSkeys, rdMHFPFingerprint
 __all__ = [
     "DescriptorGenerator",
     "FingerprintGenerator",
-    "feature_filtering",
     "feature_reader",
 ]
 
@@ -234,13 +233,6 @@ class DescriptorGenerator:
         df_features = pd.DataFrame(data=frag_features, columns=feature_names)
 
         return df_features
-
-
-# feature selection
-def feature_filtering():
-    """Feature selection."""
-    # todo: add feature selection for binary fingerprints
-    pass
 
 
 class FingerprintGenerator:
@@ -448,7 +440,7 @@ class FingerprintGenerator:
 def feature_reader(
     file_name: str, sep: str = ",", engine: str = "python", **kwargs,
 ) -> PandasDataFrame:
-    """Load molecule features/descriptors.
+    r"""Load molecule features/descriptors.
 
     Parameters
     ----------
@@ -464,8 +456,8 @@ def feature_reader(
         make it work. Default="python".
     **kwargs
         Additional keyword arguments passed to
-        `pd.read_csv()<https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html>`_
-        or `pd.read_excel()<https://pandas.pydata.org/docs/reference/api/pandas.read_excel.html>`_.
+        `pd.read_csv() <https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html>`_
+        or `pd.read_excel() <https://pandas.pydata.org/docs/reference/api/pandas.read_excel.html>`_.
 
     Returns
     -------

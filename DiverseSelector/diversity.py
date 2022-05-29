@@ -33,6 +33,13 @@ from scipy.spatial.distance import euclidean
 
 __all__ = [
     "compute_diversity",
+    "entropy",
+    "explicit_diversity_index",
+    "logdet",
+    "shannon_entropy",
+    "wdud",
+    "total_diversity_volume",
+    "gini_coefficient",
 ]
 
 
