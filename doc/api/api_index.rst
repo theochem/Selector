@@ -1,4 +1,4 @@
-﻿..
+..
     : -*- coding: utf-8 -*-
     : The DiverseSelector library provides a set of tools to select molecule
     : subset with maximum molecular diversity.
@@ -22,13 +22,14 @@
     :
     : --
 
-.. _features:
+DiverseSelector API
+###################
 
+.. toctree::
 
-:mod:`DiverseSelector.features`
-===============================
-
-.. automodule:: DiverseSelector.features
-   :members:
-   :undoc-members:
-   :inherited-members:
+    base.rst
+    selectors.rst
+    distance.rst
+    diversity.rst
+    features.rst
+    utils.rst

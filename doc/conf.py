@@ -131,7 +131,7 @@ numfig = True
 
 # General information about the project.
 project = 'DiverseSelector'
-copyright = '2017-2022, The QC-Devs Community'
+copyright = '2022, The QC-Devs Community'
 author = 'The QC-Devs Community'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -251,7 +251,7 @@ texinfo_documents = [
 # Put class docstring and the __init__ docstring together in the documentation
 # for your class when you use the autoclass directive.
 autoclass_content = 'both'
-autodoc_member_order = 'bysource'
+# autodoc_member_order = 'bysource'
 
 # autodoc_default_options = {'members': True,
 #                            'undoc-members': None,
