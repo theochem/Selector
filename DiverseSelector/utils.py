@@ -135,44 +135,6 @@ def mol_loader(
     return mols
 
 
-def pick_initial_compounds(arr_dist):
-    """
-    Pick the initial compounds using medioid.
-
-    Parameters
-    ----------
-    arr_dist: np.ndarray
-
-    Returns
-    -------
-    starting_idx: int
-        center of the medioid
-    """
-    # use the molecule with maximum distance to initial medoid as  the starting molecule
-    # https://www.sciencedirect.com/science/article/abs/pii/S1093326399000145?via%3Dihub
-    # J. Mol. Graphics Mod., 1998, Vol. 16,
-    # DISSIM: A program for the analysis of chemical diversity
-    medoid_idx = np.argmin(arr_dist.sum(axis=0))
-
-    # selected molecule with maximum distance to medoid
-    starting_idx = np.argmax(arr_dist[medoid_idx, :])
-    return starting_idx
-
-
-def dump_mol():
-    """Save molecules."""
-    pass
-
-
-def dump_feature():
-    """Save selected molecule with features."""
-    pass
-
-
-# todo: dump_selected_index
-# todo: add index of selected molecules in base.py
-
-
 def distance_to_similarity(x: np.ndarray, dist: bool = True) -> np.ndarray:
     """Convert between distance and similarity matrix.
 
