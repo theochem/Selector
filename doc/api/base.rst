@@ -28,7 +28,7 @@
 :mod:`DiverseSelector.base`
 =============================
 
-.. autoclass:: DiverseSelector.SelectionBase
+.. autoclass:: DiverseSelector.base.SelectionBase
    :members:
    :undoc-members:
    :inherited-members:
