@@ -250,7 +250,7 @@ texinfo_documents = [
 
 # Put class docstring and the __init__ docstring together in the documentation
 # for your class when you use the autoclass directive.
-autoclass_content = 'both'
+# autoclass_content = 'both'
 # autodoc_member_order = 'bysource'
 
 # autodoc_default_options = {'members': True,
