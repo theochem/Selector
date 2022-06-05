@@ -28,15 +28,7 @@ from typing import Union
 from DiverseSelector.base import SelectionBase
 from DiverseSelector.utils import PandasDataFrame
 import numpy as np
-import pandas as pd
 import random as rd
-from sklearn.decomposition import PCA
-from sklearn.preprocessing import StandardScaler
-from nary_tools import calculate_counters, gen_sim_dict, calculate_special_points
-
-__all__ = [
-    "DissimilaritySelection",
-]
 
 
 class ExtendedSelection(SelectionBase):
@@ -56,7 +48,7 @@ class ExtendedSelection(SelectionBase):
                  w_factor="fraction",
                  c_threshold=None,
                  algorithm='ECS_MeDiv'
-                           **kwargs,
+                 ** kwargs,
                  ):
         """Initialization brute_strength_type for DissimilaritySelection class.
         Parameters
@@ -105,12 +97,12 @@ class ExtendedSelection(SelectionBase):
 
         # use the molecule with maximum distance to initial medoid as  the starting molecule
         if self.initialization == "medoid" or self.initialization == "outlier":
-            starting_idx = calculate_special_points(total_data = self.features,
-                                                    points = [self.initialization],
-                                                    n_ary = self.n_ary,
-                                                    c_threshold = self.c_threshold,
-                                                    w_factor = self.w_factor,
-                                                    weight = self.weight)
+            starting_idx = calculate_special_points(total_data=self.features,
+                                                    points=[self.initialization],
+                                                    n_ary=self.n_ary,
+                                                    c_threshold=self.c_threshold,
+                                                    w_factor=self.w_factor,
+                                                    weight=self.weight)
 
         elif self.initialization.lower() == "random":
             rng = np.random.default_rng(seed=self.random_seed)
@@ -121,26 +113,29 @@ class ExtendedSelection(SelectionBase):
         return starting_idx
 
     def select(self):
-        def _get_single_index(total_data, indices, selected_n, c_threshold=None, n_ary = 'RR', weight = 'nw'):
+        def _get_single_index(total_data, indices, selected_n, c_threshold=None, n_ary='RR',
+                              weight='nw'):
             """Binary tie-breaker selection criterion"""
-        index = len(total_data[0]) + 1
-        min_value = 3.08
-        for i in indices:
-            v = 0
-            for j in selected_n:
-                c_total = total_data[j] + total_data[i]
-                data_sets = [np.append(c_total, 2)]
-                Indices = gen_sim_dict(data_sets, c_threshold=c_threshold)
-                sim_index = Indices[weight][n_ary]
-                v += sim_index
-            av_v = v/(len(selected_n) + 1)
-            if av_v < min_value:
-                index = i
-                min_value = av_v
-        return index
 
-        def _get_new_index_n(total_data, selected_condensed, n, select_from_n, selected_n, c_threshold=None,
-                             n_ary = 'RR', weight = 'nw'):
+            index = len(total_data[0]) + 1
+            min_value = 3.08
+            for i in indices:
+                v = 0
+                for j in selected_n:
+                    c_total = total_data[j] + total_data[i]
+                    data_sets = [np.append(c_total, 2)]
+                    Indices = gen_sim_dict(data_sets, c_threshold=c_threshold)
+                    sim_index = Indices[weight][n_ary]
+                    v += sim_index
+                av_v = v / (len(selected_n) + 1)
+                if av_v < min_value:
+                    index = i
+                    min_value = av_v
+            return index
+
+        def _get_new_index_n(total_data, selected_condensed, n, select_from_n, selected_n,
+                             c_threshold=None,
+                             n_ary='RR', weight='nw'):
             """Select a diverse object using the ECS_MeDiv algorithm"""
             n_total = n + 1
             # min value that is guaranteed to be higher than all the comparisons
@@ -168,7 +163,8 @@ class ExtendedSelection(SelectionBase):
             else:
                 if self.algorithm == 'ECS_MeDiv':
                     # Use average of binary similarities as tie-breaker
-                    index = get_single_index(total_data, indices, selected_n, c_threshold=None, n_ary = n_ary, weight = 'nw')
+                    index = _get_single_index(total_data, indices, selected_n, c_threshold=None,
+                                              n_ary=n_ary, weight='nw')
                 elif self.algorithm == 'Max_nDis':
                     index = rd.choice(indices)
             return index
@@ -185,8 +181,9 @@ class ExtendedSelection(SelectionBase):
             select_from_n = np.delete(total_indices, selected)
 
             # new index selected
-            new_index_n = get_new_index_n(self.features, selected_condensed, n, select_from_n, selected,
-                                          c_threshold = self.c_threshold, n_ary = self.n_ary)
+            new_index_n = _get_new_index_n(self.features, selected_condensed, n, select_from_n,
+                                           selected,
+                                           c_threshold=self.c_threshold, n_ary=self.n_ary)
 
             # updating column sum vector
             selected_condensed += self.features[new_index_n]
@@ -197,7 +194,7 @@ class ExtendedSelection(SelectionBase):
             # updating n
             n = len(selected)
 
-    return selected
+        return selected
 
 
 def calculate_counters(data_sets, c_threshold=None, w_factor="fraction"):
@@ -238,7 +235,7 @@ def calculate_counters(data_sets, c_threshold=None, w_factor="fraction"):
         c_total = data_sets[:-1]
     elif len(data_sets.shape) == 2:
         n_objects = len(data_sets)
-        c_total = np.sum(data_sets, axis = 0)
+        c_total = np.sum(data_sets, axis=0)
     else:
         raise TypeError("data_sets can only be a 1D or 2D Numpy array.")
 
@@ -247,7 +244,8 @@ def calculate_counters(data_sets, c_threshold=None, w_factor="fraction"):
         c_threshold = n_objects % 2
     if isinstance(c_threshold, str):
         if c_threshold != 'dissimilar':
-            raise TypeError("c_threshold must be None, 'dissimilar', an integer, or a number in the (0, 1) interval.")
+            raise TypeError(
+                "c_threshold must be None, 'dissimilar', an integer, or a number in the (0, 1) interval.")
         else:
             c_threshold = ceil(n_objects / 2)
     if isinstance(c_threshold, int):
@@ -261,17 +259,18 @@ def calculate_counters(data_sets, c_threshold=None, w_factor="fraction"):
     if w_factor:
         if "power" in w_factor:
             power = int(w_factor.split("_")[-1])
+
             def f_s(d):
-                return power**-float(n_objects - d)
+                return power ** -float(n_objects - d)
 
             def f_d(d):
-                return power**-float(d - n_objects % 2)
+                return power ** -float(d - n_objects % 2)
         elif w_factor == "fraction":
             def f_s(d):
-                return d/n_objects
+                return d / n_objects
 
             def f_d(d):
-                return 1 - (d - n_objects % 2)/n_objects
+                return 1 - (d - n_objects % 2) / n_objects
         else:
             def f_s(d):
                 return 1
@@ -314,6 +313,7 @@ def calculate_counters(data_sets, c_threshold=None, w_factor="fraction"):
 
     return counters
 
+
 def gen_sim_dict(data_sets, c_threshold=None, w_factor="fraction"):
     counters = calculate_counters(data_sets, c_threshold=c_threshold, w_factor="fraction")
     # Indices
@@ -323,114 +323,114 @@ def gen_sim_dict(data_sets, c_threshold=None, w_factor="fraction"):
     # SM: Sokal-Michener, SSn: Sokal-Sneath n
 
     # Weighted Indices
-    ac_w = (2/np.pi) * np.arcsin(np.sqrt(counters['total_w_sim']/
-                                         counters['w_p']))
-    bub_w = ((counters['w_a'] * counters['w_d'])**0.5 + counters['w_a'])/ \
-            ((counters['w_a'] * counters['w_d'])**0.5 + counters['w_a'] + counters['total_w_dis'])
-    ct1_w = (log(1 + counters['w_a'] + counters['w_d']))/ \
+    ac_w = (2 / np.pi) * np.arcsin(np.sqrt(counters['total_w_sim'] /
+                                           counters['w_p']))
+    bub_w = ((counters['w_a'] * counters['w_d']) ** 0.5 + counters['w_a']) / \
+            ((counters['w_a'] * counters['w_d']) ** 0.5 + counters['w_a'] + counters['total_w_dis'])
+    ct1_w = (log(1 + counters['w_a'] + counters['w_d'])) / \
             (log(1 + counters['w_p']))
-    ct2_w = (log(1 + counters['w_p']) - log(1 + counters['total_w_dis']))/ \
+    ct2_w = (log(1 + counters['w_p']) - log(1 + counters['total_w_dis'])) / \
             (log(1 + counters['w_p']))
-    ct3_w = (log(1 + counters['w_a']))/ \
+    ct3_w = (log(1 + counters['w_a'])) / \
             (log(1 + counters['w_p']))
-    ct4_w = (log(1 + counters['w_a']))/ \
+    ct4_w = (log(1 + counters['w_a'])) / \
             (log(1 + counters['w_a'] + counters['total_w_dis']))
-    fai_w = (counters['w_a'] + 0.5 * counters['w_d'])/ \
+    fai_w = (counters['w_a'] + 0.5 * counters['w_d']) / \
             (counters['w_p'])
-    gle_w = (2 * counters['w_a'])/ \
+    gle_w = (2 * counters['w_a']) / \
             (2 * counters['w_a'] + counters['total_w_dis'])
-    ja_w = (3 * counters['w_a'])/ \
+    ja_w = (3 * counters['w_a']) / \
            (3 * counters['w_a'] + counters['total_w_dis'])
-    ja0_w = (3 * counters['total_w_sim'])/ \
+    ja0_w = (3 * counters['total_w_sim']) / \
             (3 * counters['total_w_sim'] + counters['total_w_dis'])
-    jt_w = (counters['w_a'])/ \
+    jt_w = (counters['w_a']) / \
            (counters['w_a'] + counters['total_w_dis'])
-    rt_w = (counters['total_w_sim'])/ \
+    rt_w = (counters['total_w_sim']) / \
            (counters['w_p'] + counters['total_w_dis'])
-    rr_w = (counters['w_a'])/ \
+    rr_w = (counters['w_a']) / \
            (counters['w_p'])
-    sm_w =(counters['total_w_sim'])/ \
-          (counters['w_p'])
-    ss1_w = (counters['w_a'])/ \
+    sm_w = (counters['total_w_sim']) / \
+           (counters['w_p'])
+    ss1_w = (counters['w_a']) / \
             (counters['w_a'] + 2 * counters['total_w_dis'])
-    ss2_w = (2 * counters['total_w_sim'])/ \
+    ss2_w = (2 * counters['total_w_sim']) / \
             (counters['w_p'] + counters['total_w_sim'])
 
-
     ## Non-Weighted Indices
-    ac_nw = (2/np.pi) * np.arcsin(np.sqrt(counters['total_w_sim']/
-                                          counters['p']))
-    bub_nw = ((counters['w_a'] * counters['w_d'])**0.5 + counters['w_a'])/ \
-             ((counters['a'] * counters['d'])**0.5 + counters['a'] + counters['total_dis'])
-    ct1_nw = (log(1 + counters['w_a'] + counters['w_d']))/ \
+    ac_nw = (2 / np.pi) * np.arcsin(np.sqrt(counters['total_w_sim'] /
+                                            counters['p']))
+    bub_nw = ((counters['w_a'] * counters['w_d']) ** 0.5 + counters['w_a']) / \
+             ((counters['a'] * counters['d']) ** 0.5 + counters['a'] + counters['total_dis'])
+    ct1_nw = (log(1 + counters['w_a'] + counters['w_d'])) / \
              (log(1 + counters['p']))
-    ct2_nw = (log(1 + counters['w_p']) - log(1 + counters['total_w_dis']))/ \
+    ct2_nw = (log(1 + counters['w_p']) - log(1 + counters['total_w_dis'])) / \
              (log(1 + counters['p']))
-    ct3_nw = (log(1 + counters['w_a']))/ \
+    ct3_nw = (log(1 + counters['w_a'])) / \
              (log(1 + counters['p']))
-    ct4_nw = (log(1 + counters['w_a']))/ \
+    ct4_nw = (log(1 + counters['w_a'])) / \
              (log(1 + counters['a'] + counters['total_dis']))
-    fai_nw = (counters['w_a'] + 0.5 * counters['w_d'])/ \
+    fai_nw = (counters['w_a'] + 0.5 * counters['w_d']) / \
              (counters['p'])
-    gle_nw = (2 * counters['w_a'])/ \
+    gle_nw = (2 * counters['w_a']) / \
              (2 * counters['a'] + counters['total_dis'])
-    ja_nw = (3 * counters['w_a'])/ \
+    ja_nw = (3 * counters['w_a']) / \
             (3 * counters['a'] + counters['total_dis'])
-    ja0_nw = (3 * counters['total_w_sim'])/ \
+    ja0_nw = (3 * counters['total_w_sim']) / \
              (3 * counters['total_sim'] + counters['total_dis'])
-    jt_nw = (counters['w_a'])/ \
+    jt_nw = (counters['w_a']) / \
             (counters['a'] + counters['total_dis'])
-    rt_nw = (counters['total_w_sim'])/ \
+    rt_nw = (counters['total_w_sim']) / \
             (counters['p'] + counters['total_dis'])
-    rr_nw = (counters['w_a'])/ \
+    rr_nw = (counters['w_a']) / \
             (counters['p'])
-    sm_nw =(counters['total_w_sim'])/ \
-           (counters['p'])
-    ss1_nw = (counters['w_a'])/ \
+    sm_nw = (counters['total_w_sim']) / \
+            (counters['p'])
+    ss1_nw = (counters['w_a']) / \
              (counters['a'] + 2 * counters['total_dis'])
-    ss2_nw = (2 * counters['total_w_sim'])/ \
+    ss2_nw = (2 * counters['total_w_sim']) / \
              (counters['p'] + counters['total_sim'])
 
     # Dictionary with all the results
-    Indices = {'nw': {'AC':ac_nw,
-                      'BUB':bub_nw,
-                      'CT1':ct1_nw,
-                      'CT2':ct2_nw,
-                      'CT3':ct3_nw,
-                      'CT4':ct4_nw,
-                      'Fai':fai_nw,
-                      'Gle':gle_nw,
-                      'Ja0':ja0_nw,
-                      'Ja':ja_nw,
-                      'JT':jt_nw,
-                      'RT':rt_nw,
-                      'RR':rr_nw,
-                      'SM':sm_nw,
-                      'SS1':ss1_nw,
-                      'SS2':ss2_nw},
-               'w': {'AC':ac_w,
-                     'BUB':bub_w,
-                     'CT1':ct1_w,
-                     'CT2':ct2_w,
-                     'CT3':ct3_w,
-                     'CT4':ct4_w,
-                     'Fai':fai_w,
-                     'Gle':gle_w,
-                     'Ja0':ja0_w,
-                     'Ja':ja_w,
-                     'JT':jt_w,
-                     'RT':rt_w,
-                     'RR':rr_w,
-                     'SM':sm_w,
-                     'SS1':ss1_w,
-                     'SS2':ss2_w}}
+    Indices = {'nw': {'AC': ac_nw,
+                      'BUB': bub_nw,
+                      'CT1': ct1_nw,
+                      'CT2': ct2_nw,
+                      'CT3': ct3_nw,
+                      'CT4': ct4_nw,
+                      'Fai': fai_nw,
+                      'Gle': gle_nw,
+                      'Ja0': ja0_nw,
+                      'Ja': ja_nw,
+                      'JT': jt_nw,
+                      'RT': rt_nw,
+                      'RR': rr_nw,
+                      'SM': sm_nw,
+                      'SS1': ss1_nw,
+                      'SS2': ss2_nw},
+               'w': {'AC': ac_w,
+                     'BUB': bub_w,
+                     'CT1': ct1_w,
+                     'CT2': ct2_w,
+                     'CT3': ct3_w,
+                     'CT4': ct4_w,
+                     'Fai': fai_w,
+                     'Gle': gle_w,
+                     'Ja0': ja0_w,
+                     'Ja': ja_w,
+                     'JT': jt_w,
+                     'RT': rt_w,
+                     'RR': rr_w,
+                     'SM': sm_w,
+                     'SS1': ss1_w,
+                     'SS2': ss2_w}}
     return Indices
 
+
 def calculate_special_points(total_data, points=['medoid'],
-                             complete_order=False, n_ary = 'RR',
-                             c_threshold=None, w_factor='fraction', weight = 'nw'):
+                             complete_order=False, n_ary='RR',
+                             c_threshold=None, w_factor='fraction', weight='nw'):
     """Calculate medoid of a set"""
-    total_sum = np.sum(total_data, axis = 0)
+    total_sum = np.sum(total_data, axis=0)
     n_objects = len(total_data)
     complementary_sims = np.array([])
     for i in range(n_objects):
