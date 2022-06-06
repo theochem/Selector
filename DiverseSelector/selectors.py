@@ -374,6 +374,7 @@ class GridPartitioning(SelectionBase):
             norm_data = StandardScaler().fit_transform(arr)
             pca = PCA(n_components=self.max_dim)
             arr = pca.fit_transform(norm_data)
+            data_dim = self.max_dim
 
         if self.grid_method == "equisized_independent":
             axis_info = []
