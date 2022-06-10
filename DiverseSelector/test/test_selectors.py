@@ -23,7 +23,8 @@
 
 """Testing for the MaxMin selection algorithms."""
 
-from DiverseSelector.selectors import DirectedSphereExclusion, GridPartitioning, MaxMin, OptiSim
+from DiverseSelector.selectors import DirectedSphereExclusion, GridPartitioning, MaxMin, MaxSum, \
+    OptiSim
 from DiverseSelector.test.common import generate_synthetic_data
 import numpy as np
 from numpy.testing import assert_equal
@@ -86,6 +87,19 @@ def test_maxmin():
                                       num_selected=15,
                                       labels=labels_mocked)
     assert_equal(selected_mocked, [0, 1, 2, 3, 4, 5, 6, 7, 8, 16, 15, 10, 13, 9, 18])
+
+
+def test_maxsum():
+    """Testing OptiSim class."""
+    selector = MaxSum(lambda x: pairwise_distances(x, metric='euclidean'))
+    selected_ids = selector.select(arr=coords_cluster, num_selected=12, labels=class_labels_cluster)
+    # make sure all the selected indices are the same with expectation
+    assert_equal(selected_ids, [41, 34, 85, 94, 51, 50, 78, 66, 21, 64, 0, 83])
+
+    selector = MaxSum(lambda x: pairwise_distances(x, metric='euclidean'))
+    selected_ids = selector.select(arr=coords, num_selected=12)
+    # make sure all the selected indices are the same with expectation
+    assert_equal(selected_ids, [85, 57, 25, 41, 95, 9, 21, 8, 13, 68, 37, 54])
 
 
 def test_optisim():
