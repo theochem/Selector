@@ -90,6 +90,73 @@ class MaxMin(SelectionBase):
         return selected
 
 
+class MaxSum(SelectionBase):
+    """Selecting compounds using MaxSum algorithm.
+
+    Initial point is chosen as medoid center. The second point is
+    the furthest point away. All the following points are selected
+    using the rule:
+    1. Find minimum distance from every point to the selected ones.
+    2. Select a point the has the maximum sum of distance among calculated
+       on the previous step.
+    """
+
+    def __init__(self, func_distance=None):
+        """
+        Initializing class.
+
+        Parameters
+        ----------
+        func_distance: callable
+            Function for calculating the pairwise distance between instances of the array.
+        """
+        self.func_distance = func_distance
+
+    def select_from_cluster(self, arr, num_selected, cluster_ids=None):
+        """
+        Algorithm MinMax for selecting points from cluster.
+
+        Parameters
+        ----------
+        arr: np.ndarray
+            Distance matrix for points that needs to be selected if func_distance is None.
+            Otherwise, treated as coordinates array.
+        num_selected: int
+            Number of molecules that need to be selected
+        cluster_ids: np.ndarray
+            Indices of molecules that form a cluster
+
+        Returns
+        -------
+        selected: list
+            List of ids of selected molecules
+        """
+        if num_selected > len(arr):
+            raise ValueError(f"Requested {num_selected} points which is greater than {len(arr)} "
+                             f"points provided in array")
+
+        if self.func_distance is not None:
+            arr_dist = self.func_distance(arr)
+        else:
+            arr_dist = arr
+
+        if cluster_ids is not None:
+            arr_dist = arr_dist[cluster_ids][:, cluster_ids]
+
+        # choosing initial point as the medoid
+        selected = [np.argmin(np.sum(arr_dist, axis=0))]
+        while len(selected) < num_selected:
+            sum_distances = np.sum(arr_dist[selected], axis=0)
+            while True:
+                new_id = np.argmax(sum_distances)
+                if new_id in selected:
+                    sum_distances[new_id] = 0
+                else:
+                    break
+            selected.append(new_id)
+        return selected
+
+
 class OptiSim(SelectionBase):
     """Selecting compounds using OptiSim algorithm.
 
