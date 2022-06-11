@@ -38,11 +38,11 @@ import pandas as pd
 from rdkit import Chem
 from rdkit.Chem import AllChem, Descriptors, MACCSkeys, rdMHFPFingerprint
 
-
 __all__ = [
     "DescriptorGenerator",
     "FingerprintGenerator",
     "feature_reader",
+    "aug_features",
 ]
 
 
@@ -50,11 +50,11 @@ class DescriptorGenerator:
     """Compute molecular features."""
 
     def __init__(self,
-                 mols: list = None,):
+                 mols: list = None):
         """Coinstructor of DescriptorGenerator."""
         self.mols = mols
 
-    def mordred_desc(self, ignore_3D: bool = False,) -> PandasDataFrame:  # noqa: N803
+    def mordred_desc(self, ignore_3D: bool = False) -> PandasDataFrame:  # noqa: N803
         """Mordred molecular descriptor generation.
 
         Parameters
@@ -124,8 +124,8 @@ class DescriptorGenerator:
         # ignore_3D=True
 
         csv_fname = (
-            str(os.path.basename(mol_file)).split(".", maxsplit=1)[0]
-            + "_padel_descriptors.csv"
+                str(os.path.basename(mol_file)).split(".", maxsplit=1)[0]
+                + "_padel_descriptors.csv"
         )
 
         padeldescriptor(
@@ -163,8 +163,7 @@ class DescriptorGenerator:
 
     def rdkit_desc(self,
                    use_fragment: bool = True,
-                   ipc_avg: bool = True,
-                   ) -> PandasDataFrame:
+                   ipc_avg: bool = True) -> PandasDataFrame:
         """Generation RDKit molecular descriptors.
 
         Parameters
@@ -238,7 +237,7 @@ class DescriptorGenerator:
 class FingerprintGenerator:
     """Fingerprint generator."""
 
-    def __init__(self, mols: list,) -> None:
+    def __init__(self, mols: list) -> None:
         """Fingerprint generator.
 
         Parameters
@@ -258,15 +257,15 @@ class FingerprintGenerator:
         self.mol_names = mol_names
 
     def compute_fingerprint(
-        self,
-        fp_type: str = "SECFP",
-        n_bits: int = 2048,
-        radius: int = 3,
-        min_radius: int = 1,
-        random_seed: int = 12345,
-        rings: bool = True,
-        isomeric: bool = True,
-        kekulize: bool = False,
+            self,
+            fp_type: str = "SECFP",
+            n_bits: int = 2048,
+            radius: int = 3,
+            min_radius: int = 1,
+            random_seed: int = 12345,
+            rings: bool = True,
+            isomeric: bool = True,
+            kekulize: bool = False,
     ) -> PandasDataFrame:
         """Compute fingerprints.
 
@@ -324,15 +323,15 @@ class FingerprintGenerator:
 
     @staticmethod
     def rdkit_fingerprint_low(
-        mol: RDKitMol,
-        fp_type: str = "SECFP",
-        n_bits: int = 2048,
-        radius: int = 3,
-        min_radius: int = 1,
-        random_seed: int = 12345,
-        rings: bool = True,
-        isomeric: bool = False,
-        kekulize: bool = False,
+            mol: RDKitMol,
+            fp_type: str = "SECFP",
+            n_bits: int = 2048,
+            radius: int = 3,
+            min_radius: int = 1,
+            random_seed: int = 12345,
+            rings: bool = True,
+            isomeric: bool = False,
+            kekulize: bool = False,
     ) -> ExplicitBitVector:
         """
         Generate required molecular fingerprints.
@@ -437,10 +436,11 @@ class FingerprintGenerator:
         return fp
 
 
-def feature_reader(
-    file_name: str, sep: str = ",", engine: str = "python", **kwargs,
-) -> PandasDataFrame:
-    r"""Load molecule features/descriptors.
+def feature_reader(file_name: str,
+                   sep: str = ",",
+                   engine: str = "python",
+                   **kwargs) -> PandasDataFrame:
+    """Load molecule features/descriptors.
 
     Parameters
     ----------
@@ -476,3 +476,58 @@ def feature_reader(
         df = pd.read_excel(file_name, engine=engine, *kwargs)
 
     return df
+
+
+def aug_features(features: Union[np.ndarray, PandasDataFrame],
+                 target_prop: Union[np.ndarray, PandasDataFrame],
+                 weight: Union[np.ndarray, float, int] = None) -> np.ndarray:
+    r"""Augmented features.
+
+    Parameters
+    ----------
+    features : np.ndarray or PandasDataFrame
+        Molecular features.
+    target_prop : np.ndarray or PandasDataFrame
+        Target properties.
+    weight : np.ndarray, optional
+        Weight for each molecule. When weight is not provided (None), the property will be
+        directly augmented to the features without repeats. Default=None.
+
+    Returns
+    -------
+    aug_features : np.ndarray
+        Augmented features matrix.
+
+    Notes
+    -----
+    When the property becomes the focus instead of structural diversity, we can just use the
+    property matrix as the feature matrix without using fingerprints or molecular descriptors.
+
+    The augmented feature matrix is a concatenation of the original features matrix and the
+    property matrix. When a weight matrix is provided, then the repeat-value for each property to
+    be :math:`repeats = \left \lceil weight \times n_{features} \right \rceil`
+    where :math:`n_{features}` denotes the number of features (length of the
+    fingerprint/descriptors), and the final augmented features matrix is of feature matrix
+    augmented by the property matrix for :math:`repeat` times.
+
+    To achieve sampling with respect to target properties and diversity with respect to a
+    fingerprint/feature-vector, you need to append the target properties to the feature vector.
+    For each property, specify the :math:`repeats`: the more times you repeat the property
+    value the higher its weight.
+
+    """
+    if isinstance(features, pd.DataFrame):
+        features = features.to_numpy()
+    if isinstance(target_prop, pd.DataFrame):
+        target_prop = target_prop.to_numpy()
+
+    # define the repeat-value for each property
+    if weight is not None:
+        repeats = np.ceil(np.multiply(weight, features.shape[1]))
+    else:
+        repeats = 1
+
+    features_new = np.hstack((features,
+                              np.repeat(target_prop, repeats=repeats, axis=1)))
+
+    return features_new
