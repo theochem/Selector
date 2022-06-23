@@ -186,8 +186,8 @@ class OptiSim(SelectionBase):
             Percentage error of number of molecules actually selected from number of molecules
             requested.
         r: float
-            Radius for optisim algorithm, no points within r distance to an already selected point
-            can be selected.
+            Initial guess of radius for optisim algorithm, no points within r distance to an already
+            selected point can be selected.
         k: int
             Amount of points to add to subsample before selecting one of the points with the
             greatest minimum distance
@@ -297,8 +297,8 @@ class DirectedSphereExclusion(SelectionBase):
         Parameters
         ----------
         r: float
-            Radius for directed sphere exclusion algorithm, no points within r distance to an
-            already selected point can be selected.
+            Initial guess of radius for directed sphere exclusion algorithm, no points within r
+            distance to an already selected point can be selected.
         tolerance: float
             Percentage error of number of molecules actually selected from number of molecules
             requested.
@@ -569,16 +569,17 @@ def predict_radius(obj: Union[DirectedSphereExclusion, OptiSim], arr, num_select
     if cluster_ids is not None:
         arr = arr[cluster_ids]
     if obj.r is not None:
-        return obj.algorithm(arr)
+        result = obj.algorithm(arr)
     # Use numpy.optimize.bisect instead
-    rg = max(np.ptp(arr, axis=0)) / num_selected * 3
-    obj.r = rg
-    result = obj.algorithm(arr)
+    else:
+        rg = max(np.ptp(arr, axis=0)) / num_selected * 3
+        obj.r = rg
+        result = obj.algorithm(arr)
     if len(result) == num_selected:
         return result
 
-    low = rg if len(result) > num_selected else 0
-    high = rg if low == 0 else None
+    low = obj.r if len(result) > num_selected else 0
+    high = obj.r if low == 0 else None
     bounds = [low, high]
     count = 0
     error = num_selected * obj.tolerance / 100
