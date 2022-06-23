@@ -21,13 +21,13 @@
 # --
 
 """Selectors classes for different choices of subset selection."""
-
-
 from typing import Union
 
 from DiverseSelector.base import SelectionBase
 from DiverseSelector.diversity import compute_diversity
 import numpy as np
+import collections
+import BitVector
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 
@@ -169,13 +169,13 @@ class OptiSim(SelectionBase):
     """
 
     def __init__(
-        self,
-        r=None,
-        k=10,
-        tolerance=5.0,
-        func_distance=lambda x, y: np.linalg.norm(x - y),
-        start_id=0,
-        random_seed=42,
+            self,
+            r=None,
+            k=10,
+            tolerance=5.0,
+            func_distance=lambda x, y: np.linalg.norm(x - y),
+            start_id=0,
+            random_seed=42,
     ):
         """
         Initializing class.
@@ -541,6 +541,118 @@ class GridPartitioning(SelectionBase):
             old_len = len(selected)
         return selected
 
+
+class KDTree(SelectionBase):
+    def __init__(self, start_id=0):
+        self.starting_idx = start_id
+
+    def kdtree(self, arr):
+        """Construct a k-d tree from an iterable of points.
+
+        This algorithm is taken from Wikipedia. For more details,
+
+        > https://en.wikipedia.org/wiki/K-d_tree#Construction
+
+        """
+
+        BT = collections.namedtuple("BT", ["value", "index", "left", "right"])
+        BT.__doc__ = """
+        A Binary Tree (BT) with a node value, and left- and
+        right-subtrees.
+        """
+
+        k = len(arr[0])
+
+        def build(points, depth, old_indices=None):
+            """Build a k-d tree from a set of points at a given
+            depth.
+            """
+            if len(points) == 0:
+                return None
+            middle = len(points) // 2
+            indices = np.argsort(points[:, depth % k])
+            if old_indices is not None:
+                indices = [old_indices[i] for i in indices]
+            points = points[np.argsort(points[:, depth % k])]
+            return BT(
+                value=points[middle],
+                index=indices[middle],
+                left=build(
+                    points=points[:middle],
+                    depth=depth + 1,
+                    old_indices=indices[:middle],
+                ),
+                right=build(
+                    points=points[middle + 1:],
+                    depth=depth + 1,
+                    old_indices=indices[middle + 1:],
+                ),
+            )
+
+        return build(points=arr, depth=0)
+
+    def find_furthest_neighbor(self, kdtree, point, selected_bitvector):
+        """Find the nearest neighbor in a k-d tree for a given
+        point.
+        """
+
+        FNRecord = collections.namedtuple("NNRecord", ["point", "index", "distance"])
+        FNRecord.__doc__ = """
+        Used to keep track of the current best guess during a furthest
+        neighbor search.
+        """
+
+        k = len(point)
+        best = None
+
+        def search(tree, depth):
+            """Recursively search through the k-d tree to find the
+            furthest neighbor.
+            """
+            nonlocal selected_bitvector
+            nonlocal best
+
+            if tree is None:
+                return
+
+            distance = np.linalg.norm(tree.value - point)
+            if not selected_bitvector[tree.index] and (best is None or distance > best.distance):
+                best = FNRecord(point=tree.value, index=tree.index, distance=distance)
+
+            axis = depth % k
+            diff = point[axis] - tree.value[axis]
+            if diff >= 0:
+                close, away = tree.right, tree.left
+            else:
+                close, away = tree.left, tree.right
+
+            search(tree=away, depth=depth + 1)
+            if best is None or (close is not None and diff ** 2 <= 1.1 * (
+                    (point[axis] - close.value[axis]) ** 2)):
+                search(tree=close, depth=depth + 1)
+
+        search(tree=kdtree, depth=0)
+        return best
+
+    def select_from_cluster(self, arr, num_selected, cluster_ids=None):
+        if cluster_ids is not None:
+            arr = arr[cluster_ids]
+
+        tree = self.kdtree(arr)
+        bv = BitVector.BitVector(size=len(arr))
+        selected = [self.starting_idx]
+        query_point = arr[self.starting_idx]
+        bv[self.starting_idx] = 1
+        count = 1
+        while len(selected) < num_selected:
+            new_point = self.find_furthest_neighbor(tree, query_point, bv)
+            if new_point is None:
+                return selected
+            selected.append(new_point.index)
+            bv[new_point.index] = 1
+            query_point = (count * query_point + new_point.point) / (count + 1)
+            count += 1
+        return selected
 
 def predict_radius(obj: Union[DirectedSphereExclusion, OptiSim], arr, num_selected,
                    cluster_ids=None):
