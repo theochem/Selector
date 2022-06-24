@@ -568,7 +568,10 @@ def predict_radius(obj: Union[DirectedSphereExclusion, OptiSim], arr, num_select
 
     if cluster_ids is not None:
         arr = arr[cluster_ids]
+
+    original_r = None
     if obj.r is not None:
+        original_r = obj.r
         result = obj.algorithm(arr)
     # Use numpy.optimize.bisect instead
     else:
@@ -596,6 +599,7 @@ def predict_radius(obj: Union[DirectedSphereExclusion, OptiSim], arr, num_select
             bounds[1] = rg
         count += 1
     if count == 20:
-        print(f"Optimal radius finder failed to converge, selectedd {len(result)} molecules instead"
+        print(f"Optimal radius finder failed to converge, selected {len(result)} molecules instead "
               f"of requested {num_selected}.")
+    obj.r = original_r
     return result
