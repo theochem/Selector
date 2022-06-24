@@ -598,5 +598,4 @@ def predict_radius(obj: Union[DirectedSphereExclusion, OptiSim], arr, num_select
     if count == 20:
         print(f"Optimal radius finder failed to converge, selectedd {len(result)} molecules instead"
               f"of requested {num_selected}.")
-    obj.r = None
     return result
