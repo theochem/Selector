@@ -546,6 +546,10 @@ class KDTree(SelectionBase):
     def __init__(self, start_id=0):
         self.starting_idx = start_id
 
+    def SED(self, X, Y):
+        """Compute the squared Euclidean distance between X and Y."""
+        return sum((i - j) ** 2 for i, j in zip(X, Y))
+
     def kdtree(self, arr):
         """Construct a k-d tree from an iterable of points.
 
@@ -596,7 +600,7 @@ class KDTree(SelectionBase):
         point.
         """
 
-        FNRecord = collections.namedtuple("NNRecord", ["point", "index", "distance"])
+        FNRecord = collections.namedtuple("FNRecord", ["point", "index", "distance"])
         FNRecord.__doc__ = """
         Used to keep track of the current best guess during a furthest
         neighbor search.
@@ -615,16 +619,17 @@ class KDTree(SelectionBase):
             if tree is None:
                 return
 
-            distance = np.linalg.norm(tree.value - point)
-            if not selected_bitvector[tree.index] and (best is None or distance > best.distance):
-                best = FNRecord(point=tree.value, index=tree.index, distance=distance)
+            if not selected_bitvector[tree.index]:
+                distance = self.SED(tree.value, point)
+                if best is None or distance > best.distance:
+                    best = FNRecord(point=tree.value, index=tree.index, distance=distance)
 
             axis = depth % k
             diff = point[axis] - tree.value[axis]
-            if diff >= 0:
-                close, away = tree.right, tree.left
-            else:
+            if diff <= 0:
                 close, away = tree.left, tree.right
+            else:
+                close, away = tree.right, tree.left
 
             search(tree=away, depth=depth + 1)
             if best is None or (close is not None and diff ** 2 <= 1.1 * (
@@ -634,16 +639,72 @@ class KDTree(SelectionBase):
         search(tree=kdtree, depth=0)
         return best
 
+    def find_nearest_neighbor(self, kdtree, point, furthest_distance_avg):
+        """Find the nearest neighbor in a k-d tree for a given
+        point.
+        """
+
+        NNRecord = collections.namedtuple("NNRecord", ["point", "index", "distance"])
+        NNRecord.__doc__ = """
+        Used to keep track of the current best guess during a furthest
+        neighbor search.
+        """
+
+        k = len(point)
+        scaled_avg = furthest_distance_avg * 0.1
+        to_eliminate = []
+
+        def search(tree, depth):
+            """Recursively search through the k-d tree to find the
+            nearest neighbor.
+            """
+            if tree is None:
+                return
+
+            distance = self.SED(tree.value, point)
+            if distance < scaled_avg:
+                to_eliminate.append((distance, tree.index))
+
+            axis = depth % k
+            diff = point[axis] - tree.value[axis]
+            if diff <= 0:
+                close, away = tree.left, tree.right
+            else:
+                close, away = tree.right, tree.left
+
+            search(tree=close, depth=depth + 1)
+            if diff ** 2 < scaled_avg:
+                search(tree=away, depth=depth + 1)
+
+        search(tree=kdtree, depth=0)
+        to_eliminate.sort()
+        to_eliminate.pop(0)
+        to_eliminate = [index for dist, index in to_eliminate]
+        return to_eliminate
+
+    def eliminate(self, tree, point, best_distance_av, arr_len, num_eliminate, bv):
+        elim_candidates = self.find_nearest_neighbor(tree, point, best_distance_av)
+        elim_candidates = elim_candidates[:int(arr_len*0.05)]
+        num_eliminate -= len(elim_candidates)
+        if num_eliminate < 0:
+            elim_candidates = elim_candidates[:num_eliminate]
+        for index in elim_candidates:
+            bv[index] = 1
+        return num_eliminate
+
     def select_from_cluster(self, arr, num_selected, cluster_ids=None):
         if cluster_ids is not None:
             arr = arr[cluster_ids]
 
+        arr_len = len(arr)
         tree = self.kdtree(arr)
-        bv = BitVector.BitVector(size=len(arr))
+        bv = BitVector.BitVector(size=arr_len)
         selected = [self.starting_idx]
         query_point = arr[self.starting_idx]
         bv[self.starting_idx] = 1
         count = 1
+        num_eliminate = arr_len - num_selected
+        best_distance_av = 0
         while len(selected) < num_selected:
             new_point = self.find_furthest_neighbor(tree, query_point, bv)
             if new_point is None:
@@ -651,8 +712,18 @@ class KDTree(SelectionBase):
             selected.append(new_point.index)
             bv[new_point.index] = 1
             query_point = (count * query_point + new_point.point) / (count + 1)
+            if count == 1:
+                best_distance_av = new_point.distance
+            else:
+                best_distance_av = (count * best_distance_av + new_point.distance) / (count + 1)
+            if count == 1:
+                if num_eliminate > 0:
+                    num_eliminate = self.eliminate(tree, arr[self.starting_idx], best_distance_av, arr_len, num_eliminate, bv)
+            if num_eliminate > 0:
+                num_eliminate = self.eliminate(tree, new_point.point, best_distance_av, arr_len, num_eliminate, bv)
             count += 1
         return selected
+
 
 def predict_radius(obj: Union[DirectedSphereExclusion, OptiSim], arr, num_selected,
                    cluster_ids=None):
