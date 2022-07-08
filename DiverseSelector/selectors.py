@@ -21,13 +21,14 @@
 # --
 
 """Selectors classes for different choices of subset selection."""
+import operator
 from typing import Union
 
 from DiverseSelector.base import SelectionBase
 from DiverseSelector.diversity import compute_diversity
 import numpy as np
 import collections
-import BitVector
+import bitarray
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 
@@ -545,6 +546,16 @@ class GridPartitioning(SelectionBase):
 class KDTree(SelectionBase):
     def __init__(self, start_id=0):
         self.starting_idx = start_id
+        self.BT = collections.namedtuple("BT", ["value", "index", "left", "right"])
+        self.BT.__doc__ = """
+        A Binary Tree (BT) with a node value, and left- and
+        right-subtrees.
+        """
+        self.FNRecord = collections.namedtuple("FNRecord", ["point", "index", "distance"])
+        self.FNRecord.__doc__ = """
+        Used to keep track of the current best guess during a furthest
+        neighbor search.
+        """
 
     def SED(self, X, Y):
         """Compute the squared Euclidean distance between X and Y."""
@@ -559,11 +570,6 @@ class KDTree(SelectionBase):
 
         """
 
-        BT = collections.namedtuple("BT", ["value", "index", "left", "right"])
-        BT.__doc__ = """
-        A Binary Tree (BT) with a node value, and left- and
-        right-subtrees.
-        """
 
         k = len(arr[0])
 
@@ -574,11 +580,10 @@ class KDTree(SelectionBase):
             if len(points) == 0:
                 return None
             middle = len(points) // 2
-            indices = np.argsort(points[:, depth % k])
+            indices, points = zip(*sorted(enumerate(points), key=lambda x: x[1][depth % k]))
             if old_indices is not None:
                 indices = [old_indices[i] for i in indices]
-            points = points[np.argsort(points[:, depth % k])]
-            return BT(
+            return self.BT(
                 value=points[middle],
                 index=indices[middle],
                 left=build(
@@ -600,11 +605,6 @@ class KDTree(SelectionBase):
         point.
         """
 
-        FNRecord = collections.namedtuple("FNRecord", ["point", "index", "distance"])
-        FNRecord.__doc__ = """
-        Used to keep track of the current best guess during a furthest
-        neighbor search.
-        """
 
         k = len(point)
         best = None
@@ -622,7 +622,7 @@ class KDTree(SelectionBase):
             if not selected_bitvector[tree.index]:
                 distance = self.SED(tree.value, point)
                 if best is None or distance > best.distance:
-                    best = FNRecord(point=tree.value, index=tree.index, distance=distance)
+                    best = self.FNRecord(point=tree.value, index=tree.index, distance=distance)
 
             axis = depth % k
             diff = point[axis] - tree.value[axis]
@@ -644,11 +644,6 @@ class KDTree(SelectionBase):
         point.
         """
 
-        NNRecord = collections.namedtuple("NNRecord", ["point", "index", "distance"])
-        NNRecord.__doc__ = """
-        Used to keep track of the current best guess during a furthest
-        neighbor search.
-        """
 
         k = len(point)
         scaled_avg = furthest_distance_avg * 0.1
@@ -696,9 +691,11 @@ class KDTree(SelectionBase):
         if cluster_ids is not None:
             arr = arr[cluster_ids]
 
+        if isinstance(arr, np.ndarray):
+            arr = arr.tolist()
         arr_len = len(arr)
         tree = self.kdtree(arr)
-        bv = BitVector.BitVector(size=arr_len)
+        bv = bitarray.bitarray(arr_len)
         selected = [self.starting_idx]
         query_point = arr[self.starting_idx]
         bv[self.starting_idx] = 1
@@ -711,7 +708,8 @@ class KDTree(SelectionBase):
                 return selected
             selected.append(new_point.index)
             bv[new_point.index] = 1
-            query_point = (count * query_point + new_point.point) / (count + 1)
+            query_point = (count * np.array(query_point) + np.array(new_point.point)) / (count + 1)
+            query_point = query_point.tolist()
             if count == 1:
                 best_distance_av = new_point.distance
             else:
