@@ -21,15 +21,13 @@
 # --
 
 """Selectors classes for different choices of subset selection."""
-import operator
-from typing import Union
 import collections
+from typing import Union
 
+import bitarray
 from DiverseSelector.base import SelectionBase
 from DiverseSelector.diversity import compute_diversity
-
 import numpy as np
-import bitarray
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 
@@ -603,9 +601,7 @@ class KDTree(SelectionBase):
         k = len(arr[0])
 
         def build(points, depth, old_indices=None):
-            """Build a k-d tree from a set of points at a given
-            depth.
-            """
+            """Build a k-d tree from a set of points at a given depth."""
             if len(points) == 0:
                 return None
             middle = len(points) // 2
@@ -631,9 +627,7 @@ class KDTree(SelectionBase):
         return kdtree
 
     def find_furthest_neighbor(self, kdtree, point, selected_bitvector):
-        """
-        Find an approximation of the furthest neighbor in a k-d tree for a given
-        point.
+        """Find approximately the furthest neighbor in a k-d tree for a given point.
 
         Parameters
         ----------
@@ -654,9 +648,9 @@ class KDTree(SelectionBase):
         best = None
 
         def search(tree, depth):
-            """Recursively search through the k-d tree to find the
-            furthest neighbor.
-            """
+            # Recursively search through the k-d tree to find the
+            # furthest neighbor.
+
             nonlocal selected_bitvector
             nonlocal best
 
@@ -685,8 +679,7 @@ class KDTree(SelectionBase):
 
     def find_nearest_neighbor(self, kdtree, point, furthest_distance_avg):
         """
-        Find the nearest neighbor in a k-d tree for a given
-        point.
+        Find the nearest neighbors in a k-d tree for a point.
 
         Parameters
         ----------
@@ -707,9 +700,9 @@ class KDTree(SelectionBase):
         to_eliminate = []
 
         def search(tree, depth):
-            """Recursively search through the k-d tree to find the
-            nearest neighbor.
-            """
+            # Recursively search through the k-d tree to find the
+            # nearest neighbor.
+
             if tree is None:
                 return
 
@@ -735,10 +728,7 @@ class KDTree(SelectionBase):
         return to_eliminate
 
     def eliminate(self, tree, point, best_distance_av, arr_len, num_eliminate, bv):
-        """
-        Eliminates points from being selected in future rounds, keeping track of eliminated points
-        in a bitvector. Elimination is done on points too close to the point passed to the
-        function.
+        """Eliminates points from being selected in future rounds.
 
         Parameters
         ----------
@@ -770,8 +760,8 @@ class KDTree(SelectionBase):
         return num_eliminate
 
     def select_from_cluster(self, arr, num_selected, cluster_ids=None):
-        """
-        Main function for selecting points using the KDTree algorithm.
+        """Main function for selecting points using the KDTree algorithm.
+
         Parameters
         ----------
         arr: np.ndarray
