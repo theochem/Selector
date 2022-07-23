@@ -142,6 +142,7 @@ def test_gridpartitioning():
 
 
 def test_kdtree():
+    """Testing KDTree class."""
     selector = KDTree()
     selected_ids = selector.select(arr=coords_cluster, num_selected=12, labels=class_labels_cluster)
     # make sure all the selected indices are the same with expectation
