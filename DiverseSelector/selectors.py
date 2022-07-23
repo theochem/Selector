@@ -780,6 +780,7 @@ class KDTree(SelectionBase):
         arr_len = len(arr)
         tree = self.kdtree(arr)
         bv = bitarray.bitarray(arr_len)
+        bv[:] = 0
         selected = [self.starting_idx]
         query_point = arr[self.starting_idx]
         bv[self.starting_idx] = 1
@@ -800,10 +801,10 @@ class KDTree(SelectionBase):
             else:
                 best_distance_av = (count * best_distance_av + new_point.distance) / (count + 1)
             if count == 1:
-                if num_eliminate > 0:
+                if num_eliminate > 0 and self.scaling != 0:
                     num_eliminate = self.eliminate(tree, arr[self.starting_idx], best_distance_av,
                                                    num_eliminate, bv)
-            if num_eliminate > 0:
+            if num_eliminate > 0 and self.scaling != 0:
                 num_eliminate = self.eliminate(tree, new_point.point, best_distance_av,
                                                num_eliminate, bv)
             count += 1
