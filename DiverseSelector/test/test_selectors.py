@@ -23,8 +23,8 @@
 
 """Testing for the MaxMin selection algorithms."""
 
-from DiverseSelector.selectors import DirectedSphereExclusion, GridPartitioning, MaxMin, MaxSum, \
-    OptiSim, KDTree
+from DiverseSelector.selectors import DirectedSphereExclusion, GridPartitioning, KDTree, MaxMin, MaxSum, \
+    OptiSim
 from DiverseSelector.test.common import generate_synthetic_data
 import numpy as np
 from numpy.testing import assert_equal
