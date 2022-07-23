@@ -24,7 +24,7 @@
 """Testing for the MaxMin selection algorithms."""
 
 from DiverseSelector.selectors import DirectedSphereExclusion, GridPartitioning, MaxMin, MaxSum, \
-    OptiSim
+    OptiSim, KDTree
 from DiverseSelector.test.common import generate_synthetic_data
 import numpy as np
 from numpy.testing import assert_equal
@@ -139,3 +139,15 @@ def test_gridpartitioning():
     selected_ids = selector.select(arr=coords, num_selected=12)
     # make sure all the selected indices are the same with expectation
     assert_equal(selected_ids, [7, 55, 70, 57, 29, 91, 9, 65, 28, 11, 54, 88])
+
+
+def test_kdtree():
+    selector = KDTree()
+    selected_ids = selector.select(arr=coords_cluster, num_selected=12, labels=class_labels_cluster)
+    # make sure all the selected indices are the same with expectation
+    assert_equal(selected_ids, [2, 73, 94, 86, 1, 50, 93, 78, 0, 54, 33, 72])
+
+    selector = KDTree()
+    selected_ids = selector.select(arr=coords, num_selected=12)
+    # make sure all the selected indices are the same with expectation
+    assert_equal(selected_ids, [0, 95, 57, 41, 25, 9, 8, 6, 66, 1, 42, 82])
