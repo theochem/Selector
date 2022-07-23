@@ -22,6 +22,7 @@
 
 """Selectors classes for different choices of subset selection."""
 import collections
+import math
 from typing import Union
 
 import bitarray
@@ -559,6 +560,7 @@ class KDTree(SelectionBase):
     def __init__(self,
                  start_id=0,
                  func_distance=lambda x, y: sum((i - j) ** 2 for i, j in zip(x, y)),
+                 scaling=10,
                  ):
         """
         Initializing class.
@@ -569,20 +571,16 @@ class KDTree(SelectionBase):
             Index for the first point to be selected.
         func_distance: callable
             Function for calculating the pairwise distance between instances of the array.
+        scaling: float
+            Percent of average maximum distance to use when eliminating the closest points.
         """
 
         self.starting_idx = start_id
         self.func_distance = func_distance
         self.BT = collections.namedtuple("BT", ["value", "index", "left", "right"])
-        self.BT.__doc__ = """
-        A Binary Tree (BT) with a node value, and left- and
-        right-subtrees.
-        """
         self.FNRecord = collections.namedtuple("FNRecord", ["point", "index", "distance"])
-        self.FNRecord.__doc__ = """
-        Used to keep track of the current best guess during a furthest
-        neighbor search.
-        """
+        self.scaling = scaling/100
+        self.ratio = None
 
     def kdtree(self, arr):
         """Construct a k-d tree from an iterable of points.
@@ -696,7 +694,7 @@ class KDTree(SelectionBase):
             A list containing all the indices of points too close to the newly selected point.
         """
         k = len(point)
-        scaled_avg = furthest_distance_avg * 0.1
+        scaled_avg = furthest_distance_avg * self.scaling
         to_eliminate = []
 
         def search(tree, depth):
@@ -727,7 +725,7 @@ class KDTree(SelectionBase):
         to_eliminate = [index for dist, index in to_eliminate]
         return to_eliminate
 
-    def eliminate(self, tree, point, best_distance_av, arr_len, num_eliminate, bv):
+    def eliminate(self, tree, point, best_distance_av, num_eliminate, bv):
         """Eliminates points from being selected in future rounds.
 
         Parameters
@@ -738,8 +736,6 @@ class KDTree(SelectionBase):
             Point where close neighbors should be eliminated.
         best_distance_av: float
             An average of all the furthest distances found using find_furthest_neighbor
-        arr_len: int
-            Length of original point array
         num_eliminate: int
             Maximum number of points permitted to be eliminated.
         bv: bitarray
@@ -751,7 +747,7 @@ class KDTree(SelectionBase):
             Maximum number of points permitted to be eliminated.
         """
         elim_candidates = self.find_nearest_neighbor(tree, point, best_distance_av)
-        elim_candidates = elim_candidates[:int(arr_len * 0.05)]
+        elim_candidates = elim_candidates[:self.ratio]
         num_eliminate -= len(elim_candidates)
         if num_eliminate < 0:
             elim_candidates = elim_candidates[:num_eliminate]
@@ -789,6 +785,7 @@ class KDTree(SelectionBase):
         bv[self.starting_idx] = 1
         count = 1
         num_eliminate = arr_len - num_selected
+        self.ratio = math.ceil(num_eliminate/num_selected)
         best_distance_av = 0
         while len(selected) < num_selected:
             new_point = self.find_furthest_neighbor(tree, query_point, bv)
@@ -805,9 +802,9 @@ class KDTree(SelectionBase):
             if count == 1:
                 if num_eliminate > 0:
                     num_eliminate = self.eliminate(tree, arr[self.starting_idx], best_distance_av,
-                                                   arr_len, num_eliminate, bv)
+                                                   num_eliminate, bv)
             if num_eliminate > 0:
-                num_eliminate = self.eliminate(tree, new_point.point, best_distance_av, arr_len,
+                num_eliminate = self.eliminate(tree, new_point.point, best_distance_av,
                                                num_eliminate, bv)
             count += 1
         return selected
