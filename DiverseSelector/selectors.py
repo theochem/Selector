@@ -170,13 +170,13 @@ class OptiSim(SelectionBase):
     """
 
     def __init__(
-        self,
-        r=None,
-        k=10,
-        tolerance=5.0,
-        func_distance=lambda x, y: np.linalg.norm(x - y),
-        start_id=0,
-        random_seed=42,
+            self,
+            r=None,
+            k=10,
+            tolerance=5.0,
+            func_distance=lambda x, y: np.linalg.norm(x - y),
+            start_id=0,
+            random_seed=42,
     ):
         """
         Initializing class.
@@ -685,6 +685,7 @@ class KDTree(KDTreeBase):
             arr = arr.tolist()
         arr_len = len(arr)
         tree = self._kdtree(arr)
+
         bv = bitarray.bitarray(arr_len)
         bv[:] = 0
         selected = [self.starting_idx]
