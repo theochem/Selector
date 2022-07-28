@@ -631,36 +631,6 @@ class KDTree(KDTreeBase):
         search(tree=kdtree, depth=0)
         return best
 
-    def _eliminate(self, tree, point, best_distance_av, num_eliminate, bv):
-        """Eliminates points from being selected in future rounds.
-
-        Parameters
-        ----------
-        tree: collections.namedtuple
-            KDTree organizing coordinates.
-        point: list
-            Point where close neighbors should be eliminated.
-        best_distance_av: float
-            An average of all the furthest distances found using find_furthest_neighbor
-        num_eliminate: int
-            Maximum number of points permitted to be eliminated.
-        bv: bitarray
-            Bitvector marking picked/eliminated points.
-
-        Returns
-        -------
-        num_eliminate: int
-            Maximum number of points permitted to be eliminated.
-        """
-        elim_candidates = self._find_nearest_neighbor(tree, point, best_distance_av)
-        elim_candidates = elim_candidates[:self.ratio]
-        num_eliminate -= len(elim_candidates)
-        if num_eliminate < 0:
-            elim_candidates = elim_candidates[:num_eliminate]
-        for index in elim_candidates:
-            bv[index] = 1
-        return num_eliminate
-
     def select_from_cluster(self, arr, num_selected, cluster_ids=None):
         """Main function for selecting points using the KDTree algorithm.
 
