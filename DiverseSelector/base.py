@@ -22,7 +22,6 @@
 # --
 
 """Base class for diversity based subset selection."""
-import collections
 from abc import ABC, abstractmethod
 import warnings
 
@@ -120,7 +119,9 @@ class SelectionBase(ABC):
 
 
 class KDTreeBase(SelectionBase, ABC):
+    """Base class for KDTree based subset selection."""
     def __int__(self):
+        """Initializing class."""
         self.func_distance = None
         self.BT = None
 

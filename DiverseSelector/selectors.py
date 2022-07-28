@@ -709,10 +709,12 @@ class KDTree(KDTreeBase):
                 best_distance_av = (count * best_distance_av + new_point.distance) / (count + 1)
             if count == 1:
                 if num_eliminate > 0 and self.scaling != 0:
-                    num_eliminate = self._eliminate(tree, arr[self.starting_idx], best_distance_av * self.scaling,
+                    num_eliminate = self._eliminate(tree, arr[self.starting_idx],
+                                                    best_distance_av * self.scaling,
                                                     num_eliminate, bv)
             if num_eliminate > 0 and self.scaling != 0:
-                num_eliminate = self._eliminate(tree, new_point.point, best_distance_av * self.scaling,
+                num_eliminate = self._eliminate(tree, new_point.point,
+                                                best_distance_av * self.scaling,
                                                 num_eliminate, bv)
             count += 1
         return selected
