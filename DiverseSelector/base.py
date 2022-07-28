@@ -120,6 +120,7 @@ class SelectionBase(ABC):
 
 class KDTreeBase(SelectionBase, ABC):
     """Base class for KDTree based subset selection."""
+
     def __int__(self):
         """Initializing class."""
         self.func_distance = None
