@@ -22,8 +22,8 @@
 # --
 
 """Base class for diversity based subset selection."""
-import collections
 from abc import ABC, abstractmethod
+import collections
 import warnings
 
 import numpy as np
