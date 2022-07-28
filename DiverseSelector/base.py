@@ -22,6 +22,7 @@
 # --
 
 """Base class for diversity based subset selection."""
+import collections
 from abc import ABC, abstractmethod
 import warnings
 
@@ -123,8 +124,8 @@ class KDTreeBase(SelectionBase, ABC):
 
     def __int__(self):
         """Initializing class."""
-        self.func_distance = None
-        self.BT = None
+        self.func_distance = lambda x, y: sum((i - j) ** 2 for i, j in zip(x, y))
+        self.BT = collections.namedtuple("BT", ["value", "index", "left", "right"])
 
     def _kdtree(self, arr):
         """Construct a k-d tree from an iterable of points.
