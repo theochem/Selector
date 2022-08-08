@@ -209,7 +209,7 @@ class KDTreeBase(SelectionBase, ABC):
                 close, away = tree.right, tree.left
 
             search(tree=close, depth=depth + 1)
-            if diff ** 2 < threshold:
+            if diff < threshold:
                 search(tree=away, depth=depth + 1)
 
         search(tree=kdtree, depth=0)
