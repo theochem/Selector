@@ -33,6 +33,16 @@ from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 
 
+__all__ = [
+    "MaxMin",
+    "MaxSum",
+    "OptiSim",
+    "DirectedSphereExclusion",
+    "GridPartitioning",
+    "KDTree",
+]
+
+
 class MaxMin(SelectionBase):
     """Selecting compounds using MinMax algorithm.
 
