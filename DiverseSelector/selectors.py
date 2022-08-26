@@ -40,6 +40,7 @@ __all__ = [
     "DirectedSphereExclusion",
     "GridPartitioning",
     "KDTree",
+    "ExtendedSelection",
 ]
 
 
@@ -699,6 +700,166 @@ class KDTree(KDTreeBase):
             count += 1
         return selected
 
+
+class ExtendedSelection(SelectionBase):
+    """Selecting compounds using Extended Similarity algorithms.
+
+    Initial point can be medoid, outlier, or a random point.
+    The selection always seeks to minimize the extended similarity
+    of the selected set.
+    """
+    
+    def __init__(self,
+                 arr: np.ndarray = None,
+                 initialization="medoid",
+                 random_seed=42,
+                 num_selected: int = None,
+                 n_ary="JT",
+                 weight="nw",
+                 w_factor="fraction",
+                 c_threshold=None,
+                 algorithm='ECS_MeDiv'
+                 ):
+        """Initialization brute_strength_type for DissimilaritySelection class.
+        Parameters
+        ----------
+        arr: np.ndarray
+            Array of corrdinates and/or features
+        initialization: str
+        random_seed: int
+        num_selected: int
+        n_ary: str
+        weight: str
+        w_factor: str
+        c_threshold: {None, int, float}
+        algorithm: str
+        """
+
+        self.arr = arr
+        self.initialization = initialization
+        self.n_ary = n_ary
+        self.weight = weight
+        self.w_factor = w_factor
+        self.c_threshold = c_threshold
+        self.algorithm = algorithm
+        self.n_total = len(self.arr)
+        self.starting_idx = self.pick_initial_compounds()
+    
+    def pick_initial_compounds(self):
+        """Pick the initial compound."""
+
+        # use the molecule with maximum distance to initial medoid as  the starting molecule
+        if self.initialization == "medoid" or self.initialization == "outlier":
+            starting_idx = calculate_special_points(total_data = self.arr,
+                                                    points = [self.initialization],
+                                                    n_ary = self.n_ary,
+                                                    c_threshold = self.c_threshold,
+                                                    w_factor = self.w_factor,
+                                                    weight = self.weight)
+
+        elif self.initialization.lower() == "random":
+            rng = np.random.default_rng(seed=self.random_seed)
+            starting_idx = rng.choice(np.arange(self.arr.shape[0]), 1)
+        else:
+            raise ValueError(f"Initialization method {self.initialization} is not supported.")
+
+        return starting_idx
+    
+    def select_from_cluster(self):
+        def _get_single_index(total_data,
+                              indices,
+                              selected_n,
+                              c_threshold=None,
+                              n_ary='RR',
+                              weight='nw'
+                              ):
+        """Binary tie-breaker selection criterion"""
+        index = len(total_data[0]) + 1
+        min_value = 3.08
+        for i in indices:
+            v = 0
+            for j in selected_n:
+                c_total = total_data[j] + total_data[i]
+                data_sets = [np.append(c_total, 2)]
+                Indices = gen_sim_dict(data_sets, c_threshold=c_threshold)
+                sim_index = Indices[weight][n_ary]
+                v += sim_index
+            av_v = v/(len(selected_n) + 1)
+            if av_v < min_value:
+                index = i
+                min_value = av_v
+        return index
+
+        def _get_new_index_n(total_data,
+                             selected_condensed,
+                             n,
+                             select_from_n,
+                             selected_n,
+                             c_threshold=None,
+                             n_ary='RR',
+                             weight='nw'
+                             ):
+            """Select a diverse object using the ECS_MeDiv algorithm"""
+            n_total = n + 1
+            # min value that is guaranteed to be higher than all the comparisons
+            min_value = 3.08
+            
+            # placeholder index
+            indices = [len(total_data[0]) + 1]
+            
+            # for all indices that have not been selected
+            for i in select_from_n:
+                # column sum
+                c_total = selected_condensed + total_data[i]
+                # calculating similarity
+                data_sets = [np.append(c_total, n_total)]
+                Indices = gen_sim_dict(data_sets, c_threshold=c_threshold)
+                sim_index = Indices[weight][n_ary]
+                # if the sim of the set is less than the similarity of the previous diverse set, update min_value and index
+                if sim_index < min_value:
+                    indices = [i]
+                    min_value = sim_index
+                elif sim_index == min_value:
+                    indices.append(i)
+            if len(indices) == 1:
+                index = indices[0]
+            else:
+                if self.algorithm == 'ECS_MeDiv':
+                    # Use average of binary similarities as tie-breaker
+                    index = _get_single_index(total_data,
+                                              indices, selected_n,
+                                              c_threshold=None,
+                                              n_ary=n_ary,
+                                              weight='nw'
+                                              )
+                elif self.algorithm == 'Max_nDis':
+                    index = rd.choice(indices)
+            return index
+    
+        total_indices = np.array(range(self.n_total))
+        selected = [self.starting_idx]
+        # vector with the column sums of all the selected fingerprints
+        selected_condensed = self.arr[self.starting_idx]
+        
+        # number of fingerprints selected
+        n = 1
+        while len(selected) < self.num_selected:
+            # indices from which to select the new fingerprints
+            select_from_n = np.delete(total_indices, selected)
+            
+            # new index selected
+            new_index_n = _get_new_index_n(self.arr, selected_condensed, n, select_from_n, selected,
+                                          c_threshold = self.c_threshold, n_ary = self.n_ary)
+            
+            # updating column sum vector
+            selected_condensed += self.arr[new_index_n]
+            
+            # updating selected indices
+            selected.append(new_index_n)
+            
+            # updating n
+            n = len(selected)
+    return selected
 
 def predict_radius(obj: Union[DirectedSphereExclusion, OptiSim], arr, num_selected,
                    cluster_ids=None):
