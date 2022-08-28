@@ -32,7 +32,6 @@ import numpy as np
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 
-
 __all__ = [
     "MaxMin",
     "MaxSum",
@@ -42,6 +41,8 @@ __all__ = [
     "KDTree",
     "ExtendedSelection",
 ]
+
+from DiverseSelector.nary_tools import calculate_special_points, gen_sim_dict
 
 
 class MaxMin(SelectionBase):
@@ -708,7 +709,7 @@ class ExtendedSelection(SelectionBase):
     The selection always seeks to minimize the extended similarity
     of the selected set.
     """
-    
+
     def __init__(self,
                  arr: np.ndarray = None,
                  initialization="medoid",
@@ -721,6 +722,7 @@ class ExtendedSelection(SelectionBase):
                  algorithm='ECS_MeDiv'
                  ):
         """Initialization brute_strength_type for DissimilaritySelection class.
+
         Parameters
         ----------
         arr: np.ndarray
@@ -744,18 +746,18 @@ class ExtendedSelection(SelectionBase):
         self.algorithm = algorithm
         self.n_total = len(self.arr)
         self.starting_idx = self.pick_initial_compounds()
-    
+
     def pick_initial_compounds(self):
         """Pick the initial compound."""
 
         # use the molecule with maximum distance to initial medoid as  the starting molecule
         if self.initialization == "medoid" or self.initialization == "outlier":
-            starting_idx = calculate_special_points(total_data = self.arr,
-                                                    points = [self.initialization],
-                                                    n_ary = self.n_ary,
-                                                    c_threshold = self.c_threshold,
-                                                    w_factor = self.w_factor,
-                                                    weight = self.weight)
+            starting_idx = calculate_special_points(total_data=self.arr,
+                                                    points=[self.initialization],
+                                                    n_ary=self.n_ary,
+                                                    c_threshold=self.c_threshold,
+                                                    w_factor=self.w_factor,
+                                                    weight=self.weight)
 
         elif self.initialization.lower() == "random":
             rng = np.random.default_rng(seed=self.random_seed)
@@ -764,7 +766,7 @@ class ExtendedSelection(SelectionBase):
             raise ValueError(f"Initialization method {self.initialization} is not supported.")
 
         return starting_idx
-    
+
     def select_from_cluster(self):
         def _get_single_index(total_data,
                               indices,
@@ -773,22 +775,22 @@ class ExtendedSelection(SelectionBase):
                               n_ary='RR',
                               weight='nw'
                               ):
-        """Binary tie-breaker selection criterion"""
-        index = len(total_data[0]) + 1
-        min_value = 3.08
-        for i in indices:
-            v = 0
-            for j in selected_n:
-                c_total = total_data[j] + total_data[i]
-                data_sets = [np.append(c_total, 2)]
-                Indices = gen_sim_dict(data_sets, c_threshold=c_threshold)
-                sim_index = Indices[weight][n_ary]
-                v += sim_index
-            av_v = v/(len(selected_n) + 1)
-            if av_v < min_value:
-                index = i
-                min_value = av_v
-        return index
+            """Binary tie-breaker selection criterion."""
+            index = len(total_data[0]) + 1
+            min_value = 3.08
+            for i in indices:
+                v = 0
+                for j in selected_n:
+                    c_total = total_data[j] + total_data[i]
+                    data_sets = [np.append(c_total, 2)]
+                    Indices = gen_sim_dict(data_sets, c_threshold=c_threshold)
+                    sim_index = Indices[weight][n_ary]
+                    v += sim_index
+                av_v = v / (len(selected_n) + 1)
+                if av_v < min_value:
+                    index = i
+                    min_value = av_v
+            return index
 
         def _get_new_index_n(total_data,
                              selected_condensed,
@@ -803,10 +805,10 @@ class ExtendedSelection(SelectionBase):
             n_total = n + 1
             # min value that is guaranteed to be higher than all the comparisons
             min_value = 3.08
-            
+
             # placeholder index
             indices = [len(total_data[0]) + 1]
-            
+
             # for all indices that have not been selected
             for i in select_from_n:
                 # column sum
@@ -835,31 +837,33 @@ class ExtendedSelection(SelectionBase):
                 elif self.algorithm == 'Max_nDis':
                     index = rd.choice(indices)
             return index
-    
+
         total_indices = np.array(range(self.n_total))
         selected = [self.starting_idx]
         # vector with the column sums of all the selected fingerprints
         selected_condensed = self.arr[self.starting_idx]
-        
+
         # number of fingerprints selected
         n = 1
         while len(selected) < self.num_selected:
             # indices from which to select the new fingerprints
             select_from_n = np.delete(total_indices, selected)
-            
+
             # new index selected
             new_index_n = _get_new_index_n(self.arr, selected_condensed, n, select_from_n, selected,
-                                          c_threshold = self.c_threshold, n_ary = self.n_ary)
-            
+                                           c_threshold=self.c_threshold, n_ary=self.n_ary)
+
             # updating column sum vector
             selected_condensed += self.arr[new_index_n]
-            
+
             # updating selected indices
             selected.append(new_index_n)
-            
+
             # updating n
             n = len(selected)
+
     return selected
+
 
 def predict_radius(obj: Union[DirectedSphereExclusion, OptiSim], arr, num_selected,
                    cluster_ids=None):
