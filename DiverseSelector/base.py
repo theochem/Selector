@@ -185,6 +185,8 @@ class KDTreeBase(SelectionBase, ABC):
             Query point for search.
         threshold: float
             The boundary used to mark all the points whose distance is within the threshold.
+        sort: boolean
+            Whether the results should be sorted based on lowest distance or not.
 
         Returns
         -------
