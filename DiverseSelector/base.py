@@ -120,7 +120,10 @@ class SelectionBase(ABC):
 
 
 class KDTreeBase(SelectionBase, ABC):
-    """Base class for KDTree based subset selection."""
+    """Base class for KDTree based subset selection.
+
+    Adapted from https://johnlekberg.com/blog/2020-04-17-kd-tree.html
+    """
 
     def __int__(self):
         """Initializing class."""
