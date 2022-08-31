@@ -166,7 +166,7 @@ class OptiSim(KDTreeBase):
     number of points are added to the subsample, the point with the greatest minimum distance to
     previously selected points is selected and the subsample is cleared and the process repeats.
 
-    Addapted from  https://doi.org/10.1021/ci970282v
+    Adapted from  https://doi.org/10.1021/ci970282v
     """
 
     def __init__(
