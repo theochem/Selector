@@ -126,6 +126,7 @@ class KDTreeBase(SelectionBase, ABC):
         """Initializing class."""
         self.func_distance = lambda x, y: sum((i - j) ** 2 for i, j in zip(x, y))
         self.BT = collections.namedtuple("BT", ["value", "index", "left", "right"])
+        self.NNRecord = collections.namedtuple("NNRecord", ["point", "distance"])
 
     def _kdtree(self, arr):
         """Construct a k-d tree from an iterable of points.
@@ -213,10 +214,55 @@ class KDTreeBase(SelectionBase, ABC):
                 search(tree=away, depth=depth + 1)
 
         search(tree=kdtree, depth=0)
-        to_eliminate.sort()
-        to_eliminate.pop(0)
         to_eliminate = [index for dist, index in to_eliminate]
         return to_eliminate
+
+    def _nearest_neighbor(self, kdtree, point):
+        """
+        Find the nearest neighbors in a k-d tree for a point.
+
+        Parameters
+        ----------
+        kdtree: collections.namedtuple
+            KDTree organizing coordinates.
+        point: list
+            Query point for search.
+        threshold: float
+            The boundary used to mark all the points whose distance is within the threshold.
+
+        Returns
+        -------
+        to_eliminate: list
+            A list containing all the indices of points too close to the newly selected point.
+        """
+        k = len(point)
+        best = None
+
+        def search(tree, depth):
+            # Recursively search through the k-d tree to find the
+            # nearest neighbor.
+            nonlocal best
+
+            if tree is None:
+                return
+
+            distance = self.func_distance(tree.value, point)
+            if best is None or distance < best.distance:
+                best = self.NNRecord(point=tree.value, distance=distance)
+
+            axis = depth % k
+            diff = point[axis] - tree.value[axis]
+            if diff <= 0:
+                close, away = tree.left, tree.right
+            else:
+                close, away = tree.right, tree.left
+
+            search(tree=close, depth=depth + 1)
+            if diff < best.distance:
+                search(tree=away, depth=depth + 1)
+
+        search(tree=kdtree, depth=0)
+        return best
 
     def _eliminate(self, tree, point, threshold, num_eliminate, bv):
         """Eliminates points from being selected in future rounds.
