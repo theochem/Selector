@@ -114,6 +114,13 @@ def test_optisim():
     # make sure all the selected indices are the same with expectation
     assert_equal(selected_ids, [0, 8, 55, 37, 41, 13, 12, 42, 6, 30, 57, 76])
 
+    # tester to check if optisim gives same results as maxmin for k=>infinity
+    selector = OptiSim(start_id=85, k=999999)
+    selected_ids_optisim = selector.select(arr=coords, num_selected=12)
+    selector = MaxMin()
+    selected_ids_maxmin = selector.select(arr=arr_dist, num_selected=12)
+    assert_equal(selected_ids_optisim, selected_ids_maxmin)
+
 
 def test_directedsphereexclusion():
     """Testing DirectedSphereExclusion class."""
