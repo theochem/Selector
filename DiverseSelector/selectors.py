@@ -168,7 +168,7 @@ class MaxSum(SelectionBase):
         return selected
 
 
-class OptiSim(SelectionBase):
+class OptiSim(KDTreeBase):
     """Selecting compounds using OptiSim algorithm.
 
     Initial point is chosen as medoid center. Points are randomly chosen and added to a subsample
@@ -176,7 +176,7 @@ class OptiSim(SelectionBase):
     number of points are added to the subsample, the point with the greatest minimum distance to
     previously selected points is selected and the subsample is cleared and the process repeats.
 
-    Addapted from  https://doi.org/10.1021/ci970282v
+    Adapted from  https://doi.org/10.1021/ci970282v
     """
 
     def __init__(
@@ -216,6 +216,8 @@ class OptiSim(SelectionBase):
         self.func_distance = func_distance
         self.start_id = start_id
         self.random_seed = random_seed
+        self.BT = collections.namedtuple("BT", ["value", "index", "left", "right"])
+        self.NNRecord = collections.namedtuple("NNRecord", ["point", "distance"])
 
     def algorithm(self, arr) -> list:
         """
@@ -232,37 +234,35 @@ class OptiSim(SelectionBase):
             List of ids of selected molecules
         """
         selected = [self.start_id]
-        recycling = []
-
-        candidates = np.delete(np.arange(0, len(arr)), selected + recycling)
-        subsample = {}
-        while len(candidates) > 0:
-            while len(subsample) < self.k:
-                if len(candidates) == 0:
-                    if len(subsample) > 0:
-                        break
-                    return selected
-                rng = np.random.default_rng(seed=self.random_seed)
-                random_int = rng.integers(low=0, high=len(candidates), size=1)[0]
-                index_new = candidates[random_int]
-                distances = []
-                for selected_idx in selected:
-                    data_point = arr[index_new]
-                    selected_point = arr[selected_idx]
-                    distance = self.func_distance(selected_point, data_point)
-                    distances.append(distance)
-                min_dist = min(distances)
-                if min_dist > self.r:
-                    subsample[index_new] = min_dist
-                else:
-                    recycling.append(index_new)
-                candidates = np.delete(
-                    np.arange(0, len(arr)),
-                    selected + recycling + list(subsample.keys()),
-                )
-            selected.append(max(zip(subsample.values(), subsample.keys()))[1])
-            candidates = np.delete(np.arange(0, len(arr)), selected + recycling)
-            subsample = {}
+        tree = self._kdtree(arr)
+        rng = np.random.default_rng(seed=self.random_seed)
+        len_arr = len(arr)
+        bv = np.zeros(len_arr)
+        candidates = list(range(len_arr))
+        elim = self._find_nearest_neighbor(kdtree=tree, point=arr[self.start_id], threshold=self.r,
+                                           sort=False)
+        for idx in elim:
+            bv[idx] = 1
+        candidates = np.ma.array(candidates, mask=bv)
+        while len(candidates.compressed()) > 0:
+            try:
+                sublist = rng.choice(candidates.compressed(), size=self.k, replace=False)
+            except ValueError:
+                sublist = candidates.compressed()
+            newtree = self._kdtree(arr[selected])
+            best_dist = None
+            best_idx = None
+            for idx in sublist:
+                search = self._nearest_neighbor(newtree, arr[idx])
+                if best_dist is None or search.distance > best_dist:
+                    best_dist = search.distance
+                    best_idx = idx
+            selected.append(best_idx)
+            elim = self._find_nearest_neighbor(kdtree=tree, point=arr[best_idx], threshold=self.r,
+                                               sort=False)
+            for idx in elim:
+                bv[idx] = 1
+            candidates = np.ma.array(candidates, mask=bv)
 
         return selected
 
@@ -744,7 +744,7 @@ def predict_radius(obj: Union[DirectedSphereExclusion, OptiSim], arr, num_select
     bounds = [low, high]
     count = 0
     error = num_selected * obj.tolerance / 100
-    while (len(result) < num_selected - error or len(result) > num_selected + error) and count < 20:
+    while (len(result) < num_selected - error or len(result) > num_selected + error) and count < 10:
         if bounds[1] is None:
             rg = bounds[0] * 2
         else:
@@ -756,7 +756,7 @@ def predict_radius(obj: Union[DirectedSphereExclusion, OptiSim], arr, num_select
         else:
             bounds[1] = rg
         count += 1
-    if count == 10:
+    if count >= 10:
         print(f"Optimal radius finder failed to converge, selected {len(result)} molecules instead "
               f"of requested {num_selected}.")
     obj.r = original_r
