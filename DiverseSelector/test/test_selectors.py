@@ -107,12 +107,12 @@ def test_optisim():
     selector = OptiSim()
     selected_ids = selector.select(arr=coords_cluster, num_selected=12, labels=class_labels_cluster)
     # make sure all the selected indices are the same with expectation
-    assert_equal(selected_ids, [2, 85, 86, 59, 1, 50, 93, 68, 0, 11, 33, 46])
+    assert_equal(selected_ids, [2, 85, 86, 59, 1, 66, 50, 68, 0, 64, 83, 72])
 
     selector = OptiSim()
     selected_ids = selector.select(arr=coords, num_selected=12)
     # make sure all the selected indices are the same with expectation
-    assert_equal(selected_ids, [0, 13, 21, 9, 8, 18, 39, 57, 65, 25, 6, 45])
+    assert_equal(selected_ids, [0, 8, 55, 37, 41, 13, 12, 42, 6, 30, 57, 76])
 
 
 def test_directedsphereexclusion():
