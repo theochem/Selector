@@ -170,7 +170,7 @@ class KDTreeBase(SelectionBase, ABC):
         kdtree = build(points=arr, depth=0)
         return kdtree
 
-    def _find_nearest_neighbor(self, kdtree, point, threshold):
+    def _find_nearest_neighbor(self, kdtree, point, threshold, sort=True):
         """
         Find the nearest neighbors in a k-d tree for a point.
 
@@ -215,6 +215,8 @@ class KDTreeBase(SelectionBase, ABC):
 
         search(tree=kdtree, depth=0)
         to_eliminate = [index for dist, index in to_eliminate]
+        if sort:
+            to_eliminate.sort()
         return to_eliminate
 
     def _nearest_neighbor(self, kdtree, point):
