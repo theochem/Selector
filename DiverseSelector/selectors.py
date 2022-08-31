@@ -229,7 +229,8 @@ class OptiSim(KDTreeBase):
         len_arr = len(arr)
         bv = np.zeros(len_arr)
         candidates = list(range(len_arr))
-        elim = self._find_nearest_neighbor(kdtree=tree, point=arr[self.start_id], threshold=self.r)
+        elim = self._find_nearest_neighbor(kdtree=tree, point=arr[self.start_id], threshold=self.r,
+                                           sort=False)
         for idx in elim:
             bv[idx] = 1
         candidates = np.ma.array(candidates, mask=bv)
@@ -247,7 +248,8 @@ class OptiSim(KDTreeBase):
                     best_dist = search.distance
                     best_idx = idx
             selected.append(best_idx)
-            elim = self._find_nearest_neighbor(kdtree=tree, point=arr[best_idx], threshold=self.r)
+            elim = self._find_nearest_neighbor(kdtree=tree, point=arr[best_idx], threshold=self.r,
+                                               sort=False)
             for idx in elim:
                 bv[idx] = 1
             candidates = np.ma.array(candidates, mask=bv)
