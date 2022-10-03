@@ -127,7 +127,7 @@ class KDTreeBase(SelectionBase, ABC):
 
     def __int__(self):
         """Initializing class."""
-        self.func_distance = lambda x, y: sum((i - j) ** 2 for i, j in zip(x, y))
+        self.func_distance = lambda x, y: np.linalg.norm(x - y)
         self.BT = collections.namedtuple("BT", ["value", "index", "left", "right"])
         self.NNRecord = collections.namedtuple("NNRecord", ["point", "distance"])
 
