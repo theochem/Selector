@@ -29,6 +29,7 @@ import bitarray
 from DiverseSelector.base import KDTreeBase, SelectionBase
 from DiverseSelector.diversity import compute_diversity
 import numpy as np
+from scipy import spatial
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 
@@ -158,7 +159,7 @@ class MaxSum(SelectionBase):
         return selected
 
 
-class OptiSim(KDTreeBase):
+class OptiSim(SelectionBase):
     """Selecting compounds using OptiSim algorithm.
 
     Initial point is chosen as medoid center. Points are randomly chosen and added to a subsample
@@ -206,8 +207,6 @@ class OptiSim(KDTreeBase):
         self.func_distance = func_distance
         self.start_id = start_id
         self.random_seed = random_seed
-        self.BT = collections.namedtuple("BT", ["value", "index", "left", "right"])
-        self.NNRecord = collections.namedtuple("NNRecord", ["point", "distance"])
 
     def algorithm(self, arr) -> list:
         """
@@ -224,13 +223,12 @@ class OptiSim(KDTreeBase):
             List of ids of selected molecules
         """
         selected = [self.start_id]
-        tree = self._kdtree(arr)
+        tree = spatial.KDTree(arr)
         rng = np.random.default_rng(seed=self.random_seed)
         len_arr = len(arr)
         bv = np.zeros(len_arr)
         candidates = list(range(len_arr))
-        elim = self._find_nearest_neighbor(kdtree=tree, point=arr[self.start_id], threshold=self.r,
-                                           sort=False)
+        elim = tree.query_ball_point(arr[self.start_id], self.r, workers=-1)
         for idx in elim:
             bv[idx] = 1
         candidates = np.ma.array(candidates, mask=bv)
@@ -239,17 +237,13 @@ class OptiSim(KDTreeBase):
                 sublist = rng.choice(candidates.compressed(), size=self.k, replace=False)
             except ValueError:
                 sublist = candidates.compressed()
-            newtree = self._kdtree(arr[selected])
-            best_dist = None
-            best_idx = None
-            for idx in sublist:
-                search = self._nearest_neighbor(newtree, arr[idx])
-                if best_dist is None or search.distance > best_dist:
-                    best_dist = search.distance
-                    best_idx = idx
+
+            newtree = spatial.KDTree(arr[selected])
+            search, _ = newtree.query(arr[sublist], workers=-1)
+            search_idx = np.argmax(search)
+            best_idx = sublist[search_idx]
             selected.append(best_idx)
-            elim = self._find_nearest_neighbor(kdtree=tree, point=arr[best_idx], threshold=self.r,
-                                               sort=False)
+            elim = tree.query_ball_point(arr[best_idx], self.r, workers=-1)
             for idx in elim:
                 bv[idx] = 1
             candidates = np.ma.array(candidates, mask=bv)
@@ -277,7 +271,7 @@ class OptiSim(KDTreeBase):
         return predict_radius(self, arr, num_selected, cluster_ids)
 
 
-class DirectedSphereExclusion(KDTreeBase):
+class DirectedSphereExclusion(SelectionBase):
     """Selecting points using Directed Sphere Exclusion algorithm.
 
     Starting point is chosen as the reference point and not included in the selected molecules. The
@@ -315,7 +309,6 @@ class DirectedSphereExclusion(KDTreeBase):
         self.func_distance = func_distance
         self.starting_idx = start_id
         self.random_seed = random_seed
-        self.BT = collections.namedtuple("BT", ["value", "index", "left", "right"])
 
     def algorithm(self, arr):
         """
@@ -342,7 +335,7 @@ class DirectedSphereExclusion(KDTreeBase):
         distances.sort()
         order = [idx for dist, idx in distances]
 
-        kdtree = self._kdtree(arr)
+        kdtree = spatial.KDTree(arr)
         bv = bitarray.bitarray(len(arr))
         bv[:] = 0
         bv[self.starting_idx] = 1
@@ -350,7 +343,7 @@ class DirectedSphereExclusion(KDTreeBase):
         for idx in order:
             if not bv[idx]:
                 selected.append(idx)
-                elim = self._find_nearest_neighbor(kdtree=kdtree, point=arr[idx], threshold=self.r)
+                elim = kdtree.query_ball_point(arr[idx], self.r, workers=-1)
                 for index in elim:
                     bv[index] = 1
 
@@ -541,7 +534,7 @@ class GridPartitioning(SelectionBase):
         return selected
 
 
-class KDTree(KDTreeBase):
+class Medoid(KDTreeBase):
     """Selecting points using an algorithm adapted from KDTree.
 
     Points are initially used to construct a KDTree. Eucleidean distances are used for this
@@ -711,9 +704,6 @@ def predict_radius(obj: Union[DirectedSphereExclusion, OptiSim], arr, num_select
     selected: list
         List of ids of selected molecules
     """
-    if not isinstance(obj, (DirectedSphereExclusion, OptiSim)):
-        raise ValueError("Not valid class for function.")
-
     if cluster_ids is not None:
         arr = arr[cluster_ids]
 
