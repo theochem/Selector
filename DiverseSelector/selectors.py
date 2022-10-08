@@ -26,7 +26,7 @@ import math
 from typing import Union
 
 import bitarray
-from DiverseSelector.base import KDTreeBase, SelectionBase
+from DiverseSelector.base import SelectionBase
 from DiverseSelector.diversity import compute_diversity
 import numpy as np
 from scipy import spatial
@@ -170,32 +170,28 @@ class OptiSim(SelectionBase):
     Adapted from  https://doi.org/10.1021/ci970282v
     """
 
-    def __init__(
-            self,
-            r=None,
-            k=10,
-            tolerance=5.0,
-            func_distance=lambda x, y: np.linalg.norm(x - y),
-            start_id=0,
-            random_seed=42,
-    ):
+    def __init__(self, r=None, k=10, tolerance=5.0, eps=0, p=2, start_id=0, random_seed=42):
         """
         Initializing class.
 
         Parameters
         ----------
-        tolerance: float
-            Percentage error of number of molecules actually selected from number of molecules
-            requested.
         r: float
             Initial guess of radius for optisim algorithm, no points within r distance to an already
             selected point can be selected.
         k: int
             Amount of points to add to subsample before selecting one of the points with the
-            greatest minimum distance
-            to the previously selected points.
-        func_distance: callable
-            Function for calculating the pairwise distance between instances of the array.
+            greatest minimum distance to the previously selected points.
+        tolerance: float
+            Percentage error of number of molecules actually selected from number of molecules
+            requested.
+        eps: float
+            Approximate nearest neighbor search for eliminating close points. Branches of the tree
+            are not explored if their nearest points are further than r / (1 + eps), and branches
+            are added in bulk if their furthest points are nearer than r * (1 + eps).
+        p: float
+            Which Minkowski p-norm to use. Should be in the range [1, inf]. A finite large p may
+            cause a ValueError if overflow can occur.
         start_id: int
             Index for the first point to be selected.
         random_seed: int
@@ -204,11 +200,12 @@ class OptiSim(SelectionBase):
         self.r = r
         self.k = k
         self.tolerance = tolerance
-        self.func_distance = func_distance
+        self.eps = eps
+        self.p = p
         self.start_id = start_id
         self.random_seed = random_seed
 
-    def algorithm(self, arr) -> list:
+    def algorithm(self, arr, uplimit) -> list:
         """
         Optisim algorithm logic.
 
@@ -223,12 +220,13 @@ class OptiSim(SelectionBase):
             List of ids of selected molecules
         """
         selected = [self.start_id]
+        count = 1
         tree = spatial.KDTree(arr)
         rng = np.random.default_rng(seed=self.random_seed)
         len_arr = len(arr)
         bv = np.zeros(len_arr)
         candidates = list(range(len_arr))
-        elim = tree.query_ball_point(arr[self.start_id], self.r, workers=-1)
+        elim = tree.query_ball_point(arr[self.start_id], self.r, eps=self.eps, p=self.p, workers=-1)
         for idx in elim:
             bv[idx] = 1
         candidates = np.ma.array(candidates, mask=bv)
@@ -239,11 +237,14 @@ class OptiSim(SelectionBase):
                 sublist = candidates.compressed()
 
             newtree = spatial.KDTree(arr[selected])
-            search, _ = newtree.query(arr[sublist], workers=-1)
+            search, _ = newtree.query(arr[sublist], eps=self.eps, p=self.p, workers=-1)
             search_idx = np.argmax(search)
             best_idx = sublist[search_idx]
             selected.append(best_idx)
-            elim = tree.query_ball_point(arr[best_idx], self.r, workers=-1)
+            count += 1
+            if count > uplimit:
+                return selected
+            elim = tree.query_ball_point(arr[best_idx], self.r, eps=self.eps, p=self.p, workers=-1)
             for idx in elim:
                 bv[idx] = 1
             candidates = np.ma.array(candidates, mask=bv)
@@ -284,8 +285,7 @@ class DirectedSphereExclusion(SelectionBase):
     Adapted from https://doi.org/10.1021/ci025554v
     """
 
-    def __init__(self, r=None, tolerance=5.0, func_distance=lambda x, y: np.linalg.norm(x - y),
-                 start_id=0, random_seed=42):
+    def __init__(self, r=None, tolerance=5.0, eps=0, p=2, start_id=0, random_seed=42):
         """
         Initializing class.
 
@@ -297,8 +297,13 @@ class DirectedSphereExclusion(SelectionBase):
         tolerance: float
             Percentage error of number of molecules actually selected from number of molecules
             requested.
-        func_distance: callable
-            Function for calculating the pairwise distance between instances of the array.
+        eps: float
+            Approximate nearest neighbor search for eliminating close points. Branches of the tree
+            are not explored if their nearest points are further than r / (1 + eps), and branches
+            are added in bulk if their furthest points are nearer than r * (1 + eps).
+        p: float
+            Which Minkowski p-norm to use. Should be in the range [1, inf]. A finite large p may
+            cause a ValueError if overflow can occur.
         start_id: int
             Index for the first point to be selected.
         random_seed: int
@@ -306,11 +311,12 @@ class DirectedSphereExclusion(SelectionBase):
         """
         self.r = r
         self.tolerance = tolerance
-        self.func_distance = func_distance
+        self.eps = eps
+        self.p = p
         self.starting_idx = start_id
         self.random_seed = random_seed
 
-    def algorithm(self, arr):
+    def algorithm(self, arr, uplimit):
         """
         Directed sphere exclusion algorithm logic.
 
@@ -325,12 +331,13 @@ class DirectedSphereExclusion(SelectionBase):
             List of ids of selected molecules
         """
         selected = []
+        count = 0
         candidates = np.delete(np.arange(0, len(arr)), self.starting_idx)
         distances = []
         for idx in candidates:
             ref_point = arr[self.starting_idx]
             data_point = arr[idx]
-            distance = self.func_distance(ref_point, data_point)
+            distance = spatial.distance.minkowski(ref_point, data_point, p=self.p)
             distances.append((distance, idx))
         distances.sort()
         order = [idx for dist, idx in distances]
@@ -343,7 +350,10 @@ class DirectedSphereExclusion(SelectionBase):
         for idx in order:
             if not bv[idx]:
                 selected.append(idx)
-                elim = kdtree.query_ball_point(arr[idx], self.r, workers=-1)
+                count += 1
+                if count > uplimit:
+                    return selected
+                elim = kdtree.query_ball_point(arr[idx], self.r, eps=self.eps, p=self.p, workers=-1)
                 for index in elim:
                     bv[index] = 1
 
@@ -534,7 +544,7 @@ class GridPartitioning(SelectionBase):
         return selected
 
 
-class Medoid(KDTreeBase):
+class Medoid(SelectionBase):
     """Selecting points using an algorithm adapted from KDTree.
 
     Points are initially used to construct a KDTree. Eucleidean distances are used for this
@@ -572,6 +582,129 @@ class Medoid(KDTreeBase):
         self.FNRecord = collections.namedtuple("FNRecord", ["point", "index", "distance"])
         self.scaling = scaling / 100
         self.ratio = None
+
+    def _kdtree(self, arr):
+        """Construct a k-d tree from an iterable of points.
+
+        Parameters
+        ----------
+        arr: list or np.ndarray
+            Coordinate array of points.
+
+        Returns
+        -------
+        kdtree: collections.namedtuple
+            KDTree organizing coordinates.
+        """
+
+        k = len(arr[0])
+
+        def build(points, depth, old_indices=None):
+            """Build a k-d tree from a set of points at a given depth."""
+            if len(points) == 0:
+                return None
+            middle = len(points) // 2
+            indices, points = zip(*sorted(enumerate(points), key=lambda x: x[1][depth % k]))
+            if old_indices is not None:
+                indices = [old_indices[i] for i in indices]
+            return self.BT(
+                value=points[middle],
+                index=indices[middle],
+                left=build(
+                    points=points[:middle],
+                    depth=depth + 1,
+                    old_indices=indices[:middle],
+                ),
+                right=build(
+                    points=points[middle + 1:],
+                    depth=depth + 1,
+                    old_indices=indices[middle + 1:],
+                ),
+            )
+
+        kdtree = build(points=arr, depth=0)
+        return kdtree
+
+    def _find_nearest_neighbor(self, kdtree, point, threshold, sort=True):
+        """
+        Find the nearest neighbors in a k-d tree for a point.
+
+        Parameters
+        ----------
+        kdtree: collections.namedtuple
+            KDTree organizing coordinates.
+        point: list
+            Query point for search.
+        threshold: float
+            The boundary used to mark all the points whose distance is within the threshold.
+        sort: boolean
+            Whether the results should be sorted based on lowest distance or not.
+
+        Returns
+        -------
+        to_eliminate: list
+            A list containing all the indices of points too close to the newly selected point.
+        """
+        k = len(point)
+        to_eliminate = []
+
+        def search(tree, depth):
+            # Recursively search through the k-d tree to find the
+            # nearest neighbor.
+
+            if tree is None:
+                return
+
+            distance = self.func_distance(tree.value, point)
+            if distance < threshold:
+                to_eliminate.append((distance, tree.index))
+
+            axis = depth % k
+            diff = point[axis] - tree.value[axis]
+            if diff <= 0:
+                close, away = tree.left, tree.right
+            else:
+                close, away = tree.right, tree.left
+
+            search(tree=close, depth=depth + 1)
+            if diff < threshold:
+                search(tree=away, depth=depth + 1)
+
+        search(tree=kdtree, depth=0)
+        to_eliminate = [index for dist, index in to_eliminate]
+        if sort:
+            to_eliminate.sort()
+        return to_eliminate
+
+    def _eliminate(self, tree, point, threshold, num_eliminate, bv):
+        """Eliminates points from being selected in future rounds.
+
+        Parameters
+        ----------
+        tree: collections.namedtuple
+            KDTree organizing coordinates.
+        point: list
+            Point where close neighbors should be eliminated.
+        threshold: float
+            An average of all the furthest distances found using find_furthest_neighbor
+        num_eliminate: int
+            Maximum number of points permitted to be eliminated.
+        bv: bitarray
+            Bitvector marking picked/eliminated points.
+
+        Returns
+        -------
+        num_eliminate: int
+            Maximum number of points permitted to be eliminated.
+        """
+        elim_candidates = self._find_nearest_neighbor(tree, point, threshold)
+        elim_candidates = elim_candidates[:self.ratio]
+        num_eliminate -= len(elim_candidates)
+        if num_eliminate < 0:
+            elim_candidates = elim_candidates[:num_eliminate]
+        for index in elim_candidates:
+            bv[index] = 1
+        return num_eliminate
 
     def _find_furthest_neighbor(self, kdtree, point, selected_bitvector):
         """Find approximately the furthest neighbor in a k-d tree for a given point.
@@ -704,18 +837,22 @@ def predict_radius(obj: Union[DirectedSphereExclusion, OptiSim], arr, num_select
     selected: list
         List of ids of selected molecules
     """
+    error = num_selected * obj.tolerance / 100
+    lowlimit = num_selected - error
+    uplimit = num_selected + error
+
     if cluster_ids is not None:
         arr = arr[cluster_ids]
 
     original_r = None
     if obj.r is not None:
         original_r = obj.r
-        result = obj.algorithm(arr)
+        result = obj.algorithm(arr, uplimit)
     # Use numpy.optimize.bisect instead
     else:
         rg = max(np.ptp(arr, axis=0)) / num_selected * 3
         obj.r = rg
-        result = obj.algorithm(arr)
+        result = obj.algorithm(arr, uplimit)
     if len(result) == num_selected:
         return result
 
@@ -723,14 +860,13 @@ def predict_radius(obj: Union[DirectedSphereExclusion, OptiSim], arr, num_select
     high = obj.r if low == 0 else None
     bounds = [low, high]
     count = 0
-    error = num_selected * obj.tolerance / 100
-    while (len(result) < num_selected - error or len(result) > num_selected + error) and count < 10:
+    while (len(result) < lowlimit or len(result) > uplimit) and count < 10:
         if bounds[1] is None:
             rg = bounds[0] * 2
         else:
             rg = (bounds[0] + bounds[1]) / 2
         obj.r = rg
-        result = obj.algorithm(arr)
+        result = obj.algorithm(arr, uplimit)
         if len(result) > num_selected:
             bounds[0] = rg
         else:
