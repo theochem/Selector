@@ -117,17 +117,3 @@ class SelectionBase(ABC):
 
         """
         pass
-
-
-class KDTreeBase(SelectionBase, ABC):
-    """Base class for KDTree based subset selection.
-
-    Adapted from https://johnlekberg.com/blog/2020-04-17-kd-tree.html
-    """
-
-    def __int__(self):
-        """Initializing class."""
-        self.func_distance = lambda x, y: np.linalg.norm(x - y)
-        self.BT = collections.namedtuple("BT", ["value", "index", "left", "right"])
-        self.NNRecord = collections.namedtuple("NNRecord", ["point", "distance"])
-
