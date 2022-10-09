@@ -661,7 +661,8 @@ class Medoid(SelectionBase):
             Maximum number of points permitted to be eliminated.
         """
         _, elim_candidates = tree.query(point, k=self.ratio,
-                                        distance_upper_bound=np.sqrt(threshold))
+                                        distance_upper_bound=np.sqrt(threshold),
+                                        workers=-1)
         if num_eliminate < 0:
             elim_candidates = elim_candidates[:num_eliminate]
         for index in elim_candidates:
