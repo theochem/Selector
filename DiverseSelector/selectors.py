@@ -213,6 +213,8 @@ class OptiSim(SelectionBase):
         ----------
         arr: np.ndarray
             Coordinate array of points.
+        uplimit: int
+            Maximum number of points to select.
 
         Returns
         -------
@@ -324,6 +326,8 @@ class DirectedSphereExclusion(SelectionBase):
         ----------
         arr: np.ndarray
             Coordinate array of points.
+        uplimit: int
+            Maximum number of points to select.
 
         Returns
         -------
@@ -560,7 +564,7 @@ class Medoid(SelectionBase):
 
     def __init__(self,
                  start_id=0,
-                 func_distance=lambda x, y: sum((i - j) ** 2 for i, j in zip(x, y)),
+                 func_distance=lambda x, y: spatial.minkowski_distance(x, y) ** 2,
                  scaling=10,
                  ):
         """
@@ -625,63 +629,12 @@ class Medoid(SelectionBase):
         kdtree = build(points=arr, depth=0)
         return kdtree
 
-    def _find_nearest_neighbor(self, kdtree, point, threshold, sort=True):
-        """
-        Find the nearest neighbors in a k-d tree for a point.
-
-        Parameters
-        ----------
-        kdtree: collections.namedtuple
-            KDTree organizing coordinates.
-        point: list
-            Query point for search.
-        threshold: float
-            The boundary used to mark all the points whose distance is within the threshold.
-        sort: boolean
-            Whether the results should be sorted based on lowest distance or not.
-
-        Returns
-        -------
-        to_eliminate: list
-            A list containing all the indices of points too close to the newly selected point.
-        """
-        k = len(point)
-        to_eliminate = []
-
-        def search(tree, depth):
-            # Recursively search through the k-d tree to find the
-            # nearest neighbor.
-
-            if tree is None:
-                return
-
-            distance = self.func_distance(tree.value, point)
-            if distance < threshold:
-                to_eliminate.append((distance, tree.index))
-
-            axis = depth % k
-            diff = point[axis] - tree.value[axis]
-            if diff <= 0:
-                close, away = tree.left, tree.right
-            else:
-                close, away = tree.right, tree.left
-
-            search(tree=close, depth=depth + 1)
-            if diff < threshold:
-                search(tree=away, depth=depth + 1)
-
-        search(tree=kdtree, depth=0)
-        to_eliminate = [index for dist, index in to_eliminate]
-        if sort:
-            to_eliminate.sort()
-        return to_eliminate
-
     def _eliminate(self, tree, point, threshold, num_eliminate, bv):
         """Eliminates points from being selected in future rounds.
 
         Parameters
         ----------
-        tree: collections.namedtuple
+        tree: spatial.KDTree
             KDTree organizing coordinates.
         point: list
             Point where close neighbors should be eliminated.
@@ -697,13 +650,16 @@ class Medoid(SelectionBase):
         num_eliminate: int
             Maximum number of points permitted to be eliminated.
         """
-        elim_candidates = self._find_nearest_neighbor(tree, point, threshold)
-        elim_candidates = elim_candidates[:self.ratio]
-        num_eliminate -= len(elim_candidates)
+        dist, elim_candidates = tree.query(point, k=self.ratio,
+                                           distance_upper_bound=np.sqrt(threshold))
         if num_eliminate < 0:
             elim_candidates = elim_candidates[:num_eliminate]
         for index in elim_candidates:
-            bv[index] = 1
+            try:
+                bv[index] = 1
+                num_eliminate -= 1
+            except IndexError:
+                break
         return num_eliminate
 
     def _find_furthest_neighbor(self, kdtree, point, selected_bitvector):
@@ -780,7 +736,8 @@ class Medoid(SelectionBase):
         if isinstance(arr, np.ndarray):
             arr = arr.tolist()
         arr_len = len(arr)
-        tree = self._kdtree(arr)
+        fartree = self._kdtree(arr)
+        neartree = spatial.KDTree(arr)
 
         bv = bitarray.bitarray(arr_len)
         bv[:] = 0
@@ -792,7 +749,7 @@ class Medoid(SelectionBase):
         self.ratio = math.ceil(num_eliminate / num_selected)
         best_distance_av = 0
         while len(selected) < num_selected:
-            new_point = self._find_furthest_neighbor(tree, query_point, bv)
+            new_point = self._find_furthest_neighbor(fartree, query_point, bv)
             if new_point is None:
                 return selected
             selected.append(new_point.index)
@@ -805,11 +762,11 @@ class Medoid(SelectionBase):
                 best_distance_av = (count * best_distance_av + new_point.distance) / (count + 1)
             if count == 1:
                 if num_eliminate > 0 and self.scaling != 0:
-                    num_eliminate = self._eliminate(tree, arr[self.starting_idx],
+                    num_eliminate = self._eliminate(neartree, arr[self.starting_idx],
                                                     best_distance_av * self.scaling,
                                                     num_eliminate, bv)
             if num_eliminate > 0 and self.scaling != 0:
-                num_eliminate = self._eliminate(tree, new_point.point,
+                num_eliminate = self._eliminate(neartree, new_point.point,
                                                 best_distance_av * self.scaling,
                                                 num_eliminate, bv)
             count += 1
