@@ -43,6 +43,7 @@ __all__ = [
     "Medoid",
 ]
 
+
 class MaxMin(SelectionBase):
     """Selecting compounds using MinMax algorithm.
 
