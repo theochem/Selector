@@ -23,8 +23,8 @@
 
 """Testing for the MaxMin selection algorithms."""
 
-from DiverseSelector.selectors import DirectedSphereExclusion, GridPartitioning, MaxMin, MaxSum, \
-    OptiSim
+from DiverseSelector.selectors import DirectedSphereExclusion, GridPartitioning, MaxMin, MaxSum,\
+    Medoid, OptiSim
 from DiverseSelector.test.common import generate_synthetic_data
 import numpy as np
 from numpy.testing import assert_equal
@@ -107,12 +107,19 @@ def test_optisim():
     selector = OptiSim()
     selected_ids = selector.select(arr=coords_cluster, num_selected=12, labels=class_labels_cluster)
     # make sure all the selected indices are the same with expectation
-    assert_equal(selected_ids, [2, 85, 86, 59, 1, 50, 93, 68, 0, 11, 33, 46])
+    assert_equal(selected_ids, [2, 85, 86, 59, 1, 66, 50, 68, 0, 64, 83, 72])
 
     selector = OptiSim()
     selected_ids = selector.select(arr=coords, num_selected=12)
     # make sure all the selected indices are the same with expectation
-    assert_equal(selected_ids, [0, 13, 21, 9, 8, 18, 39, 57, 65, 25, 6, 45])
+    assert_equal(selected_ids, [0, 8, 55, 37, 41, 13, 12, 42, 6, 30, 57, 76])
+
+    # tester to check if optisim gives same results as maxmin for k=>infinity
+    selector = OptiSim(start_id=85, k=999999)
+    selected_ids_optisim = selector.select(arr=coords, num_selected=12)
+    selector = MaxMin()
+    selected_ids_maxmin = selector.select(arr=arr_dist, num_selected=12)
+    assert_equal(selected_ids_optisim, selected_ids_maxmin)
 
 
 def test_directedsphereexclusion():
@@ -139,3 +146,16 @@ def test_gridpartitioning():
     selected_ids = selector.select(arr=coords, num_selected=12)
     # make sure all the selected indices are the same with expectation
     assert_equal(selected_ids, [7, 55, 70, 57, 29, 91, 9, 65, 28, 11, 54, 88])
+
+
+def test_medoid():
+    """Testing Medoid class."""
+    selector = Medoid()
+    selected_ids = selector.select(arr=coords_cluster, num_selected=12, labels=class_labels_cluster)
+    # make sure all the selected indices are the same with expectation
+    assert_equal(selected_ids, [2, 73, 94, 86, 1, 50, 93, 78, 0, 54, 33, 72])
+
+    selector = Medoid()
+    selected_ids = selector.select(arr=coords, num_selected=12)
+    # make sure all the selected indices are the same with expectation
+    assert_equal(selected_ids, [0, 95, 57, 41, 25, 9, 8, 6, 66, 1, 42, 82])

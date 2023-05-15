@@ -22,7 +22,6 @@
 # --
 
 """Base class for diversity based subset selection."""
-
 from abc import ABC, abstractmethod
 import warnings
 
