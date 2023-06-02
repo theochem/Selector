@@ -24,7 +24,7 @@
 
 import sys
 
-from setuptools import find_packages, setup
+from setuptools import setup
 import versioneer
 
 short_description = "Molecule selection with maximum diversity".split("\n")[0]
@@ -39,8 +39,8 @@ try:
 except ValueError:
     long_description = short_description
 
+
 setup(
-    # Self-descriptive entries which should always be present
     name="DiverseSelector",
     author="QC-Devs Community",
     author_email="qcdevs@gmail.com",
@@ -54,7 +54,8 @@ setup(
     # Which Python importable modules should be included when your package is installed
     # Handled automatically by setuptools. Use "exclude" to prevent some specific
     # subpackage(s) from being added, if needed
-    packages=find_packages(),
+    package_dir={"DiverseSelector": "DiverseSelector"},
+    packages=["DiverseSelector"],
 
     # Optional include package data to ship with your package
     # Customize MANIFEST.in if the general case does not suit your needs
@@ -64,13 +65,19 @@ setup(
     # Allows `setup.py test` to work correctly with pytest
     setup_requires=["numpy>=1.21.2",
                     "scipy>=1.7.3",
-                    "pytest>=6.2.4"] + pytest_runner,
+                    "pytest>=6.2.4",
+                    "scikit-learn",
+                    "bitarray",
+                    ] + pytest_runner,
 
     # Additional entries you may want simply uncomment the lines you want and fill in the data
     url="https://github.com/theochem/DiverseSelector",  # Website
     install_requires=["numpy>=1.21.2",
                       "scipy>=1.7.3",
-                      "pytest>=6.2.4"],
+                      "pytest>=6.2.4",
+                      "scikit-learn",
+                      "bitarray",
+                      ],
     # platforms=["Linux",
     #            "Mac OS-X",
     #            "Unix",
