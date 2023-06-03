@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # The DiverseSelector library provides a set of tools to select molecule
 # subset with maximum molecular diversity.
 #
@@ -21,15 +20,4 @@
 #
 # --
 
-"""The main DiverseSelector Package."""
-
-from DiverseSelector.methods import *
-
-
-# Handle versioneer
-from ._version import get_versions
-
-versions = get_versions()
-__version__ = versions["version"]
-__git_revision__ = versions["full-revisionid"]
-del get_versions, versions
+"""Module for Clustering-Based Selection Methods."""
