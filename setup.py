@@ -55,7 +55,7 @@ setup(
     # Handled automatically by setuptools. Use "exclude" to prevent some specific
     # subpackage(s) from being added, if needed
     package_dir={"DiverseSelector": "DiverseSelector"},
-    packages=["DiverseSelector"],
+    packages=["DiverseSelector", "DiverseSelector.methods", "DiverseSelector.test", "DiverseSelector.methods.tests"],
 
     # Optional include package data to ship with your package
     # Customize MANIFEST.in if the general case does not suit your needs
