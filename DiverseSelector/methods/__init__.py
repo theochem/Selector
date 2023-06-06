@@ -21,15 +21,6 @@
 #
 # --
 
-"""The main DiverseSelector Package."""
-
-from DiverseSelector.methods import *
-
-
-# Handle versioneer
-from ._version import get_versions
-
-versions = get_versions()
-__version__ = versions["version"]
-__git_revision__ = versions["full-revisionid"]
-del get_versions, versions
+from DiverseSelector.methods.dissimilarity import *
+from DiverseSelector.methods.partition import *
+from DiverseSelector.methods.clustering import *

@@ -23,12 +23,8 @@
 
 """Common functions for test module."""
 
-from typing import Any, Tuple, Union
-
 import numpy as np
 from rdkit import Chem
-from sklearn.datasets import make_blobs
-from sklearn.metrics import pairwise_distances
 
 try:
     from importlib_resources import path
@@ -36,81 +32,8 @@ except ImportError:
     from importlib.resources import path
 
 __all__ = [
-    "generate_synthetic_data",
     "load_testing_mols",
 ]
-
-
-def generate_synthetic_data(n_samples: int = 100,
-                            n_features: int = 2,
-                            n_clusters: int = 2,
-                            cluster_std: float = 1.0,
-                            center_box: Tuple[float, float] = (-10.0, 10.0),
-                            metric: str = "euclidean",
-                            shuffle: bool = True,
-                            random_state: int = 42,
-                            pairwise_dist: bool = False,
-                            **kwargs: Any,
-                            ) -> Union[Tuple[np.ndarray, np.ndarray],
-                                       Tuple[np.ndarray, np.ndarray, np.ndarray]]:
-    """Generate synthetic data.
-
-    Parameters
-    ----------
-    n_samples : int, optional
-        The number of samples. Default=100.
-    n_features : int, optional
-        The number of features. Default=2.
-    n_clusters : int, optional
-        The number of clusters. Default=2.
-    cluster_std : float, optional
-        The standard deviation of the clusters. Default=1.0.
-    center_box : tuple[float, float], optional
-        The bounding box for each cluster center when centers are generated at random.
-        Default=(-10.0, 10.0).
-    metric : str, optional
-        The metric used for computing pairwise distances. For the supported
-        distance matrix, please refer to
-        https://scikit-learn.org/stable/modules/generated/sklearn.metrics.pairwise_distances.html.
-        Default="euclidean".
-    shuffle : bool, optional
-        Whether to shuffle the samples. Default=True.
-    random_state : int, optional
-        The random state used for generating synthetic data. Default=42.
-    pairwise_dist : bool, optional
-        If True, then compute and return the pairwise distances between samples. Default=False.
-    **kwargs : Any, optional
-            Additional keyword arguments for the scikit-learn `pairwise_distances` function.
-
-    Returns
-    -------
-    syn_data : np.ndarray
-        The synthetic data.
-    class_labels : np.ndarray
-        The integer labels for cluster membership of each sample.
-    dist: np.ndarray
-        The symmetric pairwise distances between samples.
-
-    """
-    # pylint: disable=W0632
-    syn_data, class_labels = make_blobs(n_samples=n_samples,
-                                        n_features=n_features,
-                                        centers=n_clusters,
-                                        cluster_std=cluster_std,
-                                        center_box=center_box,
-                                        shuffle=shuffle,
-                                        random_state=random_state,
-                                        return_centers=False,
-                                        )
-    if pairwise_dist:
-        dist = pairwise_distances(X=syn_data,
-                                  Y=None,
-                                  metric=metric,
-                                  **kwargs,
-                                  )
-        return syn_data, class_labels, dist
-    else:
-        return syn_data, class_labels
 
 
 def load_testing_mols(mol_type: str = "2d") -> list:

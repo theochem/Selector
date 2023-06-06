@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # The DiverseSelector library provides a set of tools to select molecule
 # subset with maximum molecular diversity.
 #
@@ -21,38 +20,30 @@
 #
 # --
 
-"""Testing for the MaxMin selection algorithms."""
+"""Test Dissimilarity-Based Selection Methods."""
 
-from DiverseSelector.selectors import DirectedSphereExclusion, GridPartitioning, MaxMin, MaxSum,\
-    Medoid, OptiSim
-from DiverseSelector.test.common import generate_synthetic_data
+
+from DiverseSelector.methods.dissimilarity import MaxMin, MaxSum, OptiSim
 import numpy as np
 from numpy.testing import assert_equal
 from sklearn.metrics import pairwise_distances
-
-coords, class_labels, arr_dist = generate_synthetic_data(n_samples=100,
-                                                         n_features=2,
-                                                         n_clusters=1,
-                                                         pairwise_dist=True,
-                                                         metric="euclidean",
-                                                         random_state=42)
-
-coords_cluster, class_labels_cluster, arr_dist_cluster = generate_synthetic_data(n_samples=100,
-                                                                                 n_features=2,
-                                                                                 n_clusters=3,
-                                                                                 pairwise_dist=True,
-                                                                                 metric="euclidean",
-                                                                                 random_state=42)
-
-simple_coords = np.array([[0, 0],
-                          [2, 0],
-                          [0, 2],
-                          [2, 2],
-                          [-10, -10]])
+from DiverseSelector.methods.tests.common import generate_synthetic_data
 
 
 def test_maxmin():
     """Testing the MinMax class."""
+    _, _, arr_dist = generate_synthetic_data(n_samples=100,
+                                             n_features=2,
+                                             n_clusters=1,
+                                             pairwise_dist=True,
+                                             metric="euclidean",
+                                             random_state=42)
+    _, class_labels_cluster, arr_dist_cluster = generate_synthetic_data(n_samples=100,
+                                                                        n_features=2,
+                                                                        n_clusters=3,
+                                                                        pairwise_dist=True,
+                                                                        metric="euclidean",
+                                                                        random_state=42)
     selector = MaxMin()
     selected_ids = selector.select(arr=arr_dist_cluster,
                                    num_selected=12,
@@ -66,6 +57,11 @@ def test_maxmin():
     assert_equal(selected_ids, [85, 57, 41, 25, 9, 62, 29, 65, 81, 61, 60, 97])
 
     selector = MaxMin(lambda x: pairwise_distances(x, metric='euclidean'))
+    simple_coords = np.array([[0, 0],
+                              [2, 0],
+                              [0, 2],
+                              [2, 2],
+                              [-10, -10]])
     selected_ids = selector.select(arr=simple_coords, num_selected=3)
     # make sure all the selected indices are the same with expectation
     assert_equal(selected_ids, [0, 4, 3])
@@ -91,6 +87,19 @@ def test_maxmin():
 
 def test_maxsum():
     """Testing OptiSim class."""
+    coords, _, _ = generate_synthetic_data(n_samples=100,
+                                           n_features=2,
+                                           n_clusters=1,
+                                           pairwise_dist=True,
+                                           metric="euclidean",
+                                           random_state=42)
+    coords_cluster, class_labels_cluster, _ = generate_synthetic_data(n_samples=100,
+                                                                      n_features=2,
+                                                                      n_clusters=3,
+                                                                      pairwise_dist=True,
+                                                                      metric="euclidean",
+                                                                      random_state=42)
+
     selector = MaxSum(lambda x: pairwise_distances(x, metric='euclidean'))
     selected_ids = selector.select(arr=coords_cluster, num_selected=12, labels=class_labels_cluster)
     # make sure all the selected indices are the same with expectation
@@ -104,6 +113,18 @@ def test_maxsum():
 
 def test_optisim():
     """Testing OptiSim class."""
+    coords, _, arr_dist = generate_synthetic_data(n_samples=100,
+                                                  n_features=2,
+                                                  n_clusters=1,
+                                                  pairwise_dist=True,
+                                                  metric="euclidean",
+                                                  random_state=42)
+    coords_cluster, class_labels_cluster, _ = generate_synthetic_data(n_samples=100,
+                                                                      n_features=2,
+                                                                      n_clusters=3,
+                                                                      pairwise_dist=True,
+                                                                      metric="euclidean",
+                                                                      random_state=42)
     selector = OptiSim()
     selected_ids = selector.select(arr=coords_cluster, num_selected=12, labels=class_labels_cluster)
     # make sure all the selected indices are the same with expectation
@@ -120,42 +141,3 @@ def test_optisim():
     selector = MaxMin()
     selected_ids_maxmin = selector.select(arr=arr_dist, num_selected=12)
     assert_equal(selected_ids_optisim, selected_ids_maxmin)
-
-
-def test_directedsphereexclusion():
-    """Testing DirectedSphereExclusion class."""
-    selector = DirectedSphereExclusion()
-    selected_ids = selector.select(arr=coords_cluster, num_selected=12, labels=class_labels_cluster)
-    # make sure all the selected indices are the same with expectation
-    assert_equal(selected_ids, [95, 14, 88, 84, 76, 68, 93, 50, 29, 19, 54])
-
-    selector = DirectedSphereExclusion()
-    selected_ids = selector.select(arr=coords, num_selected=12)
-    # make sure all the selected indices are the same with expectation
-    assert_equal(selected_ids, [17, 92, 64, 6, 12, 76, 10, 87, 73, 66, 11, 57])
-
-
-def test_gridpartitioning():
-    """Testing DirectedSphereExclusion class."""
-    selector = GridPartitioning(cells=3)
-    selected_ids = selector.select(arr=coords_cluster, num_selected=12, labels=class_labels_cluster)
-    # make sure all the selected indices are the same with expectation
-    assert_equal(selected_ids, [2, 25, 84, 56, 8, 70, 58, 78, 4, 46, 65, 29])
-
-    selector = GridPartitioning(cells=3)
-    selected_ids = selector.select(arr=coords, num_selected=12)
-    # make sure all the selected indices are the same with expectation
-    assert_equal(selected_ids, [7, 55, 70, 57, 29, 91, 9, 65, 28, 11, 54, 88])
-
-
-def test_medoid():
-    """Testing Medoid class."""
-    selector = Medoid()
-    selected_ids = selector.select(arr=coords_cluster, num_selected=12, labels=class_labels_cluster)
-    # make sure all the selected indices are the same with expectation
-    assert_equal(selected_ids, [2, 73, 94, 86, 1, 50, 93, 78, 0, 54, 33, 72])
-
-    selector = Medoid()
-    selected_ids = selector.select(arr=coords, num_selected=12)
-    # make sure all the selected indices are the same with expectation
-    assert_equal(selected_ids, [0, 95, 57, 41, 25, 9, 8, 6, 66, 1, 42, 82])
