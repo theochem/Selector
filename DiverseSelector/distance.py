@@ -32,11 +32,12 @@ from sklearn.metrics import pairwise_distances
 
 __all__ = [
     "compute_distance_matrix",
-    "bit_tanimoto",
-    "euc_bit",
-    "modified_tanimoto",
     "pairwise_similarity_bit",
+    "euc_bit",
     "tanimoto",
+    "bit_tanimoto",
+    "modified_tanimoto",
+    "nearest_average_tanimoto"
 ]
 
 
@@ -71,6 +72,7 @@ def compute_distance_matrix(
         "modified_tanimoto",
     ]
 
+    # Check if specified metric is supported
     if metric in sklearn_supported_metrics:
         dist = pairwise_distances(
             X=features,
@@ -87,14 +89,15 @@ def compute_distance_matrix(
         }
 
         dist = function_dict[metric](features)
-    else:
+    else: # raise error if unsupported
         raise ValueError(f"Metric {metric} is not supported by the library.")
 
     return dist
 
 
 def pairwise_similarity_bit(feature: np.array, metric: str) -> np.ndarray:
-    """Compute the pairwaise similarity coefficients.
+    """Compute the pairwise similarity coefficients and returns them in
+        a square symmetric matrix.
 
     Parameters
     ----------
@@ -106,19 +109,23 @@ def pairwise_similarity_bit(feature: np.array, metric: str) -> np.ndarray:
     Returns
     -------
     pair_coeff : ndarray
-        Similairty coefficients for all molecule pairs in feature matrix.
+        Similarity coefficients for all molecule pairs in feature matrix.
     """
     pair_simi = []
     size = len(feature)
     for i in range(0, size):
         for j in range(i + 1, size):
+            # use the specified metric to compute similarity between all distinct molecule pairs
             pair_simi.append(metric(feature[i], feature[j]))
-    pair_coeff = squareform(pair_simi) + np.identity(size)
+    pair_coeff = squareform(pair_simi) + np.identity(size)  # shape into symmetric matrix
     return pair_coeff
 
 
 def euc_bit(a: np.array, b: np.array) -> float:
-    """Compute Euclidean distance from bitstring.
+    r"""Compute Euclidean distance from bitstring.
+
+    .. math::
+        euc_dist  = |a| + |b| - 2|a \cap b|
 
     Parameters
     ----------
@@ -129,8 +136,8 @@ def euc_bit(a: np.array, b: np.array) -> float:
 
     Returns
     -------
-    e_d : float
-        Euclidean distance between molecule A and B.
+    euc_dist : float
+        Euclidean distance between molecules A and B.
 
     Notes
     -----
@@ -138,18 +145,21 @@ def euc_bit(a: np.array, b: np.array) -> float:
     Why is Tanimoto index an appropriate choice for fingerprint-based similarity calculations?.
     Journal of Cheminformatics 7.
     """
+    # Count non-trivial features in a and b
     a_feat = np.count_nonzero(a)
     b_feat = np.count_nonzero(b)
+    # compute intersection of a and b
     c = 0
     for idx, _ in enumerate(a):
         if a[idx] == b[idx] and a[idx] != 0:
             c += 1
-    e_d = (a_feat + b_feat - (2 * c)) ** 0.5
-    return e_d
+    # compute euclidean distance
+    euc_dist = (a_feat + b_feat - (2 * c)) ** 0.5
+    return euc_dist
 
 
 def tanimoto(a: np.array, b: np.array) -> float:
-    """Compute tanimoto coefficient.
+    r"""Compute Tanimoto coefficient.
 
     Parameters
     ----------
@@ -161,10 +171,14 @@ def tanimoto(a: np.array, b: np.array) -> float:
     Returns
     -------
     coeff : float
-        Tanimoto coefficient for molecule A and B.
+        Tanimoto coefficient for molecules A and B.
 
     Notes
     -----
+    The Tanimoto coefficient computes similarity by taking the intersection of A and B over their union.
+    ..math::
+    T(A,B) = A \cap B / A \cup B
+
     Bajusz, D., Rácz, A., and Héberger, K.. (2015)
     Why is Tanimoto index an appropriate choice for fingerprint-based similarity calculations?.
     Journal of Cheminformatics 7.
@@ -174,7 +188,7 @@ def tanimoto(a: np.array, b: np.array) -> float:
 
 
 def bit_tanimoto(a: np.array, b: np.array) -> float:
-    """Compute tanimoto coefficient.
+    """Compute Tanimoto coefficient for molecules A and B, with features in bitstring form.
 
     Parameters
     ----------
@@ -186,26 +200,31 @@ def bit_tanimoto(a: np.array, b: np.array) -> float:
     Returns
     -------
     coeff : float
-        Tanimoto coefficient for molecule A and B.
+        Tanimoto coefficient for molecules A and B.
 
     Notes
     -----
+    The Tanimoto coefficient computes similarity by taking the intersection of A and B over their union.
+    T(A,B) = (A & B) / A + B - (A & B)
+
     Bajusz, D., Rácz, A., and Héberger, K.. (2015)
     Why is Tanimoto index an appropriate choice for fingerprint-based similarity calculations?.
     Journal of Cheminformatics 7.
     """
     a_feat = np.count_nonzero(a)
     b_feat = np.count_nonzero(b)
+    # compute intersection of a and b
     c = 0
     for idx, _ in enumerate(a):
         if a[idx] == b[idx] and a[idx] != 0:
             c += 1
-    b_t = c / (a_feat + b_feat - c)
-    return b_t
+    # compute bitwise tanimoto
+    bit_tani = c / (a_feat + b_feat - c)
+    return bit_tani
 
 
 def modified_tanimoto(a: np.array, b: np.array) -> float:
-    """Compute the modified tanimoto coefficient.
+    """Compute the modified tanimoto coefficient from bitstrings of molecules A and B.
 
     Parameters
     ----------
@@ -221,22 +240,36 @@ def modified_tanimoto(a: np.array, b: np.array) -> float:
 
     Notes
     -----
+    Adjusts calculation of the Tanimoto coefficient to counter its natural bias towards
+    smaller molecules using a Bernoulli probability model.
+
+     mt = (((2 - p) / 3) * t_1) + (((1 + p) / 3) * t_0)
+     p = success probability of independent trials
+     t_1 = intersection of '1' bits in a and b
+     t_0 = intersection of '0' bits in a and b
+
     Fligner, M. A., Verducci, J. S., and Blower, P. E.. (2002)
     A Modification of the Jaccard-Tanimoto Similarity Index for
     Diverse Selection of Chemical Compounds Using Binary Strings.
     Technometrics 44, 110-119.
     """
     n = len(a)
+    # intersection of '1' bits
     n_11 = sum(a * b)
+    # intersection of '0' bits
     n_00 = sum((1 - a) * (1 - b))
+
+    # calculate in terms of '1' bits
     if n_00 == n:
         t_1 = 1
     else:
         t_1 = n_11 / (n - n_00)
+    # calculate in terms of '0' bits
     if n_11 == n:
         t_0 = 1
     else:
         t_0 = n_00 / (n - n_11)
+    # combine into modified tanimoto using Bernoulli Model
     p = ((n - n_00) + n_11) / (2 * n)
     mt = (((2 - p) / 3) * t_1) + (((1 + p) / 3) * t_0)
     return mt
@@ -257,8 +290,10 @@ def nearest_average_tanimoto(x: np.ndarray) -> float:
 
     Notes
     -----
-    This computes the tanimoto of pairs with the shortest distances,
-    this is explictly for explicit diversity index.
+    This computes the tanimoto coefficient of pairs with the shortest
+    distances, then returns the average of them.
+    This calculation is explictly for the explicit diversity index.
+
     Papp, Á., Gulyás-Forró, A., Gulyás, Z., Dormán, G., Ürge, L.,
     and Darvas, F.. (2006) Explicit Diversity Index (EDI):
     A Novel Measure for Assessing the Diversity of Compound Databases.
@@ -269,11 +304,13 @@ def nearest_average_tanimoto(x: np.ndarray) -> float:
         short = 100  # arbitary distance
         a = 0
         b = 0
-        for jdx, _ in enumerate(x):
+        for jdx, _ in enumerate(x):  # search for shortest distance
             if euc_bit(x[idx], x[jdx]) < short and idx != jdx:
                 short = euc_bit(x[idx], x[jdx])
                 a = idx
                 b = jdx
+        # calculate tanimoto for each shortest dist pair
         tani.append(bit_tanimoto(x[a], x[b]))
+    # compute average of all shortest tanimoto coeffs
     nat = np.average(tani)
     return nat

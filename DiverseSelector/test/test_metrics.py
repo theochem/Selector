@@ -64,6 +64,8 @@ sample3 = np.array([[1, 4],
 sample4 = np.array([[1, 0, 1],
                     [0, 1, 1]])
 
+#############################
+# This group tests the compute_distance_matrix() function from distance.py
 
 def test_compute_distance_matrix_euc_bit():
     """Testing the euclidean distance function with predefined feature matrix."""
@@ -80,14 +82,19 @@ def test_compute_distance_matrix_euc():
     assert_almost_equal(expected, sci_dist)
 
 
+def test_compute_distance_matrix_invalid_metric():
+    assert_raises(ValueError, compute_distance_matrix, sample1, "Canberra")
+
+#####################################################
+
 def test_tanimoto_bit():
     """Testing the tanimoto function with predefined bit-string matrix."""
     tani = pairwise_similarity_bit(sample2, bit_tanimoto)
-    expceted = np.array([[1, (1 / 3), 0, 0],
+    expected = np.array([[1, (1 / 3), 0, 0],
                          [(1 / 3), 1, 0, 0],
                          [0, 0, 1, 0],
                          [0, 0, 0, 1]])
-    assert_equal(expceted, tani)
+    assert_equal(expected, tani)
 
 
 def test_tanimoto():
