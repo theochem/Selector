@@ -125,7 +125,7 @@ def euc_bit(a: np.array, b: np.array) -> float:
     r"""Compute Euclidean distance from bitstring.
 
     .. math::
-        euc_dist  = |a| + |b| - 2|a \cap b|
+        euc_dist  = \| a-b\| = \sqrt{|a| + |b| - 2|a \cap b|}
 
     Parameters
     ----------
@@ -161,6 +161,9 @@ def euc_bit(a: np.array, b: np.array) -> float:
 def tanimoto(a: np.array, b: np.array) -> float:
     r"""Compute Tanimoto coefficient.
 
+    ..math::
+        T(A,B) = A \cap B / A \cup B
+
     Parameters
     ----------
     a : array_like
@@ -176,8 +179,6 @@ def tanimoto(a: np.array, b: np.array) -> float:
     Notes
     -----
     The Tanimoto coefficient computes similarity by taking the intersection of A and B over their union.
-    ..math::
-    T(A,B) = A \cap B / A \cup B
 
     Bajusz, D., Rácz, A., and Héberger, K.. (2015)
     Why is Tanimoto index an appropriate choice for fingerprint-based similarity calculations?.
@@ -188,7 +189,10 @@ def tanimoto(a: np.array, b: np.array) -> float:
 
 
 def bit_tanimoto(a: np.array, b: np.array) -> float:
-    """Compute Tanimoto coefficient for molecules A and B, with features in bitstring form.
+    r"""Compute Tanimoto coefficient for molecules A and B, with features in bitstring form.
+
+    ..math::
+        T(A,B) = \frac{|A \cap B|}{|A \cup B|} = \frac{|A \cap B|}{|A|+|B| - |A \cap B|}
 
     Parameters
     ----------
@@ -224,7 +228,17 @@ def bit_tanimoto(a: np.array, b: np.array) -> float:
 
 
 def modified_tanimoto(a: np.array, b: np.array) -> float:
-    """Compute the modified tanimoto coefficient from bitstrings of molecules A and B.
+    r"""Compute the modified tanimoto coefficient from bitstrings of molecules A and B.
+
+    Adjusts calculation of the Tanimoto coefficient to counter its natural bias towards
+    smaller molecules using a Bernoulli probability model.
+
+    ..math::
+    mt = \frac{2-p}{3}t_1 + \frac{1+p}{3}t_0$
+    where
+    p = success probability of independent trials
+    $t_1 = | A \cap B |$
+    $t_0 =  |(1-A) \cap (1-B)|$
 
     Parameters
     ----------
@@ -240,13 +254,6 @@ def modified_tanimoto(a: np.array, b: np.array) -> float:
 
     Notes
     -----
-    Adjusts calculation of the Tanimoto coefficient to counter its natural bias towards
-    smaller molecules using a Bernoulli probability model.
-
-     mt = (((2 - p) / 3) * t_1) + (((1 + p) / 3) * t_0)
-     p = success probability of independent trials
-     t_1 = intersection of '1' bits in a and b
-     t_0 = intersection of '0' bits in a and b
 
     Fligner, M. A., Verducci, J. S., and Blower, P. E.. (2002)
     A Modification of the Jaccard-Tanimoto Similarity Index for
@@ -301,10 +308,10 @@ def nearest_average_tanimoto(x: np.ndarray) -> float:
     """
     tani = []
     for idx, _ in enumerate(x):
-        short = 100  # arbitary distance
+        short = 100  # arbitrary distance
         a = 0
         b = 0
-        for jdx, _ in enumerate(x):  # search for shortest distance
+        for jdx, _ in enumerate(x):  # search for shortest distance point from idx
             if euc_bit(x[idx], x[jdx]) < short and idx != jdx:
                 short = euc_bit(x[idx], x[jdx])
                 a = idx
