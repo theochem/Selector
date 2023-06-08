@@ -22,6 +22,7 @@
 # --
 
 """Testing for the distance and similarity algorithms in the distance.py module."""
+from scipy.spatial.distance import euclidean
 
 from DiverseSelector.distance import (bit_tanimoto,
                                       compute_distance_matrix,
@@ -42,7 +43,7 @@ sample1 = np.array([[4, 2, 6],
                     [2, 0, 9],
                     [5, 3, 0]])
 
-# each row is a molecule and each colume is a feature (scipy)
+# each row is a molecule and each column is a feature (scipy)
 sample2 = np.array([[1, 1, 0, 0, 0],
                     [0, 1, 1, 0, 0],
                     [0, 0, 0, 1, 0],
@@ -74,7 +75,6 @@ def test_compute_distance_matrix_builtin():
                         [0, 0, 0, 0],
                         [0, 0, 0, 0]])
     assert_almost_equal(expected, sci_dist)
-
 
 
 def test_compute_distance_matrix_invalid_metric():
@@ -116,4 +116,20 @@ def test_modifed_tanimoto():
                          [(4 / 27), 1]])
     assert_equal(mod_tani, expceted)
 
+
+def test_bitstring_equivalence_tanimoto():
+    bit_tani = pairwise_similarity_bit(sample2, bit_tanimoto)
+    tani = pairwise_similarity_bit(sample2, tanimoto)
+    assert_equal(bit_tani, tani)
+
+
+def test_bitstring_equivalence_euc():
+    bit_euc = compute_distance_matrix(sample2, "euclidean")
+    euc = pairwise_similarity_bit(sample2, euc_bit) - np.identity(len(sample2))
+    assert_equal(bit_euc, euc)
+
+def test_bitstring_equivalence():
+    bit_euc = pairwise_similarity_bit(sample2, euclidean)
+    euc = pairwise_similarity_bit(sample2, euc_bit)
+    assert_equal(bit_euc, euc)
 
