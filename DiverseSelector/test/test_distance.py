@@ -73,6 +73,7 @@ def test_compute_distance_matrix_builtin():
     assert_equal(expected, sci_dist)
 
 
+
 def test_compute_distance_matrix_invalid_metric():
     """Testing the compute distance matrix with an invalid metric."""
     assert_raises(ValueError, compute_distance_matrix, sample1, "fake_distance")
