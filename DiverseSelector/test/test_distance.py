@@ -57,23 +57,25 @@ sample4 = np.array([[1, 0, 1],
 #############################
 # This group tests the compute_distance_matrix() function from distance.py
 
-def test_compute_distance_matrix_euc_bit():
-    """Testing the euclidean distance function with predefined feature matrix."""
-    sci_dist = compute_distance_matrix(sample2, "euclidean")
-    expected = pairwise_similarity_bit(sample2, euc_bit) - np.identity(len(sample2))
-    assert_equal(expected, sci_dist)
 
-
-def test_compute_distance_matrix_euc():
-    """Testing the euclidean distance function with predefined bit-string matrix."""
+def test_compute_distance_matrix_sklearn():
+    """Testing the compute distance matrix with a metric from sklearn."""
     sci_dist = compute_distance_matrix(sample3, "euclidean")
     expected = np.array([[0, 2.8284271],
                          [2.8284271, 0]])
     assert_almost_equal(expected, sci_dist)
 
 
+def test_compute_distance_matrix_builtin():
+    """Testing the compute distance matrix with a built in metric."""
+    sci_dist = compute_distance_matrix(sample2, "tanimoto")
+    expected = pairwise_similarity_bit(sample2, tanimoto) - np.identity(len(sample2))
+    assert_equal(expected, sci_dist)
+
+
 def test_compute_distance_matrix_invalid_metric():
-    assert_raises(ValueError, compute_distance_matrix, sample1, "Canberra")
+    """Testing the compute distance matrix with an invalid metric."""
+    assert_raises(ValueError, compute_distance_matrix, sample1, "fake_distance")
 
 #####################################################
 
