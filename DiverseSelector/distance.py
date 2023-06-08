@@ -46,7 +46,8 @@ def compute_distance_matrix(
     metric: str = "euclidean",
     n_jobs: int = -1,
     force_all_finite: bool = True,
-    **kwargs: Any,
+    bitstring: bool = False,
+    **kwargs: Any
 ):
     """Compute pairwise distance given a feature matrix.
 
@@ -60,6 +61,8 @@ def compute_distance_matrix(
         Number of jobs to run in parallel. Default=-1, which means all CPUs.
     force_all_finite : bool, optional
         Whether to raise an error on np.inf and np.nan in X. Default=True.
+    bitstring: bool, optional
+        Whether the input features are in bitstring form. Default=False.
 
     Returns
     -------
@@ -71,6 +74,9 @@ def compute_distance_matrix(
         "tanimoto",
         "modified_tanimoto",
     ]
+
+    if bitstring:
+        pass
 
     # Check if specified metric is supported
     if metric in sklearn_supported_metrics:
@@ -88,7 +94,9 @@ def compute_distance_matrix(
             "modified_tanimoto": modified_tanimoto,
         }
 
-        dist = function_dict[metric](features)
+        # dist = function_dict[metric](features)
+        dist = pairwise_similarity_bit(features, function_dict[metric]) - np.identity(len(features))
+
     else: # raise error if unsupported
         raise ValueError(f"Metric {metric} is not supported by the library.")
 
