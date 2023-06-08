@@ -95,9 +95,15 @@ def compute_distance_matrix(
         }
 
         # dist = function_dict[metric](features)
-        dist = pairwise_similarity_bit(features, function_dict[metric]) - np.identity(len(features))
+        distances = []
+        size = len(features)
+        for i in range(0, size):
+            for j in range(i + 1, size):
+                # use the metric to compute distance between all molecule pairs
+                distances.append(1 - metric(features[i], features[j]))
+        dist = squareform(distances)  # shape into symmetric matrix
 
-    else: # raise error if unsupported
+    else:  # raise error if unsupported
         raise ValueError(f"Metric {metric} is not supported by the library.")
 
     return dist
