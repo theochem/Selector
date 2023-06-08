@@ -116,6 +116,7 @@ def test_modifed_tanimoto():
                          [(4 / 27), 1]])
     assert_equal(mod_tani, expceted)
 
+# Bitstring Function Equivalence Testing
 
 def test_bitstring_equivalence_tanimoto():
     bit_tani = pairwise_similarity_bit(sample2, bit_tanimoto)
@@ -128,8 +129,5 @@ def test_bitstring_equivalence_euc():
     euc = pairwise_similarity_bit(sample2, euc_bit) - np.identity(len(sample2))
     assert_equal(bit_euc, euc)
 
-def test_bitstring_equivalence():
-    bit_euc = pairwise_similarity_bit(sample2, euclidean)
-    euc = pairwise_similarity_bit(sample2, euc_bit)
-    assert_equal(bit_euc, euc)
+
 
