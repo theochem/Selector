@@ -92,6 +92,8 @@ def compute_distance_matrix(
         function_dict = {
             "tanimoto": tanimoto,
             "modified_tanimoto": modified_tanimoto,
+            "bit_tanimoto": bit_tanimoto,
+            "euc_bit": euc_bit,
         }
 
         # dist = function_dict[metric](features)
@@ -125,12 +127,20 @@ def pairwise_similarity_bit(feature: np.array, metric: str) -> np.ndarray:
     pair_coeff : ndarray
         Similarity coefficients for all molecule pairs in feature matrix.
     """
+
+    function_dict = {
+        "tanimoto": tanimoto,
+        "modified_tanimoto": modified_tanimoto,
+        "bit_tanimoto": bit_tanimoto,
+        "euc_bit": euc_bit,
+    }
+
     pair_simi = []
     size = len(feature)
     for i in range(0, size):
         for j in range(i + 1, size):
             # use the specified metric to compute similarity between all distinct molecule pairs
-            pair_simi.append(metric(feature[i], feature[j]))
+            pair_simi.append(function_dict[metric](feature[i], feature[j]))
     pair_coeff = squareform(pair_simi) + np.identity(size)  # shape into symmetric matrix
     return pair_coeff
 
@@ -335,3 +345,4 @@ def nearest_average_tanimoto(x: np.ndarray) -> float:
     # compute average of all shortest tanimoto coeffs
     nat = np.average(tani)
     return nat
+
