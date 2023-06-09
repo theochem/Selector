@@ -336,12 +336,13 @@ def nearest_average_tanimoto(x: np.ndarray) -> float:
         a = 0
         b = 0
         for jdx, _ in enumerate(x):  # search for shortest distance point from idx
-            if euc_bit(x[idx], x[jdx]) < short and idx != jdx:
+            dist = np.linalg.norm(x[idx]-x[jdx])
+            if dist < short and idx != jdx:
                 short = euc_bit(x[idx], x[jdx])
                 a = idx
                 b = jdx
         # calculate tanimoto for each shortest dist pair
-        tani.append(bit_tanimoto(x[a], x[b]))
+        tani.append(tanimoto(x[a], x[b]))
     # compute average of all shortest tanimoto coeffs
     nat = np.average(tani)
     return nat
