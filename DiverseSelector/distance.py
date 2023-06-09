@@ -90,8 +90,6 @@ def compute_distance_matrix(
         function_dict = {
             "tanimoto": tanimoto,
             "modified_tanimoto": modified_tanimoto,
-            "bit_tanimoto": bit_tanimoto,
-            "euc_bit": euc_bit,
         }
 
         # dist = function_dict[metric](features)
@@ -129,8 +127,6 @@ def pairwise_similarity_bit(feature: np.array, metric: str) -> np.ndarray:
     function_dict = {
         "tanimoto": tanimoto,
         "modified_tanimoto": modified_tanimoto,
-        "bit_tanimoto": bit_tanimoto,
-        "euc_bit": euc_bit,
     }
 
     pair_simi = []
@@ -261,7 +257,7 @@ def nearest_average_tanimoto(x: np.ndarray) -> float:
         for jdx, _ in enumerate(x):  # search for shortest distance point from idx
             dist = np.linalg.norm(x[idx]-x[jdx])
             if dist < short and idx != jdx:
-                short = euc_bit(x[idx], x[jdx])
+                short = dist
                 a = idx
                 b = jdx
         # calculate tanimoto for each shortest dist pair
