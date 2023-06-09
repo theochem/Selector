@@ -25,7 +25,6 @@
 
 from typing import Any
 
-from DiverseSelector.utils import sklearn_supported_metrics
 import numpy as np
 from scipy.spatial.distance import squareform
 from sklearn.metrics import pairwise_distances
@@ -36,6 +35,32 @@ __all__ = [
     "tanimoto",
     "modified_tanimoto",
     "nearest_average_tanimoto"
+]
+
+sklearn_supported_metrics = [
+    "cityblock",
+    "cosine",
+    "euclidean",
+    "l1",
+    "l2",
+    "manhattan",
+    "braycurtis",
+    "canberra",
+    "chebyshev",
+    "correlation",
+    "dice",
+    "hamming",
+    "jaccard",
+    "kulsinski",
+    "mahalanobis",
+    "minkowski",
+    "rogerstanimoto",
+    "russellrao",
+    "seuclidean",
+    "sokalmichener",
+    "sokalsneath",
+    "sqeuclidean",
+    "yule",
 ]
 
 
@@ -72,9 +97,6 @@ def compute_distance_matrix(
         "tanimoto",
         "modified_tanimoto",
     ]
-
-    if bitstring:
-        pass
 
     # Check if specified metric is supported
     if metric in sklearn_supported_metrics:
@@ -137,7 +159,6 @@ def pairwise_similarity_bit(feature: np.array, metric: str) -> np.ndarray:
             pair_simi.append(function_dict[metric](feature[i], feature[j]))
     pair_coeff = squareform(pair_simi) + np.identity(size)  # shape into symmetric matrix
     return pair_coeff
-
 
 
 def tanimoto(a: np.array, b: np.array) -> float:
