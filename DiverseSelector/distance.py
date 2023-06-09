@@ -33,9 +33,7 @@ from sklearn.metrics import pairwise_distances
 __all__ = [
     "compute_distance_matrix",
     "pairwise_similarity_bit",
-    "euc_bit",
     "tanimoto",
-    "bit_tanimoto",
     "modified_tanimoto",
     "nearest_average_tanimoto"
 ]
@@ -145,42 +143,6 @@ def pairwise_similarity_bit(feature: np.array, metric: str) -> np.ndarray:
     return pair_coeff
 
 
-def euc_bit(a: np.array, b: np.array) -> float:
-    r"""Compute Euclidean distance from bitstring.
-
-    .. math::
-        euc_dist  = \| a-b\| = \sqrt{|a| + |b| - 2|a \cap b|}
-
-    Parameters
-    ----------
-    a : array_like
-        molecule A's features in bits.
-    b : array_like
-        molecules B's features in bits.
-
-    Returns
-    -------
-    euc_dist : float
-        Euclidean distance between molecules A and B.
-
-    Notes
-    -----
-    Bajusz, D., Rácz, A., and Héberger, K.. (2015)
-    Why is Tanimoto index an appropriate choice for fingerprint-based similarity calculations?.
-    Journal of Cheminformatics 7.
-    """
-    # Count non-trivial features in a and b
-    a_feat = np.count_nonzero(a)
-    b_feat = np.count_nonzero(b)
-    # compute intersection of a and b
-    c = 0
-    for idx, _ in enumerate(a):
-        if a[idx] == b[idx] and a[idx] != 0:
-            c += 1
-    # compute euclidean distance
-    euc_dist = (a_feat + b_feat - (2 * c)) ** 0.5
-    return euc_dist
-
 
 def tanimoto(a: np.array, b: np.array) -> float:
     r"""Compute Tanimoto coefficient.
@@ -210,45 +172,6 @@ def tanimoto(a: np.array, b: np.array) -> float:
     """
     coeff = (sum(a * b)) / ((sum(a ** 2)) + (sum(b ** 2)) - (sum(a * b)))
     return coeff
-
-
-def bit_tanimoto(a: np.array, b: np.array) -> float:
-    r"""Compute Tanimoto coefficient for molecules A and B, with features in bitstring form.
-
-    ..math::
-        T(A,B) = \frac{|A \cap B|}{|A \cup B|} = \frac{|A \cap B|}{|A|+|B| - |A \cap B|}
-
-    Parameters
-    ----------
-    a : array_like
-        Molecule A's features in bitstring.
-    b : array_like
-        Molecules B's features in bitstring.
-
-    Returns
-    -------
-    coeff : float
-        Tanimoto coefficient for molecules A and B.
-
-    Notes
-    -----
-    The Tanimoto coefficient computes similarity by taking the intersection of A and B over their union.
-    T(A,B) = (A & B) / A + B - (A & B)
-
-    Bajusz, D., Rácz, A., and Héberger, K.. (2015)
-    Why is Tanimoto index an appropriate choice for fingerprint-based similarity calculations?.
-    Journal of Cheminformatics 7.
-    """
-    a_feat = np.count_nonzero(a)
-    b_feat = np.count_nonzero(b)
-    # compute intersection of a and b
-    c = 0
-    for idx, _ in enumerate(a):
-        if a[idx] == b[idx] and a[idx] != 0:
-            c += 1
-    # compute bitwise tanimoto
-    bit_tani = c / (a_feat + b_feat - c)
-    return bit_tani
 
 
 def modified_tanimoto(a: np.array, b: np.array) -> float:

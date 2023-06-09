@@ -23,9 +23,7 @@
 
 """Testing for the distance and similarity algorithms in the distance.py module."""
 
-from DiverseSelector.distance import (bit_tanimoto,
-                                      compute_distance_matrix,
-                                      euc_bit,
+from DiverseSelector.distance import (compute_distance_matrix,
                                       modified_tanimoto,
                                       pairwise_similarity_bit,
                                       tanimoto,
@@ -84,16 +82,6 @@ def test_compute_distance_matrix_invalid_metric():
 #####################################################
 
 
-def test_tanimoto_bit():
-    """Testing the tanimoto function with predefined bit-string matrix."""
-    tani = pairwise_similarity_bit(sample2, "bit_tanimoto")
-    expected = np.array([[1, (1 / 3), 0, 0],
-                         [(1 / 3), 1, 0, 0],
-                         [0, 0, 1, 0],
-                         [0, 0, 0, 1]])
-    assert_equal(expected, tani)
-
-
 def test_tanimoto():
     """Testing the tanimoto function with predefined feature matrix."""
     tani = pairwise_similarity_bit(sample3, "tanimoto")
@@ -129,26 +117,11 @@ def test_nearest_average_tanimoto_bit():
 def test_nearest_average_tanimoto():
     """Test the nearest_average_tanimoto function with non-binary input"""
     nat = nearest_average_tanimoto(sample3)
-    euc_dist = np.array([[0., 2.82842712],
-                        [2.82842712, 0.]])
-    all_tanimoto = np.array([[1, (11 / 19)],
-                            [(11 / 19), 1]])
     shortest_tani = [(11/19), (11/19)]
     average = np.average(shortest_tani)
     assert_equal(nat, average)
 
 
-# Bitstring Function Equivalence Testing
-def test_bitstring_equivalence_tanimoto():
-    bit_tani = pairwise_similarity_bit(sample2, "bit_tanimoto")
-    tani = pairwise_similarity_bit(sample2, "tanimoto")
-    assert_equal(bit_tani, tani)
-
-
-def test_bitstring_equivalence_euc():
-    bit_euc = compute_distance_matrix(sample2, "euclidean")
-    euc = pairwise_similarity_bit(sample2, "euc_bit") - np.identity(len(sample2))
-    assert_equal(bit_euc, euc)
 
 
 
