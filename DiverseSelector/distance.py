@@ -100,7 +100,7 @@ def compute_distance_matrix(
         for i in range(0, size):
             for j in range(i + 1, size):
                 # use the metric to compute distance between all molecule pairs
-                distances.append(1 - metric(features[i], features[j]))
+                distances.append(1 - function_dict[metric](features[i], features[j]))
         dist = squareform(distances)  # shape into symmetric matrix
 
     else:  # raise error if unsupported

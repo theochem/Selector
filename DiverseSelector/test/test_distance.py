@@ -22,7 +22,6 @@
 # --
 
 """Testing for the distance and similarity algorithms in the distance.py module."""
-from scipy.spatial.distance import euclidean
 
 from DiverseSelector.distance import (bit_tanimoto,
                                       compute_distance_matrix,
@@ -70,10 +69,10 @@ def test_compute_distance_matrix_sklearn():
 def test_compute_distance_matrix_builtin():
     """Testing the compute distance matrix with a built in metric."""
     sci_dist = compute_distance_matrix(sample2, "tanimoto")
-    expected = np.array([[0, 0.3333333, 0, 0],
-                        [0.33333333, 0, 0, 0],
-                        [0, 0, 0, 0],
-                        [0, 0, 0, 0]])
+    expected = np.array([[0, 0.6666667, 1, 1],
+                         [0.6666667, 0, 1, 1],
+                         [1, 1, 0, 1],
+                         [1, 1, 1, 0]])
     assert_almost_equal(expected, sci_dist)
 
 
@@ -82,6 +81,7 @@ def test_compute_distance_matrix_invalid_metric():
     assert_raises(ValueError, compute_distance_matrix, sample1, "fake_distance")
 
 #####################################################
+
 
 def test_tanimoto_bit():
     """Testing the tanimoto function with predefined bit-string matrix."""
@@ -117,6 +117,7 @@ def test_modifed_tanimoto():
     assert_equal(mod_tani, expceted)
 
 # Bitstring Function Equivalence Testing
+
 
 def test_bitstring_equivalence_tanimoto():
     bit_tani = pairwise_similarity_bit(sample2, bit_tanimoto)
