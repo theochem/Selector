@@ -24,6 +24,7 @@
 """Testing for the diversity algorithms in the diversity.py module."""
 
 from DiverseSelector.diversity import (
+                                       compute_diversity,
                                        # compute_diversity_matrix,
                                        entropy,
                                        gini_coefficient,
@@ -43,7 +44,7 @@ sample1 = np.array([[4, 2, 6],
                     [2, 0, 9],
                     [5, 3, 0]])
 
-# each row is a molecule and each colume is a feature (scipy)
+# each row is a molecule and each column is a feature (scipy)
 sample2 = np.array([[1, 1, 0, 0, 0],
                     [0, 1, 1, 0, 0],
                     [0, 0, 0, 1, 0],
@@ -56,29 +57,56 @@ sample4 = np.array([[1, 0, 1],
                     [0, 1, 1]])
 
 
+def test_compute_diversity():
+    """Test compute diversity with a non-explicit_diversity_index div type."""
+    comp_div = compute_diversity(sample4, "entropy")
+    expected = (2/3)
+    assert_almost_equal(comp_div, expected)
+
+
+def test_compute_diversity_invalid():
+    """Test compute diversity with a non-supported div_type."""
+    assert_raises(ValueError, compute_diversity, sample1, "diversity_type")
+
+
 def test_entropy():
-    """Testing the entropy function with predefined matrix."""
+    """Test the entropy function with predefined matrix."""
     ent = entropy(sample4)
     expected = (2 / 3)
     assert_almost_equal(ent, expected)
 
 
+def test_entropy_conversion():
+    """Test the entropy function with matrix that is not in bit form."""
+    ent = entropy(sample3)
+    expected = 0
+    assert_almost_equal(ent, expected)
+
+
+def test_entropy_value_error():
+    """Test the entropy function with a matrix that causes a value error"""
+    x = np.array([[0, 2, 4, 0],
+                 [1, 2, 4, 0],
+                 [2, 2, 4, 0]])
+    assert_raises(ValueError, entropy, x)
+
+
 def test_logdet():
-    """Testing the log determinant function with predefined subset matrix."""
+    """Test the log determinant function with predefined subset matrix."""
     sel = logdet(sample3)
     expected = np.log10(131)
     assert_almost_equal(sel, expected)
 
 
 def test_shannon_entropy():
-    """Testing the shannon entropy function with predefined matrix."""
+    """Test the shannon entropy function with predefined matrix."""
     selected = shannon_entropy(sample4)
     expected = 0.301029995
     assert_almost_equal(selected, expected)
 
 # todo: implement Wasserstein test
 def test_wdud():
-    """Testing the Wasserstein Distance to Uniform Distribution (WDUD) with predefined matrix ."""
+    """Test the Wasserstein Distance to Uniform Distribution (WDUD) with predefined matrix ."""
     # incomplete
     # selected = wdud(sample3)
     # expected = (2 / 3)
@@ -87,14 +115,14 @@ def test_wdud():
 
 
 def test_total_diversity_volume():
-    """Testing the total diversity volume method with predefined matrix."""
+    """Test the total diversity volume method with predefined matrix."""
     selected = total_diversity_volume(sample3)
     expected = 2
     assert_almost_equal(selected, expected)
 
 
 def test_gini_coefficient_of_non_diverse_set():
-    r"""Test Gini coefficient of the worst diverse set is zero."""
+    r"""Test Gini coefficient of the least diverse set. Expected return is zero."""
     # Finger-prints where columns are all the same
     numb_molecules = 5
     numb_features = 10
@@ -106,6 +134,9 @@ def test_gini_coefficient_of_non_diverse_set():
     # Since they are all the same, then gini coefficient should be zero.
     assert_almost_equal(result, 0.0, decimal=8)
 
+
+def test_gini_coefficient_errors():
+    r"""Test input error cases for Gini coefficient"""
     # Test raises as well.
     assert_raises(ValueError, gini_coefficient, np.array([[1, 2], [0, 1]]))
     assert_raises(ValueError, gini_coefficient, np.array([1, 0, 0, 0]))
