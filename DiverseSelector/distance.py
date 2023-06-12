@@ -23,11 +23,9 @@
 
 """Metric calculation module."""
 
-from typing import Any
 
 import numpy as np
 from scipy.spatial.distance import squareform
-from sklearn.metrics import pairwise_distances
 
 __all__ = [
     "compute_distance_matrix",
@@ -37,40 +35,10 @@ __all__ = [
     "nearest_average_tanimoto"
 ]
 
-sklearn_supported_metrics = [
-    "cityblock",
-    "cosine",
-    "euclidean",
-    "l1",
-    "l2",
-    "manhattan",
-    "braycurtis",
-    "canberra",
-    "chebyshev",
-    "correlation",
-    "dice",
-    "hamming",
-    "jaccard",
-    "kulsinski",
-    "mahalanobis",
-    "minkowski",
-    "rogerstanimoto",
-    "russellrao",
-    "seuclidean",
-    "sokalmichener",
-    "sokalsneath",
-    "sqeuclidean",
-    "yule",
-]
-
 
 def compute_distance_matrix(
     features: np.ndarray,
-    metric: str = "euclidean",
-    n_jobs: int = -1,
-    force_all_finite: bool = True,
-    bitstring: bool = False,
-    **kwargs: Any
+    metric: str
 ):
     """Compute pairwise distance given a feature matrix.
 
@@ -78,14 +46,8 @@ def compute_distance_matrix(
     ----------
     features : np.ndarray
         Molecule feature matrix.
-    metric : str, optional
+    metric : str
         Distance metric.
-    n_jobs : int, optional
-        Number of jobs to run in parallel. Default=-1, which means all CPUs.
-    force_all_finite : bool, optional
-        Whether to raise an error on np.inf and np.nan in X. Default=True.
-    bitstring: bool, optional
-        Whether the input features are in bitstring form. Default=False.
 
     Returns
     -------
@@ -93,34 +55,19 @@ def compute_distance_matrix(
         Symmetric distance array.
     """
     # todo: add more metrics implemented here
-    built_in_metrics = [
-        "tanimoto",
-        "modified_tanimoto",
-    ]
+    built_in_metrics = {
+        "tanimoto": tanimoto,
+        "modified_tanimoto": modified_tanimoto,
+    }
 
     # Check if specified metric is supported
-    if metric in sklearn_supported_metrics:
-        dist = pairwise_distances(
-            X=features,
-            Y=None,
-            metric=metric,
-            n_jobs=n_jobs,
-            force_all_finite=force_all_finite,
-            **kwargs,
-        )
-    elif metric in built_in_metrics:
-        function_dict = {
-            "tanimoto": tanimoto,
-            "modified_tanimoto": modified_tanimoto,
-        }
-
-        # dist = function_dict[metric](features)
+    if metric in built_in_metrics:
         distances = []
         size = len(features)
         for i in range(0, size):
             for j in range(i + 1, size):
                 # use the metric to compute distance between all molecule pairs
-                distances.append(1 - function_dict[metric](features[i], features[j]))
+                distances.append(1 - built_in_metrics[metric](features[i], features[j]))
         dist = squareform(distances)  # shape into symmetric matrix
 
     else:  # raise error if unsupported

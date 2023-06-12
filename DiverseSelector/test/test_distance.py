@@ -24,13 +24,10 @@
 """Testing for the distance and similarity algorithms in the distance.py module."""
 
 from DiverseSelector.distance import (compute_distance_matrix,
-                                      modified_tanimoto,
                                       pairwise_similarity_bit,
-                                      tanimoto,
                                       nearest_average_tanimoto
                                       )
 
-from DiverseSelector.utils import distance_to_similarity
 import numpy as np
 from numpy.testing import assert_almost_equal, assert_equal, assert_raises
 
@@ -53,17 +50,6 @@ sample3 = np.array([[1, 4],
 sample4 = np.array([[1, 0, 1],
                     [0, 1, 1]])
 
-#############################
-# This group tests the compute_distance_matrix() function from distance.py
-
-
-def test_compute_distance_matrix_sklearn():
-    """Testing the compute distance matrix with a metric from sklearn."""
-    sci_dist = compute_distance_matrix(sample3, "euclidean")
-    expected = np.array([[0, 2.8284271],
-                         [2.8284271, 0]])
-    assert_almost_equal(expected, sci_dist)
-
 
 def test_compute_distance_matrix_builtin():
     """Testing the compute distance matrix with a built in metric."""
@@ -79,8 +65,6 @@ def test_compute_distance_matrix_invalid_metric():
     """Testing the compute distance matrix with an invalid metric."""
     assert_raises(ValueError, compute_distance_matrix, sample1, "fake_distance")
 
-#####################################################
-
 
 def test_tanimoto():
     """Testing the tanimoto function with predefined feature matrix."""
@@ -88,14 +72,6 @@ def test_tanimoto():
     expected = np.array([[1, (11 / 19)],
                          [(11 / 19), 1]])
     assert_equal(expected, tani)
-
-
-def test_dist_to_simi():
-    """Testing the distance to similarity function with predefined distance matrix."""
-    dist = distance_to_similarity(sample3, dist=True)
-    expected = np.array([[(1 / 2), (1 / 5)],
-                         [(1 / 4), (1 / 3)]])
-    assert_equal(dist, expected)
 
 
 def test_modifed_tanimoto():
