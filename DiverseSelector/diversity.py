@@ -25,16 +25,12 @@
 
 from typing import List
 
-from DiverseSelector.distance import nearest_average_tanimoto
 import numpy as np
-import rdkit
-from rdkit.Chem import rdFMCS
 from scipy.spatial.distance import euclidean
 
 __all__ = [
     "compute_diversity",
     "entropy",
-    "explicit_diversity_index",
     "logdet",
     "shannon_entropy",
     "wdud",
@@ -46,7 +42,6 @@ __all__ = [
 def compute_diversity(
     features: np.array,
     div_type: str = "total_diversity_volume",
-    mols: List[rdkit.Chem.rdchem.Mol] = None,
 ) -> float:
     """Compute diversity metrics.
 
@@ -68,7 +63,6 @@ def compute_diversity(
 
     """
     func_dict = {
-        "explicit_diversity_index": explicit_diversity_index,
         "entropy": entropy,
         "logdet": logdet,
         "shannon_entropy": shannon_entropy,
@@ -77,17 +71,8 @@ def compute_diversity(
         "gini_coefficient": gini_coefficient,
     }
 
-    if div_type in [
-        "entropy",
-        "shannon_entropy",
-        "logdet",
-        "wdud",
-        "total_diversity_volume",
-        "gini_coefficient",
-    ]:
+    if div_type in func_dict:
         return func_dict[div_type](features)
-    elif div_type == "explicit_diversity_index":
-        return explicit_diversity_index(features, mols)
     else:
         raise ValueError(f"Diversity type {div_type} not supported.")
 
@@ -133,40 +118,6 @@ def entropy(x: np.ndarray) -> float:
             top += ((ans[i]) / n) * (np.log(ans[i] / n))
     e = -1 * (top / (length * 0.34657359027997264))
     return e
-
-
-def explicit_diversity_index(
-    x: np.ndarray, mols: List[rdkit.Chem.rdchem.Mol],
-) -> float:
-    """Computes the explicit diversity index.
-
-    Parameters
-    ----------
-    x : ndarray
-        Feature matrix.
-    mols: List[rdkit.Chem.rdchem.Mol]
-        Molecules from feature matrix.
-
-    Returns
-    -------
-    edi_scaled : float
-        Explicit diversity index.
-
-    Notes
-    -----
-    This method hasn't been tested.
-    Papp, Á., Gulyás-Forró, A., Gulyás, Z., Dormán, G., Ürge, L.,
-    and Darvas, F.. (2006) Explicit Diversity Index (EDI):
-    A Novel Measure for Assessing the Diversity of Compound Databases.
-    Journal of Chemical Information and Modeling 46, 1898-1904.
-    """
-    cs = len(rdFMCS.FindMCS(mols))
-    nc = len(x)
-    sdi = (1 - nearest_average_tanimoto(x)) / (0.8047 - (0.065 * (np.log(nc))))
-    cr = -1 * np.log10(nc / (cs ** 2))
-    edi = (sdi + cr) * 0.7071067811865476
-    edi_scaled = ((np.tanh(edi / 3) + 1) / 2) * 100
-    return edi_scaled
 
 
 def logdet(x: np.ndarray) -> float:
