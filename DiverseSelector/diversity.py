@@ -93,7 +93,13 @@ def compute_diversity(
 
 
 def entropy(x: np.ndarray) -> float:
-    """Compute entropy of matrix.
+    r"""Compute entropy of matrix.
+
+    .. math::
+        E = $-\frac{\sum{\frac{y_i}{N}\ln{\frac{y_i}{N}}}}{L\frac{\ln{2}}{2}}$
+
+    where N is the number of molecules in the set, L is the length of the fingerprint,
+    and :math:y_i is a vector of the bitcounts of each feature in the fingerprints.
 
     Parameters
     ----------
@@ -102,43 +108,68 @@ def entropy(x: np.ndarray) -> float:
 
     Returns
     -------
-    e : float
+    ent : float
         Entropy of matrix.
 
     Notes
     -----
-    Feature matrixs are converted to bits,
+    Feature matrices are converted to bits,
     so we lose any information associated with num in matrix.
     Weidlich, I. E., and Filippov, I. V. (2016)
-    Using the Gini coefficient to measure the chemical diversity of small-molecule libraries.
+    Using the Gini coefficient to measure the chemical diversity
+    of small-molecule libraries.
     Journal of Computational Chemistry 37, 2091-2097.
     """
+
+    # convert features to binary
+    y = np.empty(x.shape)
     for i in range(0, len(x)):
         for j in range(0, len(x[0])):
             if x[i, j] != 0:
-                x[i, j] = 1
+                y[i, j] = 1
             else:
-                x[i, j] = 0
+                y[i, j] = 0
+    # initialize variables
     length = len(x[0])
     n = len(x)
     top = 0
     val = []
     for i in range(0, length):
-        val.append(sum(x[:, i]))
+        val.append(sum(y[:, i]))
     ans = np.sort(val)
+    # sum over list of features
     for i in range(0, length):
         if ans[i] == 0:
             raise ValueError
         if ans[i] != 0:
             top += ((ans[i]) / n) * (np.log(ans[i] / n))
-    e = -1 * (top / (length * 0.34657359027997264))
-    return e
+    # final calculation of entropy
+    ent = -1 * (top / (length * 0.34657359027997264))
+    return ent
 
 
 def explicit_diversity_index(
     x: np.ndarray, mols: List[rdkit.Chem.rdchem.Mol],
 ) -> float:
-    """Computes the explicit diversity index.
+    r"""Computes the scaled explicit diversity index.
+
+    .. math::
+    EDI_{scaled} = \frac{\tanh\left(\frac{EDI_{unscaled}}{3}\right)+1}{2} * 100
+
+    where :math:EDI_{unscaled} is the following:
+
+    .. math::
+    EDI_{unscaled} = \frac{\sqrt{2}}{2}\left(SDI + CR\right)
+
+    SDI is the structural dissimilarity and CR is the core representativeness such that
+
+    .. math::
+    SDI = \frac{1-NAT}{0.8047-0.065\ln\left(NC\right)}
+    .. math::
+    CR = -\log\left(\frac{NC}{CS^2}\right)
+
+    NAT is the nearest average Tanimoto of the molecule set, NC is the number of molecules in the set, and CS
+    is the number of features of each molecule.
 
     Parameters
     ----------
@@ -155,6 +186,7 @@ def explicit_diversity_index(
     Notes
     -----
     This method hasn't been tested.
+
     Papp, Á., Gulyás-Forró, A., Gulyás, Z., Dormán, G., Ürge, L.,
     and Darvas, F.. (2006) Explicit Diversity Index (EDI):
     A Novel Measure for Assessing the Diversity of Compound Databases.
@@ -170,7 +202,7 @@ def explicit_diversity_index(
 
 
 def logdet(x: np.ndarray) -> float:
-    """Computes the log determinant function .
+    """Computes the log determinant function.
 
     Parameters
     ----------
@@ -180,10 +212,11 @@ def logdet(x: np.ndarray) -> float:
     Returns
     -------
     f_logdet: float
-        The volume of parallelotope spand by the matrix.
+        The volume of parallelotope spanned by the matrix.
 
     Notes
     -----
+
     Nakamura, T., Sakaue, S., Fujii, K., Harabuchi, Y., Maeda, S., and Iwata, S.. (2022)
     Selecting molecules with diverse structures and properties by maximizing
     submodular functions of descriptors learned with graph neural networks.
@@ -195,7 +228,7 @@ def logdet(x: np.ndarray) -> float:
 
 
 def shannon_entropy(x: np.ndarray) -> float:
-    """Computes the shannon entrop of a matrix.
+    """Computes the shannon entropy of a matrix.
 
     Parameters
     ----------
