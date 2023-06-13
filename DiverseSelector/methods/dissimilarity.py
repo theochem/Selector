@@ -44,6 +44,8 @@ class MaxMin(SelectionBase):
     1. Find minimum distance from every point to the selected ones.
     2. Select a point the has the maximum distance among calculated
        on the previous step.
+
+    The algorithm is described well here: https://doi.org/10.1002/qsar.200290002
     """
 
     def __init__(self, func_distance=None):
