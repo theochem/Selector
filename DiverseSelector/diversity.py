@@ -78,7 +78,13 @@ def compute_diversity(
 
 
 def entropy(x: np.ndarray) -> float:
-    """Compute entropy of matrix.
+    r"""Compute entropy of matrix. The equation for entropy is
+
+    .. math::
+        E = $-\frac{\sum{\frac{y_i}{N}\ln{\frac{y_i}{N}}}}{L\frac{\ln{2}}{2}}$
+
+    where N is the number of molecules in the set, L is the length of the fingerprint,
+    and :math:y_i is a vector of the bitcounts of each feature in the fingerprints.
 
     Parameters
     ----------
@@ -92,24 +98,25 @@ def entropy(x: np.ndarray) -> float:
 
     Notes
     -----
-    Feature matrixs are converted to bits,
+    Feature matrices are converted to bits,
     so we lose any information associated with num in matrix.
     Weidlich, I. E., and Filippov, I. V. (2016)
     Using the Gini coefficient to measure the chemical diversity of small-molecule libraries.
     Journal of Computational Chemistry 37, 2091-2097.
     """
+    y = np.empty(x.shape)
     for i in range(0, len(x)):
         for j in range(0, len(x[0])):
             if x[i, j] != 0:
-                x[i, j] = 1
+                y[i, j] = 1
             else:
-                x[i, j] = 0
+                y[i, j] = 0
     length = len(x[0])
     n = len(x)
     top = 0
     val = []
     for i in range(0, length):
-        val.append(sum(x[:, i]))
+        val.append(sum(y[:, i]))
     ans = np.sort(val)
     for i in range(0, length):
         if ans[i] == 0:
