@@ -29,37 +29,45 @@ import numpy as np
 
 
 class SelectionBase(ABC):
-    """Base class for subset selection."""
+    """Base class for selecting subset of sample points."""
 
-    def select(self, arr, num_selected, labels=None):
-        """
-         Algorithm for selecting points.
+    def select(self, arr: np.ndarray, size: int, labels: np.ndarray = None) -> np.ndarray:
+        """Return indices representing subset of sample points.
 
         Parameters
         ----------
         arr: np.ndarray
             Array of features if fun_distance is provided.
             Otherwise, treated as distance matrix.
-        num_selected: int
-            Number of points that need to be selected
-        labels: np.ndarray
-            Labels for performing algorithm withing clusters.
+        size: int
+            Number of sample points to select (i.e. size of the subset).
+        labels: np.ndarray, optional
+            Array of integers or strings representing the labels of the clusters that
+            each sample belongs to. If `None`, the samples are treated as one cluster.
+            If labels are provided, selection is made from each cluster.
 
         Returns
         -------
         selected: list
-            List of ids of selected molecules
+            Indices of the selected sample points.
         """
+        # check size
+        if size > len(arr):
+            raise ValueError(
+                f"Size of subset {size} cannot be larger than number of samples {len(arr)}."
+            )
+
         if labels is None:
-            return self.select_from_cluster(arr, num_selected)
+            return self.select_from_cluster(arr, size)
 
         # compute the number of samples (i.e. population or pop) in each cluster
         unique_labels = np.unique(labels)
         num_clusters = len(unique_labels)
-        pop_clusters = {unique_label: len(np.where(labels == unique_label)[0])
-                        for unique_label in unique_labels}
+        pop_clusters = {
+            unique_label: len(np.where(labels == unique_label)[0]) for unique_label in unique_labels
+        }
         # compute number of samples to be selected from each cluster
-        n = num_selected // num_clusters
+        n = size // num_clusters
 
         # update number of samples to select from each cluster based on the cluster population.
         # this is needed when some clusters do not have enough samples in them (pop < n) and
@@ -76,12 +84,11 @@ class SelectionBase(ABC):
                         pop_clusters[unique_label] = 0
             # update number of samples to be selected from each cluster
             totally_used_clusters = list(pop_clusters.values()).count(0)
-            n = (num_selected - len(np.hstack(selected_ids))) // \
-                (num_clusters - totally_used_clusters)
+            n = (size - len(np.hstack(selected_ids))) // (num_clusters - totally_used_clusters)
 
             warnings.warn(
                 f"Number of molecules in one cluster is less than"
-                f" {num_selected}/{num_clusters}.\nNumber of selected "
+                f" {size}/{num_clusters}.\nNumber of selected "
                 f"molecules might be less than desired.\nIn order to avoid this "
                 f"problem. Try to use less number of clusters"
             )
@@ -96,23 +103,26 @@ class SelectionBase(ABC):
         return np.hstack(selected_ids).flatten().tolist()
 
     @abstractmethod
-    def select_from_cluster(self, arr, num_selected, cluster_ids=None):
-        """
-        Algorithm for selecting points from cluster.
+    def select_from_cluster(
+        self, arr: np.ndarray, size: int, labels: np.ndarray = None
+    ) -> np.ndarray:
+        """Return indices representing subset of sample points from one cluster.
 
         Parameters
         ----------
         arr: np.ndarray
-            Distance matrix for points that needs to be selected
-        num_selected: int
-            Number of molecules that need to be selected
-        cluster_ids: np.array
-
+            Array of features (columns) for each sample (rows). If fun_distance is `None`,
+            this arr is treated as a pairwise distance array.
+        size: int
+            Number of sample points to select (i.e. size of the subset).
+        labels: np.ndarray, optional
+            Array of integers or strings representing the labels of the clusters that
+            each sample belongs to. If `None`, the samples are treated as one cluster.
+            If labels are provided, selection is made from each cluster.
 
         Returns
         -------
         selected: list
-            List of ids of molecules that are belonged to the one cluster
-
+            Indices of the selected sample points.
         """
         pass
