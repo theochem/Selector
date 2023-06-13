@@ -76,13 +76,13 @@ def compute_distance_matrix(
     return dist
 
 
-def pairwise_similarity_bit(feature: np.array, metric: str) -> np.ndarray:
+def pairwise_similarity_bit(features: np.array, metric: str) -> np.ndarray:
     """Compute the pairwise similarity coefficients and returns them in
         a square symmetric matrix.
 
     Parameters
     ----------
-    feature : ndarray
+    features : ndarray
         Feature matrix.
     metric : str
         Method of calculation.
@@ -99,11 +99,11 @@ def pairwise_similarity_bit(feature: np.array, metric: str) -> np.ndarray:
     }
 
     pair_simi = []
-    size = len(feature)
+    size = len(features)
     for i in range(0, size):
         for j in range(i + 1, size):
             # use the specified metric to compute similarity between all distinct molecule pairs
-            pair_simi.append(function_dict[metric](feature[i], feature[j]))
+            pair_simi.append(function_dict[metric](features[i], features[j]))
     pair_coeff = squareform(pair_simi) + np.identity(size)  # shape into symmetric matrix
     return pair_coeff
 
