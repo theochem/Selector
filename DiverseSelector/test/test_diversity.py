@@ -58,7 +58,7 @@ sample4 = np.array([[1, 0, 1],
 
 
 def test_compute_diversity():
-    """Test compute diversity with a non-explicit_diversity_index div type."""
+    """Test compute diversity with a specified div_type."""
     comp_div = compute_diversity(sample4, "entropy")
     expected = (2/3)
     assert_almost_equal(comp_div, expected)

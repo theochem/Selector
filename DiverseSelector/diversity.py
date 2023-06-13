@@ -51,7 +51,7 @@ def compute_diversity(
         Feature matrix.
     div_type : str, optional
         Method of calculation diversity for a given molecule set, which
-        includes "explicit_diversity_index", "entropy", "logdet", "shannon_entropy", "wdud",
+        includes "entropy", "logdet", "shannon_entropy", "wdud",
         gini_coefficient" and "total_diversity_volume". Default is "total_diversity_volume".
     mols : List[rdkit.Chem.rdchem.Mol], optional
         List of RDKit molecule objects. This is only needed when using the
@@ -104,6 +104,8 @@ def entropy(x: np.ndarray) -> float:
     Using the Gini coefficient to measure the chemical diversity of small-molecule libraries.
     Journal of Computational Chemistry 37, 2091-2097.
     """
+
+    # convert input matrix to bit matrix
     y = np.empty(x.shape)
     for i in range(0, len(x)):
         for j in range(0, len(x[0])):
@@ -111,13 +113,15 @@ def entropy(x: np.ndarray) -> float:
                 y[i, j] = 1
             else:
                 y[i, j] = 0
+    # initialize variables
     length = len(x[0])
     n = len(x)
     top = 0
     val = []
-    for i in range(0, length):
+    for i in range(0, length):  # count bits in fingerprint
         val.append(sum(y[:, i]))
     ans = np.sort(val)
+    # sum entropy calculation for each feature
     for i in range(0, length):
         if ans[i] == 0:
             raise ValueError
@@ -126,9 +130,12 @@ def entropy(x: np.ndarray) -> float:
     e = -1 * (top / (length * 0.34657359027997264))
     return e
 
-
+# todo: double check implementation. Cited paper uses a features x mols matrix, while we use mols x features
 def logdet(x: np.ndarray) -> float:
-    """Computes the log determinant function .
+    r"""Computes the log determinant function.
+
+    .. math:
+        F_{logdet}\left(S\right) = \log{\det{\left(X[S]^TX[S] + I_{|S|} \right)}}
 
     Parameters
     ----------
@@ -153,7 +160,14 @@ def logdet(x: np.ndarray) -> float:
 
 
 def shannon_entropy(x: np.ndarray) -> float:
-    """Computes the shannon entrop of a matrix.
+    r"""Computes the shannon entropy of a matrix. The equation for
+    Shannon entropy is
+
+    .. math::
+        H(X) = \sum_{i=1}^{n}-P_i(X)\log{P_i(X)}
+
+    where X is the feature matrix, n is the number of features, and :math: P_i(X) is the
+    proportion of the ith descriptor in X.
 
     Parameters
     ----------
@@ -176,7 +190,7 @@ def shannon_entropy(x: np.ndarray) -> float:
     h_x = 0
     for i in range(0, size):
         inter = np.count_nonzero(x[:, i]) / size
-        if inter < (0.36787944117):
+        if inter < (0.36787944117):  # e^{-1}
             h_x += (-1 * inter) * np.log10(inter)
         else:
             h_x += (-1 * inter) * np.log10(inter)
@@ -199,13 +213,13 @@ def wdud(x: np.ndarray) -> float:
 
     Notes
     -----
-    Unclear if this method is implmented correctly.
+    Unclear if this method is implemented correctly.
     Nakamura, T., Sakaue, S., Fujii, K., Harabuchi, Y., Maeda, S., and Iwata, S.. (2022)
     Selecting molecules with diverse structures and properties by maximizing
     submodular functions of descriptors learned with graph neural networks.
     Scientific Reports 12.
     """
-    # min_max normilization:
+    # min_max normalization:
     d = len(x[0])
     n = len(x[:, 0])
     max_x = np.max(x)
@@ -226,7 +240,10 @@ def wdud(x: np.ndarray) -> float:
 
 
 def total_diversity_volume(x: np.ndarray) -> float:
-    """Computes the total diversity volume of the matrix.
+    r"""Computes the total diversity volume of the matrix.
+
+    .. math::
+
 
     Parameters
     ----------
@@ -245,19 +262,20 @@ def total_diversity_volume(x: np.ndarray) -> float:
     """
     d = len(x[0])
     k = len(x[:, 0])
-    # min_max normilization:
+    # min_max normalization:
     max_x = max(map(max, x))
     min_x = min(map(min, x))
     y = np.zeros((k, d))
     for i in range(0, k):
-        for j in range(0, d):
+        for j in range(0, d):  # scale data according to min-max distribution
             y[i, j] = (x[i, j] - min_x) / (max_x - min_x)
-    # divesity
-    r_o = d * np.sqrt(1 / k)
+    # calculate diversity volume
+    r_o = d * np.sqrt(1 / k)  # hypersphere radius
     g_s = 0
     for i in range(0, (k - 1)):
         for j in range((i + 1), k):
             dist = euclidean(y[i], y[j])
+            # Overlap penalty
             if dist <= (2 * r_o) and dist != 0:
                 o_ij = min(100, 2 * r_o / dist - 1)
                 g_s += o_ij
