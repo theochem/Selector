@@ -190,12 +190,11 @@ def shannon_entropy(x: np.ndarray) -> float:
     size = len(x[:, 0])
     h_x = 0
     for i in range(0, size):
-        inter = np.count_nonzero(x[:, i]) / size
-        if inter < (0.36787944117):  # e^{-1}
-            h_x += (-1 * inter) * np.log10(inter)
-        else:
-            h_x += (-1 * inter) * np.log10(inter)
-            # raise error
+        # calculate feature proportion
+        p_i = np.count_nonzero(x[:, i]) / size
+        # sum all non-zero terms
+        if p_i != 0 and p_i != 1:
+            h_x += (-1 * p_i) * np.log10(p_i)
     return h_x
 
 
