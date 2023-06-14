@@ -97,17 +97,20 @@ def test_logdet():
     expected = np.log10(131)
     assert_almost_equal(sel, expected)
 
+
 def test_logdet_non_square_matrix():
     """Test the log determinant function with a rectangular matrix."""
     sel = logdet(sample4)
     expected = np.log10(8)
     assert_almost_equal(sel, expected)
 
+
 def test_shannon_entropy():
     """Test the shannon entropy function with predefined matrix."""
     selected = shannon_entropy(sample4)
-    expected = 0.301029995
+    expected = 0.301029995  # -log10(1/2)
     assert_almost_equal(selected, expected)
+
 
 # todo: implement Wasserstein test
 def test_wdud():
