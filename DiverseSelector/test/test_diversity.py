@@ -31,7 +31,7 @@ from DiverseSelector.diversity import (
                                        logdet,
                                        shannon_entropy,
                                        total_diversity_volume,
-                                       # wdud,
+                                       wdud,
                                        )
 from DiverseSelector.utils import distance_to_similarity
 import numpy as np

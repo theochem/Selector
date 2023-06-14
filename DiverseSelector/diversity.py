@@ -199,7 +199,14 @@ def shannon_entropy(x: np.ndarray) -> float:
 
 
 def wdud(x: np.ndarray) -> float:
-    """Computes the Wasserstein Distance to Uniform Distribution(WDUD).
+    r"""Computes the Wasserstein Distance to Uniform Distribution(WDUD).
+    The equation for the Wasserstein Distance is
+    .. math::
+        WDUD(x) = \int_{v_{min}}^{v_{max}} |U(x) - V(x)|dx
+
+    where :math:v_{min} and :math:v_{max} are the minimum and maximum
+    feature values in :math:x, and :math:U(x) is the uniform distribution between them.
+    :math:V(x) is the discrete distribution of feature values in :math:x.
 
     Parameters
     ----------
@@ -224,9 +231,10 @@ def wdud(x: np.ndarray) -> float:
     n = len(x[:, 0])
     max_x = np.max(x)
     min_x = np.min(x)
-    y = np.zeros((n, d))
+    y = np.zeros(x.shape)
     for i in range(0, len(x[:, 0])):
         for j in range(0, len(x[0])):
+            # value of uniform distribution at all data points
             y[i, j] = (x[i, j] - min_x) / (max_x - min_x)
     # wdud
     ans = []
