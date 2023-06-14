@@ -132,7 +132,9 @@ def entropy(x: np.ndarray) -> float:
 
 
 def logdet(x: np.ndarray) -> float:
-    r"""Computes the log determinant function of an :math:S\times :math:n feature matrix with
+    r"""Computes the log determinant function.
+
+     Input is an :math:S\times :math:n feature matrix with
     :math:S molecules and :math:n features.
 
     .. math:
@@ -140,8 +142,8 @@ def logdet(x: np.ndarray) -> float:
 
     Parameters
     ----------
-    x : ndarray(M, N)
-        Subset feature matrix, where M is the number of molecules and N is the number of features.
+    x : ndarray(S, n)
+        Subset feature matrix.
 
     Returns
     -------
@@ -161,8 +163,9 @@ def logdet(x: np.ndarray) -> float:
 
 
 def shannon_entropy(x: np.ndarray) -> float:
-    r"""Computes the shannon entropy of a matrix. The equation for
-    Shannon entropy is
+    r"""Computes the shannon entropy of a matrix.
+
+    The equation for Shannon entropy is
 
     .. math::
         H(X) = \sum_{i=1}^{n}-P_i(X)\log{P_i(X)}
