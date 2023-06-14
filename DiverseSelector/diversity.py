@@ -193,8 +193,9 @@ def shannon_entropy(x: np.ndarray) -> float:
         # calculate feature proportion
         p_i = np.count_nonzero(x[:, i]) / size
         # sum all non-zero terms
-        if p_i != 0 and p_i != 1:
-            h_x += (-1 * p_i) * np.log10(p_i)
+        if p_i == 0:
+            raise ValueError(f"Feature {i} has value 0 for all molecules. Remove extraneous feature from data set.")
+        h_x += (-1 * p_i) * np.log10(p_i)
     return h_x
 
 
