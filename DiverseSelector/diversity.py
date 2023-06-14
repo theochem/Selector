@@ -132,10 +132,11 @@ def entropy(x: np.ndarray) -> float:
 
 
 def logdet(x: np.ndarray) -> float:
-    r"""Computes the log determinant function.
+    r"""Computes the log determinant function of an :math:S\times :math:n feature matrix with
+    :math:S molecules and :math:n features.
 
     .. math:
-        F_{logdet}\left(S\right) = \log{\det{\left(X[S]^TX[S] + I_{|S|} \right)}}
+        F_{logdet}\left(S\right) = \log{\det{\left(X[S]X[S]^T + I_{|S|} \right)}}
 
     Parameters
     ----------
@@ -154,8 +155,8 @@ def logdet(x: np.ndarray) -> float:
     submodular functions of descriptors learned with graph neural networks.
     Scientific Reports 12.
     """
-    mid = np.dot(np.transpose(x), x)
-    f_logdet = np.log10(np.linalg.det(mid + np.identity(len(x[0]))))
+    mid = np.dot(x, np.transpose(x))
+    f_logdet = np.log10(np.linalg.det(mid + np.identity(len(x))))
     return f_logdet
 
 
