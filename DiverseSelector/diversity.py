@@ -140,8 +140,8 @@ def logdet(x: np.ndarray) -> float:
 
     Parameters
     ----------
-    x : ndarray
-        Subset feature matrix.
+    x : ndarray(M, N)
+        Subset feature matrix, where M is the number of molecules and N is the number of features.
 
     Returns
     -------
@@ -167,7 +167,7 @@ def shannon_entropy(x: np.ndarray) -> float:
     .. math::
         H(X) = \sum_{i=1}^{n}-P_i(X)\log{P_i(X)}
 
-    where X is the feature matrix, n is the number of features, and :math: P_i(X) is the
+    where X is the feature matrix, n is the number of features, and :math:`P_i(X)` is the
     proportion of the ith descriptor in X.
 
     Parameters
