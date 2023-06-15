@@ -207,49 +207,65 @@ def shannon_entropy(x: np.ndarray) -> float:
 def wdud(x: np.ndarray) -> float:
     r"""Computes the Wasserstein Distance to Uniform Distribution(WDUD).
 
-    The equation for the Wasserstein Distance is
+    The equation for the Wasserstein Distance for a single feature to uniform distribution is
     .. math::
-        WDUD(x) = \int_{v_{min}}^{v_{max}} |U(x) - V(x)|dx
+        WDUD(x) = \int_{0}^{1} |U(x) - V(x)|dx
 
-    where :math:v_{min} and :math:v_{max} are the minimum and maximum
-    feature values in :math:x, and :math:U(x) is the uniform distribution between them.
-    :math:V(x) is the discrete distribution of feature values in :math:x.
+    where the feature is normalized to [0, 1], :math:`U(x)=x` is the cumulative distribution
+    of the uniform distribution on [0, 1], and :math:`V(x) = \sum_{y <= x}1 / N` is the discrete
+    distribution of the values of the feature in :math:`x`, where :math:`y` is the ith feature. This
+    integral is calculated iteratively between :math:y_i and :math:y_{i+1}, using trapezoidal method.
 
     Parameters
     ----------
-    x : ndarray
-        Feature matrix.
+    x : ndarray(N, K)
+        Feature array of N molecules and K features.
 
     Returns
     -------
-    h_x: float
-        The WDUD of the matrix.
+    float:
+        The mean of the WDUD of each feature over all molecules.
 
     Notes
     -----
-    Unclear if this method is implemented correctly.
     Nakamura, T., Sakaue, S., Fujii, K., Harabuchi, Y., Maeda, S., and Iwata, S.. (2022)
     Selecting molecules with diverse structures and properties by maximizing
     submodular functions of descriptors learned with graph neural networks.
     Scientific Reports 12.
+
     """
+    if x.ndim != 2:
+        raise ValueError(f"The number of dimensions {x.ndim} should be two.")
     # min_max normalization:
-    d = len(x[0])
-    n = len(x[:, 0])
-    max_x = np.max(x)
-    min_x = np.min(x)
-    y = np.zeros(x.shape)
-    for i in range(0, len(x[:, 0])):
-        for j in range(0, len(x[0])):
-            # value of uniform distribution at all data points
-            y[i, j] = (x[i, j] - min_x) / (max_x - min_x)
-    # wdud
-    ans = []
-    for i in range(0, d):
-        h = -np.sort(-y[:, i])
-        wdu = (-1 / d) - h[0]
-        for j in range(1, len(h)):
-            wdu -= np.absolute(((j - 1) / d) - h[j])
+    num_features = len(x[0])
+    num_mols = len(x[:, 0])
+    # Find the maximum and minimum over each feature across all molecules.
+    max_x = np.max(x, axis=0)
+    min_x = np.min(x, axis=0)
+    # Normalization of each feature to [0, 1]
+    if np.any(np.abs(max_x - min_x) < 1e-30):
+        raise ValueError(f"One of the features is redundant and causes normalization to fail.")
+    x_norm = (x - min_x) / (max_x - min_x)
+    ans = []  # store the Wasserstein distance for each feature
+    for i in range(0, num_features):
+        wdu = 0.0
+        y = np.sort(x_norm[:, i])
+        # Round to the sixth decimal place and count number of unique elements
+        #    to construct an accurate cumulative discrete distribution func \sum_{x <= y_{i + 1}} 1/k
+        y, counts = np.unique(np.round(x_norm[:,i], decimals=6), return_counts=True)
+        p = 0
+        # Ignore 0 and because v_min= 0
+        for j in range(1, len(counts)):
+            # integral from y_{i - 1} to y_{i} of |x - \sum_{x <= y_{i}} 1/k| dx
+            yi1 = y[j - 1]
+            yi = y[j]
+            # Make a grid from yi1 to yi
+            grid = np.linspace(yi1, yi, num=1000, endpoint=True)
+            # Evaluate the integrand  |x - \sum_{x <= y_{i + 1}} 1/k|
+            p += counts[j-1]
+            integrand = np.abs(grid - p / num_mols)
+            # Integrate using np.trapz
+            wdu += np.trapz(y=integrand, x=grid)
         ans.append(wdu)
     return np.average(ans)
 
