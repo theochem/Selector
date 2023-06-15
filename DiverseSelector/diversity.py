@@ -78,8 +78,9 @@ def compute_diversity(
 
 
 def entropy(x: np.ndarray) -> float:
-    r"""Compute entropy of matrix. The equation for entropy is
+    r"""Compute entropy of matrix.
 
+    The equation for entropy is
     .. math::
         E = $-\frac{\sum{\frac{y_i}{N}\ln{\frac{y_i}{N}}}}{L\frac{\ln{2}}{2}}$
 
@@ -134,7 +135,7 @@ def entropy(x: np.ndarray) -> float:
 def logdet(x: np.ndarray) -> float:
     r"""Computes the log determinant function.
 
-     Input is an :math:S\times :math:n feature matrix with
+    Input is an :math:S\times :math:n feature matrix with
     :math:S molecules and :math:n features.
 
     .. math:
@@ -171,7 +172,7 @@ def shannon_entropy(x: np.ndarray) -> float:
         H(X) = \sum_{i=1}^{n}-P_i(X)\log{P_i(X)}
 
     where X is the feature matrix, n is the number of features, and :math:`P_i(X)` is the
-    proportion of the ith descriptor in X.
+    proportion of molecules that have feature :math:i in :math:X.
 
     Parameters
     ----------
@@ -190,11 +191,12 @@ def shannon_entropy(x: np.ndarray) -> float:
     in a more robust QM dataset (OD9) and a more efficient molecular optimization.
     Journal of Cheminformatics 13.
     """
-    size = len(x[:, 0])
+    num_feat = len(x[0, :])
+    num_mols = len(x[:, 0])
     h_x = 0
-    for i in range(0, size):
+    for i in range(0, num_feat):
         # calculate feature proportion
-        p_i = np.count_nonzero(x[:, i]) / size
+        p_i = np.count_nonzero(x[:, i]) / num_mols
         # sum all non-zero terms
         if p_i == 0:
             raise ValueError(f"Feature {i} has value 0 for all molecules. Remove extraneous feature from data set.")
@@ -204,6 +206,7 @@ def shannon_entropy(x: np.ndarray) -> float:
 
 def wdud(x: np.ndarray) -> float:
     r"""Computes the Wasserstein Distance to Uniform Distribution(WDUD).
+
     The equation for the Wasserstein Distance is
     .. math::
         WDUD(x) = \int_{v_{min}}^{v_{max}} |U(x) - V(x)|dx

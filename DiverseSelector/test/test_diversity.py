@@ -56,6 +56,10 @@ sample3 = np.array([[1, 4],
 sample4 = np.array([[1, 0, 1],
                     [0, 1, 1]])
 
+sample5 = np.array([[0, 2, 4, 0],
+                    [1, 2, 4, 0],
+                    [2, 2, 4, 0]])
+
 
 def test_compute_diversity():
     """Test compute diversity with a specified div_type."""
@@ -85,10 +89,7 @@ def test_entropy_conversion():
 
 def test_entropy_value_error():
     """Test the entropy function with a matrix that causes a value error"""
-    x = np.array([[0, 2, 4, 0],
-                 [1, 2, 4, 0],
-                 [2, 2, 4, 0]])
-    assert_raises(ValueError, entropy, x)
+    assert_raises(ValueError, entropy, sample5)
 
 
 def test_logdet():
@@ -110,6 +111,11 @@ def test_shannon_entropy():
     selected = shannon_entropy(sample4)
     expected = 0.301029995  # -log10(1/2)
     assert_almost_equal(selected, expected)
+
+
+def test_shannon_entropy_error():
+    """Test the shannon entropy function raises error with matrix with invalid feature."""
+    assert_raises(ValueError, shannon_entropy, sample5)
 
 
 # todo: implement Wasserstein test
