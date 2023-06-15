@@ -118,14 +118,31 @@ def test_shannon_entropy_error():
     assert_raises(ValueError, shannon_entropy, sample5)
 
 
-# todo: implement Wasserstein test
-def test_wdud():
-    """Test the Wasserstein Distance to Uniform Distribution (WDUD) with predefined matrix ."""
-    # incomplete
-    # selected = wdud(sample3)
-    # expected = (2 / 3)
-    # assert_equal(expected, selected)
-    pass
+def test_wdud_uniform():
+    """Test wdud when a feature has uniform distribution."""
+    uni = np.arange(0, 50000)[:, None]
+    wdud_val = wdud(uni)
+    expected = 0
+    assert_almost_equal(wdud_val, expected, decimal=4)
+
+
+def test_wdud_repeat_yi():
+    """Test wdud when a feature has multiple identical values."""
+    dist = np.array([[0,0.5,0.5,0.75,1]]).T
+    wdud_val = wdud(dist)
+    expected = 0.065 + 0.01625 + 0.02125  # calculated using wolfram alpha
+    assert_almost_equal(wdud_val, expected, decimal=4)
+
+
+def test_wdud_mult_features():
+    """Test wdud when there are multiple features per molecule."""
+    dist = np.array([[0, 0.5, 0.5, 0.75, 1],
+                     [0, 0.5, 0.5, 0.75, 1],
+                     [0, 0.5, 0.5, 0.75, 1],
+                     [0, 0.5, 0.5, 0.75, 1]]).T
+    wdud_val = wdud(dist)
+    expected = 0.065 + 0.01625 + 0.02125  # calculated using wolfram alpha
+    assert_almost_equal(wdud_val, expected, decimal=4)
 
 
 def test_total_diversity_volume():
