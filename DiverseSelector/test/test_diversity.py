@@ -109,7 +109,8 @@ def test_logdet_non_square_matrix():
 def test_shannon_entropy():
     """Test the shannon entropy function with predefined matrix."""
     selected = shannon_entropy(sample4)
-    expected = 0.301029995  # -log10(1/2)
+    # expected = -log10(1/2)
+    expected = 0.301029995
     assert_almost_equal(selected, expected)
 
 
@@ -130,7 +131,8 @@ def test_wdud_repeat_yi():
     """Test wdud when a feature has multiple identical values."""
     dist = np.array([[0,0.5,0.5,0.75,1]]).T
     wdud_val = wdud(dist)
-    expected = 0.065 + 0.01625 + 0.02125  # calculated using wolfram alpha
+    # calculated using wolfram alpha:
+    expected = 0.065 + 0.01625 + 0.02125
     assert_almost_equal(wdud_val, expected, decimal=4)
 
 
@@ -141,7 +143,8 @@ def test_wdud_mult_features():
                      [0, 0.5, 0.5, 0.75, 1],
                      [0, 0.5, 0.5, 0.75, 1]]).T
     wdud_val = wdud(dist)
-    expected = 0.065 + 0.01625 + 0.02125  # calculated using wolfram alpha
+    # calculated using wolfram alpha:
+    expected = 0.065 + 0.01625 + 0.02125
     assert_almost_equal(wdud_val, expected, decimal=4)
 
 
@@ -168,7 +171,6 @@ def test_gini_coefficient_of_non_diverse_set():
 
 def test_gini_coefficient_errors():
     r"""Test input error cases for Gini coefficient"""
-    # Test raises as well.
     assert_raises(ValueError, gini_coefficient, np.array([[1, 2], [0, 1]]))
     assert_raises(ValueError, gini_coefficient, np.array([1, 0, 0, 0]))
 
@@ -176,7 +178,7 @@ def test_gini_coefficient_errors():
 def test_gini_coefficient_of_most_diverse_set():
     r"""Test Gini coefficient of the most diverse set."""
     #  Finger-prints where one feature has more `wealth` than all others.
-    #  Note transpose is done so one column has all ones.
+    #  Note: Transpose is done so one column has all ones.
     finger_prints = np.array([
                                  [1, 1, 1, 1, 1, 1, 1],
 

@@ -119,7 +119,8 @@ def entropy(x: np.ndarray) -> float:
     n = len(x)
     top = 0
     val = []
-    for i in range(0, length):  # count bits in fingerprint
+    # count bits in fingerprint
+    for i in range(0, length):
         val.append(sum(y[:, i]))
     ans = np.sort(val)
     # sum entropy calculation for each feature
@@ -298,11 +299,13 @@ def total_diversity_volume(x: np.ndarray) -> float:
     min_x = min(map(min, x))
     y = np.zeros((k, d))
     for i in range(0, k):
-        for j in range(0, d):  # scale data according to min-max distribution
+        # scale data according to min-max distribution
+        for j in range(0, d):
             y[i, j] = (x[i, j] - min_x) / (max_x - min_x)
-    # calculate diversity volume
-    r_o = d * np.sqrt(1 / k)  # hypersphere radius
+    # r_o = hypersphere radius
+    r_o = d * np.sqrt(1 / k)
     g_s = 0
+    # calculate overlap volume
     for i in range(0, (k - 1)):
         for j in range((i + 1), k):
             dist = euclidean(y[i], y[j])
