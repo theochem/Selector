@@ -27,6 +27,7 @@ from typing import List
 
 import numpy as np
 from scipy.spatial.distance import euclidean
+import warnings
 
 __all__ = [
     "compute_diversity",
@@ -34,7 +35,7 @@ __all__ = [
     "logdet",
     "shannon_entropy",
     "wdud",
-    "total_diversity_volume",
+    "hypersphere_overlap_of_subset",
     "gini_coefficient",
 ]
 
@@ -271,16 +272,27 @@ def wdud(x: np.ndarray) -> float:
     return np.average(ans)
 
 
-def total_diversity_volume(x: np.ndarray) -> float:
-    r"""Computes the total diversity volume of the matrix.
+def hypersphere_overlap_of_subset(lib: np.ndarray, x: np.array) -> float:
+    r"""Computes the overlap of subset with hyper-spheres around each point
+
+    The edge penalty is also included, which disregards areas
+    outside of the boundary of the full feature space/library.
+    This is calculated as:
 
     .. math::
+        g(S) = \sum_{i < j}^k O(i, j) + \sum^k_m E(m),
 
+    where :math:`i, j` is over the subset of molecules,
+    :math:`O(i, j)` is the approximate overlap between hyper-spheres,
+    :math:`k` is the number of features and :math:`E`
+    is the edge penalty of a molecule.
 
     Parameters
     ----------
+    lib : ndarray
+        Feature matrix of all molecules.
     x : ndarray
-        Feature matrix.
+        Feature matrix of selected subset of molecules.
 
     Returns
     -------
@@ -294,28 +306,47 @@ def total_diversity_volume(x: np.ndarray) -> float:
     """
     d = len(x[0])
     k = len(x[:, 0])
-    # min_max normalization:
-    max_x = max(map(max, x))
-    min_x = min(map(min, x))
-    y = np.zeros((k, d))
-    for i in range(0, k):
-        # scale data according to min-max distribution
-        for j in range(0, d):
-            y[i, j] = (x[i, j] - min_x) / (max_x - min_x)
+    # Find the maximum and minimum over each feature across all molecules.
+    max_x = np.max(lib, axis=0)
+    min_x = np.min(lib, axis=0)
+    # Normalization of each feature to [0, 1]
+    if np.any(np.abs(max_x - min_x) < 1e-30):
+        raise ValueError(f"One of the features is redundant and causes normalization to fail.")
+    x_norm = (x - min_x) / (max_x - min_x)
     # r_o = hypersphere radius
     r_o = d * np.sqrt(1 / k)
+    if r_o > 0.5:
+        warnings.warn(f"The number of molecules should be much larger"
+                      " than the number of features.")
     g_s = 0
+    edge = 0
+    lam = (d - 1.0) / d   # Lambda parameter controls edge penalty
     # calculate overlap volume
     for i in range(0, (k - 1)):
         for j in range((i + 1), k):
-            dist = euclidean(y[i], y[j])
+            dist = np.linalg.norm(x_norm[i] - x_norm[j])
             # Overlap penalty
-            if dist <= (2 * r_o) and dist != 0:
-                o_ij = min(100, 2 * r_o / dist - 1)
-                g_s += o_ij
-            else:
-                o_ij = 0
-                g_s += o_ij
+            if dist <= (2 * r_o):
+                with np.errstate(divide='ignore'):
+                    # min(100) ignores the inf case with divide by zero
+                    g_s += min(100, 2 * (r_o / dist) - 1)
+        # Edge penalty: lambda (1 - \sum^d_j e_{ij} / (dr_0)
+        edge_pen = 0.0
+        for j_dim in range(0, d):
+            # calculate dist to closest boundary in jth coordinate,
+            # with max value = 1, min value = 0
+            dist_max = np.abs(1 - x_norm[i, j_dim])
+            dist_min = x_norm[i, j_dim]
+            dist = min(dist_min, dist_max)
+            # truncate distance at r_o
+            if dist > r_o:
+                dist = r_o
+            edge_pen += dist
+        edge_pen /= (d * r_o)
+        # print("Should be positive value only", (1.0 - edge_pen))
+        edge_pen = lam * (1.0 - edge_pen)
+        edge += edge_pen
+    g_s += edge
     return g_s
 
 

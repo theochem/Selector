@@ -30,7 +30,7 @@ from DiverseSelector.diversity import (
                                        gini_coefficient,
                                        logdet,
                                        shannon_entropy,
-                                       total_diversity_volume,
+                                       hypersphere_overlap_of_subset,
                                        wdud,
                                        )
 from DiverseSelector.utils import distance_to_similarity
@@ -148,11 +148,27 @@ def test_wdud_mult_features():
     assert_almost_equal(wdud_val, expected, decimal=4)
 
 
-def test_total_diversity_volume():
+def test_hypersphere_overlap_of_subset_with_only_corners_and_center():
     """Test the total diversity volume method with predefined matrix."""
-    selected = total_diversity_volume(sample3)
-    expected = 2
-    assert_almost_equal(selected, expected)
+    corner_pts = np.array([
+        [0.0, 0.0],
+        [0.0, 1.0],
+        [1.0, 0.0],
+        [1.0, 1.0]
+    ])
+    # Many duplicate pts cause r_0 to be much smaller than 1.0,
+    #   which is required due to normalization of the feature space
+    centers_pts = np.array([[0.5, 0.5]] * (100 - 4))
+    pts = np.vstack((corner_pts, centers_pts))
+
+    # Overlap should be all coming from the centers
+    expected_overlap = 100.0 * 96 * 95 * 0.5
+    # The edge penalty should all be from the corner pts
+    lam = 1.0 / 2.0  # Default lambda chosen from paper.
+    expected_edge = lam * 4.0
+    expected = expected_overlap + expected_edge
+    true = hypersphere_overlap_of_subset(pts, pts)
+    assert_almost_equal(true, expected)
 
 
 def test_gini_coefficient_of_non_diverse_set():
