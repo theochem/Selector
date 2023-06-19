@@ -21,17 +21,8 @@
 #
 # --
 
-"""Testing for the distance, similarity, and diversity algorithms."""
+"""Testing for the diversity algorithms in the diversity.py module."""
 
-# todo: fix this later
-# noqa: F401
-from DiverseSelector.distance import (bit_tanimoto,
-                                      compute_distance_matrix,
-                                      euc_bit,
-                                      modified_tanimoto,
-                                      pairwise_similarity_bit,
-                                      tanimoto,
-                                      )
 from DiverseSelector.diversity import (
                                        # compute_diversity_matrix,
                                        entropy,
@@ -65,55 +56,6 @@ sample4 = np.array([[1, 0, 1],
                     [0, 1, 1]])
 
 
-def test_compute_distance_matrix_euc_bit():
-    """Testing the euclidean distance function with predefined feature matrix."""
-    sci_dist = compute_distance_matrix(sample2, "euclidean")
-    expected = pairwise_similarity_bit(sample2, euc_bit) - np.identity(len(sample2))
-    assert_equal(expected, sci_dist)
-
-
-def test_compute_distance_matrix_euc():
-    """Testing the euclidean distance function with predefined bit-string matrix."""
-    sci_dist = compute_distance_matrix(sample3, "euclidean")
-    expected = np.array([[0, 2.8284271],
-                         [2.8284271, 0]])
-    assert_almost_equal(expected, sci_dist)
-
-
-def test_tanimoto_bit():
-    """Testing the tanimoto function with predefined bit-string matrix."""
-    tani = pairwise_similarity_bit(sample2, bit_tanimoto)
-    expceted = np.array([[1, (1 / 3), 0, 0],
-                         [(1 / 3), 1, 0, 0],
-                         [0, 0, 1, 0],
-                         [0, 0, 0, 1]])
-    assert_equal(expceted, tani)
-
-
-def test_tanimoto():
-    """Testing the tanimoto function with predefined feature matrix."""
-    tani = pairwise_similarity_bit(sample3, tanimoto)
-    expceted = np.array([[1, (11 / 19)],
-                         [(11 / 19), 1]])
-    assert_equal(expceted, tani)
-
-
-def test_dist_to_simi():
-    """Testing the distance to similarity function with predefined distance matrix."""
-    dist = distance_to_similarity(sample3, dist=True)
-    expceted = np.array([[(1 / 2), (1 / 5)],
-                         [(1 / 4), (1 / 3)]])
-    assert_equal(dist, expceted)
-
-
-def test_modifed_tanimoto():
-    """Testing the modified tanimoto function with predefined feature matrix."""
-    mod_tani = pairwise_similarity_bit(sample4, modified_tanimoto)
-    expceted = np.array([[1, (4 / 27)],
-                         [(4 / 27), 1]])
-    assert_equal(mod_tani, expceted)
-
-
 def test_entropy():
     """Testing the entropy function with predefined matrix."""
     ent = entropy(sample4)
@@ -134,7 +76,7 @@ def test_shannon_entropy():
     expected = 0.301029995
     assert_almost_equal(selected, expected)
 
-
+# todo: implement Wasserstein test
 def test_wdud():
     """Testing the Wasserstein Distance to Uniform Distribution (WDUD) with predefined matrix ."""
     # incomplete
