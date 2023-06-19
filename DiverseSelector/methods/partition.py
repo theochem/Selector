@@ -48,11 +48,15 @@ class DirectedSphereExclusion(SelectionBase):
     Starting point is chosen as the reference point and not included in the selected molecules. The
     distance of each point is calculated to the reference point and the points are then sorted based
     on the ascending order of distances. The points are then evaluated in their sorted order, and
-    are selected if their distance to all the other selected points is at least r away. Euclidian
+    are selected if their distance to all the other selected points is at least r away. Euclidean
     distance is used by default and the r value is automatically generated if not passed to satisfy
     the number of molecules requested.
 
-    Adapted from https://doi.org/10.1021/ci025554v
+    Notes
+    -----
+    Gobbi, A., and Lee, M.-L. (2002). DISE: directed sphere exclusion.
+    Journal of Chemical Information and Computer Sciences,
+    43(1), 317–323. https://doi.org/10.1021/ci025554v
     """
 
     def __init__(self, r=None, tolerance=5.0, eps=0, p=2, start_id=0, random_seed=42):
@@ -106,25 +110,27 @@ class DirectedSphereExclusion(SelectionBase):
         count = 0
         candidates = np.delete(np.arange(0, len(arr)), self.starting_idx)
         distances = []
-        for idx in candidates:
+        for idx in candidates:  # calculate distance from reference point to all data points
             ref_point = arr[self.starting_idx]
             data_point = arr[idx]
             distance = spatial.distance.minkowski(ref_point, data_point, p=self.p)
             distances.append((distance, idx))
+        # order points by distance from reference
         distances.sort()
         order = [idx for dist, idx in distances]
-
+        # initialize search variables
         kdtree = spatial.KDTree(arr)
         bv = bitarray.bitarray(len(arr))
         bv[:] = 0
         bv[self.starting_idx] = 1
-
+        # select points
         for idx in order:
             if not bv[idx]:
                 selected.append(idx)
                 count += 1
-                if count > uplimit:
+                if count > uplimit:  # finished selecting # of points required, return
                     return selected
+                # eliminate points within radius from consideration
                 elim = kdtree.query_ball_point(arr[idx], self.r, eps=self.eps, p=self.p, workers=-1)
                 for index in elim:
                     bv[index] = 1
