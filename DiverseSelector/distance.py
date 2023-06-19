@@ -68,7 +68,8 @@ def compute_distance_matrix(
             for j in range(i + 1, size):
                 # use the metric to compute distance between all molecule pairs
                 distances.append(1 - built_in_metrics[metric](features[i], features[j]))
-        dist = squareform(distances)  # shape into symmetric matrix
+        # shape into symmetric matrix
+        dist = squareform(distances)
 
     else:  # raise error if unsupported
         raise ValueError(f"Metric {metric} is not supported by the library.")
@@ -104,7 +105,8 @@ def pairwise_similarity_bit(features: np.array, metric: str) -> np.ndarray:
         for j in range(i + 1, size):
             # use the specified metric to compute similarity between all distinct molecule pairs
             pair_simi.append(function_dict[metric](features[i], features[j]))
-    pair_coeff = squareform(pair_simi) + np.identity(size)  # shape into symmetric matrix
+    # shape into symmetric matrix
+    pair_coeff = squareform(pair_simi) + np.identity(size)
     return pair_coeff
 
 
@@ -219,10 +221,12 @@ def nearest_average_tanimoto(x: np.ndarray) -> float:
     """
     tani = []
     for idx, _ in enumerate(x):
-        short = 100  # arbitrary distance
+        # arbitrary distance for comparison:
+        short = 100
         a = 0
         b = 0
-        for jdx, _ in enumerate(x):  # search for shortest distance point from idx
+        # search for shortest distance point from idx
+        for jdx, _ in enumerate(x):
             dist = np.linalg.norm(x[idx]-x[jdx])
             if dist < short and idx != jdx:
                 short = dist
