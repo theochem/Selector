@@ -25,7 +25,6 @@
 
 from DiverseSelector.diversity import (
                                        compute_diversity,
-                                       # compute_diversity_matrix,
                                        entropy,
                                        gini_coefficient,
                                        logdet,
@@ -35,7 +34,7 @@ from DiverseSelector.diversity import (
                                        )
 from DiverseSelector.utils import distance_to_similarity
 import numpy as np
-from numpy.testing import assert_almost_equal, assert_equal, assert_raises
+from numpy.testing import assert_almost_equal, assert_equal, assert_raises, assert_warns
 
 # each row is a feature and each column is a molecule
 sample1 = np.array([[4, 2, 6],
@@ -170,6 +169,17 @@ def test_wdud_mult_features():
     assert_almost_equal(wdud_val, expected, decimal=4)
 
 
+def test_wdud_dimension_error():
+    """Test wdud method raises error when input has incorrect dimensions."""
+    arr = np.zeros((2, 2, 2))
+    assert_raises(ValueError, wdud, arr)
+
+
+def test_wdud_normalization_error():
+    """Test wdud method raises error when normalization fails."""
+    assert_raises(ValueError, wdud, sample5)
+
+
 def test_hypersphere_overlap_of_subset_with_only_corners_and_center():
     """Test the hypersphere overlap method with predefined matrix."""
     corner_pts = np.array([
@@ -193,8 +203,24 @@ def test_hypersphere_overlap_of_subset_with_only_corners_and_center():
     assert_almost_equal(true, expected)
 
 
+def test_hypersphere_normalization_error():
+    """Test the hypersphere overlap method raises error when normalization fails."""
+    assert_raises(ValueError, hypersphere_overlap_of_subset, sample5, sample5)
+
+
+def test_hypersphere_radius_warning():
+    """Test the hypersphere overlap method gives warning when radius is too large."""
+    corner_pts = np.array([
+        [0.0, 0.0],
+        [0.0, 1.0],
+        [1.0, 0.0],
+        [1.0, 1.0]
+    ])
+    assert_warns(Warning, hypersphere_overlap_of_subset, corner_pts, corner_pts)
+
+
 def test_gini_coefficient_of_non_diverse_set():
-    r"""Test Gini coefficient of the least diverse set. Expected return is zero."""
+    """Test Gini coefficient of the least diverse set. Expected return is zero."""
     # Finger-prints where columns are all the same
     numb_molecules = 5
     numb_features = 10
@@ -207,14 +233,18 @@ def test_gini_coefficient_of_non_diverse_set():
     assert_almost_equal(result, 0.0, decimal=8)
 
 
-def test_gini_coefficient_errors():
-    r"""Test input error cases for Gini coefficient"""
-    assert_raises(ValueError, gini_coefficient, np.array([[1, 2], [0, 1]]))
+def test_gini_coefficient_non_binary_error():
+    """Test Gini coefficient error when input is not binary."""
+    assert_raises(ValueError, gini_coefficient, np.array([[1, 2], [7, 1]]))
+
+
+def test_gini_coefficient_dimension_error():
+    """Test Gini coefficient error when input has incorrect dimensions."""
     assert_raises(ValueError, gini_coefficient, np.array([1, 0, 0, 0]))
 
 
 def test_gini_coefficient_of_most_diverse_set():
-    r"""Test Gini coefficient of the most diverse set."""
+    """Test Gini coefficient of the most diverse set."""
     #  Finger-prints where one feature has more `wealth` than all others.
     #  Note: Transpose is done so one column has all ones.
     finger_prints = np.array([
@@ -227,7 +257,7 @@ def test_gini_coefficient_of_most_diverse_set():
 
 
 def test_gini_coefficient_with_alternative_definition():
-    r"""Test Gini coefficient with alternative definition."""
+    """Test Gini coefficient with alternative definition."""
     # Finger-prints where they are all different
     numb_features = 4
     finger_prints = np.array([
