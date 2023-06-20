@@ -120,6 +120,5 @@ def test_nearest_average_tanimoto_bit():
 def test_nearest_average_tanimoto():
     """Test the nearest_average_tanimoto function with non-binary input"""
     nat = nearest_average_tanimoto(sample3)
-    shortest_tani = [(11/19), (11/19)]
-    average = np.average(shortest_tani)
+    average = 11/19
     assert_equal(nat, average)
