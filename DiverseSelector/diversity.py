@@ -54,9 +54,6 @@ def compute_diversity(
         Method of calculation diversity for a given molecule set, which
         includes "entropy", "logdet", "shannon_entropy", "wdud",
         gini_coefficient" and "total_diversity_volume". Default is "total_diversity_volume".
-    mols : List[rdkit.Chem.rdchem.Mol], optional
-        List of RDKit molecule objects. This is only needed when using the
-        "explicit_diversity_index" method. Default=None.
 
     Returns
     -------
