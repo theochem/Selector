@@ -85,10 +85,12 @@ def entropy(x: np.ndarray) -> float:
 
     The equation for entropy is
     .. math::
-        E = $-\frac{\sum{\frac{y_i}{N}\ln{\frac{y_i}{N}}}}{L\frac{\ln{2}}{2}}$
+        E = -\frac{\sum{\frac{y_i}{N}\ln{\frac{y_i}{N}}}}{L\frac{\ln{2}}{2}}
 
     where N is the number of molecules in the set, L is the length of the fingerprint,
     and :math:y_i is a vector of the bitcounts of each feature in the fingerprints.
+
+    Higher values mean more diversity.
 
     Parameters
     ----------
@@ -98,7 +100,7 @@ def entropy(x: np.ndarray) -> float:
     Returns
     -------
     e : float
-        Entropy of matrix.
+        Entropy of matrix in the range [0,1].
 
     Notes
     -----
@@ -130,11 +132,13 @@ def entropy(x: np.ndarray) -> float:
 def logdet(x: np.ndarray) -> float:
     r"""Computes the log determinant function.
 
-    Input is an :math:S\times :math:n feature matrix with
-    :math:S molecules and :math:n features.
+    Input is an :math:`S\times n` feature matrix with
+    :math:`S` molecules and :math:`n` features.
 
     .. math:
         F_{logdet}\left(S\right) = \log{\det{\left(X[S]X[S]^T + I_{|S|} \right)}}
+
+    Higher values mean more diversity.
 
     Parameters
     ----------
@@ -144,7 +148,7 @@ def logdet(x: np.ndarray) -> float:
     Returns
     -------
     f_logdet: float
-        The volume of parallelotope spand by the matrix.
+        The volume of parallelotope spanned by the matrix.
 
     Notes
     -----
@@ -166,8 +170,10 @@ def shannon_entropy(x: np.ndarray) -> float:
     .. math::
         H(X) = \sum_{i=1}^{n}-P_i(X)\log{P_i(X)}
 
-    where X is the feature matrix, n is the number of features, and :math:`P_i(X)` is the
-    proportion of molecules that have feature :math:i in :math:X.
+    where :math:`X` is the feature matrix, :math:`n` is the number of features, and :math:`P_i(X)` is the
+    proportion of molecules that have feature :math:`i` in :math:`X`.
+
+    Higher values mean more diversity.
 
     Parameters
     ----------
@@ -176,7 +182,7 @@ def shannon_entropy(x: np.ndarray) -> float:
 
     Returns
     -------
-    h_x: float
+    float :
         The shannon entropy of the matrix.
 
     Notes
@@ -211,6 +217,8 @@ def wdud(x: np.ndarray) -> float:
     distribution of the values of the feature in :math:`x`, where :math:`y` is the ith feature. This
     integral is calculated iteratively between :math:y_i and :math:y_{i+1}, using trapezoidal method.
 
+    Lower values mean more diversity.
+
     Parameters
     ----------
     x : ndarray(N, K)
@@ -218,16 +226,18 @@ def wdud(x: np.ndarray) -> float:
 
     Returns
     -------
-    float:
+    float :
         The mean of the WDUD of each feature over all molecules.
 
     Notes
     -----
+    Lower values of the WDUD mean more diversity because the features of the selected set are
+     more evenly distributed over the range of feature values.
+
     Nakamura, T., Sakaue, S., Fujii, K., Harabuchi, Y., Maeda, S., and Iwata, S.. (2022)
     Selecting molecules with diverse structures and properties by maximizing
     submodular functions of descriptors learned with graph neural networks.
     Scientific Reports 12.
-
     """
     if x.ndim != 2:
         raise ValueError(f"The number of dimensions {x.ndim} should be two.")
@@ -280,6 +290,8 @@ def hypersphere_overlap_of_subset(x: np.ndarray, x_subset: np.array) -> float:
     :math:`k` is the number of features and :math:`E`
     is the edge penalty of a molecule.
 
+    Lower values mean more diversity.
+
     Parameters
     ----------
     x : ndarray
@@ -289,12 +301,14 @@ def hypersphere_overlap_of_subset(x: np.ndarray, x_subset: np.array) -> float:
 
     Returns
     -------
-    g_s: float
+    float :
         The approximate overlapping volume of hyperspheres
         drawn around the selected points/molecules.
 
     Notes
     -----
+    The hypersphere overlap volume is calculated using an approximation formula from Agrafiotis (1997).
+
     Agrafiotis, D. K.. (1997) Stochastic Algorithms for Maximizing Molecular Diversity.
     Journal of Chemical Information and Computer Sciences 37, 841-851.
     """
@@ -357,6 +371,8 @@ def gini_coefficient(x: np.ndarray):
     where :math:`y_i \in \{0, 1\}^N` is a vector of zero and ones of length the
     number of molecules :math:`N` of the `i`th feature, and :math:`L` is the feature length.
 
+    Lower values mean more diversity.
+
     Parameters
     ----------
     x : ndarray(N, L)
@@ -365,7 +381,7 @@ def gini_coefficient(x: np.ndarray):
     Returns
     -------
     float :
-        Gini coefficient between zero and one, where closer to zero indicates more diversity.
+        Gini coefficient in the range [0,1].
 
     References
     ----------
