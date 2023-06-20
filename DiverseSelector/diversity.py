@@ -59,6 +59,7 @@ def compute_diversity(
         includes "entropy", "logdet", "shannon_entropy", "wdud",
         gini_coefficient" and "hypersphere_overlap_of_subset".
         Default is "entropy".
+
     Returns
     -------
     float, computed diversity.
