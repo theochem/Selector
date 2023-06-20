@@ -350,7 +350,7 @@ def hypersphere_overlap_of_subset(lib: np.ndarray, x: np.array) -> float:
     return g_s
 
 
-def gini_coefficient(a: np.ndarray):
+def gini_coefficient(x: np.ndarray):
     r"""
     Gini coefficient of bit-wise fingerprints of a database of molecules.
 
@@ -365,7 +365,7 @@ def gini_coefficient(a: np.ndarray):
 
     Parameters
     ----------
-    a : ndarray(N, L)
+    x : ndarray(N, L)
         Molecule features in L bits with N molecules.
 
     Returns
@@ -375,21 +375,21 @@ def gini_coefficient(a: np.ndarray):
 
     References
     ----------
-    .. [1] Weidlich, Iwona E., and Igor V. Filippov. "Using the gini coefficient to measure the
-           chemical diversity of small‐molecule libraries." (2016): 2091-2097.
+    Weidlich, Iwona E., and Igor V. Filippov. "Using the gini coefficient to measure the
+    chemical diversity of small‐molecule libraries." (2016): 2091-2097.
 
     """
-    # Check that `a` is a bit-wise fingerprint.
-    if np.any(np.abs(np.sort(np.unique(a)) - np.array([0, 1])) > 1e-8):
-        raise ValueError("Attribute `a` should have binary values.")
-    if a.ndim != 2:
+    # Check that `x` is a bit-wise fingerprint.
+    if np.any(np.abs(np.sort(np.unique(x)) - np.array([0, 1])) > 1e-8):
+        raise ValueError("Attribute `x` should have binary values.")
+    if x.ndim != 2:
         raise ValueError(
-            f"Attribute `a` should have dimension two rather than {a.ndim}."
+            f"Attribute `x` should have dimension two rather than {x.ndim}."
         )
 
-    numb_features = a.shape[1]
+    numb_features = x.shape[1]
     # Take the bit-count of each column/molecule.
-    bit_count = np.sum(a, axis=0)
+    bit_count = np.sum(x, axis=0)
 
     # Sort the bit-count since Gini coefficients relies on cumulative distribution.
     bit_count = np.sort(bit_count)
