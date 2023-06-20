@@ -42,8 +42,8 @@ __all__ = [
 
 def compute_diversity(
     features: np.array,
-    library: np.array,
     div_type: str = "entropy",
+    library: np.array = None,
 ) -> float:
     """Compute diversity metrics.
 
@@ -51,15 +51,14 @@ def compute_diversity(
     ----------
     features : np.ndarray
         Feature matrix.
-    library : np.ndarray, optional
-        Feature matrix of entire molecule library, used only if
-        calculating hypersphere_overlap_of_subset.
     div_type : str, optional
         Method of calculation diversity for a given molecule set, which
         includes "entropy", "logdet", "shannon_entropy", "wdud",
         gini_coefficient" and "hypersphere_overlap_of_subset".
         Default is "entropy".
-
+    library : np.ndarray, optional
+        Feature matrix of entire molecule library, used only if
+        calculating hypersphere_overlap_of_subset. Default is "None".
     Returns
     -------
     float, computed diversity.
