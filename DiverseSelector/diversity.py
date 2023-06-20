@@ -102,36 +102,27 @@ def entropy(x: np.ndarray) -> float:
 
     Notes
     -----
-    Feature matrices are converted to bits,
-    so we lose any information associated with num in matrix.
+    The feature matrix does not need to be in bitstring form to use this function.
+    However, the features should be encoded in a binary way, such that 0 means
+    absence of the feature, and nonzero means presence of the feature.
+
     Weidlich, I. E., and Filippov, I. V. (2016)
     Using the Gini coefficient to measure the chemical diversity of small-molecule libraries.
     Journal of Computational Chemistry 37, 2091-2097.
     """
 
-    # convert input matrix to bit matrix
-    y = np.empty(x.shape)
-    for i in range(0, len(x)):
-        for j in range(0, len(x[0])):
-            if x[i, j] != 0:
-                y[i, j] = 1
-            else:
-                y[i, j] = 0
     # initialize variables
     length = len(x[0])
     n = len(x)
     top = 0
-    val = []
-    # count bits in fingerprint
-    for i in range(0, length):
-        val.append(sum(y[:, i]))
-    ans = np.sort(val)
+    # count bits in fingerprint and order them
+    counts = np.count_nonzero(x, axis=0)
+    counts = np.sort(counts)
     # sum entropy calculation for each feature
+    if 0 in counts:
+        raise ValueError
     for i in range(0, length):
-        if ans[i] == 0:
-            raise ValueError
-        if ans[i] != 0:
-            top += ((ans[i]) / n) * (np.log(ans[i] / n))
+        top += ((counts[i]) / n) * (np.log(counts[i] / n))
     e = -1 * (top / (length * 0.34657359027997264))
     return e
 
