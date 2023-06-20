@@ -61,10 +61,32 @@ sample5 = np.array([[0, 2, 4, 0],
                     [2, 2, 4, 0]])
 
 
-def test_compute_diversity():
-    """Test compute diversity with a specified div_type."""
-    comp_div = compute_diversity(sample4, "entropy")
+def test_compute_diversity_default():
+    """Test compute diversity with default div_type."""
+    comp_div = compute_diversity(sample4)
     expected = (2/3)
+    assert_almost_equal(comp_div, expected)
+
+
+def test_compute_diversity_specified():
+    """Test compute diversity with a specified div_type."""
+    comp_div = compute_diversity(sample4, "shannon_entropy")
+    expected = 0.301029995
+    assert_almost_equal(comp_div, expected)
+
+
+def test_compute_diversity_hyperspheres():
+    """Test compute diversity with two arguments for hypersphere_overlap method"""
+    corner_pts = np.array([[0.0, 0.0],
+                           [0.0, 1.0],
+                           [1.0, 0.0],
+                           [1.0, 1.0]])
+    centers_pts = np.array([[0.5, 0.5]] * (100 - 4))
+    pts = np.vstack((corner_pts, centers_pts))
+
+    comp_div = compute_diversity(pts, "hypersphere_overlap_of_subset", pts)
+    # Expected = overlap + edge penalty
+    expected = (100.0 * 96 * 95 * 0.5) + 2.0
     assert_almost_equal(comp_div, expected)
 
 
@@ -149,7 +171,7 @@ def test_wdud_mult_features():
 
 
 def test_hypersphere_overlap_of_subset_with_only_corners_and_center():
-    """Test the total diversity volume method with predefined matrix."""
+    """Test the hypersphere overlap method with predefined matrix."""
     corner_pts = np.array([
         [0.0, 0.0],
         [0.0, 1.0],
