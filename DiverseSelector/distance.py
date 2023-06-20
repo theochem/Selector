@@ -106,11 +106,13 @@ def modified_tanimoto(a: np.array, b: np.array) -> float:
     smaller molecules using a Bernoulli probability model.
 
     ..math::
-    mt = \frac{2-p}{3}t_1 + \frac{1+p}{3}t_0$
-    where
-    p = success probability of independent trials
-    $t_1 = | A \cap B |$
-    $t_0 =  |(1-A) \cap (1-B)|$
+    MT = \frac{2-p}{3}T_1 + \frac{1+p}{3}T_0
+
+    where :math:`p` is success probability of independent trials,
+    :math:`T_1` is the number of common '1' bits between molecules
+    (:math:`T_1 = | A \cap B |`), and :math:`T_0` is the number of common '0'
+    bits between molecules (:math:`T_0 = |(1-A) \cap (1-B)|`).
+
 
     Parameters
     ----------
@@ -126,12 +128,29 @@ def modified_tanimoto(a: np.array, b: np.array) -> float:
 
     Notes
     -----
+    The equation above has been derived from
+
+    ..math::
+    MT_\alpha= {\alpha}T_1 + (1-\alpha)T_0
+
+    where :math:`\alpha = \frac{2-p}{3}`. This is done so that the expected value
+    of the modified tanimoto, :math:`E(MT)`, remains constant even as the number of
+    trials :math:`p` grows larger.
 
     Fligner, M. A., Verducci, J. S., and Blower, P. E.. (2002)
     A Modification of the Jaccard-Tanimoto Similarity Index for
     Diverse Selection of Chemical Compounds Using Binary Strings.
     Technometrics 44, 110-119.
     """
+    if a.ndim != 1:
+        raise ValueError(
+            f"Argument `a` should have dimension 1 rather than {a.ndim}."
+        )
+    if b.ndim != 1:
+        raise ValueError(
+            f"Argument `b` should have dimension 1 rather than {b.ndim}."
+        )
+
     n = len(a)
     # intersection of '1' bits
     n_11 = sum(a * b)

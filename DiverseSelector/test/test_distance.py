@@ -77,6 +77,30 @@ def test_modified_tanimoto():
     assert_equal(mod_tani, expected)
 
 
+def test_modified_tanimoto_all_ones():
+    """Test the modified tanimoto function when input is all '1' bits"""
+    a = np.array([1, 1, 1, 1, 1])
+    expected = 1
+    mod_tani = modified_tanimoto(a,a)
+    assert_equal(mod_tani, expected)
+
+
+def test_modified_tanimoto_all_zeroes():
+    """Test the modified tanimoto function when input is all '0' bits"""
+    a = np.zeros(5)
+    expected = 1
+    mod_tani = modified_tanimoto(a, a)
+    assert_equal(mod_tani, expected)
+
+
+def test_modified_tanimoto_dimension_error():
+    """Test modified tanimoto raises error when input has incorrect dimension."""
+    a = np.zeros([7,5])
+    b = np.zeros(5)
+    assert_raises(ValueError, modified_tanimoto, a, b)
+    assert_raises(ValueError, modified_tanimoto, b, a)
+
+
 def test_modified_tanimoto_matrix():
     """Testing the modified tanimoto function with predefined feature matrix."""
     mod_tani = pairwise_similarity_bit(sample4, "modified_tanimoto")
