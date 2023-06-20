@@ -25,6 +25,7 @@
 
 
 import numpy as np
+from scipy.spatial import distance_matrix
 from scipy.spatial.distance import squareform
 
 __all__ = [
@@ -152,23 +153,30 @@ def modified_tanimoto(a: np.array, b: np.array) -> float:
         )
 
     n = len(a)
-    # intersection of '1' bits
+    # number of common '1' bits between molecules A and B
     n_11 = sum(a * b)
-    # intersection of '0' bits
+    # number of common '0' bits between molecules A and B
     n_00 = sum((1 - a) * (1 - b))
 
-    # calculate in terms of '1' bits
+    # calculate Tanimoto coeff based on '1' bits
     if n_00 == n:
+        # bit string is all '0's
         t_1 = 1
     else:
         t_1 = n_11 / (n - n_00)
-    # calculate in terms of '0' bits
+    # calculate Tanimoto coeff based on '1' bits
     if n_11 == n:
+        # bit string is all '1's
         t_0 = 1
     else:
         t_0 = n_00 / (n - n_11)
     # combine into modified tanimoto using Bernoulli Model
-    p = ((n - n_00) + n_11) / (2 * n)
+    # p = independent success trials
+    #       evaluated as total number of '1' bits
+    #       divided by 2x the fingerprint length
+    p = (n - n_00 + n_11) / (2 * n)
+    # mt = x * T_1 + (1-x) * T_0
+    #       x = (2-p)/3 so that E(mt) = 1/3, no matter the value of p
     mt = (((2 - p) / 3) * t_1) + (((1 + p) / 3) * t_0)
     return mt
 
@@ -183,7 +191,7 @@ def nearest_average_tanimoto(x: np.ndarray) -> float:
 
     Returns
     -------
-    nat : float
+    float :
         Average tanimoto of closest pairs.
 
     Notes
@@ -198,20 +206,15 @@ def nearest_average_tanimoto(x: np.ndarray) -> float:
     Journal of Chemical Information and Modeling 46, 1898-1904.
     """
     tani = []
-    for idx, _ in enumerate(x):
-        # arbitrary distance for comparison:
-        short = 100
-        a = 0
-        b = 0
-        # search for shortest distance point from idx
-        for jdx, _ in enumerate(x):
-            dist = np.linalg.norm(x[idx]-x[jdx])
-            if dist < short and idx != jdx:
-                short = dist
-                a = idx
-                b = jdx
-        # calculate tanimoto for each shortest dist pair
-        tani.append(tanimoto(x[a], x[b]))
-    # compute average of all shortest tanimoto coeffs
+    # calculate euclidean distance between all points
+    #     and adjust for distance to self
+    dist = distance_matrix(x, x) + 100*np.eye(x.shape[0])
+    # find closest point for each row of x
+    short_idx = np.argmin(dist, axis=0)
+    print(f"these are the shortest indices:", short_idx)
+    for idx in range(0, len(short_idx)):
+        # compute the tanimoto coeff for each pair of closest points
+        tani.append(tanimoto(x[idx], x[short_idx[idx]]))
+    # take the average of all coeffs calculated
     nat = np.average(tani)
     return nat
