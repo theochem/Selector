@@ -272,7 +272,7 @@ def wdud(x: np.ndarray) -> float:
     return np.average(ans)
 
 
-def hypersphere_overlap_of_subset(lib: np.ndarray, x: np.array) -> float:
+def hypersphere_overlap_of_subset(x: np.ndarray, x_subset: np.array) -> float:
     r"""Computes the overlap of subset with hyper-spheres around each point
 
     The edge penalty is also included, which disregards areas
@@ -280,7 +280,7 @@ def hypersphere_overlap_of_subset(lib: np.ndarray, x: np.array) -> float:
     This is calculated as:
 
     .. math::
-        g(S) = \sum_{i < j}^k O(i, j) + \sum^k_m E(m),
+        g(S) = \sum_{i < j}^k O(i, j) + \sum^k_m E(m)
 
     where :math:`i, j` is over the subset of molecules,
     :math:`O(i, j)` is the approximate overlap between hyper-spheres,
@@ -289,9 +289,9 @@ def hypersphere_overlap_of_subset(lib: np.ndarray, x: np.array) -> float:
 
     Parameters
     ----------
-    lib : ndarray
-        Feature matrix of all molecules.
     x : ndarray
+        Feature matrix of all molecules.
+    x_subset : ndarray
         Feature matrix of selected subset of molecules.
 
     Returns
@@ -307,12 +307,12 @@ def hypersphere_overlap_of_subset(lib: np.ndarray, x: np.array) -> float:
     d = len(x[0])
     k = len(x[:, 0])
     # Find the maximum and minimum over each feature across all molecules.
-    max_x = np.max(lib, axis=0)
-    min_x = np.min(lib, axis=0)
+    max_x = np.max(x, axis=0)
+    min_x = np.min(x, axis=0)
     # Normalization of each feature to [0, 1]
     if np.any(np.abs(max_x - min_x) < 1e-30):
         raise ValueError(f"One of the features is redundant and causes normalization to fail.")
-    x_norm = (x - min_x) / (max_x - min_x)
+    x_norm = (x_subset - min_x) / (max_x - min_x)
     # r_o = hypersphere radius
     r_o = d * np.sqrt(1 / k)
     if r_o > 0.5:
