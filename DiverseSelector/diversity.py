@@ -42,7 +42,8 @@ __all__ = [
 
 def compute_diversity(
     features: np.array,
-    div_type: str = "total_diversity_volume",
+    library: np.array,
+    div_type: str = "entropy",
 ) -> float:
     """Compute diversity metrics.
 
@@ -50,11 +51,14 @@ def compute_diversity(
     ----------
     features : np.ndarray
         Feature matrix.
+    library : np.ndarray, optional
+        Feature matrix of entire molecule library, used only if
+        calculating hypersphere_overlap_of_subset.
     div_type : str, optional
         Method of calculation diversity for a given molecule set, which
         includes "entropy", "logdet", "shannon_entropy", "wdud",
-        gini_coefficient" and "total_diversity_volume". Default is "total_diversity_volume".
-
+        gini_coefficient" and "hypersphere_overlap_of_subset".
+        Default is "entropy".
     Returns
     -------
     float, computed diversity.
@@ -65,12 +69,13 @@ def compute_diversity(
         "logdet": logdet,
         "shannon_entropy": shannon_entropy,
         "wdud": wdud,
-        "total_diversity_volume": total_diversity_volume,
         "gini_coefficient": gini_coefficient,
     }
 
     if div_type in func_dict:
         return func_dict[div_type](features)
+    elif div_type == "hypersphere_overlap_of_subset":
+        return hypersphere_overlap_of_subset(library, features)
     else:
         raise ValueError(f"Diversity type {div_type} not supported.")
 
@@ -280,7 +285,7 @@ def hypersphere_overlap_of_subset(x: np.ndarray, x_subset: np.array) -> float:
         g(S) = \sum_{i < j}^k O(i, j) + \sum^k_m E(m)
 
     where :math:`i, j` is over the subset of molecules,
-    :math:`O(i, j)` is the approximate overlap between hyper-spheres,
+    :math:`O(i, j)` is the approximate overlap between hyperspheres,
     :math:`k` is the number of features and :math:`E`
     is the edge penalty of a molecule.
 
@@ -294,7 +299,8 @@ def hypersphere_overlap_of_subset(x: np.ndarray, x_subset: np.array) -> float:
     Returns
     -------
     g_s: float
-        The total diversity volume of the matrix.
+        The approximate overlapping volume of hyperspheres
+        drawn around the selected points/molecules.
 
     Notes
     -----
