@@ -28,53 +28,11 @@ import numpy as np
 from scipy.spatial.distance import squareform
 
 __all__ = [
-    "compute_distance_matrix",
     "pairwise_similarity_bit",
     "tanimoto",
     "modified_tanimoto",
     "nearest_average_tanimoto"
 ]
-
-
-def compute_distance_matrix(
-    features: np.ndarray,
-    metric: str
-):
-    """Compute pairwise distance given a feature matrix.
-
-    Parameters
-    ----------
-    features : np.ndarray
-        Molecule feature matrix.
-    metric : str
-        Distance metric.
-
-    Returns
-    -------
-    dist : ndarray
-        Symmetric distance array.
-    """
-    # todo: add more metrics implemented here
-    built_in_metrics = {
-        "tanimoto": tanimoto,
-        "modified_tanimoto": modified_tanimoto,
-    }
-
-    # Check if specified metric is supported
-    if metric in built_in_metrics:
-        distances = []
-        size = len(features)
-        for i in range(0, size):
-            for j in range(i + 1, size):
-                # use the metric to compute distance between all molecule pairs
-                distances.append(1 - built_in_metrics[metric](features[i], features[j]))
-        # shape into symmetric matrix
-        dist = squareform(distances)
-
-    else:  # raise error if unsupported
-        raise ValueError(f"Metric {metric} is not supported by the library.")
-
-    return dist
 
 
 def pairwise_similarity_bit(features: np.array, metric: str) -> np.ndarray:
@@ -130,7 +88,8 @@ def tanimoto(a: np.array, b: np.array) -> float:
 
     Notes
     -----
-    The Tanimoto coefficient computes similarity by taking the intersection of A and B over their union.
+    The Tanimoto coefficient computes similarity by taking the intersection
+    of A and B over their union.
 
     Bajusz, D., Rácz, A., and Héberger, K.. (2015)
     Why is Tanimoto index an appropriate choice for fingerprint-based similarity calculations?.
@@ -237,4 +196,3 @@ def nearest_average_tanimoto(x: np.ndarray) -> float:
     # compute average of all shortest tanimoto coeffs
     nat = np.average(tani)
     return nat
-
