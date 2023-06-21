@@ -23,17 +23,149 @@
 
 """Utils module."""
 
-
 import numpy as np
 
 
 __all__ = [
-    "ExplicitBitVector",
-    "RDKitMol",
-    "PandasDataFrame",
-    "mol_loader",
+    "sim_to_dist",
     "distance_to_similarity",
+    "reverse",
+    "reciprocal",
+    "exponential",
+    "gaussian",
+
 ]
+
+
+def sim_to_dist(x: np.ndarray, metric) -> np.ndarray:
+    """Convert similarity coefficients to distance matrix.
+
+    Parameters
+    ----------
+    x : ndarray
+        Symmetric similarity array.
+    metric : str, int
+        String or integer specifying which conversion metric to use.
+        Supported metrics are "reverse", "reciprocal", "exp" (exponential),
+        "gaussian", and "membership". If the metric is an integer,
+        integer value distance conversion is performed.
+
+    Returns
+    -------
+    y : ndarray
+        Symmetric distance or similarity array.
+
+    """
+    method_dict = {
+        "reverse": reverse,
+        "reciprocal": reciprocal,
+        "exp": exponential,
+        "gaussian": gaussian,
+    }
+    if type(metric) == str:
+        if metric in method_dict:
+            return method_dict[metric](x)
+        elif metric == "membership":
+            return 1 - x
+    elif type(metric) == int:
+        return metric - x
+    else:
+        raise ValueError(f"{metric} is an unsupported metric.")
+
+    return np.eye(5)
+
+
+def reverse(x: np.ndarray):
+    r"""Calculate distance matrix from similarity using the 'reverse' method.
+
+    .. math::
+    \delta_{ij} = min(s_{ij}) + max(s_{ij}) - s_{ij}
+
+    where :math:`\delta_{ij}` is the distance between points :math:`i`
+    and :math:`j`, :math:`s_{ij}` is their similarity coefficient,
+    and :math:`max` and :math:`min` are the maximum and minimum
+    values across the entire similarity matrix.
+
+    Parameters
+    -----------
+    x : ndarray
+        Symmetric similarity array.
+
+    Returns
+    -------
+    ndarray :
+        Symmetric distance array.
+
+    """
+    rev = (np.max(x) + np.min(x)) - x
+    return rev
+
+
+def reciprocal(x: np.ndarray):
+    r"""Calculate distance matrix from similarity using the 'reverse' method.
+
+    .. math::
+    \delta_{ij} = \frac{1}{s_{ij}}
+
+    where :math:`\delta_{ij}` is the distance between points :math:`i`
+    and :math:`j`, and :math:`s_{ij}` is their similarity coefficient.
+
+    Parameters
+    -----------
+    x : ndarray
+        Symmetric similarity array.
+
+    Returns
+    -------
+    ndarray :
+        Symmetric distance array.
+    """
+
+    return 1/x
+
+
+def exponential(x: np.ndarray):
+    r"""Calculate distance matrix from similarity using the 'reverse' method.
+
+    .. math::
+    \delta_{ij} = -\ln{\frac{s_{ij}}{max(s_{ij})}}
+
+    where :math:`\delta_{ij}` is the distance between points :math:`i`
+    and :math:`j`, and :math:`s_{ij}` is their similarity coefficient.
+
+    Parameters
+    -----------
+    x : ndarray
+        Symmetric similarity array.
+
+    Returns
+    -------
+    ndarray :
+        Symmetric distance array.
+
+    """
+    print(f"max of x: ", np.max(x))
+    y = x / (np.max(x))
+    print(y)
+    exp = -np.log(y)
+    return exp
+
+
+def gaussian(x: np.ndarray):
+    """Calculate distance matrix from similarity using the 'reverse' method.
+
+    Parameters
+    -----------
+    x : ndarray
+        Symmetric similarity array.
+
+    Returns
+    -------
+    ndarray :
+        Symmetric distance array.
+
+    """
+    pass
 
 
 def distance_to_similarity(x: np.ndarray, dist: bool = True) -> np.ndarray:
