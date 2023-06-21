@@ -39,8 +39,9 @@ def test_sim_2_dist():
     actual = ut.sim_to_dist(x, "reverse")
     assert_almost_equal(actual, expected, decimal=12)
 
+
 def test_sim_2_dist_membership():
-    """Test similarity to distance method with the 'membership' metric"""
+    """Test similarity to distance method with the membership metric"""
     x = np.array([[(1 / 2), (1 / 5)],
                   [(1 / 4), (1 / 3)]])
     expected = np.array([[(1/2), (4/5)],
@@ -60,7 +61,7 @@ def test_sim_2_dist_integer():
 
 
 def test_reverse():
-    """Test the 'reverse' function for similarity to distance conversion."""
+    """Test the reverse function for similarity to distance conversion."""
     x = np.array([[3, 1, 1],
                   [1, 3, 0],
                   [1, 0, 3]])
@@ -72,7 +73,7 @@ def test_reverse():
 
 
 def test_reciprocal():
-    """Test the 'reverse' function for similarity to distance conversion."""
+    """Test the reverse function for similarity to distance conversion."""
     x = np.array([[1, 0.25, 0.40],
                   [0.25, 1, 0.625],
                   [0.40, 0.625, 1]])
@@ -84,7 +85,7 @@ def test_reciprocal():
 
 
 def test_exponential():
-    """Test the 'exponential' function for similarity to distance conversion."""
+    """Test the exponential function for similarity to distance conversion."""
     x = np.array([[1, 0.25, 0.40],
                   [0.25, 1, 0.625],
                   [0.40, 0.625, 1]])
@@ -92,7 +93,19 @@ def test_exponential():
                          [1.38629436112, 0, 0.47000362924],
                          [0.91629073187, 0.47000362924, 0]])
     actual = ut.exponential(x)
-    assert_equal(actual, expected)
+    assert_almost_equal(actual, expected, decimal=10)
+
+
+def test_gaussian():
+    """Test the gaussian function for similarity to distance conversion."""
+    x = np.array([[1, 0.25, 0.40],
+                  [0.25, 1, 0.625],
+                  [0.40, 0.625, 1]])
+    expected = np.array([[0, 1.17741002252, 0.95723076208],
+                         [1.17741002252, 0, 0.68556810693],
+                         [0.95723076208, 0.68556810693, 0]])
+    actual = ut.gaussian(x)
+    assert_almost_equal(actual, expected, decimal=10)
 
 
 def test_dist_to_simi():
