@@ -76,7 +76,7 @@ def sim_to_dist(x: np.ndarray, metric) -> np.ndarray:
 
 
 def reverse(x: np.ndarray):
-    r"""Calculate distance matrix from similarity using the 'reverse' method.
+    r"""Calculate distance matrix from similarity using the reverse method.
 
     .. math::
     \delta_{ij} = min(s_{ij}) + max(s_{ij}) - s_{ij}
@@ -102,7 +102,7 @@ def reverse(x: np.ndarray):
 
 
 def reciprocal(x: np.ndarray):
-    r"""Calculate distance matrix from similarity using the 'reverse' method.
+    r"""Calculate distance matrix from similarity using the reciprocal method.
 
     .. math::
     \delta_{ij} = \frac{1}{s_{ij}}
@@ -125,7 +125,7 @@ def reciprocal(x: np.ndarray):
 
 
 def exponential(x: np.ndarray):
-    r"""Calculate distance matrix from similarity using the 'reverse' method.
+    r"""Calculate distance matrix from similarity using the exponential method.
 
     .. math::
     \delta_{ij} = -\ln{\frac{s_{ij}}{max(s_{ij})}}
@@ -144,15 +144,19 @@ def exponential(x: np.ndarray):
         Symmetric distance array.
 
     """
-    print(f"max of x: ", np.max(x))
     y = x / (np.max(x))
-    print(y)
     exp = -np.log(y)
     return exp
 
 
 def gaussian(x: np.ndarray):
-    """Calculate distance matrix from similarity using the 'reverse' method.
+    r"""Calculate distance matrix from similarity using the Gaussian method.
+
+    .. math::
+    \delta_{ij} = \sqrt{-\ln{\frac{s_{ij}}{max(s_{ij})}}}
+
+    where :math:`\delta_{ij}` is the distance between points :math:`i`
+    and :math:`j`, and :math:`s_{ij}` is their similarity coefficient.
 
     Parameters
     -----------
@@ -165,7 +169,9 @@ def gaussian(x: np.ndarray):
         Symmetric distance array.
 
     """
-    pass
+    y = x / (np.max(x))
+    gauss = np.sqrt(-np.log(y))
+    return gauss
 
 
 def distance_to_similarity(x: np.ndarray, dist: bool = True) -> np.ndarray:
