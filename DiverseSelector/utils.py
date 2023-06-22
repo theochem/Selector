@@ -38,8 +38,7 @@ __all__ = [
     "co_occur",
     "gravity",
     "probability",
-    "covariance"
-
+    "covariance",
 ]
 
 
@@ -73,13 +72,18 @@ def sim_to_dist(x: np.ndarray, metric):
         "co-occurrence": co_occur,
         "gravity": gravity,
         "probability": probability,
-        "covariance": covariance
+        "covariance": covariance,
     }
 
     if type(metric) == str:
         if metric in method_dict:
             return method_dict[metric](x)
         elif metric == "membership" or metric == "confusion":
+            if np.any(x < 0) or np.any(x > 1):
+                raise ValueError(
+                    "There is an out of bounds value. Please make"
+                    "sure all input values are between [0, 1]."
+                )
             return 1 - x
     elif type(metric) == int:
         return metric - x
@@ -135,7 +139,7 @@ def reciprocal(x: np.ndarray):
         Symmetric distance array.
     """
 
-    return 1/x
+    return 1 / x
 
 
 def exponential(x: np.ndarray):
@@ -209,8 +213,10 @@ def correlation(x: np.ndarray):
 
     """
     if np.any(x < -1) or np.any(x > 1):
-        raise ValueError("There is an out of bounds value. Please make"
-                         "sure all correlations are between [-1, 1].")
+        raise ValueError(
+            "There is an out of bounds value. Please make"
+            "sure all correlations are between [-1, 1]."
+        )
     dist = np.sqrt(1 - x)
     return dist
 
@@ -236,11 +242,13 @@ def transition(x: np.ndarray):
 
     """
     if np.any(x < 0):
-        raise ValueError("There is a negative value in the input. Please"
-                         "make sure all frequency values are non-negative.")
+        raise ValueError(
+            "There is a negative value in the input. Please"
+            "make sure all frequency values are non-negative."
+        )
 
     # ignore divide by zero warnings
-    with np.errstate(divide='ignore'):
+    with np.errstate(divide="ignore"):
         dist = 1 / np.sqrt(x)
     # replace all divide by zero elements with value 0
     dist[dist == np.inf] = 0
@@ -318,8 +326,10 @@ def probability(x: np.ndarray):
 
     """
     if np.any(x < 0) or np.any(x > 1):
-        raise ValueError("There is an out of bounds value. Please make"
-                         "sure all correlations are between [0, 1].")
+        raise ValueError(
+            "There is an out of bounds value. Please make"
+            "sure all correlations are between [0, 1]."
+        )
     y = np.arcsin(x)
     dist = 1 / np.sqrt(y)
     return dist
@@ -353,7 +363,7 @@ def covariance(x: np.ndarray):
     for i in range(0, x.shape[0]):
         for j in range(0, x.shape[1]):
             # for each entry in covariance matrix, calculate distance
-            dist[i][j] = x[i][i] + x[j][j] - 2*x[i][j]
+            dist[i][j] = x[i][i] + x[j][j] - 2 * x[i][j]
     dist = np.sqrt(dist)
     return dist
 
