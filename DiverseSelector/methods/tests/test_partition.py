@@ -22,36 +22,63 @@
 
 """Test Partition-Based Selection Methods."""
 
+import numpy as np
 from DiverseSelector.methods.partition import DirectedSphereExclusion, GridPartitioning, Medoid
 from DiverseSelector.methods.tests.common import generate_synthetic_data
-from numpy.testing import assert_equal
+from numpy.testing import assert_equal, assert_raises
 
 
-
-def test_directedsphereexclusion():
-    """Testing DirectedSphereExclusion class."""
-    coords, _, _ = generate_synthetic_data(n_samples=100,
-                                           n_features=2,
-                                           n_clusters=1,
-                                           pairwise_dist=True,
-                                           metric="euclidean",
-                                           random_state=42)
-
-    coords_cluster, class_labels_cluster, _ = generate_synthetic_data(n_samples=100,
-                                                                      n_features=2,
-                                                                      n_clusters=3,
-                                                                      pairwise_dist=True,
-                                                                      metric="euclidean",
-                                                                      random_state=42)
+def test_directed_sphere_num_selected_error():
+    """Test DirectedSphereExclusion error when too many points requested."""
+    x = np.array([[1, 9]]*100)
     selector = DirectedSphereExclusion()
-    selected_ids = selector.select(arr=coords_cluster, num_selected=12, labels=class_labels_cluster)
-    # make sure all the selected indices are the same with expectation
-    assert_equal(selected_ids, [95, 14, 88, 84, 76, 68, 93, 50, 29, 19, 54])
+    assert_raises(RuntimeError, selector.select, x, num_selected=105)
 
-    selector = DirectedSphereExclusion()
-    selected_ids = selector.select(arr=coords, num_selected=12)
-    # make sure all the selected indices are the same with expectation
-    assert_equal(selected_ids, [17, 92, 64, 6, 12, 76, 10, 87, 73, 66, 11, 57])
+
+def test_directed_sphere_same_number_of_pts():
+    """Test DirectSphereExclusion with `num_selected` = number of points in dataset."""
+    # (0,0) as the reference point
+    x = np.array([[0,0],[0,1],[0,2],[0,3]])
+    selector = DirectedSphereExclusion(r=1, tolerance=0)
+    selected = selector.select(arr=x, num_selected=3)
+    expected = [1,2,3]
+    assert_equal(selected, expected)
+    assert_equal(selector.r, 0.5)
+
+
+def test_directed_sphere_exclusion_select_more_number_of_pts():
+    """Test DirectSphereExclusion on points on the line with `num_selected` < number of points in dataset."""
+    # (0,0) as the reference point
+    x = np.array([[0, 0], [0, 1], [0, 2], [0, 3], [0, 4], [0, 5], [0, 6]])
+    selector = DirectedSphereExclusion(r=0.5, tolerance=0)
+    selected = selector.select(arr=x, num_selected=3)
+    expected = [1, 3, 5]
+    assert_equal(selected, expected)
+    assert_equal(selector.r, 1.0)
+
+
+def test_directed_sphere_exclusion_on_line_with_():
+    """Test Direct Sphere Exclusion on points on line with smaller distribution than the radius."""
+    # (0,0) as the reference point
+    x = np.array([[0, 0], [0, 1], [0, 1.1], [0, 1.2], [0, 2],
+                  [0, 3], [0, 3.1], [0, 3.2], [0, 4], [0, 5], [0, 6]])
+    selector = DirectedSphereExclusion(r=0.5, tolerance=0)
+    selected = selector.select(arr=x, num_selected=3)
+    expected = [1, 5, 9]
+    assert_equal(selected, expected)
+    assert_equal(selector.r, 1.0)
+
+
+def test_directed_sphere_on_line_with_larger_radius():
+    """Test Direct Sphere Exclusion on points on the line with a too large radius size."""
+    # (0,0) as the reference point
+    x = np.array([[0, 0], [0, 1], [0, 1.1], [0, 1.2], [0, 2],
+                  [0, 3], [0, 3.1], [0, 3.2], [0, 4], [0, 5]])
+    selector = DirectedSphereExclusion(r=2.0, tolerance=0)
+    selected = selector.select(arr=x, num_selected=3)
+    expected = [1, 5, 9]
+    assert_equal(selected, expected)
+    assert_equal(selector.r, 1.0)
 
 
 def test_gridpartitioning():
