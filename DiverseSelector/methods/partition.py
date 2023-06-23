@@ -62,13 +62,13 @@ class DirectedSphereExclusion(SelectionBase):
     43(1), 317–323. https://doi.org/10.1021/ci025554v
     """
 
-    def __init__(self, r=None, tolerance=0.05, eps=1e-8, p=2, start_id=0, random_seed=42):
+    def __init__(self, r_0=None, tolerance=0.05, eps=1e-8, p=2, start_id=0, random_seed=42, n_iter=10):
         """
         Initializing class.
 
         Parameters
         ----------
-        r: float
+        r_0: float
             Initial guess of radius for directed sphere exclusion algorithm, no points within r
             distance to an already selected point can be selected.
         tolerance: float
@@ -82,16 +82,19 @@ class DirectedSphereExclusion(SelectionBase):
             Which Minkowski p-norm to use. Should be in the range [1, inf]. A finite large p may
             cause a ValueError if overflow can occur.
         start_id: int
-            Index for the first point to be selected.
+            Index for the first point to be selected. Default is 0.
         random_seed: int
             Seed for random selection of points be evaluated.
+        n_iter: int
+            Number of iterations to execute when optimizing the size of exclusion radius. Default is 10.
         """
-        self.r = r
+        self.r = r_0
         self.tolerance = tolerance
         self.eps = eps
         self.p = p
         self.starting_idx = start_id
         self.random_seed = random_seed
+        self.n_iter = n_iter
 
     def algorithm(self, x, uplimit):
         """
@@ -116,8 +119,7 @@ class DirectedSphereExclusion(SelectionBase):
         selected: list
             List of ids of selected points.
         """
-        selected = []
-        count = 0
+
         # calculate distance from reference point to all data points
         ref_point = x[self.starting_idx]
         distances = scipy.spatial.minkowski_distance(ref_point, x, p=self.p)
@@ -130,14 +132,14 @@ class DirectedSphereExclusion(SelectionBase):
         bv[:] = 0
         bv[self.starting_idx] = 1
         # select points based on closest to reference point
+        selected = []
         for idx in order:
-            # If it isn't already part of any hyperspheres
-            if not bv[idx]:
-                # Then select it to be part of it
+            # If point isn't already part of any hyperspheres
+            if bv[idx] == 0:
+                # Then add point to selection
                 selected.append(idx)
-                count += 1
                 # finished selecting # of points required, return
-                if count > uplimit:
+                if len(selected) > uplimit:
                     return selected
                 # find all points now within radius of newly selected point
                 elim = kdtree.query_ball_point(x[idx], self.r, eps=self.eps, p=self.p, workers=-1)
