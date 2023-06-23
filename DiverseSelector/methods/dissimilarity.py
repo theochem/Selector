@@ -23,7 +23,7 @@
 """Module for Dissimilarity-Based Selection Methods."""
 
 from DiverseSelector.base import SelectionBase
-from DiverseSelector.methods.utils import predict_radius
+from DiverseSelector.methods.utils import optimize_radius
 import numpy as np
 from scipy import spatial
 
@@ -272,6 +272,6 @@ class OptiSim(SelectionBase):
         selected: list
             List of ids of selected molecules
         """
-        return predict_radius(self, arr, num_selected, cluster_ids)
+        return optimize_radius(self, arr, num_selected, cluster_ids)
 
 
