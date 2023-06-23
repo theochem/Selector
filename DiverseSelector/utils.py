@@ -85,7 +85,8 @@ def sim_to_dist(x, metric):
         single = True
     # check if x is 1D array
     elif x.ndim == 1:
-        x = squareform(x)
+        # todo: convert 1d sparse array to 2d similarity matrix
+        pass
 
     # check that x was a valid input
     if x.ndim != 1 and x.ndim != 2:
@@ -112,6 +113,7 @@ def sim_to_dist(x, metric):
     # convert back to float if input was single value
     if single:
         dist = dist.item((0, 0))
+
     return dist
 
 
@@ -295,11 +297,19 @@ def co_occur(x: np.ndarray):
     Returns
     -------
     ndarray :
-        Symmetric distance array.
+        Symmetric co-occurence array.
 
     """
-    # todo: implement co-occurrence
-    return np.eye(5)
+    # compute sums along each axis
+    i = np.sum(x, axis=0, keepdims=True)
+    j = np.sum(x, axis=1, keepdims=True)
+    # multiply sums to scalar value
+    bottom = np.dot(i, j)
+    # multiply each element by the sum of entire matrix
+    top = x * np.sum(x)
+    # evaluate function as a whole
+    dist = (1 + (top/bottom))**-1
+    return dist
 
 
 def gravity(x: np.ndarray):
@@ -320,11 +330,19 @@ def gravity(x: np.ndarray):
     Returns
     -------
     ndarray :
-        Symmetric distance array.
+        Symmetric gravity array.
 
     """
-    # todo: implement gravity
-    return np.eye(5)
+    # compute sums along each axis
+    i = np.sum(x, axis=0, keepdims=True)
+    j = np.sum(x, axis=1, keepdims=True)
+    # multiply sums to scalar value
+    top = np.dot(i, j)
+    # multiply each element by the sum of entire matrix
+    bottom = x * np.sum(x)
+    # take square root of the fraction
+    dist = np.sqrt(top/bottom)
+    return dist
 
 
 def probability(x: np.ndarray):
