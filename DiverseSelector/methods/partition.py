@@ -26,6 +26,8 @@ import collections
 import math
 
 import bitarray
+import scipy.spatial
+
 from DiverseSelector.methods.base import SelectionBase
 from DiverseSelector.diversity import compute_diversity
 from DiverseSelector.methods.utils import predict_radius
@@ -45,7 +47,8 @@ __all__ = [
 class DirectedSphereExclusion(SelectionBase):
     """Selecting points using Directed Sphere Exclusion algorithm.
 
-    Starting point is chosen as the reference point and not included in the selected molecules. The
+    Starting point is chosen as the reference point
+    and not included in the selected molecules. The
     distance of each point is calculated to the reference point and the points are then sorted based
     on the ascending order of distances. The points are then evaluated in their sorted order, and
     are selected if their distance to all the other selected points is at least r away. Euclidean
@@ -59,7 +62,7 @@ class DirectedSphereExclusion(SelectionBase):
     43(1), 317–323. https://doi.org/10.1021/ci025554v
     """
 
-    def __init__(self, r=None, tolerance=5.0, eps=0, p=2, start_id=0, random_seed=42):
+    def __init__(self, r=None, tolerance=0.05, eps=1e-8, p=2, start_id=0, random_seed=42):
         """
         Initializing class.
 
@@ -69,7 +72,7 @@ class DirectedSphereExclusion(SelectionBase):
             Initial guess of radius for directed sphere exclusion algorithm, no points within r
             distance to an already selected point can be selected.
         tolerance: float
-            Percentage error of number of molecules actually selected from number of molecules
+            Percentage error of number of points actually selected from number of points
             requested.
         eps: float
             Approximate nearest neighbor search for eliminating close points. Branches of the tree
@@ -90,74 +93,85 @@ class DirectedSphereExclusion(SelectionBase):
         self.starting_idx = start_id
         self.random_seed = random_seed
 
-    def algorithm(self, arr, uplimit):
+    def algorithm(self, x, uplimit):
         """
-        Directed sphere exclusion algorithm logic.
+        Directed sphere exclusion algorithm.
+
+        Given a reference point, sorts all points by distance to the reference point.
+        Then using a KDTree, the closest points are selected and a sphere
+        is built around the point. All points within the sphere are excluded
+        from the search. This process iterates until the number of selected
+        points is greater than `uplimit`, or the algorithm runs out of points
+        to select from.
 
         Parameters
         ----------
-        arr: np.ndarray
-            Coordinate array of points.
+        x: np.ndarray
+            Feature matrix.
         uplimit: int
             Maximum number of points to select.
 
         Returns
         -------
         selected: list
-            List of ids of selected molecules
+            List of ids of selected points.
         """
         selected = []
         count = 0
-        candidates = np.delete(np.arange(0, len(arr)), self.starting_idx)
-        distances = []
         # calculate distance from reference point to all data points
-        for idx in candidates:
-            ref_point = arr[self.starting_idx]
-            data_point = arr[idx]
-            distance = spatial.distance.minkowski(ref_point, data_point, p=self.p)
-            distances.append((distance, idx))
+        ref_point = x[self.starting_idx]
+        distances = scipy.spatial.minkowski_distance(ref_point, x, p=self.p)
         # order points by distance from reference
-        distances.sort()
-        order = [idx for dist, idx in distances]
-        # initialize search variables
-        kdtree = spatial.KDTree(arr)
-        bv = bitarray.bitarray(len(arr))
+        order = np.argsort(distances)
+        # Construct KDTree to make it easier to search neighbors
+        kdtree = spatial.KDTree(x)
+        # bv tracks viable candidates
+        bv = bitarray.bitarray(len(x))
         bv[:] = 0
         bv[self.starting_idx] = 1
-        # select points
+        # select points based on closest to reference point
         for idx in order:
+            # If it isn't already part of any hyperspheres
             if not bv[idx]:
+                # Then select it to be part of it
                 selected.append(idx)
                 count += 1
                 # finished selecting # of points required, return
                 if count > uplimit:
                     return selected
-                # eliminate points within radius from consideration
-                elim = kdtree.query_ball_point(arr[idx], self.r, eps=self.eps, p=self.p, workers=-1)
+                # find all points now within radius of newly selected point
+                elim = kdtree.query_ball_point(x[idx], self.r, eps=self.eps, p=self.p, workers=-1)
+                # turn 'on' bits in bv to make for loop skip indices of eliminated points
+                #   eliminate points from selection
                 for index in elim:
                     bv[index] = 1
 
         return selected
 
-    def select_from_cluster(self, arr, num_selected, cluster_ids=None):
+    def select_from_cluster(self, x, num_selected, cluster_ids=None):
         """
         Algorithm that uses sphere_exclusion for selecting points from cluster.
 
         Parameters
         ----------
-        arr: np.ndarray
-            Coordinate array of points
+        x: np.ndarray
+            Feature points.
         num_selected: int
-            Number of molecules that need to be selected.
+            Number of points that need to be selected.
         cluster_ids: np.ndarray
-            Indices of molecules that form a cluster
+            Indices of points that form a cluster
 
         Returns
         -------
         selected: list
             List of ids of selected molecules
         """
-        return predict_radius(self, arr, num_selected, cluster_ids)
+        if x.shape[0] < num_selected:
+            raise RuntimeError(
+                f"The number of selected points {num_selected} is greater than the number of points"
+                f"provided {x.shape[0]}."
+            )
+        return predict_radius(self, x, num_selected, cluster_ids)
 
 
 class GridPartitioning(SelectionBase):
