@@ -28,6 +28,9 @@ import numpy as np
 from numpy.testing import assert_almost_equal, assert_equal, assert_raises
 
 
+# Tests for variations on input `x` for sim_to_dist()
+
+
 def test_sim_2_dist_float_int():
     """Test similarity to distance input handling when input is a float or int."""
     expected_1 = 0.25
@@ -38,9 +41,18 @@ def test_sim_2_dist_float_int():
     assert_equal(float_out, expected_2)
 
 
-def test_sim_2_dist_input_error():
+def test_sim_2_dist_array_error():
     """Test sim to dist function with incorrect input for `x`"""
-    assert_raises(ValueError, ut.sim_to_dist, np.ones([2,2,2]), "reciprocal")
+    assert_raises(ValueError, ut.sim_to_dist, np.ones([2, 2, 2]), "reciprocal")
+
+
+def test_sim_2_dist_1d_metric_error():
+    """Test sim to dist function with an invalid metric for 1D arrays."""
+    assert_raises(RuntimeError, ut.sim_to_dist, np.ones(5), "gravity")
+    assert_raises(RuntimeError, ut.sim_to_dist, np.ones(5), "co-occurrence")
+
+
+# Tests for variations on input `metric` for sim_to_dist()
 
 
 def test_sim_2_dist():
@@ -64,12 +76,7 @@ def test_sim_2_dist_membership_error():
     assert_raises(ValueError, ut.sim_to_dist, x, "membership")
 
 
-def test_sim_2_dist_integer():
-    """Test similarity to distance method with an integer passed as the metric."""
-    x = np.array([[0.5, 1], [0, 2.125]])
-    expected = np.array([[2.5, 2], [3, 0.875]])
-    actual = ut.sim_to_dist(x, 3)
-    assert_almost_equal(actual, expected, decimal=10)
+# Tests for individual metrics
 
 
 def test_reverse():
@@ -157,27 +164,29 @@ def test_transition_error():
 
 def test_co_occurrence():
     """Test the co-occurrence conversion function."""
-    x = np.array([[1, 2, 3],
-                  [2, 1, 3],
-                  [3, 3, 1]])
-    sum_mult_x = np.array([[19, 38, 57],
-                           [38, 19, 57],
-                           [57, 57, 19]])
-    expected = np.array([[1/(19/121 + 1), 1/(38/121 + 1), 1/(57/121 + 1)],
-                        [1/(38/121 + 1), 1/(19/121 + 1), 1/(57/121 + 1)],
-                        [1/(57/121 + 1), 1/(57/121 + 1), 1/(19/121 + 1)]])
-    actual = ut.co_occur(x)
+    x = np.array([[1, 2, 3], [2, 1, 3], [3, 3, 1]])
+    sum_mult_x = np.array([[19, 38, 57], [38, 19, 57], [57, 57, 19]])
+    expected = np.array(
+        [
+            [1 / (19 / 121 + 1), 1 / (38 / 121 + 1), 1 / (57 / 121 + 1)],
+            [1 / (38 / 121 + 1), 1 / (19 / 121 + 1), 1 / (57 / 121 + 1)],
+            [1 / (57 / 121 + 1), 1 / (57 / 121 + 1), 1 / (19 / 121 + 1)],
+        ]
+    )
+    actual = ut.co_occurrence(x)
     assert_almost_equal(actual, expected, decimal=10)
 
 
 def test_gravity():
     """Test the gravity conversion function."""
-    x = np.array([[1, 2, 3],
-                  [2, 1, 3],
-                  [3, 3, 1]])
-    expected = np.array([[2.5235730726, 1.7844356324, 1.45698559277],
-                         [1.7844356324, 2.5235730726, 1.45698559277],
-                         [1.45698559277, 1.45698559277, 2.5235730726]])
+    x = np.array([[1, 2, 3], [2, 1, 3], [3, 3, 1]])
+    expected = np.array(
+        [
+            [2.5235730726, 1.7844356324, 1.45698559277],
+            [1.7844356324, 2.5235730726, 1.45698559277],
+            [1.45698559277, 1.45698559277, 2.5235730726],
+        ]
+    )
     actual = ut.gravity(x)
     assert_almost_equal(actual, expected, decimal=10)
 
@@ -202,11 +211,3 @@ def test_covariance():
     expected = np.array([[0, 4.24264068712], [4.24264068712, 0]])
     actual = ut.covariance(x)
     assert_almost_equal(actual, expected, decimal=10)
-
-
-def test_dist_to_simi():
-    """Testing the distance to similarity function with predefined distance matrix."""
-    x = np.array([[1, 4], [3, 2]])
-    actual = ut.distance_to_similarity(x, dist=True)
-    expceted = np.array([[(1 / 2), (1 / 5)], [(1 / 4), (1 / 3)]])
-    assert_almost_equal(actual, expceted, decimal=10)
