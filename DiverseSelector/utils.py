@@ -24,6 +24,7 @@
 """Utils module."""
 
 import numpy as np
+from scipy.spatial.distance import squareform
 
 
 __all__ = [
@@ -42,13 +43,14 @@ __all__ = [
 ]
 
 
-def sim_to_dist(x: np.ndarray, metric):
+def sim_to_dist(x, metric):
     """Convert similarity coefficients to distance matrix.
 
     Parameters
     ----------
-    x : ndarray
-        Symmetric similarity array.
+    x : float or ndarray
+        A similarity value as float, or a 1D or 2D array of similarity values.
+        If 2D, the array is assumed to be symmetric.
     metric : str, int
         String or integer specifying which conversion metric to use.
         Supported metrics are "reverse", "reciprocal", "exponential",
@@ -60,7 +62,7 @@ def sim_to_dist(x: np.ndarray, metric):
     Returns
     -------
     ndarray :
-        Symmetric distance array.
+        Symmetric 2D distance array.
     """
     method_dict = {
         "reverse": reverse,
@@ -74,23 +76,43 @@ def sim_to_dist(x: np.ndarray, metric):
         "probability": probability,
         "covariance": covariance,
     }
+    single = False
+    dist = None
+    # Convert all inputs to 2D array:
+    # check if x is a single value
+    if type(x) == float or type(x) == int:
+        x = np.array([[x]])
+        single = True
+    # check if x is 1D array
+    elif x.ndim == 1:
+        x = squareform(x)
 
+    # check that x was a valid input
+    if x.ndim != 1 and x.ndim != 2:
+        raise ValueError(f"Attribute `x` should have dimension 1 or 2 rather than {x.ndim}.")
+
+    # call correct metric function
     if type(metric) == str:
         if metric in method_dict:
-            return method_dict[metric](x)
+            dist = method_dict[metric](x)
         elif metric == "membership" or metric == "confusion":
             if np.any(x < 0) or np.any(x > 1):
                 raise ValueError(
                     "There is an out of bounds value. Please make"
                     "sure all input values are between [0, 1]."
                 )
-            return 1 - x
+            dist = 1 - x
+    # metric is an integer value
     elif type(metric) == int:
-        return metric - x
+        dist = metric - x
+    # unsupported metric
     else:
         raise ValueError(f"{metric} is an unsupported metric.")
 
-    return
+    # convert back to float if input was single value
+    if single:
+        dist = dist.item((0, 0))
+    return dist
 
 
 def reverse(x: np.ndarray):

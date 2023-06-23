@@ -28,6 +28,11 @@ import numpy as np
 from numpy.testing import assert_almost_equal, assert_equal, assert_raises
 
 
+def test_sim_float_int():
+    assert_raises(ValueError, ut.sim_to_dist, 3, "reciprocal")
+    assert_raises(ValueError, ut.sim_to_dist, 0.44, "reciprocal")
+
+
 def test_sim_2_dist():
     """Test similarity to distance method with specified metric"""
     x = np.array([[1, 0.2, 0.5], [0.2, 1, 0.25], [0.5, 0.25, 1]])
