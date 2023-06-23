@@ -171,7 +171,7 @@ class OptiSim(SelectionBase):
     Adapted from  https://doi.org/10.1021/ci970282v
     """
 
-    def __init__(self, r=None, k=10, tolerance=5.0, eps=0, p=2, start_id=0, random_seed=42):
+    def __init__(self, r=None, k=10, tolerance=5.0, eps=0, p=2, start_id=0, random_seed=42, n_iter=10):
         """
         Initializing class.
 
@@ -197,6 +197,8 @@ class OptiSim(SelectionBase):
             Index for the first point to be selected.
         random_seed: int
             Seed for random selection of points be evaluated.
+        n_iter: int
+            Number of iterations to execute when optimizing the size of exclusion radius. Default is 10.
         """
         self.r = r
         self.k = k
@@ -205,6 +207,7 @@ class OptiSim(SelectionBase):
         self.p = p
         self.start_id = start_id
         self.random_seed = random_seed
+        self.n_iter = n_iter
 
     def algorithm(self, arr, uplimit) -> list:
         """

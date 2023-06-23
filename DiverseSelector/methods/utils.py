@@ -63,11 +63,8 @@ def optimize_radius(obj, x, num_selected, cluster_ids=None):
     error = num_selected * obj.tolerance
     lowlimit = round(num_selected - error)
     uplimit = round(num_selected + error)
-    # sort into clusters if data is labelled
-    if cluster_ids is not None:
-        x = x[cluster_ids]
 
-    # use specified radius if passed in
+    # use initial radius if passed in
     if obj.r is not None:
         # run the selection algorithm
         result = obj.algorithm(x, uplimit)
@@ -83,13 +80,15 @@ def optimize_radius(obj, x, num_selected, cluster_ids=None):
 
     # if incorrect number of points chosen, then optimize radius
     if len(result) > num_selected:
-        # Too many points, so the radius should be bigger.
+        # Too many points selected, make radius bigger.
         bounds = [obj.r, np.inf]
     else:
+        # Too few points selected, make radius smaller
         bounds = [0, obj.r]
-    niter = 0
+    n_iter = 0
     print(f"Number of results {len(result)}, {lowlimit}, {uplimit}")
-    while (len(result) < lowlimit or len(result) > uplimit) and niter < 10:
+
+    while (len(result) < lowlimit or len(result) > uplimit) and n_iter < obj.n_iter:
         # too many points selected, make radius larger
         if bounds[1] == np.inf:
             rg = bounds[0] * 2
@@ -102,17 +101,17 @@ def optimize_radius(obj, x, num_selected, cluster_ids=None):
 
         # adjust upper/lower bounds of radius size to fine tune
         if len(result) > num_selected:
+            # Too many points selected, raise lower bound
             bounds[0] = rg
         else:
+            # Too few points selected, lower upper bound
             bounds[1] = rg
-        print(f"Radius ", rg)
-        niter += 1
+        n_iter += 1
     # cannot find radius that produces desired number of selected points
-    if niter >= 10:
+    if n_iter >= obj.n_iter:
         warnings.warn(
-            f"Optimal radius finder failed to converge, selected {len(result)} molecules instead "
-              f"of requested {num_selected}."
+            f"Optimal radius finder failed to converge, selected {len(result)} points instead "
+            f"of requested {num_selected}."
         )
 
-    print(f"radius after optimization: ", obj.r)
     return result
