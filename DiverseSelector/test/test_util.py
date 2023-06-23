@@ -28,9 +28,19 @@ import numpy as np
 from numpy.testing import assert_almost_equal, assert_equal, assert_raises
 
 
-def test_sim_float_int():
-    assert_raises(ValueError, ut.sim_to_dist, 3, "reciprocal")
-    assert_raises(ValueError, ut.sim_to_dist, 0.44, "reciprocal")
+def test_sim_2_dist_float_int():
+    """Test similarity to distance input handling when input is a float or int."""
+    expected_1 = 0.25
+    int_out = ut.sim_to_dist(4, "reciprocal")
+    assert_equal(int_out, expected_1)
+    expected_2 = 2
+    float_out = ut.sim_to_dist(0.5, "reciprocal")
+    assert_equal(float_out, expected_2)
+
+
+def test_sim_2_dist_input_error():
+    """Test sim to dist function with incorrect input for `x`"""
+    assert_raises(ValueError, ut.sim_to_dist, np.ones([2,2,2]), "reciprocal")
 
 
 def test_sim_2_dist():
@@ -143,6 +153,33 @@ def test_transition_error():
     """Test the correlation function with an out of bounds array."""
     x = np.array([[1, 0, -7], [0, 1, 3], [-7, 3, 1]])
     assert_raises(ValueError, ut.correlation, x)
+
+
+def test_co_occurrence():
+    """Test the co-occurrence conversion function."""
+    x = np.array([[1, 2, 3],
+                  [2, 1, 3],
+                  [3, 3, 1]])
+    sum_mult_x = np.array([[19, 38, 57],
+                           [38, 19, 57],
+                           [57, 57, 19]])
+    expected = np.array([[1/(19/121 + 1), 1/(38/121 + 1), 1/(57/121 + 1)],
+                        [1/(38/121 + 1), 1/(19/121 + 1), 1/(57/121 + 1)],
+                        [1/(57/121 + 1), 1/(57/121 + 1), 1/(19/121 + 1)]])
+    actual = ut.co_occur(x)
+    assert_almost_equal(actual, expected, decimal=10)
+
+
+def test_gravity():
+    """Test the gravity conversion function."""
+    x = np.array([[1, 2, 3],
+                  [2, 1, 3],
+                  [3, 3, 1]])
+    expected = np.array([[2.5235730726, 1.7844356324, 1.45698559277],
+                         [1.7844356324, 2.5235730726, 1.45698559277],
+                         [1.45698559277, 1.45698559277, 2.5235730726]])
+    actual = ut.gravity(x)
+    assert_almost_equal(actual, expected, decimal=10)
 
 
 def test_probability():
