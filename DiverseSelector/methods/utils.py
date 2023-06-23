@@ -21,84 +21,98 @@
 # --
 
 """Module for Selection Utilities."""
+import warnings
 
 import numpy as np
 
 
 __all__ = [
-    "predict_radius",
+    "optimize_radius",
 ]
 
 
-def predict_radius(obj, arr, num_selected, cluster_ids=None):
-    """Algorithm that uses sphere_exclusion for selecting points from cluster.
+def optimize_radius(obj, x, num_selected, cluster_ids=None):
+    """Algorithm that uses sphere exclusion for selecting points from cluster.
+
+    Iteratively searches for the optimal radius to obtain the correct number
+    of selected points. If the radius cannot converge to return `num_selected` points,
+    the function returns the closest number of points to `num_selected` as possible.
 
     Parameters
     ----------
     obj: object
-        Instance of dissimilarity selection class
-    arr: np.ndarray
-        Coordinate array of points
+        Instance of 'DirectedSphereExclusion' or 'OptiSim' selection class.
+    x: np.ndarray
+        Feature array.
     num_selected: int
-        Number of molecules that need to be selected.
+        Number of points that need to be selected.
     cluster_ids: np.ndarray
-        Indices of molecules that form a cluster
+        Indices of points that form a cluster.
 
     Returns
     -------
     selected: list
-        List of ids of selected molecules
+        List of ids of selected points.
     """
+    if x.shape[0] < num_selected:
+        raise RuntimeError(
+            f"The number of selected points {num_selected} is greater than the number of points"
+            f"provided {x.shape[0]}."
+        )
     # set the limits on # of selected points according to the tolerance percentage
-    error = num_selected * obj.tolerance / 100
-    lowlimit = num_selected - error
-    uplimit = num_selected + error
+    error = num_selected * obj.tolerance
+    lowlimit = round(num_selected - error)
+    uplimit = round(num_selected + error)
     # sort into clusters if data is labelled
     if cluster_ids is not None:
-        arr = arr[cluster_ids]
+        x = x[cluster_ids]
 
-    original_r = None
     # use specified radius if passed in
     if obj.r is not None:
-        original_r = obj.r
         # run the selection algorithm
-        result = obj.algorithm(arr, uplimit)
+        result = obj.algorithm(x, uplimit)
     # calculate radius from largest feature values
     else:
-        rg = max(np.ptp(arr, axis=0)) / num_selected * 3
+        rg = max(np.ptp(x, axis=0)) / num_selected * 3
         obj.r = rg
-        result = obj.algorithm(arr, uplimit)
+        result = obj.algorithm(x, uplimit)
 
     # correct number of points chosen, return selected
     if len(result) == num_selected:
         return result
 
-    # incorrect number of points chosen
-    low = obj.r if len(result) > num_selected else 0
-    high = obj.r if low == 0 else None
-    bounds = [low, high]
-    count = 0
-    while (len(result) < lowlimit or len(result) > uplimit) and count < 10:
+    # if incorrect number of points chosen, then optimize radius
+    if len(result) > num_selected:
+        # Too many points, so the radius should be bigger.
+        bounds = [obj.r, np.inf]
+    else:
+        bounds = [0, obj.r]
+    niter = 0
+    print(f"Number of results {len(result)}, {lowlimit}, {uplimit}")
+    while (len(result) < lowlimit or len(result) > uplimit) and niter < 10:
         # too many points selected, make radius larger
-        if bounds[1] is None:
+        if bounds[1] == np.inf:
             rg = bounds[0] * 2
         # too few points selected, make radius smaller
         else:
             rg = (bounds[0] + bounds[1]) / 2
         obj.r = rg
         # re-run selection with new radius
-        result = obj.algorithm(arr, uplimit)
+        result = obj.algorithm(x, uplimit)
 
         # adjust upper/lower bounds of radius size to fine tune
         if len(result) > num_selected:
             bounds[0] = rg
         else:
             bounds[1] = rg
-        count += 1
+        print(f"Radius ", rg)
+        niter += 1
     # cannot find radius that produces desired number of selected points
-    if count >= 10:
-        print(f"Optimal radius finder failed to converge, selected {len(result)} molecules instead "
-              f"of requested {num_selected}.")
-    # undo any changes to radius
-    obj.r = original_r
+    if niter >= 10:
+        warnings.warn(
+            f"Optimal radius finder failed to converge, selected {len(result)} molecules instead "
+              f"of requested {num_selected}."
+        )
+
+    print(f"radius after optimization: ", obj.r)
     return result
