@@ -25,6 +25,7 @@
 
 import DiverseSelector.utils as ut
 import numpy as np
+from numpy import inf
 from numpy.testing import assert_almost_equal, assert_equal, assert_raises
 
 
@@ -41,8 +42,8 @@ def test_sim_2_dist_float_int():
     assert_equal(float_out, expected_2)
 
 
-def test_sim_2_dist_array_error():
-    """Test sim to dist function with incorrect input for `x`"""
+def test_sim_2_dist_array_dimension_error():
+    """Test sim to dist function with incorrect input dimensions for `x`."""
     assert_raises(ValueError, ut.sim_to_dist, np.ones([2, 2, 2]), "reciprocal")
 
 
@@ -56,11 +57,31 @@ def test_sim_2_dist_1d_metric_error():
 
 
 def test_sim_2_dist():
-    """Test similarity to distance method with specified metric"""
+    """Test similarity to distance method with specified metric."""
     x = np.array([[1, 0.2, 0.5], [0.2, 1, 0.25], [0.5, 0.25, 1]])
     expected = np.array([[0.20, 1, 0.70], [1, 0.20, 0.95], [0.70, 0.95, 0.20]])
     actual = ut.sim_to_dist(x, "reverse")
     assert_almost_equal(actual, expected, decimal=10)
+
+
+def test_sim_2_dist_frequency():
+    """Test similarity to distance method with a frequency metric."""
+    x = np.array([[4, 9, 1], [9, 1, 25], [1, 25, 16]])
+    expected = np.array(
+        [[(1 / 2), (1 / 3), 1], [(1 / 3), 1, (1 / 5)], [1, (1 / 5), (1 / 4)]]
+    )
+    actual = ut.sim_to_dist(x, "transition")
+    assert_almost_equal(actual, expected, decimal=10)
+
+
+def test_sim_2_dist_frequency_error():
+    """Test similarity to distance method with a frequency metric and incorrect input."""
+    # zeroes in the frequency matrix
+    x = np.array([[0, 9, 1], [9, 1, 25], [1, 25, 0]])
+    assert_raises(ValueError, ut.sim_to_dist, x, "gravity")
+    # negatives in the frequency matrix
+    y = np.array([[1, -9, 1], [9, 1, -25], [1, 25, 16]])
+    assert_raises(ValueError, ut.sim_to_dist, x, "gravity")
 
 
 def test_sim_2_dist_membership():
@@ -95,6 +116,16 @@ def test_reciprocal():
     assert_equal(actual, expected)
 
 
+def test_reciprocal_error():
+    """Test the reverse function with incorrect input values."""
+    # zero value for similarity (causes divide by zero issues)
+    x = np.array([[0, 4], [3, 2]])
+    assert_raises(ValueError, ut.reciprocal, x)
+    # negative value for similarity (distance cannot be negative)
+    y = np.array([[1, -4], [3, 2]])
+    assert_raises(ValueError, ut.reciprocal, y)
+
+
 def test_exponential():
     """Test the exponential function for similarity to distance conversion."""
     x = np.array([[1, 0.25, 0.40], [0.25, 1, 0.625], [0.40, 0.625, 1]])
@@ -109,6 +140,12 @@ def test_exponential():
     assert_almost_equal(actual, expected, decimal=10)
 
 
+def test_exponential_error():
+    """Test the exponential function when max similarity is zero."""
+    x = np.zeros((4, 4))
+    assert_raises(ValueError, ut.exponential, x)
+
+
 def test_gaussian():
     """Test the gaussian function for similarity to distance conversion."""
     x = np.array([[1, 0.25, 0.40], [0.25, 1, 0.625], [0.40, 0.625, 1]])
@@ -121,6 +158,12 @@ def test_gaussian():
     )
     actual = ut.gaussian(x)
     assert_almost_equal(actual, expected, decimal=10)
+
+
+def test_gaussian_error():
+    """Test the gaussian function when max similarity is zero."""
+    x = np.zeros((4, 4))
+    assert_raises(ValueError, ut.gaussian, x)
 
 
 def test_correlation():
@@ -146,26 +189,18 @@ def test_correlation_error():
 
 def test_transition():
     """Test the transition function for frequency to distance conversion."""
-    x = np.array([[4, 9, 0], [9, 1, 25], [0, 25, 16]])
-    root = np.array([[2, 3, 0], [3, 1, 5], [0, 5, 4]])
+    x = np.array([[4, 9, 1], [9, 1, 25], [1, 25, 16]])
     expected = np.array(
-        [[(1 / 2), (1 / 3), 0], [(1 / 3), 1, (1 / 5)], [0, (1 / 5), (1 / 4)]]
+        [[(1 / 2), (1 / 3), 1], [(1 / 3), 1, (1 / 5)], [1, (1 / 5), (1 / 4)]]
     )
 
     actual = ut.transition(x)
     assert_almost_equal(actual, expected, decimal=10)
 
 
-def test_transition_error():
-    """Test the correlation function with an out of bounds array."""
-    x = np.array([[1, 0, -7], [0, 1, 3], [-7, 3, 1]])
-    assert_raises(ValueError, ut.correlation, x)
-
-
 def test_co_occurrence():
     """Test the co-occurrence conversion function."""
     x = np.array([[1, 2, 3], [2, 1, 3], [3, 3, 1]])
-    sum_mult_x = np.array([[19, 38, 57], [38, 19, 57], [57, 57, 19]])
     expected = np.array(
         [
             [1 / (19 / 121 + 1), 1 / (38 / 121 + 1), 1 / (57 / 121 + 1)],
@@ -201,8 +236,15 @@ def test_probability():
 
 def test_probability_error():
     """Test the correlation function with an out of bounds array."""
-    x = np.array([[1, 0, -0.5], [0, 1, 3], [-0.5, 0.2, 1]])
+    # negative value for probability
+    x = np.array([[-0.5]])
     assert_raises(ValueError, ut.probability, x)
+    # too large value for probability
+    y = np.array([[3]])
+    assert_raises(ValueError, ut.probability, y)
+    # zero value for probability (causes divide by zero issues)
+    z = np.array([[0]])
+    assert_raises(ValueError, ut.probability, z)
 
 
 def test_covariance():
@@ -211,3 +253,9 @@ def test_covariance():
     expected = np.array([[0, 4.24264068712], [4.24264068712, 0]])
     actual = ut.covariance(x)
     assert_almost_equal(actual, expected, decimal=10)
+
+
+def test_covariance_error():
+    """Test the covariance function when input contains a negative variance."""
+    x = np.array([[-4, 4], [4, 6]])
+    assert_raises(ValueError, ut.covariance, x)
