@@ -21,10 +21,10 @@
 #
 # --
 
-"""Utils module."""
+"""Module for converting similarity measures to distance/dissimilarity measures."""
+from typing import Union
 
 import numpy as np
-from scipy.spatial.distance import squareform
 
 
 __all__ = [
@@ -42,7 +42,7 @@ __all__ = [
 ]
 
 
-def sim_to_dist(x, metric: str):
+def sim_to_dist(x: Union[int, float, np.ndarray], metric: str) -> Union[float, np.ndarray]:
     """Convert similarity coefficients to distance array.
 
     Parameters
@@ -58,7 +58,7 @@ def sim_to_dist(x, metric: str):
 
     Returns
     -------
-    dist : float, ndarray
+    dist : float or ndarray
          Distance value or array.
     """
     frequency = {
@@ -83,13 +83,11 @@ def sim_to_dist(x, metric: str):
         single = True
 
     # check if x is 1 array with invalid metric
-    if x.ndim == 1:
-        if metric == "co-occurrence" or metric == "gravity":
-            raise RuntimeError(
-                "This operation unsupported with 1D array. "
-                "Please make sure `x` is a 2D array when using the metric ",
-                metric,
-            )
+    if x.ndim == 1 and metric in ["co-occurrence","gravity"]:
+        raise ValueError(
+            f"The {metric} operation is not supported with 1D array. "
+            f"Please make sure `x` is a 2D array when using the {metric} metric."
+        )
 
     # check that x is a valid array
     if x.ndim != 1 and x.ndim != 2:
@@ -98,24 +96,22 @@ def sim_to_dist(x, metric: str):
         )
 
     # call correct metric function
-    dist = None
-    if type(metric) == str:
-        if metric in frequency:
-            if np.any(x <= 0):
-                raise ValueError(
-                    "There is a negative or zero value in the input. Please "
-                    "make sure all frequency values are positive."
-                )
-            dist = frequency[metric](x)
-        elif metric in method_dict:
-            dist = method_dict[metric](x)
-        elif metric == "membership" or metric == "confusion":
-            if np.any(x < 0) or np.any(x > 1):
-                raise ValueError(
-                    "There is an out of bounds value. Please make "
-                    "sure all input values are between [0, 1]."
-                )
-            dist = 1 - x
+    if metric in frequency:
+        if np.any(x <= 0):
+            raise ValueError(
+                "There is a negative or zero value in the input. Please "
+                "make sure all frequency values are positive."
+            )
+        dist = frequency[metric](x)
+    elif metric in method_dict:
+        dist = method_dict[metric](x)
+    elif metric == "membership" or metric == "confusion":
+        if np.any(x < 0) or np.any(x > 1):
+            raise ValueError(
+                "There is an out of bounds value. Please make "
+                "sure all input values are between [0, 1]."
+            )
+        dist = 1 - x
     # unsupported metric
     else:
         raise ValueError(f"{metric} is an unsupported metric.")
@@ -127,7 +123,7 @@ def sim_to_dist(x, metric: str):
     return dist
 
 
-def reverse(x: np.ndarray):
+def reverse(x: np.ndarray) -> np.ndarray:
     r"""Calculate distance array from similarity using the reverse method.
 
     .. math::
@@ -145,15 +141,15 @@ def reverse(x: np.ndarray):
 
     Returns
     -------
-    ndarray :
+    dist : ndarray
         Distance array.
 
     """
-    dist = (np.max(x) + np.min(x)) - x
+    dist = np.max(x) + np.min(x) - x
     return dist
 
 
-def reciprocal(x: np.ndarray):
+def reciprocal(x: np.ndarray) -> np.ndarray:
     r"""Calculate distance array from similarity using the reciprocal method.
 
     .. math::
@@ -169,7 +165,7 @@ def reciprocal(x: np.ndarray):
 
     Returns
     -------
-    ndarray :
+    dist : ndarray
         Distance array.
     """
 
@@ -181,7 +177,7 @@ def reciprocal(x: np.ndarray):
     return 1 / x
 
 
-def exponential(x: np.ndarray):
+def exponential(x: np.ndarray) -> np.ndarray:
     r"""Calculate distance matrix from similarity using the exponential method.
 
     .. math::
@@ -197,7 +193,7 @@ def exponential(x: np.ndarray):
 
     Returns
     -------
-    ndarray :
+    dist : ndarray
         Distance array.
 
     """
@@ -208,7 +204,7 @@ def exponential(x: np.ndarray):
     return dist
 
 
-def gaussian(x: np.ndarray):
+def gaussian(x: np.ndarray) -> np.ndarray:
     r"""Calculate distance matrix from similarity using the Gaussian method.
 
     .. math::
@@ -224,7 +220,7 @@ def gaussian(x: np.ndarray):
 
     Returns
     -------
-    ndarray :
+    dist : ndarray
         Distance array.
 
     """
@@ -236,7 +232,7 @@ def gaussian(x: np.ndarray):
     return dist
 
 
-def correlation(x: np.ndarray):
+def correlation(x: np.ndarray) -> np.ndarray:
     r"""Calculate distance array from correlation array.
 
     .. math::
@@ -252,7 +248,7 @@ def correlation(x: np.ndarray):
 
     Returns
     -------
-    ndarray :
+    dist : ndarray
         Distance array.
 
     """
@@ -265,7 +261,7 @@ def correlation(x: np.ndarray):
     return dist
 
 
-def transition(x: np.ndarray):
+def transition(x: np.ndarray) -> np.ndarray:
     r"""Calculate distance array from frequency using the transition method.
 
     .. math::
@@ -281,7 +277,7 @@ def transition(x: np.ndarray):
 
     Returns
     -------
-    ndarray :
+    dist : ndarray
         Distance array.
 
     """
@@ -289,7 +285,7 @@ def transition(x: np.ndarray):
     return dist
 
 
-def co_occurrence(x: np.ndarray):
+def co_occurrence(x: np.ndarray) -> np.ndarray:
     r"""Calculate distance array from frequency using the co-occurrence method.
 
     .. math::
@@ -306,7 +302,7 @@ def co_occurrence(x: np.ndarray):
 
     Returns
     -------
-    ndarray :
+    dist : ndarray
         Co-occurrence array.
 
     """
@@ -322,7 +318,7 @@ def co_occurrence(x: np.ndarray):
     return dist
 
 
-def gravity(x: np.ndarray):
+def gravity(x: np.ndarray) -> np.ndarray:
     r"""Calculate distance array from frequency using the gravity method.
 
     .. math::
@@ -339,7 +335,7 @@ def gravity(x: np.ndarray):
 
     Returns
     -------
-    ndarray :
+    dist : ndarray
         Symmetric gravity array.
 
     """
@@ -355,7 +351,7 @@ def gravity(x: np.ndarray):
     return dist
 
 
-def probability(x: np.ndarray):
+def probability(x: np.ndarray) -> np.ndarray:
     r"""Calculate distance array from probability array.
 
     .. math::
@@ -371,7 +367,7 @@ def probability(x: np.ndarray):
 
     Returns
     -------
-    ndarray :
+    dist : ndarray
         Distance array.
 
     """
@@ -385,7 +381,7 @@ def probability(x: np.ndarray):
     return dist
 
 
-def covariance(x: np.ndarray):
+def covariance(x: np.ndarray) -> np.ndarray:
     r"""Calculate distance array from similarity using the covariance method.
 
     .. math::
@@ -403,18 +399,14 @@ def covariance(x: np.ndarray):
 
     Returns
     -------
-    ndarray :
+    dist : ndarray
         Distance array.
 
     """
-    variances = np.diag(x)
-    if np.any(variances < 0):
+    variance = np.diag(x).reshape([x.shape[0], 1]) * np.ones([1, x.shape[0]])
+    if np.any(variance < 0):
         raise ValueError("Variance of a single variable cannot be negative.")
-    # initialize distance array
-    dist = np.empty(x.shape)
-    for i in range(0, x.shape[0]):
-        for j in range(0, x.shape[1]):
-            # for each entry in covariance array, calculate distance
-            dist[i][j] = variances[i] + variances[j] - 2 * x[i][j]
+
+    dist = variance + variance.T - 2*x
     dist = np.sqrt(dist)
     return dist

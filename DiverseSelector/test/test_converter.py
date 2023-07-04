@@ -48,8 +48,8 @@ def test_sim_2_dist_array_dimension_error():
 
 def test_sim_2_dist_1d_metric_error():
     """Test sim to dist function with an invalid metric for 1D arrays."""
-    assert_raises(RuntimeError, cv.sim_to_dist, np.ones(5), "gravity")
-    assert_raises(RuntimeError, cv.sim_to_dist, np.ones(5), "co-occurrence")
+    assert_raises(ValueError, cv.sim_to_dist, np.ones(5), "gravity")
+    assert_raises(ValueError, cv.sim_to_dist, np.ones(5), "co-occurrence")
 
 
 # Tests for variations on input `metric` for sim_to_dist()
@@ -92,8 +92,14 @@ def test_sim_2_dist_membership():
 
 
 def test_sim_2_dist_membership_error():
+    """Test similarity to distance method with the membership metric when there is an input error."""
     x = np.array([[1, 0, -7], [0, 1, 3], [-7, 3, 1]])
     assert_raises(ValueError, cv.sim_to_dist, x, "membership")
+
+
+def test_sim_2_dist_invalid_metric():
+    """Test similarity to distance method with an unsupported metric."""
+    assert_raises(ValueError, cv.sim_to_dist, np.ones(5), "testing")
 
 
 # Tests for individual metrics
