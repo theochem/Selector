@@ -51,14 +51,14 @@ def test_maxmin():
     # use MaxMin algorithm to select points from clustered data
     selector = MaxMin()
     selected_ids = selector.select(arr=arr_dist_cluster,
-                                   num_selected=12,
+                                   size=12,
                                    labels=class_labels_cluster)
     # make sure all the selected indices are the same with expectation
     assert_equal(selected_ids, [41, 34, 94, 85, 51, 50, 66, 78, 21, 64, 29, 83])
 
     # use MaxMin algorithm to select points from non-clustered data
     selector = MaxMin()
-    selected_ids = selector.select(arr=arr_dist, num_selected=12)
+    selected_ids = selector.select(arr=arr_dist, size=12)
     # make sure all the selected indices are the same with expectation
     assert_equal(selected_ids, [85, 57, 41, 25, 9, 62, 29, 65, 81, 61, 60, 97])
 
@@ -87,7 +87,7 @@ def test_maxmin():
     # selecting molecules
     selector = MaxMin(lambda x: pairwise_distances(x, metric='euclidean'))
     selected_mocked = selector.select(mocked_cluster_coords,
-                                      num_selected=15,
+                                      size=15,
                                       labels=labels_mocked)
     assert_equal(selected_mocked, [0, 1, 2, 3, 4, 5, 6, 7, 8, 16, 15, 10, 13, 9, 18])
 
@@ -112,13 +112,13 @@ def test_maxsum():
 
     # use MaxSum algorithm to select points from clustered data, instantiating with euclidean distance metric
     selector = MaxSum(lambda x: pairwise_distances(x, metric='euclidean'))
-    selected_ids = selector.select(arr=coords_cluster, num_selected=12, labels=class_labels_cluster)
+    selected_ids = selector.select(arr=coords_cluster, size=12, labels=class_labels_cluster)
     # make sure all the selected indices are the same with expectation
     assert_equal(selected_ids, [41, 34, 85, 94, 51, 50, 78, 66, 21, 64, 0, 83])
 
     # use MaxSum algorithm to select points from non-clustered data, instantiating with euclidean distance metric
     selector = MaxSum(lambda x: pairwise_distances(x, metric='euclidean'))
-    selected_ids = selector.select(arr=coords, num_selected=12)
+    selected_ids = selector.select(arr=coords, size=12)
     # make sure all the selected indices are the same with expectation
     assert_equal(selected_ids, [85, 57, 25, 41, 95, 9, 21, 8, 13, 68, 37, 54])
 
@@ -143,19 +143,19 @@ def test_optisim():
 
     # use OptiSim algorithm to select points from clustered data
     selector = OptiSim()
-    selected_ids = selector.select(arr=coords_cluster, num_selected=12, labels=class_labels_cluster)
+    selected_ids = selector.select(arr=coords_cluster, size=12, labels=class_labels_cluster)
     # make sure all the selected indices are the same with expectation
     assert_equal(selected_ids, [2, 85, 86, 59, 1, 66, 50, 68, 0, 64, 83, 72])
 
     # use OptiSim algorithm to select points from non-clustered data
     selector = OptiSim()
-    selected_ids = selector.select(arr=coords, num_selected=12)
+    selected_ids = selector.select(arr=coords, size=12)
     # make sure all the selected indices are the same with expectation
     assert_equal(selected_ids, [0, 8, 55, 37, 41, 13, 12, 42, 6, 30, 57, 76])
 
     # tester to check if OptiSim gives same results as MaxMin for k=>infinity
     selector = OptiSim(start_id=85, k=999999)
-    selected_ids_optisim = selector.select(arr=coords, num_selected=12)
+    selected_ids_optisim = selector.select(arr=coords, size=12)
     selector = MaxMin()
-    selected_ids_maxmin = selector.select(arr=arr_dist, num_selected=12)
+    selected_ids_maxmin = selector.select(arr=arr_dist, size=12)
     assert_equal(selected_ids_optisim, selected_ids_maxmin)

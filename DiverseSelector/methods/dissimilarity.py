@@ -22,7 +22,7 @@
 
 """Module for Dissimilarity-Based Selection Methods."""
 
-from DiverseSelector.base import SelectionBase
+from DiverseSelector.methods.base import SelectionBase
 from DiverseSelector.methods.utils import predict_radius
 import numpy as np
 from scipy import spatial
