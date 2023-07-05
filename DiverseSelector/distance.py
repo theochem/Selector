@@ -25,6 +25,7 @@
 
 
 import numpy as np
+from itertools import combinations_with_replacement
 from scipy.spatial import distance_matrix
 from scipy.spatial.distance import squareform
 
@@ -36,37 +37,40 @@ __all__ = [
 ]
 
 
-def pairwise_similarity_bit(features: np.array, metric: str) -> np.ndarray:
-    """Compute the pairwise similarity coefficients and returns them in
-        a square symmetric matrix.
+def pairwise_similarity_bit(X: np.array, metric: str) -> np.ndarray:
+    """Compute pairwise similarity coefficient matrix.
 
     Parameters
     ----------
-    features : ndarray
-        Feature matrix.
+    X : ndarray
+        An `m` by `n` feature array of `m` samples in an `n`-dimensional feature space.
     metric : str
-        Method of calculation.
+        Method for calculating similarity coefficient. Options: `"tanimoto"`, `"modified_tanimoto"`.
 
     Returns
     -------
-    pair_coeff : ndarray
-        Similarity coefficients for all data point pairs in feature matrix.
+    pair_simi : ndarray
+        Returns a symmetric `m` by `m` array containing the similarity coefficient between
+        each pair of samples in the feature matrix. The diagonal elements are directly
+        computed instead of assuming that they are 1.
     """
 
-    function_dict = {
+    available_methods = {
         "tanimoto": tanimoto,
         "modified_tanimoto": modified_tanimoto,
     }
+    if metric not in available_methods:
+        raise ValueError(f"Argument metric={metric} is not recognized! Choose from {available_methods.keys()}")
+    if X.ndim != 2:
+        raise ValueError(f"Argument features should be a 2D array, got {X.ndim}")
 
-    pair_simi = []
-    size = len(features)
-    for i in range(0, size):
-        for j in range(i + 1, size):
-            # use the specified metric to compute similarity between all distinct molecule pairs
-            pair_simi.append(function_dict[metric](features[i], features[j]))
-    # shape into symmetric matrix
-    pair_coeff = squareform(pair_simi) + np.identity(size)
-    return pair_coeff
+    # make pairwise m-by-m similarity matrix
+    m = len(X)
+    pair_simi = np.zeros((m, m))
+    # compute similarity between all pairs of points (including the diagonal elements)
+    for i, j in combinations_with_replacement(range(m), 2):
+        pair_simi[i, j] = pair_simi[j, i] = available_methods[metric](X[i], X[j])
+    return pair_simi
 
 
 def tanimoto(a: np.array, b: np.array) -> float:
