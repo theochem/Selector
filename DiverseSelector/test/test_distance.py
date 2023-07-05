@@ -52,6 +52,15 @@ sample4 = np.array([[1, 0, 1],
                     [0, 1, 1]])
 
 
+def test_pairwise_similarity_bit_raises():
+    # check raised error for input feature matrix that is not 2D
+    assert_raises(ValueError, pairwise_similarity_bit, np.random.random(5), "tanimoto")
+    assert_raises(ValueError, pairwise_similarity_bit, np.random.random((2, 3, 4)), "tanimoto")
+    # check raised error for not-available method
+    assert_raises(ValueError, pairwise_similarity_bit, np.random.random((5, 1)), "tan")
+    assert_raises(ValueError, pairwise_similarity_bit, np.random.random((5, 1)), tanimoto)
+
+
 def test_tanimoto():
     """Test the tanimoto function on one pair of points."""
     a = np.array([2, 0, 1])
