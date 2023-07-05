@@ -26,7 +26,7 @@ import collections
 import math
 
 import bitarray
-from DiverseSelector.base import SelectionBase
+from DiverseSelector.methods.base import SelectionBase
 from DiverseSelector.diversity import compute_diversity
 from DiverseSelector.methods.utils import predict_radius
 import numpy as np

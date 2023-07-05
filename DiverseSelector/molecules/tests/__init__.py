@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # The DiverseSelector library provides a set of tools to select molecule
 # subset with maximum molecular diversity.
 #
@@ -20,4 +21,4 @@
 #
 # --
 
-"""Module for Clustering-Based Selection Methods."""
+"""Testing Module for DiverseSelector."""
