@@ -114,19 +114,22 @@ def entropy(x: np.ndarray) -> float:
     """
 
     # initialize variables
-    length = len(x[0])
-    n = len(x)
+    
+    num_features = len(x[0])
+    num_points = len(x)
+    print("length: ", num_features)
+    print("n: ", num_points)
     top = 0
     # count bits in fingerprint and order them
     counts = np.count_nonzero(x, axis=0)
     counts = np.sort(counts)
     # sum entropy calculation for each feature
     if 0 in counts:
-        raise ValueError
-    for i in range(0, length):
-        top += ((counts[i]) / n) * (np.log(counts[i] / n))
-    e = -1 * (top / (length * 0.34657359027997264))
-    return e
+        raise ValueError("Redundant feature in matrix. Please remove it and try again.")
+    for i in range(0, num_features):
+        top += ((counts[i]) / num_points) * (np.log(counts[i] / num_points))
+    ent = -1 * (top / (num_features * 0.34657359027997264))
+    return ent
 
 
 def logdet(x: np.ndarray) -> float:
