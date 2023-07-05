@@ -32,7 +32,7 @@ __all__ = [
     "pairwise_similarity_bit",
     "tanimoto",
     "modified_tanimoto",
-    "nearest_average_tanimoto"
+    "nearest_average_tanimoto",
 ]
 
 
@@ -50,7 +50,7 @@ def pairwise_similarity_bit(features: np.array, metric: str) -> np.ndarray:
     Returns
     -------
     pair_coeff : ndarray
-        Similarity coefficients for all molecule pairs in feature matrix.
+        Similarity coefficients for all data point pairs in feature matrix.
     """
 
     function_dict = {
@@ -78,14 +78,14 @@ def tanimoto(a: np.array, b: np.array) -> float:
     Parameters
     ----------
     a : array_like
-        Molecule A's features.
+        Data point A's features.
     b : array_like
-        Molecules B's features.
+        Data point B's features.
 
     Returns
     -------
     coeff : float
-        Tanimoto coefficient for molecules A and B.
+        Tanimoto coefficient for data points A and B.
 
     Notes
     -----
@@ -96,31 +96,31 @@ def tanimoto(a: np.array, b: np.array) -> float:
     Why is Tanimoto index an appropriate choice for fingerprint-based similarity calculations?.
     Journal of Cheminformatics 7.
     """
-    coeff = (sum(a * b)) / ((sum(a ** 2)) + (sum(b ** 2)) - (sum(a * b)))
+    coeff = (sum(a * b)) / ((sum(a**2)) + (sum(b**2)) - (sum(a * b)))
     return coeff
 
 
 def modified_tanimoto(a: np.array, b: np.array) -> float:
-    r"""Compute the modified tanimoto coefficient from bitstrings of molecules A and B.
+    r"""Compute the modified tanimoto coefficient from bitstring vectors of data points A and B.
 
     Adjusts calculation of the Tanimoto coefficient to counter its natural bias towards
-    smaller molecules using a Bernoulli probability model.
+    shorter vectors using a Bernoulli probability model.
 
     ..math::
     MT = \frac{2-p}{3}T_1 + \frac{1+p}{3}T_0
 
     where :math:`p` is success probability of independent trials,
-    :math:`T_1` is the number of common '1' bits between molecules
+    :math:`T_1` is the number of common '1' bits between data points
     (:math:`T_1 = | A \cap B |`), and :math:`T_0` is the number of common '0'
-    bits between molecules (:math:`T_0 = |(1-A) \cap (1-B)|`).
+    bits between data points (:math:`T_0 = |(1-A) \cap (1-B)|`).
 
 
     Parameters
     ----------
     a : array_like
-        Molecule A's features in bitstring.
+        Data point A's features in bitstring.
     b : array_like
-        Molecules B's features in bitstring.
+        Data point B's features in bitstring.
 
     Returns
     -------
@@ -144,18 +144,14 @@ def modified_tanimoto(a: np.array, b: np.array) -> float:
     Technometrics 44, 110-119.
     """
     if a.ndim != 1:
-        raise ValueError(
-            f"Argument `a` should have dimension 1 rather than {a.ndim}."
-        )
+        raise ValueError(f"Argument `a` should have dimension 1 rather than {a.ndim}.")
     if b.ndim != 1:
-        raise ValueError(
-            f"Argument `b` should have dimension 1 rather than {b.ndim}."
-        )
+        raise ValueError(f"Argument `b` should have dimension 1 rather than {b.ndim}.")
 
     n = len(a)
-    # number of common '1' bits between molecules A and B
+    # number of common '1' bits between points A and B
     n_11 = sum(a * b)
-    # number of common '0' bits between molecules A and B
+    # number of common '0' bits between points A and B
     n_00 = sum((1 - a) * (1 - b))
 
     # calculate Tanimoto coeff based on '1' bits
@@ -182,7 +178,7 @@ def modified_tanimoto(a: np.array, b: np.array) -> float:
 
 
 def nearest_average_tanimoto(x: np.ndarray) -> float:
-    """Computes the average tanimoto for nearest molecules.
+    """Computes the average tanimoto for nearest data points.
 
     Parameters
     ----------
@@ -192,13 +188,13 @@ def nearest_average_tanimoto(x: np.ndarray) -> float:
     Returns
     -------
     float :
-        Average tanimoto of closest pairs.
+        Average Tanimoto of closest pairs.
 
     Notes
     -----
-    This computes the tanimoto coefficient of pairs with the shortest
-    distances, then returns the average of them.
-    This calculation is explictly for the explicit diversity index.
+    This computes the Tanimoto coefficient of pairs of data points
+    with the shortest distances, then returns the average of them.
+    This calculation is explicitly for the explicit diversity index.
 
     Papp, Á., Gulyás-Forró, A., Gulyás, Z., Dormán, G., Ürge, L.,
     and Darvas, F.. (2006) Explicit Diversity Index (EDI):
@@ -208,13 +204,12 @@ def nearest_average_tanimoto(x: np.ndarray) -> float:
     tani = []
     # calculate euclidean distance between all points
     #     and adjust for distance to self
-    dist = distance_matrix(x, x) + 100*np.eye(x.shape[0])
+    dist = distance_matrix(x, x) + np.inf*np.eye(x.shape[0])
     # find closest point for each row of x
     short_idx = np.argmin(dist, axis=0)
-    print(f"these are the shortest indices:", short_idx)
-    for idx in range(0, len(short_idx)):
+    for idx, min_d in enumerate(short_idx):
         # compute the tanimoto coeff for each pair of closest points
-        tani.append(tanimoto(x[idx], x[short_idx[idx]]))
+        tani.append(tanimoto(x[idx], x[min_d]))
     # take the average of all coeffs calculated
     nat = np.average(tani)
     return nat
