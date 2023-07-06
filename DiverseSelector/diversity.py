@@ -41,22 +41,22 @@ __all__ = [
 
 
 def compute_diversity(
-    features: np.array,
+    feature_subset: np.array,
     div_type: str = "entropy",
-    library: np.array = None,
+    features: np.array = None,
 ) -> float:
     """Compute diversity metrics.
 
     Parameters
     ----------
-    features : np.ndarray
+    feature_subset : np.ndarray
         Feature matrix.
     div_type : str, optional
         Method of calculation diversity for a given molecule set, which
         includes "entropy", "logdet", "shannon_entropy", "wdud",
         gini_coefficient" and "hypersphere_overlap_of_subset".
         Default is "entropy".
-    library : np.ndarray, optional
+    features : np.ndarray, optional
         Feature matrix of entire molecule library, used only if
         calculating hypersphere_overlap_of_subset. Default is "None".
     Returns
@@ -73,9 +73,12 @@ def compute_diversity(
     }
 
     if div_type in func_dict:
-        return func_dict[div_type](features)
+        return func_dict[div_type](feature_subset)
     elif div_type == "hypersphere_overlap_of_subset":
-        return hypersphere_overlap_of_subset(library, features)
+        if features is None:
+            raise ValueError("Please input a feature matrix of the entire "
+                             "dataset when calculating hypersphere overlap.")
+        return hypersphere_overlap_of_subset(features, feature_subset)
     else:
         raise ValueError(f"Diversity type {div_type} not supported.")
 
@@ -117,8 +120,6 @@ def entropy(x: np.ndarray) -> float:
     
     num_features = len(x[0])
     num_points = len(x)
-    print("length: ", num_features)
-    print("n: ", num_points)
     top = 0
     # count bits in fingerprint and order them
     counts = np.count_nonzero(x, axis=0)
@@ -354,7 +355,6 @@ def hypersphere_overlap_of_subset(x: np.ndarray, x_subset: np.array) -> float:
                 dist = r_o
             edge_pen += dist
         edge_pen /= (d * r_o)
-        # print("Should be positive value only", (1.0 - edge_pen))
         edge_pen = lam * (1.0 - edge_pen)
         edge += edge_pen
     g_s += edge
@@ -400,7 +400,7 @@ def gini_coefficient(x: np.ndarray):
             f"Attribute `x` should have dimension two rather than {x.ndim}."
         )
 
-    numb_features = x.shape[1]
+    num_features = x.shape[1]
     # Take the bit-count of each column/molecule.
     bit_count = np.sum(x, axis=0)
 
@@ -408,7 +408,7 @@ def gini_coefficient(x: np.ndarray):
     bit_count = np.sort(bit_count)
 
     # Mean of denominator
-    denominator = numb_features * np.sum(bit_count)
-    numerator = np.sum(np.arange(1, numb_features + 1) * bit_count)
+    denominator = num_features * np.sum(bit_count)
+    numerator = np.sum(np.arange(1, num_features + 1) * bit_count)
 
-    return 2.0 * numerator / denominator - (numb_features + 1) / numb_features
+    return 2.0 * numerator / denominator - (num_features + 1) / num_features

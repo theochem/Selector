@@ -89,6 +89,10 @@ def test_compute_diversity_hyperspheres():
     assert_almost_equal(comp_div, expected)
 
 
+def test_compute_diversity_hypersphere_error():
+    """Test compute diversity with hypersphere metric and no molecule library given."""
+    assert_raises(ValueError, compute_diversity, sample5, "hypersphere_overlap_of_subset")
+
 def test_compute_diversity_invalid():
     """Test compute diversity with a non-supported div_type."""
     assert_raises(ValueError, compute_diversity, sample1, "diversity_type")
@@ -254,6 +258,11 @@ def test_gini_coefficient_of_most_diverse_set():
     result = gini_coefficient(finger_prints)
     # Since they are all the same, then gini coefficient should be zero.
     assert_almost_equal(result, 1.0, decimal=4)
+
+
+def test_gini_coefficient_binary_error():
+    """Test Gini coefficient with a matrix that is not binary."""
+    assert_raises(ValueError, gini_coefficient, sample5)
 
 
 def test_gini_coefficient_with_alternative_definition():
