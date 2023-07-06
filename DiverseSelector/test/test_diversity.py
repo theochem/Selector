@@ -239,7 +239,7 @@ def test_gini_coefficient_of_non_diverse_set():
 
 def test_gini_coefficient_non_binary_error():
     """Test Gini coefficient error when input is not binary."""
-    assert_raises(ValueError, gini_coefficient, np.array([[1, 2], [7, 1]]))
+    assert_raises(ValueError, gini_coefficient, np.array([[7, 0], [2, 1]]))
 
 
 def test_gini_coefficient_dimension_error():
@@ -258,11 +258,6 @@ def test_gini_coefficient_of_most_diverse_set():
     result = gini_coefficient(finger_prints)
     # Since they are all the same, then gini coefficient should be zero.
     assert_almost_equal(result, 1.0, decimal=4)
-
-
-def test_gini_coefficient_binary_error():
-    """Test Gini coefficient with a matrix that is not binary."""
-    assert_raises(ValueError, gini_coefficient, sample5)
 
 
 def test_gini_coefficient_with_alternative_definition():
