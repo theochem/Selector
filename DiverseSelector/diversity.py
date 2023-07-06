@@ -393,7 +393,7 @@ def gini_coefficient(x: np.ndarray):
 
     """
     # Check that `x` is a bit-wise fingerprint.
-    if np.any(np.abs(np.sort(np.unique(x)) - np.array([0, 1])) > 1e-8):
+    if np.count_nonzero((x != 0) & (x != 1)) != 0:
         raise ValueError("Attribute `x` should have binary values.")
     if x.ndim != 2:
         raise ValueError(
