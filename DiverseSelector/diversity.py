@@ -76,8 +76,10 @@ def compute_diversity(
         return func_dict[div_type](feature_subset)
     elif div_type == "hypersphere_overlap_of_subset":
         if features is None:
-            raise ValueError("Please input a feature matrix of the entire "
-                             "dataset when calculating hypersphere overlap.")
+            raise ValueError(
+                "Please input a feature matrix of the entire "
+                "dataset when calculating hypersphere overlap."
+            )
         return hypersphere_overlap_of_subset(features, feature_subset)
     else:
         raise ValueError(f"Diversity type {div_type} not supported.")
@@ -117,7 +119,7 @@ def entropy(x: np.ndarray) -> float:
     """
 
     # initialize variables
-    
+
     num_features = len(x[0])
     num_points = len(x)
     top = 0
@@ -167,7 +169,7 @@ def logdet(x: np.ndarray) -> float:
 
 
 def shannon_entropy(x: np.ndarray) -> float:
-    r"""Computes the shannon entropy of a matrix.
+    r"""Computes the shannon entropy of a binary matrix.
 
     The equation for Shannon entropy is
 
@@ -196,6 +198,11 @@ def shannon_entropy(x: np.ndarray) -> float:
     in a more robust QM dataset (OD9) and a more efficient molecular optimization.
     Journal of Cheminformatics 13.
     """
+
+    # check if matrix is binary
+    if np.count_nonzero((x != 0) & (x != 1)) != 0:
+        raise ValueError("Attribute `x` should have binary values.")
+
     num_feat = len(x[0, :])
     num_mols = len(x[:, 0])
     h_x = 0
@@ -204,7 +211,9 @@ def shannon_entropy(x: np.ndarray) -> float:
         p_i = np.count_nonzero(x[:, i]) / num_mols
         # sum all non-zero terms
         if p_i == 0:
-            raise ValueError(f"Feature {i} has value 0 for all molecules. Remove extraneous feature from data set.")
+            raise ValueError(
+                f"Feature {i} has value 0 for all molecules. Remove extraneous feature from data set."
+            )
         h_x += (-1 * p_i) * np.log10(p_i)
     return h_x
 
@@ -253,7 +262,9 @@ def wdud(x: np.ndarray) -> float:
     min_x = np.min(x, axis=0)
     # Normalization of each feature to [0, 1]
     if np.any(np.abs(max_x - min_x) < 1e-30):
-        raise ValueError(f"One of the features is redundant and causes normalization to fail.")
+        raise ValueError(
+            f"One of the features is redundant and causes normalization to fail."
+        )
     x_norm = (x - min_x) / (max_x - min_x)
     ans = []  # store the Wasserstein distance for each feature
     for i in range(0, num_features):
@@ -261,7 +272,7 @@ def wdud(x: np.ndarray) -> float:
         y = np.sort(x_norm[:, i])
         # Round to the sixth decimal place and count number of unique elements
         #    to construct an accurate cumulative discrete distribution func \sum_{x <= y_{i + 1}} 1/k
-        y, counts = np.unique(np.round(x_norm[:,i], decimals=6), return_counts=True)
+        y, counts = np.unique(np.round(x_norm[:, i], decimals=6), return_counts=True)
         p = 0
         # Ignore 0 and because v_min= 0
         for j in range(1, len(counts)):
@@ -271,7 +282,7 @@ def wdud(x: np.ndarray) -> float:
             # Make a grid from yi1 to yi
             grid = np.linspace(yi1, yi, num=1000, endpoint=True)
             # Evaluate the integrand  |x - \sum_{x <= y_{i + 1}} 1/k|
-            p += counts[j-1]
+            p += counts[j - 1]
             integrand = np.abs(grid - p / num_mols)
             # Integrate using np.trapz
             wdu += np.trapz(y=integrand, x=grid)
@@ -323,23 +334,27 @@ def hypersphere_overlap_of_subset(x: np.ndarray, x_subset: np.array) -> float:
     min_x = np.min(x, axis=0)
     # Normalization of each feature to [0, 1]
     if np.any(np.abs(max_x - min_x) < 1e-30):
-        raise ValueError(f"One of the features is redundant and causes normalization to fail.")
+        raise ValueError(
+            f"One of the features is redundant and causes normalization to fail."
+        )
     x_norm = (x_subset - min_x) / (max_x - min_x)
     # r_o = hypersphere radius
     r_o = d * np.sqrt(1 / k)
     if r_o > 0.5:
-        warnings.warn(f"The number of molecules should be much larger"
-                      " than the number of features.")
+        warnings.warn(
+            f"The number of molecules should be much larger"
+            " than the number of features."
+        )
     g_s = 0
     edge = 0
-    lam = (d - 1.0) / d   # Lambda parameter controls edge penalty
+    lam = (d - 1.0) / d  # Lambda parameter controls edge penalty
     # calculate overlap volume
     for i in range(0, (k - 1)):
         for j in range((i + 1), k):
             dist = np.linalg.norm(x_norm[i] - x_norm[j])
             # Overlap penalty
             if dist <= (2 * r_o):
-                with np.errstate(divide='ignore'):
+                with np.errstate(divide="ignore"):
                     # min(100) ignores the inf case with divide by zero
                     g_s += min(100, 2 * (r_o / dist) - 1)
         # Edge penalty: lambda (1 - \sum^d_j e_{ij} / (dr_0)
@@ -354,7 +369,7 @@ def hypersphere_overlap_of_subset(x: np.ndarray, x_subset: np.array) -> float:
             if dist > r_o:
                 dist = r_o
             edge_pen += dist
-        edge_pen /= (d * r_o)
+        edge_pen /= d * r_o
         edge_pen = lam * (1.0 - edge_pen)
         edge += edge_pen
     g_s += edge
