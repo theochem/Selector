@@ -74,32 +74,39 @@ def pairwise_similarity_bit(X: np.array, metric: str) -> np.ndarray:
 
 
 def tanimoto(a: np.array, b: np.array) -> float:
-    r"""Compute Tanimoto coefficient.
+    r"""Compute Tanimoto coefficient or index (a.k.a. Jaccard similarity coefficient).
+
+    For two binary or non-binary arrays :math:`A` and :math:`B`, Tanimoto coefficient
+    is defined as the size of their intersection divided by the size of their union:
 
     ..math::
-        T(A,B) = A \cap B / A \cup B
+        T(A, B) = \frac{| A \cap B|}{| A \cup B |} =
+        \frac{| A \cap B|}{|A| + |B| - | A \cap B|} =
+        \frac{A \cdot B}{\|A\|^2 + \|B\|^2 - A \cdot B}
+
+    where :math:`A \cdot B = \sum_i{A_i B_i}` and :math:`\|A\|^2 = \sum_i{A_i^2}`.
 
     Parameters
     ----------
-    a : array_like
-        Data point A's features.
-    b : array_like
-        Data point B's features.
+    a : ndarray
+        The 1D feature array of sample :math:`A` in an `n`-dimensional space.
+    b : ndarray
+        The 1D feature array of sample :math:`B` in an `n`-dimensional space.
 
     Returns
     -------
     coeff : float
-        Tanimoto coefficient for data points A and B.
+        Tanimoto coefficient between feature arrays :math:`A` and :math:`B`.
 
-    Notes
-    -----
-    The Tanimoto coefficient computes similarity by taking the intersection
-    of A and B over their union.
 
     Bajusz, D., Rácz, A., and Héberger, K.. (2015)
     Why is Tanimoto index an appropriate choice for fingerprint-based similarity calculations?.
     Journal of Cheminformatics 7.
     """
+    if a.ndim != 1 or b.ndim != 1:
+        raise ValueError(f"Arguments a and b should be 1D arrays, got {a.ndim} and {b.ndim}")
+    if a.shape != b.shape:
+        raise ValueError(f"Arguments a and b should have the same shape, got {a.shape} != {b.shape}")
     coeff = (sum(a * b)) / ((sum(a**2)) + (sum(b**2)) - (sum(a * b)))
     return coeff
 

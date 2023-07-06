@@ -61,20 +61,30 @@ def test_pairwise_similarity_bit_raises():
     assert_raises(ValueError, pairwise_similarity_bit, np.random.random((5, 1)), tanimoto)
 
 
+def test_tanimoto_raises():
+    # check raised error when a or b is not 1D
+    assert_raises(ValueError, tanimoto, np.random.random((1, 5)), np.random.random(5))
+    assert_raises(ValueError, tanimoto, np.random.random(3), np.random.random((1, 4)))
+    assert_raises(ValueError, tanimoto, np.random.random(4), np.random.random((3, 4)))
+    assert_raises(ValueError, tanimoto, np.random.random((3, 3)), np.random.random((2, 3)))
+    # check raised error when a and b don't have the same length
+    assert_raises(ValueError, tanimoto, np.random.random(3), np.random.random(5))
+    assert_raises(ValueError, tanimoto, np.random.random(20), np.random.random(10))
+
+
 def test_tanimoto():
     """Test the tanimoto function on one pair of points."""
     a = np.array([2, 0, 1])
     b = np.array([2, 0, 0])
     expected = 4 / (5 + 4 - 4)
-    tani = tanimoto(a, b)
-    assert_equal(tani, expected)
+    assert_equal(tanimoto(a, b), expected)
 
 
 def test_tanimoto_matrix():
     """Testing the tanimoto function with predefined feature matrix."""
-    tani = pairwise_similarity_bit(sample3, "tanimoto")
-    expected = np.array([[1, (11 / 19)],
-                         [(11 / 19), 1]])
+    x = np.array([[1, 4], [3, 2]])
+    tani = pairwise_similarity_bit(x, "tanimoto")
+    expected = np.array([[1, (11 / 19)], [(11 / 19), 1]])
     assert_equal(expected, tani)
 
 
