@@ -42,17 +42,17 @@ def pairwise_similarity_bit(X: np.array, metric: str) -> np.ndarray:
 
     Parameters
     ----------
-    X : ndarray
-        An `m` by `n` feature array of `m` samples in an `n`-dimensional feature space.
+    X : ndarray of shape (n_samples, n_features)
+        Feature matrix of `n_samples` samples in `n_features` dimensional space.
     metric : str
+        The metric used when calculating similarity coefficients between samples in a feature array.
         Method for calculating similarity coefficient. Options: `"tanimoto"`, `"modified_tanimoto"`.
 
     Returns
     -------
-    pair_simi : ndarray
-        Returns a symmetric `m` by `m` array containing the similarity coefficient between
-        each pair of samples in the feature matrix. The diagonal elements are directly
-        computed instead of assuming that they are 1.
+    s : ndarray of shape (n_samples, n_samples)
+        A symmetric similarity matrix between each pair of samples in the feature matrix.
+        The diagonal elements are directly computed instead of assuming that they are 1.
     """
 
     available_methods = {
@@ -65,12 +65,12 @@ def pairwise_similarity_bit(X: np.array, metric: str) -> np.ndarray:
         raise ValueError(f"Argument features should be a 2D array, got {X.ndim}")
 
     # make pairwise m-by-m similarity matrix
-    m = len(X)
-    pair_simi = np.zeros((m, m))
+    n_samples = len(X)
+    s = np.zeros((n_samples, n_samples))
     # compute similarity between all pairs of points (including the diagonal elements)
-    for i, j in combinations_with_replacement(range(m), 2):
-        pair_simi[i, j] = pair_simi[j, i] = available_methods[metric](X[i], X[j])
-    return pair_simi
+    for i, j in combinations_with_replacement(range(n_samples), 2):
+        s[i, j] = s[j, i] = available_methods[metric](X[i], X[j])
+    return s
 
 
 def tanimoto(a: np.array, b: np.array) -> float:
@@ -88,16 +88,15 @@ def tanimoto(a: np.array, b: np.array) -> float:
 
     Parameters
     ----------
-    a : ndarray
-        The 1D feature array of sample :math:`A` in an `n`-dimensional space.
-    b : ndarray
-        The 1D feature array of sample :math:`B` in an `n`-dimensional space.
+    a : ndarray of shape (n_features,)
+        The 1D feature array of sample :math:`A` in an `n_features` dimensional space.
+    b : ndarray of shape (n_features,)
+        The 1D feature array of sample :math:`B` in an `n_features` dimensional space.
 
     Returns
     -------
     coeff : float
         Tanimoto coefficient between feature arrays :math:`A` and :math:`B`.
-
 
     Bajusz, D., Rácz, A., and Héberger, K.. (2015)
     Why is Tanimoto index an appropriate choice for fingerprint-based similarity calculations?.
@@ -128,6 +127,11 @@ def modified_tanimoto(a: np.array, b: np.array) -> float:
 
     Parameters
     ----------
+    a : ndarray of shape (n_features,)
+        The 1D feature array of sample :math:`A` in an `n_features` dimensional space.
+    b : ndarray of shape (n_features,)
+        The 1D feature array of sample :math:`B` in an `n_features` dimensional space.
+
     a : array_like
         Data point A's features in bitstring.
     b : array_like
@@ -197,8 +201,8 @@ def nearest_average_tanimoto(X: np.ndarray) -> float:
 
     Parameters
     ----------
-    X : (M, K) array_like
-        Matrix of `M` samples in an `K` dimensional feature space.
+    X : ndarray of shape (n_samples, n_features)
+        Feature matrix of `n_samples` samples in `n_features` dimensional space.
 
     Returns
     -------
