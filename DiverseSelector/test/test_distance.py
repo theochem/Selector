@@ -138,6 +138,18 @@ def test_nearest_average_tanimoto_bit():
 
 def test_nearest_average_tanimoto():
     """Test the nearest_average_tanimoto function with non-binary input"""
-    nat = nearest_average_tanimoto(sample3)
-    average = 11/19
-    assert_equal(nat, average)
+    x = np.array([[1, 4], [3, 2]])
+    # expected: (1x3 + 4x2) / (1 + 4^2 + 3^3 + 2^2 - 1x3 - 4x2)
+    assert_equal(nearest_average_tanimoto(x), 11/19)
+
+
+def test_nearest_average_tanimoto_nonsquare():
+    """Test the nearest_average_tanimoto function with non-binary input"""
+    x = np.array([[3.5, 4.0, 10.5, 0.5], [1.25, 4.0, 7.0, 0.1], [0.0, 0.0, 0.0, 0.0]])
+    # nearest neighbor of sample 0, 1, and 2 are sample 1, 0, and 1, respectively.
+    expected = np.average([
+        np.sum(x[0] * x[1]) / (np.sum(x[0]**2) + np.sum(x[1]**2) - np.sum(x[0] * x[1])),
+        np.sum(x[1] * x[0]) / (np.sum(x[1]**2) + np.sum(x[0]**2) - np.sum(x[1] * x[0])),
+        np.sum(x[2] * x[1]) / (np.sum(x[2]**2) + np.sum(x[1]**2) - np.sum(x[2] * x[1])),
+        ])
+    assert_equal(nearest_average_tanimoto(x), expected)

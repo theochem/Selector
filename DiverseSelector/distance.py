@@ -188,39 +188,38 @@ def modified_tanimoto(a: np.array, b: np.array) -> float:
     return mt
 
 
-def nearest_average_tanimoto(x: np.ndarray) -> float:
-    """Computes the average tanimoto for nearest data points.
+def nearest_average_tanimoto(X: np.ndarray) -> float:
+    """Compute the average tanimoto for nearest data points measured by Minkowski 2-norm.
+
+    For each sample, the closest neighbor is identified by computing its Minkowski 2-norm
+    (i.e., Euclidean) distance with all other samples, and identifying neighboring sample
+    with the shortest distance.
 
     Parameters
     ----------
-    x : ndarray
-        Feature matrix.
+    X : (M, K) array_like
+        Matrix of `M` samples in an `K` dimensional feature space.
 
     Returns
     -------
     float :
-        Average Tanimoto of closest pairs.
-
-    Notes
-    -----
-    This computes the Tanimoto coefficient of pairs of data points
-    with the shortest distances, then returns the average of them.
-    This calculation is explicitly for the explicit diversity index.
+        Average of the Tanimoto coefficients for each sample and its closest neighbor.
 
     Papp, Á., Gulyás-Forró, A., Gulyás, Z., Dormán, G., Ürge, L.,
     and Darvas, F.. (2006) Explicit Diversity Index (EDI):
     A Novel Measure for Assessing the Diversity of Compound Databases.
     Journal of Chemical Information and Modeling 46, 1898-1904.
     """
-    tani = []
-    # calculate euclidean distance between all points
-    #     and adjust for distance to self
-    dist = distance_matrix(x, x) + np.inf*np.eye(x.shape[0])
-    # find closest point for each row of x
-    short_idx = np.argmin(dist, axis=0)
-    for idx, min_d in enumerate(short_idx):
-        # compute the tanimoto coeff for each pair of closest points
-        tani.append(tanimoto(x[idx], x[min_d]))
-    # take the average of all coeffs calculated
-    nat = np.average(tani)
-    return nat
+    # compute euclidean distance between all samples
+    dist = distance_matrix(X, X, p=2)
+    # replace zero self-distance with infinity, before computing nearest neighbors
+    np.fill_diagonal(dist, np.inf)
+    # find index of closest neighbor for each sample
+    nearest_neighbors = np.argmin(dist, axis=0)
+    assert nearest_neighbors.shape == (X.shape[0],)
+    # compute the tanimoto coeff for each sample and its closest neighbor
+    coeffs = []
+    for idx_sample, idx_neighbor in enumerate(nearest_neighbors):
+        coeffs.append(tanimoto(X[idx_sample], X[idx_neighbor]))
+    # return average of all coefficients
+    return np.average(coeffs)
