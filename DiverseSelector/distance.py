@@ -21,20 +21,15 @@
 #
 # --
 
-"""Metric calculation module."""
+"""Similarity Module."""
 
 
 import numpy as np
 from itertools import combinations_with_replacement
 from scipy.spatial import distance_matrix
-from scipy.spatial.distance import squareform
 
-__all__ = [
-    "pairwise_similarity_bit",
-    "tanimoto",
-    "modified_tanimoto",
-    "nearest_average_tanimoto",
-]
+
+__all__ = ["pairwise_similarity_bit", "tanimoto", "modified_tanimoto", "nearest_average_tanimoto"]
 
 
 def pairwise_similarity_bit(X: np.array, metric: str) -> np.ndarray:
@@ -60,7 +55,9 @@ def pairwise_similarity_bit(X: np.array, metric: str) -> np.ndarray:
         "modified_tanimoto": modified_tanimoto,
     }
     if metric not in available_methods:
-        raise ValueError(f"Argument metric={metric} is not recognized! Choose from {available_methods.keys()}")
+        raise ValueError(
+            f"Argument metric={metric} is not recognized! Choose from {available_methods.keys()}"
+        )
     if X.ndim != 2:
         raise ValueError(f"Argument features should be a 2D array, got {X.ndim}")
 
@@ -105,8 +102,10 @@ def tanimoto(a: np.array, b: np.array) -> float:
     if a.ndim != 1 or b.ndim != 1:
         raise ValueError(f"Arguments a and b should be 1D arrays, got {a.ndim} and {b.ndim}")
     if a.shape != b.shape:
-        raise ValueError(f"Arguments a and b should have the same shape, got {a.shape} != {b.shape}")
-    coeff = (sum(a * b)) / ((sum(a**2)) + (sum(b**2)) - (sum(a * b)))
+        raise ValueError(
+            f"Arguments a and b should have the same shape, got {a.shape} != {b.shape}"
+        )
+    coeff = sum(a * b) / (sum(a**2) + sum(b**2) - sum(a * b))
     return coeff
 
 
@@ -128,19 +127,14 @@ def modified_tanimoto(a: np.array, b: np.array) -> float:
     Parameters
     ----------
     a : ndarray of shape (n_features,)
-        The 1D feature array of sample :math:`A` in an `n_features` dimensional space.
+        The 1D bitstring feature array of sample :math:`A` in an `n_features` dimensional space.
     b : ndarray of shape (n_features,)
-        The 1D feature array of sample :math:`B` in an `n_features` dimensional space.
-
-    a : array_like
-        Data point A's features in bitstring.
-    b : array_like
-        Data point B's features in bitstring.
+        The 1D bitstring feature array of sample :math:`B` in an `n_features` dimensional space.
 
     Returns
     -------
     mt : float
-        Modified tanimoto coefficient for molecule A and B.
+        Modified tanimoto coefficient between bitstring feature arrays :math:`A` and :math:`B`.
 
     Notes
     -----
@@ -162,30 +156,33 @@ def modified_tanimoto(a: np.array, b: np.array) -> float:
         raise ValueError(f"Argument `a` should have dimension 1 rather than {a.ndim}.")
     if b.ndim != 1:
         raise ValueError(f"Argument `b` should have dimension 1 rather than {b.ndim}.")
+    if a.shape != b.shape:
+        raise ValueError(
+            f"Arguments a and b should have the same shape, got {a.shape} != {b.shape}"
+        )
 
-    n = len(a)
+    n_features = len(a)
     # number of common '1' bits between points A and B
     n_11 = sum(a * b)
     # number of common '0' bits between points A and B
     n_00 = sum((1 - a) * (1 - b))
 
-    # calculate Tanimoto coeff based on '1' bits
-    if n_00 == n:
-        # bit string is all '0's
-        t_1 = 1
-    else:
-        t_1 = n_11 / (n - n_00)
-    # calculate Tanimoto coeff based on '1' bits
-    if n_11 == n:
-        # bit string is all '1's
-        t_0 = 1
-    else:
-        t_0 = n_00 / (n - n_11)
+    # calculate Tanimoto coefficient based on '0' bits
+    t_1 = 1
+    if n_00 != n_features:
+        # bit strings are not all '0's
+        t_1 = n_11 / (n_features - n_00)
+    # calculate Tanimoto coefficient based on '1' bits
+    t_0 = 1
+    if n_11 != n_features:
+        # bit strings are not all '1's
+        t_0 = n_00 / (n_features - n_11)
+
     # combine into modified tanimoto using Bernoulli Model
     # p = independent success trials
     #       evaluated as total number of '1' bits
     #       divided by 2x the fingerprint length
-    p = (n - n_00 + n_11) / (2 * n)
+    p = (n_features - n_00 + n_11) / (2 * n_features)
     # mt = x * T_1 + (1-x) * T_0
     #       x = (2-p)/3 so that E(mt) = 1/3, no matter the value of p
     mt = (((2 - p) / 3) * t_1) + (((1 + p) / 3) * t_0)
@@ -221,7 +218,7 @@ def nearest_average_tanimoto(X: np.ndarray) -> float:
     # find index of closest neighbor for each sample
     nearest_neighbors = np.argmin(dist, axis=0)
     assert nearest_neighbors.shape == (X.shape[0],)
-    # compute the tanimoto coeff for each sample and its closest neighbor
+    # compute the tanimoto coefficient for each sample and its closest neighbor
     coeffs = []
     for idx_sample, idx_neighbor in enumerate(nearest_neighbors):
         coeffs.append(tanimoto(X[idx_sample], X[idx_neighbor]))

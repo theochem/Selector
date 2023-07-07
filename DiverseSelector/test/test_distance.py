@@ -102,6 +102,7 @@ def test_modified_tanimoto_dimension_error():
     b = np.zeros(5)
     assert_raises(ValueError, modified_tanimoto, a, b)
     assert_raises(ValueError, modified_tanimoto, b, a)
+    assert_raises(ValueError, modified_tanimoto, np.ones(3), np.ones(5))
 
 
 def test_modified_tanimoto_matrix():
