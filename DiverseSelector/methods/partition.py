@@ -30,7 +30,7 @@ import scipy.spatial
 
 from DiverseSelector.methods.base import SelectionBase
 from DiverseSelector.diversity import compute_diversity
-from DiverseSelector.methods.utils import predict_radius
+from DiverseSelector.methods.utils import optimize_radius
 import numpy as np
 from scipy import spatial
 from sklearn.decomposition import PCA
@@ -173,7 +173,7 @@ class DirectedSphereExclusion(SelectionBase):
                 f"The number of selected points {num_selected} is greater than the number of points"
                 f"provided {x.shape[0]}."
             )
-        return predict_radius(self, x, num_selected, cluster_ids)
+        return optimize_radius(self, x, num_selected, cluster_ids)
 
 
 class GridPartitioning(SelectionBase):
