@@ -27,6 +27,7 @@ from typing import List
 
 import numpy as np
 from scipy.spatial.distance import euclidean
+from DiverseSelector.distance import nearest_average_tanimoto
 import warnings
 
 __all__ = [
@@ -34,6 +35,7 @@ __all__ = [
     "entropy",
     "logdet",
     "shannon_entropy",
+    "explicit_diversity_index"
     "wdud",
     "hypersphere_overlap_of_subset",
     "gini_coefficient",
@@ -44,6 +46,7 @@ def compute_diversity(
     feature_subset: np.array,
     div_type: str = "entropy",
     features: np.array = None,
+    cs: int = None,
 ) -> float:
     """Compute diversity metrics.
 
@@ -53,12 +56,15 @@ def compute_diversity(
         Feature matrix.
     div_type : str, optional
         Method of calculation diversity for a given molecule set, which
-        includes "entropy", "logdet", "shannon_entropy", "wdud",
-        gini_coefficient" and "hypersphere_overlap_of_subset".
+        includes "entropy", "logdet", "shannon entropy", "wdud",
+        "gini coefficient" "hypersphere overlap of subset".
         Default is "entropy".
     features : np.ndarray, optional
         Feature matrix of entire molecule library, used only if
-        calculating hypersphere_overlap_of_subset. Default is "None".
+        calculating `hypersphere_overlap_of_subset`. Default is "None".
+    cs : int, optional
+        Number of common substructures in molecular compound dataset.
+        Used only if calculating `explicit_diversity_index`. Default is "None".
     Returns
     -------
     float, computed diversity.
@@ -67,20 +73,25 @@ def compute_diversity(
     func_dict = {
         "entropy": entropy,
         "logdet": logdet,
-        "shannon_entropy": shannon_entropy,
+        "shannon entropy": shannon_entropy,
         "wdud": wdud,
-        "gini_coefficient": gini_coefficient,
+        "gini coefficient": gini_coefficient,
     }
 
     if div_type in func_dict:
         return func_dict[div_type](feature_subset)
-    elif div_type == "hypersphere_overlap_of_subset":
+    elif div_type == "hypersphere overlap of subset":
         if features is None:
             raise ValueError(
                 "Please input a feature matrix of the entire "
                 "dataset when calculating hypersphere overlap."
             )
         return hypersphere_overlap_of_subset(features, feature_subset)
+    elif div_type == "explicit diversity index":
+        if cs is None:
+            raise ValueError("Attribute `cs` is missing. "
+                             "Please input `cs` value to use explicit_diversity_index." )
+        return explicit_diversity_index(feature_subset, cs)
     else:
         raise ValueError(f"Diversity type {div_type} not supported.")
 
@@ -216,6 +227,40 @@ def shannon_entropy(x: np.ndarray) -> float:
             )
         h_x += (-1 * p_i) * np.log10(p_i)
     return h_x
+
+# todo: add tests for edi
+def explicit_diversity_index(
+    x: np.ndarray, cs: int,
+) -> float:
+    """Computes the explicit diversity index.
+    Parameters
+    ----------
+    x : ndarray
+        Feature matrix.
+    cs : int
+        Number of common substructures in the compound set.
+
+    Returns
+    -------
+    edi_scaled : float
+        Explicit diversity index.
+    Notes
+    -----
+    This method hasn't been tested.
+
+    This method is used only for datasets of molecular compounds.
+
+    Papp, Á., Gulyás-Forró, A., Gulyás, Z., Dormán, G., Ürge, L.,
+    and Darvas, F.. (2006) Explicit Diversity Index (EDI):
+    A Novel Measure for Assessing the Diversity of Compound Databases.
+    Journal of Chemical Information and Modeling 46, 1898-1904.
+    """
+    nc = len(x)
+    sdi = (1 - nearest_average_tanimoto(x)) / (0.8047 - (0.065 * (np.log(nc))))
+    cr = -1 * np.log10(nc / (cs ** 2))
+    edi = (sdi + cr) * 0.7071067811865476
+    edi_scaled = ((np.tanh(edi / 3) + 1) / 2) * 100
+    return edi_scaled
 
 
 def wdud(x: np.ndarray) -> float:
