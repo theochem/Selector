@@ -171,7 +171,7 @@ class OptiSim(SelectionBase):
     Adapted from  https://doi.org/10.1021/ci970282v
     """
 
-    def __init__(self, r=None, k=10, tolerance=5.0, eps=0, p=2, start_id=0, random_seed=42, n_iter=10):
+    def __init__(self, r=None, k=10, tol=5.0, eps=0, p=2, start_id=0, random_seed=42, n_iter=10):
         """
         Initializing class.
 
@@ -183,7 +183,7 @@ class OptiSim(SelectionBase):
         k: int
             Amount of points to add to subsample before selecting one of the points with the
             greatest minimum distance to the previously selected points.
-        tolerance: float
+        tol: float
             Percentage error of number of molecules actually selected from number of molecules
             requested.
         eps: float
@@ -202,7 +202,7 @@ class OptiSim(SelectionBase):
         """
         self.r = r
         self.k = k
-        self.tolerance = tolerance
+        self.tol = tol
         self.eps = eps
         self.p = p
         self.start_id = start_id
