@@ -23,7 +23,7 @@
 """Module for Dissimilarity-Based Selection Methods."""
 
 from DiverseSelector.methods.base import SelectionBase
-from DiverseSelector.methods.utils import predict_radius
+from DiverseSelector.methods.utils import optimize_radius
 import numpy as np
 from scipy import spatial
 
@@ -187,7 +187,7 @@ class OptiSim(SelectionBase):
     Adapted from  https://doi.org/10.1021/ci970282v
     """
 
-    def __init__(self, r=None, k=10, tolerance=5.0, eps=0, p=2, start_id=0, random_seed=42):
+    def __init__(self, r=None, k=10, tol=5.0, eps=0, p=2, start_id=0, random_seed=42, n_iter=10):
         """
         Initializing class.
 
@@ -199,7 +199,7 @@ class OptiSim(SelectionBase):
         k: int
             Amount of points to add to subsample before selecting one of the points with the
             greatest minimum distance to the previously selected points.
-        tolerance: float
+        tol: float
             Percentage error of number of molecules actually selected from number of molecules
             requested.
         eps: float
@@ -213,14 +213,17 @@ class OptiSim(SelectionBase):
             Index for the first point to be selected.
         random_seed: int
             Seed for random selection of points be evaluated.
+        n_iter: int
+            Number of iterations to execute when optimizing the size of exclusion radius. Default is 10.
         """
         self.r = r
         self.k = k
-        self.tolerance = tolerance
+        self.tol = tol
         self.eps = eps
         self.p = p
         self.start_id = start_id
         self.random_seed = random_seed
+        self.n_iter = n_iter
 
     def algorithm(self, arr, uplimit) -> list:
         """
@@ -305,6 +308,6 @@ class OptiSim(SelectionBase):
         selected: list
             List of ids of selected molecules
         """
-        return predict_radius(self, arr, num_selected, cluster_ids)
+        return optimize_radius(self, arr, num_selected, cluster_ids)
 
 
