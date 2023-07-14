@@ -139,7 +139,9 @@ class DirectedSphereExclusion(SelectionBase):
                 if len(selected) > max_size:
                     return selected
                 # find index of all samples within radius of sample idx (this includes the sample index itself)
-                index_exclude = kdtree.query_ball_point(X[idx], self.r, eps=self.eps, p=self.p, workers=-1)
+                index_exclude = kdtree.query_ball_point(
+                    X[idx], self.r, eps=self.eps, p=self.p, workers=-1
+                )
                 # exclude samples within radius r of sample idx (measure by Minkowski p-norm) from
                 # future consideration by setting their bitarray value to 1
                 for index in index_exclude:
