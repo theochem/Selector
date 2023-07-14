@@ -36,7 +36,7 @@ __all__ = [
 
 
 class MaxMin(SelectionBase):
-    """Selecting compounds using MinMax algorithm.
+    """Selecting compounds using MaxMin algorithm.
 
     Initial point is chosen as medoid center. The second point is
     the furthest point away. All the following points are selected
@@ -44,6 +44,8 @@ class MaxMin(SelectionBase):
     1. Find minimum distance from every point to the selected ones.
     2. Select a point the has the maximum distance among calculated
        on the previous step.
+
+    The algorithm is described well here: https://doi.org/10.1002/qsar.200290002
     """
 
     def __init__(self, func_distance=None):
@@ -59,7 +61,7 @@ class MaxMin(SelectionBase):
 
     def select_from_cluster(self, arr, num_selected, cluster_ids=None):
         """
-        Algorithm MinMax for selecting points from cluster.
+        Algorithm MaxMin for selecting points from cluster.
 
         Parameters
         ----------
@@ -77,17 +79,24 @@ class MaxMin(SelectionBase):
             List of ids of selected molecules
         """
         if self.func_distance is not None:
+            # calculate pairwise distance between instances of provided array
             arr_dist = self.func_distance(arr)
         else:
+            # assume provided array already describes pairwise distances between samples
             arr_dist = arr
 
         if cluster_ids is not None:
+            # extract pairwise distances from full pairwise distance matrix to obtain a new matrix that only contains
+            # pairwise distances between samples within a given cluster
             arr_dist = arr_dist[cluster_ids][:, cluster_ids]
 
-        # choosing initial point as the medoid
+        # choosing initial point as the medoid (i.e., point with minimum cumulative pairwise distances to other points)
         selected = [np.argmin(np.sum(arr_dist, axis=0))]
+        # select following points until desired number of points have been obtained
         while len(selected) < num_selected:
+            # determine the minimum pairwise distances between the selected points and all the other points
             min_distances = np.min(arr_dist[selected], axis=0)
+            # determine which point affords the maximum distance among the minimum distances captured in min_distances
             new_id = np.argmax(min_distances)
             selected.append(new_id)
         return selected
@@ -99,7 +108,7 @@ class MaxSum(SelectionBase):
     Initial point is chosen as medoid center. The second point is
     the furthest point away. All the following points are selected
     using the rule:
-    1. Find minimum distance from every point to the selected ones.
+    1. Determine the sum of distances from every point to the selected ones.
     2. Select a point the has the maximum sum of distance among calculated
        on the previous step.
     """
@@ -117,7 +126,7 @@ class MaxSum(SelectionBase):
 
     def select_from_cluster(self, arr, num_selected, cluster_ids=None):
         """
-        Algorithm MinMax for selecting points from cluster.
+        Algorithm MaxSum for selecting points from cluster.
 
         Parameters
         ----------
@@ -139,18 +148,25 @@ class MaxSum(SelectionBase):
                              f"points provided in array")
 
         if self.func_distance is not None:
+            # calculate pairwise distance between instances of provided array
             arr_dist = self.func_distance(arr)
         else:
+            # assume provided array already describes pairwise distances between samples
             arr_dist = arr
 
         if cluster_ids is not None:
+            # extract pairwise distances from full pairwise distance matrix to obtain a new matrix that only contains
+            # pairwise distances between samples within a given cluster
             arr_dist = arr_dist[cluster_ids][:, cluster_ids]
 
-        # choosing initial point as the medoid
+        # choosing initial point as the medoid (i.e., point with minimum cumulative pairwise distances to other points)
         selected = [np.argmin(np.sum(arr_dist, axis=0))]
+        # select following points until desired number of points have been obtained
         while len(selected) < num_selected:
+            # determine sum of pairwise distances between selected points and all other points
             sum_distances = np.sum(arr_dist[selected], axis=0)
             while True:
+                # determine which new point has the maximum sum of pairwise distances with already-selected points
                 new_id = np.argmax(sum_distances)
                 if new_id in selected:
                     sum_distances[new_id] = 0
@@ -227,29 +243,46 @@ class OptiSim(SelectionBase):
         """
         selected = [self.start_id]
         count = 1
+
+        # establish a kd-tree for nearest-neighbor lookup
         tree = spatial.KDTree(arr)
+        # use a random number generator that will be used to randomly select points
         rng = np.random.default_rng(seed=self.random_seed)
+
         len_arr = len(arr)
+        # bv will serve as a mask to discard points within radius r of previously selected points
         bv = np.zeros(len_arr)
         candidates = list(range(len_arr))
+        # determine which points are within radius r of initial point
         elim = tree.query_ball_point(arr[self.start_id], self.r, eps=self.eps, p=self.p, workers=-1)
+        # exclude points within radius r of initial point from list of candidates using bv mask
         for idx in elim:
             bv[idx] = 1
         candidates = np.ma.array(candidates, mask=bv)
+
+        # while there are still remaining candidates to be selected
         while len(candidates.compressed()) > 0:
+            # randomly select samples from list of candidates
             try:
                 sublist = rng.choice(candidates.compressed(), size=self.k, replace=False)
             except ValueError:
                 sublist = candidates.compressed()
 
+            # create a new kd-tree for nearest neighbor lookup with candidates
             newtree = spatial.KDTree(arr[selected])
+            # query the kd-tree for nearest neighbors to selected samples
             search, _ = newtree.query(arr[sublist], eps=self.eps, p=self.p, workers=-1)
+            # identify the nearest neighbor with the largest distance from previously selected samples
             search_idx = np.argmax(search)
             best_idx = sublist[search_idx]
             selected.append(best_idx)
+
             count += 1
             if count > uplimit:
+                # do this if you have reached the maximum number of points selected
                 return selected
+
+            # eliminate all remaining candidates within radius r of the sample that was just selected
             elim = tree.query_ball_point(arr[best_idx], self.r, eps=self.eps, p=self.p, workers=-1)
             for idx in elim:
                 bv[idx] = 1

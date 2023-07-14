@@ -21,70 +21,102 @@
 #
 # --
 
-"""Testing for the distance and similarity algorithms in the distance.py module."""
+"""Test distance.py Module."""
 
-from DiverseSelector.distance import (compute_distance_matrix,
-                                      pairwise_similarity_bit,
-                                      nearest_average_tanimoto
-                                      )
+from DiverseSelector.distance import (
+    pairwise_similarity_bit,
+    nearest_average_tanimoto,
+    tanimoto,
+    modified_tanimoto,
+)
 
 import numpy as np
 from numpy.testing import assert_almost_equal, assert_equal, assert_raises
 
-# each row is a feature and each column is a molecule
-sample1 = np.array([[4, 2, 6],
-                    [4, 9, 6],
-                    [2, 5, 0],
-                    [2, 0, 9],
-                    [5, 3, 0]])
 
-# each row is a molecule and each column is a feature (scipy)
-sample2 = np.array([[1, 1, 0, 0, 0],
-                    [0, 1, 1, 0, 0],
-                    [0, 0, 0, 1, 0],
-                    [0, 0, 0, 0, 1]])
-
-sample3 = np.array([[1, 4],
-                    [3, 2]])
-
-sample4 = np.array([[1, 0, 1],
-                    [0, 1, 1]])
+def test_pairwise_similarity_bit_raises():
+    # check raised error for input feature matrix that is not 2D
+    assert_raises(ValueError, pairwise_similarity_bit, np.random.random(5), "tanimoto")
+    assert_raises(ValueError, pairwise_similarity_bit, np.random.random((2, 3, 4)), "tanimoto")
+    # check raised error for not-available method
+    assert_raises(ValueError, pairwise_similarity_bit, np.random.random((5, 1)), "tan")
+    assert_raises(ValueError, pairwise_similarity_bit, np.random.random((5, 1)), tanimoto)
 
 
-def test_compute_distance_matrix_builtin():
-    """Testing the compute distance matrix with a built in metric."""
-    sci_dist = compute_distance_matrix(sample2, "tanimoto")
-    expected = np.array([[0, 0.6666667, 1, 1],
-                         [0.6666667, 0, 1, 1],
-                         [1, 1, 0, 1],
-                         [1, 1, 1, 0]])
-    assert_almost_equal(expected, sci_dist)
-
-
-def test_compute_distance_matrix_invalid_metric():
-    """Testing the compute distance matrix with an invalid metric."""
-    assert_raises(ValueError, compute_distance_matrix, sample1, "fake_distance")
+def test_tanimoto_raises():
+    # check raised error when a or b is not 1D
+    assert_raises(ValueError, tanimoto, np.random.random((1, 5)), np.random.random(5))
+    assert_raises(ValueError, tanimoto, np.random.random(3), np.random.random((1, 4)))
+    assert_raises(ValueError, tanimoto, np.random.random(4), np.random.random((3, 4)))
+    assert_raises(ValueError, tanimoto, np.random.random((3, 3)), np.random.random((2, 3)))
+    # check raised error when a and b don't have the same length
+    assert_raises(ValueError, tanimoto, np.random.random(3), np.random.random(5))
+    assert_raises(ValueError, tanimoto, np.random.random(20), np.random.random(10))
 
 
 def test_tanimoto():
+    """Test the tanimoto function on one pair of points."""
+    a = np.array([2, 0, 1])
+    b = np.array([2, 0, 0])
+    # expected = (2*2 + 0*0 + 1*0) / (2**2 + 1 + 2**2 - 2*2)
+    assert_equal(tanimoto(a, b), 4 / (5 + 4 - 4))
+
+
+def test_tanimoto_bitstring():
+    """Test the tanimoto function on one pair of points."""
+    a = np.array([0, 0, 0, 1, 0, 1, 1])
+    b = np.array([1, 1, 0, 0, 0, 1, 1])
+    assert_equal(tanimoto(a, b), 2 / 5)
+
+
+def test_tanimoto_matrix():
     """Testing the tanimoto function with predefined feature matrix."""
-    tani = pairwise_similarity_bit(sample3, "tanimoto")
-    expected = np.array([[1, (11 / 19)],
-                         [(11 / 19), 1]])
-    assert_equal(expected, tani)
+    x = np.array([[1, 4], [3, 2]])
+    s = pairwise_similarity_bit(x, "tanimoto")
+    expected = np.array([[1, (11 / 19)], [(11 / 19), 1]])
+    assert_equal(s, expected)
 
 
-def test_modifed_tanimoto():
+def test_modified_tanimoto():
+    a = np.array([1, 1, 0, 0, 1])
+    b = np.array([0, 0, 0, 0, 1])
+    expected = (1.6 / 9) + (1.4 / 6)
+    assert_equal(modified_tanimoto(a, b), expected)
+
+
+def test_modified_tanimoto_all_ones():
+    """Test the modified tanimoto function when input is all '1' bits"""
+    a = np.array([1, 1, 1, 1, 1])
+    assert_equal(modified_tanimoto(a, a), 1)
+
+
+def test_modified_tanimoto_all_zeroes():
+    """Test the modified tanimoto function when input is all '0' bits"""
+    a = np.zeros(5)
+    assert_equal(modified_tanimoto(a, a), 1)
+
+
+def test_modified_tanimoto_dimension_error():
+    """Test modified tanimoto raises error when input has incorrect dimension."""
+    a = np.zeros([7, 5])
+    b = np.zeros(5)
+    assert_raises(ValueError, modified_tanimoto, a, b)
+    assert_raises(ValueError, modified_tanimoto, b, a)
+    assert_raises(ValueError, modified_tanimoto, np.ones(3), np.ones(5))
+
+
+def test_modified_tanimoto_matrix():
     """Testing the modified tanimoto function with predefined feature matrix."""
-    mod_tani = pairwise_similarity_bit(sample4, "modified_tanimoto")
-    expceted = np.array([[1, (4 / 27)],
-                         [(4 / 27), 1]])
-    assert_equal(mod_tani, expceted)
+    x = np.array([[1, 0, 1], [0, 1, 1]])
+    s = pairwise_similarity_bit(x, "modified_tanimoto")
+    expceted = np.array([[1, (4 / 27)], [(4 / 27), 1]])
+    assert_equal(s, expceted)
 
 
 def test_nearest_average_tanimoto_bit():
     """Test the nearest_average_tanimoto function with binary input"""
-    nat = nearest_average_tanimoto(sample2)
+    x = np.array([[1, 1, 0, 0, 0], [0, 1, 1, 0, 0], [0, 0, 0, 1, 0], [0, 0, 0, 0, 1]])
+    nat = nearest_average_tanimoto(x)
     shortest_tani = [0.3333333, 0.3333333, 0, 0]
     average = np.average(shortest_tani)
     assert_almost_equal(nat, average)
@@ -92,14 +124,20 @@ def test_nearest_average_tanimoto_bit():
 
 def test_nearest_average_tanimoto():
     """Test the nearest_average_tanimoto function with non-binary input"""
-    nat = nearest_average_tanimoto(sample3)
-    shortest_tani = [(11/19), (11/19)]
-    average = np.average(shortest_tani)
-    assert_equal(nat, average)
+    x = np.array([[1, 4], [3, 2]])
+    # expected: (1x3 + 4x2) / (1 + 4^2 + 3^3 + 2^2 - 1x3 - 4x2)
+    assert_equal(nearest_average_tanimoto(x), 11 / 19)
 
 
-
-
-
-
-
+def test_nearest_average_tanimoto_nonsquare():
+    """Test the nearest_average_tanimoto function with non-binary input"""
+    x = np.array([[3.5, 4.0, 10.5, 0.5], [1.25, 4.0, 7.0, 0.1], [0.0, 0.0, 0.0, 0.0]])
+    # nearest neighbor of sample 0, 1, and 2 are sample 1, 0, and 1, respectively.
+    expected = np.average(
+        [
+            np.sum(x[0] * x[1]) / (np.sum(x[0] ** 2) + np.sum(x[1] ** 2) - np.sum(x[0] * x[1])),
+            np.sum(x[1] * x[0]) / (np.sum(x[1] ** 2) + np.sum(x[0] ** 2) - np.sum(x[1] * x[0])),
+            np.sum(x[2] * x[1]) / (np.sum(x[2] ** 2) + np.sum(x[1] ** 2) - np.sum(x[2] * x[1])),
+        ]
+    )
+    assert_equal(nearest_average_tanimoto(x), expected)
