@@ -620,3 +620,188 @@ def test_calculate_medoid(c_threshold, w_factor, n_ary):
 
     # check that the calculated medoid is equal to the reference medoid
     assert_equal(medoid, ref_medoid)
+
+
+# results from the reference code
+def _get_ref_outlier_dict():
+    """Returns a dictionary with the reference values for the outlier.
+
+    The proper results for the tests are known in advance and are stored in a dictionary.
+
+    The dictionary has the following structure:
+        {w_factor: {c_threshold: {n_ary: value}}} where:
+            w_factor: the weight factor for the similarity index
+            c_threshold: the threshold value for the similarity index
+
+    The outlier values are stored for all possible combinations of the following parameter values:
+        - w_factor: None, dissimilar, 5
+        - c_threshold: fraction, power_3
+        - n_ary: AC, BUB, CT1, CT2, CT3, CT4, Fai, Gle, Ja, Ja0, JT, RT, RR, SM, SS1, SS2
+
+
+    Returns
+    -------
+    dict
+        A dictionary with the reference values for the outlier. The dictionary has the
+        following structure:
+            {w_factor: {c_threshold: {n_ary: value}}} where:
+                w_factor: the weight factor for the similarity index
+                c_threshold: the threshold value for the similarity index
+    """
+    oulier_ref_dict = {
+        "None": {
+            "fraction": {
+                "AC": 4,
+                "BUB": 34,
+                "CT1": 4,
+                "CT2": 4,
+                "CT3": 8,
+                "CT4": 34,
+                "Fai": 34,
+                "Gle": 34,
+                "Ja": 34,
+                "Ja0": 49,
+                "JT": 34,
+                "RT": 4,
+                "RR": 8,
+                "SM": 4,
+                "SS1": 34,
+                "SS2": 49,
+            },
+            "power_3": {
+                "AC": 49,
+                "BUB": 57,
+                "CT1": 0,
+                "CT2": 0,
+                "CT3": 0,
+                "CT4": 0,
+                "Fai": 49,
+                "Gle": 34,
+                "Ja": 16,
+                "Ja0": 80,
+                "JT": 34,
+                "RT": 4,
+                "RR": 8,
+                "SM": 49,
+                "SS1": 34,
+                "SS2": 80,
+            },
+        },
+        "dissimilar": {
+            "fraction": {
+                "AC": 0,
+                "BUB": 0,
+                "CT1": 0,
+                "CT2": 0,
+                "CT3": 0,
+                "CT4": 0,
+                "Fai": 0,
+                "Gle": 0,
+                "Ja": 0,
+                "Ja0": 0,
+                "JT": 0,
+                "RT": 0,
+                "RR": 0,
+                "SM": 0,
+                "SS1": 0,
+                "SS2": 0,
+            },
+            "power_3": {
+                "AC": 0,
+                "BUB": 0,
+                "CT1": 0,
+                "CT2": 0,
+                "CT3": 0,
+                "CT4": 0,
+                "Fai": 0,
+                "Gle": 0,
+                "Ja": 0,
+                "Ja0": 0,
+                "JT": 0,
+                "RT": 0,
+                "RR": 0,
+                "SM": 0,
+                "SS1": 0,
+                "SS2": 0,
+            },
+        },
+        5: {
+            "fraction": {
+                "AC": 49,
+                "BUB": 49,
+                "CT1": 49,
+                "CT2": 57,
+                "CT3": 2,
+                "CT4": 2,
+                "Fai": 49,
+                "Gle": 2,
+                "Ja": 2,
+                "Ja0": 49,
+                "JT": 2,
+                "RT": 49,
+                "RR": 2,
+                "SM": 49,
+                "SS1": 2,
+                "SS2": 49,
+            },
+            "power_3": {
+                "AC": 49,
+                "BUB": 49,
+                "CT1": 0,
+                "CT2": 0,
+                "CT3": 0,
+                "CT4": 0,
+                "Fai": 49,
+                "Gle": 2,
+                "Ja": 2,
+                "Ja0": 49,
+                "JT": 2,
+                "RT": 49,
+                "RR": 2,
+                "SM": 49,
+                "SS1": 2,
+                "SS2": 49,
+            },
+        },
+    }
+
+    return oulier_ref_dict
+
+
+@pytest.mark.parametrize("c_threshold, w_factor, n_ary", parameters)
+def test_calculate_outlier(c_threshold, w_factor, n_ary):
+    """Test the function to calculate the outlier for binary data.
+
+    Test the function to calculate the outlier for binary data using the reference values and several
+    combinations of parameters. The reference values are obtained using the function
+    _get_ref_outlier_dict().
+
+    Parameters
+    ----------
+    c_threshold : float
+        The threshold value for the similarity index.
+    w_factor : float
+        The weight factor for the similarity index.
+    n_ary : str
+        The similarity index to use.
+    """
+
+    # get the reference binary data
+    data = _get_binary_data()
+    # get the reference value for the outlier
+    ref_outlier_dict = _get_ref_outlier_dict()
+
+    # small hack to avoid using the None value as a key in the dictionary
+    c_threshold_key = c_threshold
+    if c_threshold == None:
+        c_threshold_key = "None"
+
+    ref_outlier = ref_outlier_dict[c_threshold_key][w_factor][n_ary]
+
+    # calculate the outlier for the binary data
+    outlier = SimilarityIndex().calculate_outlier(
+        data, similarity_index=n_ary, w_factor=w_factor, c_threshold=c_threshold
+    )
+
+    # check that the calculated outlier is equal to the reference outlier
+    assert_equal(outlier, ref_outlier)
