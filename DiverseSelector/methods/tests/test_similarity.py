@@ -378,3 +378,62 @@ def test_SimilarityIndex_call(c_threshold, w_factor, n_ary):
 
     # check that the calculated value is equal to the reference value
     assert_almost_equal(si_value, ref_value, decimal=tol)
+
+
+
+# --------------------------------------------------------------------------------------------- #
+# Section of the tests for selection of indexes functions
+# --------------------------------------------------------------------------------------------- #
+
+# Many of the combinations of parameters for the tests are too stringent and the similarity of the
+# samples is zero. These cases are not considered because will produce inconsistent results for the
+# selection of the new indexes, and the calculation of the medoid and the outlier.
+
+# Creating the possible combinations of the parameters for the tests. The combinations are stored
+# in a list of tuples. Each tuple has the following structure: (w_factor, c_threshold, n_ary)
+# where:
+#   w_factor: the weight factor for the similarity index
+#   c_threshold: the threshold value for the similarity index
+#   n_ary: the similarity index to use
+
+
+# The cases where the similarity of the samples is zero are not considered because these will be
+# inconsistent with the reference values for the selection of the new indexes, and the calculation
+# of the medoid and the outlier.
+def _get_test_parameters():
+    """Returns the parameters for the tests.
+
+    Returns the parameters for the tests. The parameters are stored in a list of tuples. Each tuple
+    has the following structure: (w_factor, c_threshold, n_ary) where:
+        w_factor: the weight factor for the similarity index
+        c_threshold: the threshold value for the similarity index
+        n_ary: the similarity index to use
+
+    Returns
+    -------
+    list
+        A list of tuples with the parameters for the tests. Each tuple has the following structure:
+        (w_factor, c_threshold, n_ary) where:
+            w_factor: the weight factor for the similarity index
+            c_threshold: the threshold value for the similarity index
+            n_ary: the similarity index to use
+    """
+    # The cases where the similarity of the samples is zero are not considered because these will be
+    # inconsistent with the reference values for the selection of the new indexes, and the calculation
+    # of the medoid and the outlier.
+    test_parameters = []
+    for w in w_factor_values:
+        for c in c_treshold_values:
+            # small hack to avoid using the None value as a key in the dictionary
+            c_key = c
+            if c == None:
+                c_key = "None"
+            for n in n_ary_values:
+                # ignore the cases where the similarity of the samples less than two percent
+                if not _get_ref_similarity_dict()[w][c_key][n] < 0.02:
+                    test_parameters.append((c, w, n))
+
+    return test_parameters
+
+
+parameters = _get_test_parameters()
