@@ -42,6 +42,85 @@ import math
 from math import log
 import warnings
 
+__all__ = ["NSimilarity", "SimilarityIndex"]
+
+
+class NSimilarity(SelectionBase):
+    r"""
+    Select samples of vectors using n-ary similarity indexes between vectors
+
+    The algorithms in this class select a diverse subset of vectors such that the similarity
+    between the vectors in the subset is minimized. The similarity of a set of vectors is
+    calculated using an n-ary similarity index. These indexes compare n vectors (e.g. molecular
+    fingerprints) at a time and return a value between 0 and 1, where 0 means that all the vectors
+    in the set are completely different and 1 means that the vectors are identical.
+
+    The algorithm starts by selecting a starting reference data point. Then, the next data point is
+    selected such as the similarity value of the group of selected data points is minimized. The
+    process is repeated until the desired number of data points is selected.
+
+
+    Notes
+    -----
+
+    The ideas behind the similarity-based selection methods are described in the following papers:
+        https://jcheminf.biomedcentral.com/articles/10.1186/s13321-021-00505-3
+        https://jcheminf.biomedcentral.com/articles/10.1186/s13321-021-00504-4
+        https://link.springer.com/article/10.1007/s10822-022-00444-7
+
+
+    """
+
+    def __init__(
+        self, similarity_index="RR", w_factor="fraction", c_threshold=None, preprocess_data=True
+    ):
+        """
+        Initializing class.
+
+        Parameters
+        ----------
+        n_similarity_measure: str
+            Key with the abbreviation of the similarity index that will be used to perform the
+            selection.
+            Possible values are:
+                AC: Austin-Colwell
+                BUB: Baroni-Urbani-Buser
+                CTn: Consoni-Todschini
+                Fai: Faith
+                Gle: Gleason
+                Ja: Jaccard
+                Ja0: Jaccard 0-variant
+                JT: Jaccard-Tanimoto
+                RT: Rogers-Tanimoto
+                RR: Russel-Rao
+                SM: Sokal-Michener
+                SSn: Sokal-Sneath n
+        w_factor: {"fraction", "power_n"}
+            Type of weight function that will be used for calculating the counters.
+                'fraction' : similarity = d[k]/n
+                            dissimilarity = 1 - (d[k] - n_objects % 2)/n_objects
+                'power_n' : similarity = n**-(n_objects - d[k])
+                            dissimilarity = n**-(d[k] - n_objects % 2)
+                other values : similarity = dissimilarity = 1
+        c_threshold: {None, 'dissimilar', int}
+            Coincidence threshold used for calculating the similarity counters. A column of the
+            elements is considered to be a coincidence among the elements if the number of elements
+            that have the same value in that position is greater than the coincidence threshold.
+                None : Default, c_threshold = n_objects % 2
+                'dissimilar' : c_threshold = ceil(n_objects / 2)
+                int : Integer number < n_objects
+        preprocess_data: bool
+            Every data element must be betwen 0 and 1 for the similarity indexes to work. If
+            preprocess_data is True, the data is scaled between 0 and 1 using a strategy that is
+            compatible with the similarity indexes. If preprocess_data is False, the data is not
+            scaled and it is assumed that the data is already between 0 and 1.
+
+        """
+        self.similarity_index = similarity_index
+        self.w_factor = w_factor
+        self.c_threshold = c_threshold
+        self.preprocess_data = preprocess_data
+
 
 class SimilarityIndex:
     r"""Calculate the n-ary similarity index of a set of vectors.
