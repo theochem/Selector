@@ -972,3 +972,118 @@ def test_get_new_index(c_threshold, w_factor, n_ary):
     )
 
     assert_equal(new_index, ref_new_index)
+
+
+# --------------------------------------------------------------------------------------------- #
+# Selecting a subset of the parameters generated for the tests
+# --------------------------------------------------------------------------------------------- #
+
+# remove cases where c_threshold is 5. This is not a valid case for the selection of the next point
+# if the number of selected samples is less than 5
+parameters = [x for x in parameters if not x[0] == 5]
+
+# The start parameter can be a list of elements that need to be selected first.
+# The case of the three elements included in a selection  1, 2, 3 is tested.
+start_values = ["medoid", "outlier", [1, 2, 3]]
+# sample size values to test
+sample_size_values = [10, 20, 30]
+
+#--------------------------------------------------------------------------------------------- #
+# Get reference data for testing the selection of the diverse subset
+# --------------------------------------------------------------------------------------------- #
+
+def get_data_file_path(file_name):
+    # Get the absolute path of the data file inside the package
+    data_file_path = pkg_resources.resource_filename(__name__, f"data/{file_name}")
+    return data_file_path
+
+
+def _get_selections_ref_dict():
+    """Returns a dictionary with the reference values for the selection of samples.
+
+    The proper results for the tests are known in advance and are stored in a csv file.
+    The file is read and the values are stored in a dictionary. The dictionary has the following
+    structure:
+        {w_factor: {c_threshold: {n_ary: {sample_size: {start: value}}}}} where:
+            w_factor: the weight factor for the similarity index
+            c_threshold: the threshold value for the similarity index
+            n_ary: the similarity index to use
+            sample_size: the number of samples to select
+            start: the method to use to select the first(s) sample(s)
+    """
+
+    file_path = get_data_file_path("ref_selected_data.txt")
+    file = open(file_path, mode="r")
+    reader = csv.reader(file, delimiter=";")
+    next(reader)  # skip header
+    # initialize the dictionary
+    data_dict = {}
+
+    for row in reader:
+        # The first column is the c_threshold
+        data_dict[row[0]] = data_dict.get(row[0], {})
+        # The second column is the w_factor
+        data_dict[row[0]][row[1]] = data_dict[row[0]].get(row[1], {})
+        # The third column is the sample_size
+        data_dict[row[0]][row[1]][row[2]] = data_dict[row[0]][row[1]].get(row[2], {})
+        # The fourth column is the start_idx
+        data_dict[row[0]][row[1]][row[2]][row[3]] = data_dict[row[0]][row[1]][row[2]].get(
+            row[3], {}
+        )
+        # The fifth column stores the n_ary and the sixth column stores the reference value
+        data_dict[row[0]][row[1]][row[2]][row[3]][row[4]] = ast.literal_eval(row[5])
+    return data_dict
+
+print(_get_selections_ref_dict())
+
+@pytest.mark.parametrize("c_threshold, w_factor, n_ary", parameters)
+@pytest.mark.parametrize("sample_size", sample_size_values)
+@pytest.mark.parametrize("start", start_values)
+def test_NSimilarity_select(c_threshold, w_factor, sample_size, n_ary, start):
+    """
+    Test the diversity selection methods based on similarity indexes for binary data.
+
+    Parameters
+    ----------
+    c_threshold : float
+        The threshold value for the similarity index.
+    w_factor : float
+        The weight factor for the similarity index.
+    sample_size : int
+        The number of molecules to select.
+    n_ary : str
+        The similarity index to use.
+    start : str
+        The method to use to select the first(s) sample(s).
+
+    """
+
+    # get the binary data
+    data = _get_binary_data()
+    # get the reference selected data
+    reference_selected_data = _get_selections_ref_dict()
+
+    # create instance of the class SimilarityIndex to test the similarity indexes for binary data
+    selector = NSimilarity(
+        similarity_index=n_ary, w_factor=w_factor, c_threshold=c_threshold, preprocess_data=False
+    )
+    # select the diverse subset using the similarity index
+    selected_data = selector.select_from_cluster(data, size=sample_size, start=start)
+
+    # get the reference value for the similarity index
+    # transform invalid keys to strings
+    if c_threshold == None:
+        c_threshold = "None"
+    # transform sample_size to string (as it is used as a key in the dictionary)
+    sample_size = str(sample_size)
+    # lists of initial indexes are not valid keys in the dictionary (non hashable)
+    if isinstance(start, list):
+        start = str(start).replace(" ", "")
+    # get the reference list as a string
+    ref_list = reference_selected_data[c_threshold][w_factor][sample_size][start][n_ary]
+
+    # check if the selected data has the same size as the reference data
+    assert_equal(len(selected_data), len(ref_list))
+
+    # check if the selected data is equal to the reference data
+    assert all([x in ref_list for x in selected_data])
