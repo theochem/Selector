@@ -221,8 +221,130 @@ class NSimilarity(SelectionBase):
 
         return index
 
+    
     def select_from_cluster(self, arr, size, cluster_ids=None, start="medoid"):
-        pass
+        r"""
+        Algorithm of nary similarity selection for selecting points from cluster.
+
+        Parameters
+        ----------
+        arr: np.ndarray
+            Array of features (columns) for each sample (rows).
+        size: int
+            Number of sample points to select (i.e. size of the subset).
+        cluster_ids: np.ndarray, optional
+            Array of integers or strings representing the points ids of the data that belong to the
+            current cluster. If `None`, all the samples in the data are treated as one cluster.
+        start: str or list
+            srt: key on what is used to start the selection
+                {'medoid', 'random', 'outlier'}
+            list: indices of points that are included in the selection since the beginning
+
+        Returns
+        -------
+        selected: list
+            Indices of the selected sample points.
+        """
+        data_array = np.array(arr)
+
+        # check if cluster_ids are provided
+        if cluster_ids is not None:
+            # extract the data corresponding to the cluster_ids
+            data_array = np.take(data_array, cluster_ids, axis=0)
+
+        # total number of objects in the current cluster
+        samples = data_array.shape[0]
+        # ids of the data points in the current cluster (0, 1, 2, ..., samples-1)
+        data_ids = np.array(range(samples))
+
+        # check if the number of selected objects is less than the total number of objects
+        if size > samples:
+            raise ValueError(
+                f"Number of samples is less than the requested sample size: {samples} < {size}."
+            )
+
+        # The data is marked to be preprocessed scale the data between 0 and 1 using a strategy
+        # that is compatible with the similarity indexes
+        if self.preprocess_data:
+            data_array = self._scale_data(data_array)
+        else:
+            # check if the data is between 0 and 1 and raise an error if it is not
+            if np.max(data_array) > 1 or np.min(data_array) < 0:
+                raise ValueError(
+                    "The data was not scaled between 0 and 1. Use the _scale_data function to scale the data."
+                )
+
+        # create an instance of the SimilarityIndex class. It is used to calculate the medoid and
+        # the outlier of the data.
+        SI = SimilarityIndex(
+            similarity_index=self.similarity_index,
+            c_threshold=self.c_threshold,
+            w_factor=self.w_factor,
+        )
+
+        # select the index (of the working data) corresponding to the medoid of the data using the
+        # similarity index
+        if start == "medoid":
+            seed = SI.calculate_medoid(data_array)
+            selected = [seed]
+        # select the index (of the working data)  corresponding to a random data point
+        elif start == "random":
+            seed = random.randint(0, samples - 1)
+            selected = [seed]
+        # select the index (of the working data) corresponding to the outlier of the data using the
+        # similarity index
+        elif start == "outlier":
+            seed = SI.calculate_outlier(data_array)
+            selected = [seed]
+        # if a list of cluster_ids is provided, select the data_ids corresponding indices
+        elif isinstance(start, list):
+            if cluster_ids is not None:
+                # check if all starting indices are in this cluster
+                if not all(label in cluster_ids for label in start):
+                    raise ValueError(
+                        "Some of the provided initial indexes are not in the cluster data."
+                    )
+                # select the indices of the data_ids that correspond to the provided starting points
+                # provided from cluster_ids
+                selected = [i for i, j in enumerate(cluster_ids) if j in start]
+            else:
+                # check if all starting indices are in the data
+                if not all(label in data_ids for label in start):
+                    raise ValueError("Some of the provided initial indexes are not in the data.")
+                # select the indices of the data_ids that correspond to the provided starting points
+                selected = start[:]
+        else:
+            raise ValueError(
+                "Select a correct starting point: medoid, random, outlier or a list of indices"
+            )
+        # Number of initial objects
+        num_selected = len(selected)
+
+        # get selected samples form the working data array
+        selected_objects = np.take(data_array, selected, axis=0)
+        # Calculate the columnwise sum of the selected samples
+        selected_condensed = np.sum(selected_objects, axis=0)
+
+        # until the desired number of objects is selected a new object is selected.
+        while num_selected < size:
+            # indices from which to select the new data points
+            select_from = np.delete(data_ids, selected)
+
+            # Select new index. The new object is selected such that from all possible objects the
+            # similarity of the set of (selected_objects + new_object) is a minimum.
+            new_index = self._get_new_index(
+                data_array, selected_condensed, num_selected, select_from
+            )
+
+            # updating column sum vector
+            selected_condensed += data_array[new_index]
+
+            # updating selected indices
+            selected.append(new_index)
+            num_selected += 1
+
+        return selected
+
 
 class SimilarityIndex:
     r"""Calculate the n-ary similarity index of a set of vectors.
