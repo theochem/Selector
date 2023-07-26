@@ -254,7 +254,90 @@ class SimilarityIndex:
             "w_p": w_p,
         }
         return counters
-    
+
+    def __call__(
+        self,
+        data=None,
+        n_objects=None,
+        similarity_index=None,
+        c_threshold=None,
+        w_factor=None,
+    ):
+        """Calculate the similarity index of a set of vectors.
+
+        Parameters
+        ----------
+        data : np.ndarray
+            Array of arrays, each sub-array contains the binary or real valued vector. The values must
+            be between 0 and 1. If the number of rows ==1, the data is treated as the columnwise sum
+            of the objects. If the number of rows > 1, the data is treated as the objects.
+        n_objects: int
+            Number of objects in the data. Is only necessary if the data is a columnwise sum of
+            the objects. If the data is not the columnwise sum of the objects, the number of objects
+            is calculated as the length of the data.
+        c_threshold: {None, 'dissimilar', int}
+            Coincidence threshold used for calculating the similarity counters. A position of the
+            elements is considered to be a coincidence (coincides among all the elements considered)
+            if the number of elements that have the same value in that position is greater than the
+            coincidence threshold.
+            arrays
+                None : Default, c_threshold = n_objects % 2
+                'dissimilar' : c_threshold = ceil(n_objects / 2)
+                int : Integer number < n_objects
+        w_factor: {"fraction", "power_n"}
+            Type of weight function that will be used.
+            'fraction' : similarity = d[k]/n
+                            dissimilarity = 1 - (d[k] - n_objects % 2)/n_objects
+            'power_n' : similarity = n**-(n_objects - d[k])
+                        dissimilarity = n**-(d[k] - n_objects % 2)
+            other values : similarity = dissimilarity = 1
+
+        Returns
+        -------
+        similarity_index: float
+            Similarity index of the set of vectors.
+        """
+        # check if data is provided
+
+        # If the parameters are not provided, the parameters provided in the class initialization are used.
+        if similarity_index is None:
+            similarity_index = self.similarity_index
+        if w_factor is None:
+            w_factor = self.w_factor
+        if c_threshold is None:
+            c_threshold = self.c_threshold
+
+        # check that data or c_total is provided
+        if data is None:
+            raise ValueError("Please provide data or c_total")
+
+        # check if data is a np.ndarray
+        if not isinstance(data, np.ndarray):
+            raise TypeError(
+                "Warning: Input data is not a np.ndarray, to secure the right results please input the right data type"
+            )
+
+        # if the data is a columnwise sum of the objects check that n_objects is provided
+        if data.ndim == 1:
+            c_total = data
+            if not n_objects:
+                raise ValueError(
+                    "Input data is the columnwise sum, please specify number of objects"
+                )
+        # if the data is not a columnwise sum of the objects, calculate the columnwise sum and the
+        # number of objects
+        else:
+            c_total = np.sum(data, axis=0)
+            n_objects = data.shape[0]
+
+        # calculate the counters needed to calculate the similarity indexes
+        counters = self._calculate_counters(
+            data=c_total, n_objects=n_objects, w_factor=w_factor, c_threshold=c_threshold
+        )
+        # calculate the similarity index
+        similarity_index = _similarity_index_dict[similarity_index](counters)
+
+        return similarity_index    
 
 # Utility functions section
 # -------------------------
