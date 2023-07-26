@@ -107,7 +107,6 @@ class SimilarityIndex:
         self.w_factor = w_factor
         self.c_threshold = c_threshold
 
-
     def _calculate_counters(self, data=None, n_objects=None, c_threshold=None, w_factor=None):
         """
         Calculate 1-similarity, 0-similarity, and dissimilarity counters
@@ -337,7 +336,99 @@ class SimilarityIndex:
         # calculate the similarity index
         similarity_index = _similarity_index_dict[similarity_index](counters)
 
-        return similarity_index    
+        return similarity_index
+
+    def calculate_medoid(
+        self, data, c_total=None, similarity_index=None, c_threshold=None, w_factor=None
+    ):
+        """Calculate the medoid of a set of real-valued vectors or binary objects.
+
+        Parameters
+        ----------
+        data: np.array
+            np.array of all the real-valued vectors or binary objects.
+        c_total:
+            np.array with the columnwise sums of the data, not necessary to provide.
+        similarity_index: string
+            Key with the abbreviation of the desired similarity index to calculate the medoid from.
+            Possible values are:
+                AC: Austin-Colwell
+                BUB: Baroni-Urbani-Buser
+                CTn: Consoni-Todschini
+                Fai: Faith
+                Gle: Gleason
+                Ja: Jaccard
+                Ja0: Jaccard 0-variant
+                JT: Jaccard-Tanimoto
+                RT: Rogers-Tanimoto
+                RR: Russel-Rao
+                SM: Sokal-Michener
+                SSn: Sokal-Sneath n
+        c_threshold: {None, 'dissimilar', int}
+            Coincidence threshold used for calculating the similarity counters. A column of the
+            elements is considered to be a coincidence among the elements if the number of elements
+            that have the same value in that position is greater than the coincidence threshold.
+                None : Default, c_threshold = n_objects % 2
+                'dissimilar' : c_threshold = ceil(n_objects / 2)
+                int : Integer number < n_objects
+        w_factor: {"fraction", "power_n"}
+            Type of weight function that will be used.
+            'fraction' : similarity = d[k]/n
+                            dissimilarity = 1 - (d[k] - n_objects % 2)/n_objects
+            'power_n' : similarity = n**-(n_objects - d[k])
+                        dissimilarity = n**-(d[k] - n_objects % 2)
+            other values : similarity = dissimilarity = 1
+        """
+
+        # setting the default values for the parameters
+        if similarity_index is None:
+            similarity_index = self.similarity_index
+        if w_factor is None:
+            w_factor = self.w_factor
+        if c_threshold is None:
+            c_threshold = self.c_threshold
+
+        # check if c_total is provided and if not, calculate it
+        if c_total is None:
+            c_total = np.sum(data, axis=0)
+        # if c_total is provided, check if it has the same number of columns as the data
+        elif c_total is not None and len(data[0]) != len(c_total):
+            raise ValueError("Dimensions of objects and columnwise sum differ")
+
+        # get the total number of objects
+        n_objects = data.shape[0]
+
+        # Initialize the selected index with a number outside the possible index values
+        index = n_objects + 1
+
+        # minimum similarity value that is guaranteed to be higher than all the comparisons, this
+        # value should be a warranty that a exist a sample with similarity lower than min_sim. The
+        # max possible similarity value for set of samples is 1.00.
+        min_sim = 1.01
+
+        # For each sample in the set, calculate the columnwise sum of the data without the sample
+        comp_sums = c_total - data
+
+        # for each sample calculate the similarity index of the complete set without the sample
+        for idx, obj in enumerate(comp_sums):
+            # calculate the similarity index of the set of objects without the current object
+            sim_index = self.__call__(
+                data=obj,
+                n_objects=n_objects - 1,
+                similarity_index=similarity_index,
+                w_factor=w_factor,
+                c_threshold=c_threshold,
+            )
+            # if the similarity is lower than the previous minimum similarity, update the minimum
+            # similarity and the index
+            if sim_index < min_sim:
+                min_sim, index = sim_index, idx
+            else:
+                pass
+        # the index of the object that increases more the similarity of the set when added is
+        # returned (the medoid)
+        return index
+
 
 # Utility functions section
 # -------------------------

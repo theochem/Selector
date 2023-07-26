@@ -380,7 +380,6 @@ def test_SimilarityIndex_call(c_threshold, w_factor, n_ary):
     assert_almost_equal(si_value, ref_value, decimal=tol)
 
 
-
 # --------------------------------------------------------------------------------------------- #
 # Section of the tests for selection of indexes functions
 # --------------------------------------------------------------------------------------------- #
@@ -437,3 +436,187 @@ def _get_test_parameters():
 
 
 parameters = _get_test_parameters()
+
+
+def _get_ref_medoid_dict():
+    """Returns a dictionary with the reference values for the medoid.
+
+    The proper results for the tests are known in advance and are stored in a dictionary.
+
+    The dictionary has the following structure:
+        {w_factor: {c_threshold: {n_ary: value}}} where:
+            w_factor: the weight factor for the similarity index
+            c_threshold: the threshold value for the similarity index
+
+    The medoid values are stored for all possible combinations of the following parameter values:
+        - w_factor: None, dissimilar, 5
+        - c_threshold: fraction, power_3
+        - n_ary: AC, BUB, CT1, CT2, CT3, CT4, Fai, Gle, Ja, Ja0, JT, RT, RR, SM, SS1, SS2
+
+
+    Returns
+    -------
+    dict
+        A dictionary with the reference values for the medoid. The dictionary has the
+        following structure:
+            {w_factor: {c_threshold: {n_ary: value}}} where:
+                w_factor: the weight factor for the similarity index
+                c_threshold: the threshold value for the similarity index
+    """
+    medoid_ref_dict = {
+        "None": {
+            "fraction": {
+                "AC": 96,
+                "BUB": 69,
+                "CT1": 96,
+                "CT2": 80,
+                "CT3": 1,
+                "CT4": 23,
+                "Fai": 96,
+                "Gle": 69,
+                "Ja": 69,
+                "Ja0": 50,
+                "JT": 69,
+                "RT": 96,
+                "RR": 1,
+                "SM": 96,
+                "SS1": 23,
+                "SS2": 50,
+            },
+            "power_3": {
+                "AC": 96,
+                "BUB": 48,
+                "CT1": 0,
+                "CT2": 0,
+                "CT3": 0,
+                "CT4": 0,
+                "Fai": 96,
+                "Gle": 69,
+                "Ja": 69,
+                "Ja0": 50,
+                "JT": 69,
+                "RT": 96,
+                "RR": 1,
+                "SM": 96,
+                "SS1": 69,
+                "SS2": 50,
+            },
+        },
+        "dissimilar": {
+            "fraction": {
+                "AC": 0,
+                "BUB": 0,
+                "CT1": 0,
+                "CT2": 0,
+                "CT3": 0,
+                "CT4": 0,
+                "Fai": 0,
+                "Gle": 0,
+                "Ja": 0,
+                "Ja0": 0,
+                "JT": 0,
+                "RT": 0,
+                "RR": 0,
+                "SM": 0,
+                "SS1": 0,
+                "SS2": 0,
+            },
+            "power_3": {
+                "AC": 0,
+                "BUB": 0,
+                "CT1": 0,
+                "CT2": 0,
+                "CT3": 0,
+                "CT4": 0,
+                "Fai": 0,
+                "Gle": 0,
+                "Ja": 0,
+                "Ja0": 0,
+                "JT": 0,
+                "RT": 0,
+                "RR": 0,
+                "SM": 0,
+                "SS1": 0,
+                "SS2": 0,
+            },
+        },
+        5: {
+            "fraction": {
+                "AC": 39,
+                "BUB": 39,
+                "CT1": 39,
+                "CT2": 96,
+                "CT3": 0,
+                "CT4": 0,
+                "Fai": 39,
+                "Gle": 0,
+                "Ja": 0,
+                "Ja0": 39,
+                "JT": 0,
+                "RT": 39,
+                "RR": 0,
+                "SM": 39,
+                "SS1": 0,
+                "SS2": 39,
+            },
+            "power_3": {
+                "AC": 39,
+                "BUB": 39,
+                "CT1": 0,
+                "CT2": 0,
+                "CT3": 0,
+                "CT4": 0,
+                "Fai": 39,
+                "Gle": 0,
+                "Ja": 0,
+                "Ja0": 39,
+                "JT": 0,
+                "RT": 39,
+                "RR": 0,
+                "SM": 39,
+                "SS1": 0,
+                "SS2": 39,
+            },
+        },
+    }
+
+    return medoid_ref_dict
+
+
+@pytest.mark.parametrize("c_threshold, w_factor, n_ary", parameters)
+def test_calculate_medoid(c_threshold, w_factor, n_ary):
+    """Test the function to calculate the medoid for binary data.
+
+    Test the function to calculate the medoid for binary data using the reference values and several
+    combinations of parameters. The reference values are obtained using the function
+    _get_ref_medoid_dict().
+
+    Parameters
+    ----------
+    c_threshold : float
+        The threshold value for the similarity index.
+    w_factor : float
+        The weight factor for the similarity index.
+    n_ary : str
+        The similarity index to use.
+    """
+
+    # get the reference binary data
+    data = _get_binary_data()
+    # get the reference value for the medoid
+    ref_medoid_dict = _get_ref_medoid_dict()
+
+    # small hack to avoid using the None value as a key in the dictionary
+    c_threshold_key = c_threshold
+    if c_threshold == None:
+        c_threshold_key = "None"
+
+    ref_medoid = ref_medoid_dict[c_threshold_key][w_factor][n_ary]
+
+    # calculate the medoid for the binary data
+    medoid = SimilarityIndex().calculate_medoid(
+        data, similarity_index=n_ary, w_factor=w_factor, c_threshold=c_threshold
+    )
+
+    # check that the calculated medoid is equal to the reference medoid
+    assert_equal(medoid, ref_medoid)
