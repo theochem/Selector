@@ -26,7 +26,7 @@ import pytest
 import csv
 import ast
 import pkg_resources
-from DiverseSelector.methods.similarity import SimilarityIndex
+from DiverseSelector.methods.similarity import SimilarityIndex, NSimilarity
 import numpy as np
 from numpy.testing import assert_equal, assert_almost_equal
 
@@ -805,3 +805,170 @@ def test_calculate_outlier(c_threshold, w_factor, n_ary):
 
     # check that the calculated outlier is equal to the reference outlier
     assert_equal(outlier, ref_outlier)
+
+
+# --------------------------------------------------------------------------------------------- #
+# Section of the test for the NSimilarity class
+# --------------------------------------------------------------------------------------------- #
+
+
+def _get_ref_new_index():
+    """
+    Returns reference data for testing the function to calculate the new index.
+
+    Returns the tuple (selected_points, new_indexes_dict) where selected_points is a list of
+    selected samples given to the function (get_new_index) and new_indexes_dict is  a dictionary
+    with the reference values for the new index to be selected based on the previously selected
+    indices and the other function parameters.
+
+    Returns
+    -------
+    tuple (list, dict)
+        A tuple with the reference data for testing the function to calculate the new index. The
+        tuple has the following structure:
+            (selected_points, new_indexes_dict) where:
+                selected_points: a list of selected samples given to the function (get_new_index)
+                new_indexes_dict: a dictionary with the reference values for the new index to be
+                    selected based on the previously selected indices and the other function
+                    parameters. The dictionary has the following structure:
+                        {w_factor: {c_threshold: {n_ary: value}}} where:
+                            w_factor: the weight factor for the similarity index
+                            c_threshold: the threshold value for the similarity index
+                            n_ary: the similarity index to use
+
+    """
+
+    # The selected points to be given to the function (get_new_index)
+    selected_samples = [0, 9, 19, 29, 39, 49, 59, 69, 79, 89, 99]
+    # The reference values for the new index to be selected based on the previously selected
+    # indices and the other function parameters.
+    new_index_dict = {
+        "None": {
+            "fraction": {
+                "AC": 62,
+                "BUB": 62,
+                "CT1": 62,
+                "CT2": 62,
+                "CT3": 2,
+                "CT4": 44,
+                "Fai": 62,
+                "Gle": 44,
+                "Ja": 44,
+                "Ja0": 62,
+                "JT": 44,
+                "RT": 62,
+                "RR": 2,
+                "SM": 62,
+                "SS1": 44,
+                "SS2": 62,
+            },
+            "power_3": {
+                "AC": 67,
+                "BUB": 11,
+                "CT1": 67,
+                "CT2": 20,
+                "CT3": 2,
+                "CT4": 44,
+                "Fai": 11,
+                "Gle": 44,
+                "Ja": 44,
+                "Ja0": 11,
+                "JT": 44,
+                "RT": 67,
+                "RR": 2,
+                "SM": 67,
+                "SS1": 44,
+                "SS2": 11,
+            },
+        },
+        5: {
+            "fraction": {
+                "AC": 2,
+                "BUB": 2,
+                "CT1": 2,
+                "CT2": 2,
+                "CT3": 2,
+                "CT4": 2,
+                "Fai": 2,
+                "Gle": 2,
+                "Ja": 2,
+                "Ja0": 2,
+                "JT": 2,
+                "RT": 2,
+                "RR": 2,
+                "SM": 2,
+                "SS1": 2,
+                "SS2": 2,
+            },
+            "power_3": {
+                "AC": 2,
+                "BUB": 2,
+                "CT1": 2,
+                "CT2": 2,
+                "CT3": 2,
+                "CT4": 2,
+                "Fai": 2,
+                "Gle": 2,
+                "Ja": 2,
+                "Ja0": 2,
+                "JT": 2,
+                "RT": 2,
+                "RR": 2,
+                "SM": 2,
+                "SS1": 2,
+                "SS2": 2,
+            },
+        },
+    }
+
+    return selected_samples, new_index_dict
+
+@pytest.mark.parametrize("c_threshold, w_factor, n_ary", parameters)
+def test_get_new_index(c_threshold, w_factor, n_ary):
+    """Test the function get a new sample from the binary data.
+
+    Test the function to get a new sample from the binary data using the reference values and several
+    combinations of parameters. The reference values are obtained using the function
+    _get_ref_new_index().
+
+    Parameters
+    ----------
+    c_threshold : float
+        The threshold value for the similarity index.
+    w_factor : float
+        The weight factor for the similarity index.
+    n_ary : str
+        The similarity index to use.
+    """
+
+    # get the reference binary data
+    data = _get_binary_data()
+    # get the reference value for the outlier
+    selected_samples, ref_new_index_dict = _get_ref_new_index()
+
+    # columnwise sum of the selected samples
+    selected_condensed_data = np.sum(np.take(data, selected_samples, axis=0), axis=0)
+    # indices of the samples to select from
+    select_from_n = [i for i in range(len(data)) if i not in selected_samples]
+    # number of samples that are already selected
+    n = len(selected_samples)
+
+    # small hack to avoid using the None value as a key in the dictionary
+    c_threshold_key = c_threshold
+    if c_threshold == None:
+        c_threshold_key = "None"
+
+    ref_new_index = ref_new_index_dict[c_threshold_key][w_factor][n_ary]
+
+    # calculate the outlier for the binary data
+    NSI = NSimilarity(similarity_index=n_ary, w_factor=w_factor, c_threshold=c_threshold)
+
+    # index = NSI._get_new_index(data_array = data, selected_condensed = selected_condensed_data, num_selected = n, select_from = select_from_n)
+    new_index = NSI._get_new_index(
+        data_array=data,
+        selected_condensed=selected_condensed_data,
+        select_from=select_from_n,
+        num_selected=n,
+    )
+
+    assert_equal(new_index, ref_new_index)
