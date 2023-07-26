@@ -121,6 +121,36 @@ class NSimilarity(SelectionBase):
         self.c_threshold = c_threshold
         self.preprocess_data = preprocess_data
 
+    def _scale_data(self, data_array):
+        r"""
+        Scales the data between so it can be used with the similarity indexes.
+
+        First each data point is normalized to be between 0 and 1.
+        .. math::
+            x_{ij} = \\frac{x_{ij} - min(x_j)}{max(x_j) - min(x_j)}
+
+        Then, the average of each column is calculated. Finally, each element of the final working
+        array will be defined as
+
+        .. math::
+            w_ij = 1 - | x_ij - a_j |
+
+        where $x_ij$ is the element of the normalized array, and $a_j$ is the average of the j-th
+        column of the normalized array.
+        """
+        min_value = np.min(data_array)
+        max_value = np.max(data_array)
+        # normalize the data to be between 0 and 1 for working with the similarity indexes
+        normalized_data = (data_array - min_value) / (max_value - min_value)
+        # calculate the average of the columns
+        col_average = np.average(normalized_data, axis=0)
+
+        # each element of the final working array will be defined as w_ij = 1 - | x_ij - a_j |
+        # where x_ij is the element of the normalized array, and a_j is the average of the j-th
+        # column of the normalized array.
+        data = 1 - np.abs(normalized_data - col_average)
+        return data
+
 
 class SimilarityIndex:
     r"""Calculate the n-ary similarity index of a set of vectors.
