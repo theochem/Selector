@@ -25,7 +25,6 @@
 
 from DiverseSelector.distance import (compute_distance_matrix,
                                       pairwise_similarity_bit,
-                                      nearest_average_tanimoto
                                       )
 
 import numpy as np
@@ -82,20 +81,6 @@ def test_modifed_tanimoto():
     assert_equal(mod_tani, expceted)
 
 
-def test_nearest_average_tanimoto_bit():
-    """Test the nearest_average_tanimoto function with binary input"""
-    nat = nearest_average_tanimoto(sample2)
-    shortest_tani = [0.3333333, 0.3333333, 0, 0]
-    average = np.average(shortest_tani)
-    assert_almost_equal(nat, average)
-
-
-def test_nearest_average_tanimoto():
-    """Test the nearest_average_tanimoto function with non-binary input"""
-    nat = nearest_average_tanimoto(sample3)
-    shortest_tani = [(11/19), (11/19)]
-    average = np.average(shortest_tani)
-    assert_equal(nat, average)
 
 
 

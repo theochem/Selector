@@ -195,46 +195,4 @@ def modified_tanimoto(a: np.array, b: np.array) -> float:
     return mt
 
 
-def nearest_average_tanimoto(x: np.ndarray) -> float:
-    """Computes the average tanimoto for nearest molecules.
-
-    Parameters
-    ----------
-    x : ndarray
-        Feature matrix.
-
-    Returns
-    -------
-    nat : float
-        Average tanimoto of closest pairs.
-
-    Notes
-    -----
-    This computes the tanimoto coefficient of pairs with the shortest
-    distances, then returns the average of them.
-    This calculation is explictly for the explicit diversity index.
-
-    Papp, Á., Gulyás-Forró, A., Gulyás, Z., Dormán, G., Ürge, L.,
-    and Darvas, F.. (2006) Explicit Diversity Index (EDI):
-    A Novel Measure for Assessing the Diversity of Compound Databases.
-    Journal of Chemical Information and Modeling 46, 1898-1904.
-    """
-    tani = []
-    for idx, _ in enumerate(x):
-        # arbitrary distance for comparison:
-        short = 100
-        a = 0
-        b = 0
-        # search for shortest distance point from idx
-        for jdx, _ in enumerate(x):
-            dist = np.linalg.norm(x[idx]-x[jdx])
-            if dist < short and idx != jdx:
-                short = dist
-                a = idx
-                b = jdx
-        # calculate tanimoto for each shortest dist pair
-        tani.append(tanimoto(x[a], x[b]))
-    # compute average of all shortest tanimoto coeffs
-    nat = np.average(tani)
-    return nat
 
