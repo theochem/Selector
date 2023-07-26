@@ -27,7 +27,7 @@ from typing import List
 
 import numpy as np
 from scipy.spatial.distance import euclidean
-from DiverseSelector.distance import nearest_average_tanimoto
+from DiverseSelector.distance import tanimoto
 import warnings
 
 __all__ = [
@@ -35,10 +35,11 @@ __all__ = [
     "entropy",
     "logdet",
     "shannon_entropy",
-    "explicit_diversity_index"
+    "explicit_diversity_index",
     "wdud",
     "hypersphere_overlap_of_subset",
     "gini_coefficient",
+    "nearest_average_tanimoto",
 ]
 
 
@@ -57,8 +58,9 @@ def compute_diversity(
     div_type : str, optional
         Method of calculation diversity for a given molecule set, which
         includes "entropy", "logdet", "shannon entropy", "wdud",
-        "gini coefficient" "hypersphere overlap of subset".
-        Default is "entropy".
+        "gini coefficient" "hypersphere overlap of subset", and
+        "explicit diversity index".
+        The default is "entropy".
     features : np.ndarray, optional
         Feature matrix of entire molecule library, used only if
         calculating `hypersphere_overlap_of_subset`. Default is "None".
@@ -91,6 +93,8 @@ def compute_diversity(
         if cs is None:
             raise ValueError("Attribute `cs` is missing. "
                              "Please input `cs` value to use explicit_diversity_index." )
+        elif cs == 0:
+            raise ValueError("Divide by zero error: Attribute `cs` cannot be 0.")
         return explicit_diversity_index(feature_subset, cs)
     else:
         raise ValueError(f"Diversity type {div_type} not supported.")
@@ -227,6 +231,7 @@ def shannon_entropy(x: np.ndarray) -> float:
             )
         h_x += (-1 * p_i) * np.log10(p_i)
     return h_x
+
 
 # todo: add tests for edi
 def explicit_diversity_index(
@@ -472,3 +477,48 @@ def gini_coefficient(x: np.ndarray):
     numerator = np.sum(np.arange(1, num_features + 1) * bit_count)
 
     return 2.0 * numerator / denominator - (num_features + 1) / num_features
+
+
+def nearest_average_tanimoto(x: np.ndarray) -> float:
+    """Computes the average tanimoto for nearest molecules.
+
+    Parameters
+    ----------
+    x : ndarray
+        Feature matrix.
+
+    Returns
+    -------
+    nat : float
+        Average tanimoto of closest pairs.
+
+    Notes
+    -----
+    This computes the tanimoto coefficient of pairs with the shortest
+    distances, then returns the average of them.
+    This calculation is explictly for the explicit diversity index.
+
+    Papp, Á., Gulyás-Forró, A., Gulyás, Z., Dormán, G., Ürge, L.,
+    and Darvas, F.. (2006) Explicit Diversity Index (EDI):
+    A Novel Measure for Assessing the Diversity of Compound Databases.
+    Journal of Chemical Information and Modeling 46, 1898-1904.
+    """
+    tani = []
+    for idx, _ in enumerate(x):
+        # arbitrary distance for comparison:
+        short = 100
+        a = 0
+        b = 0
+        # search for shortest distance point from idx
+        for jdx, _ in enumerate(x):
+            dist = np.linalg.norm(x[idx]-x[jdx])
+            if dist < short and idx != jdx:
+                short = dist
+                a = idx
+                b = jdx
+        # calculate tanimoto for each shortest dist pair
+        tani.append(tanimoto(x[a], x[b]))
+    # compute average of all shortest tanimoto coeffs
+    nat = np.average(tani)
+    return nat
+

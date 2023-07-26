@@ -27,10 +27,12 @@ from DiverseSelector.diversity import (
     compute_diversity,
     entropy,
     gini_coefficient,
+    explicit_diversity_index,
     logdet,
     shannon_entropy,
     hypersphere_overlap_of_subset,
     wdud,
+    nearest_average_tanimoto
 )
 from DiverseSelector.utils import distance_to_similarity
 import numpy as np
@@ -58,7 +60,7 @@ def test_compute_diversity_default():
 
 def test_compute_diversity_specified():
     """Test compute diversity with a specified div_type."""
-    comp_div = compute_diversity(sample4, "shannon_entropy")
+    comp_div = compute_diversity(sample4, "shannon entropy")
     expected = 0.301029995
     assert_almost_equal(comp_div, expected)
 
@@ -69,7 +71,7 @@ def test_compute_diversity_hyperspheres():
     centers_pts = np.array([[0.5, 0.5]] * (100 - 4))
     pts = np.vstack((corner_pts, centers_pts))
 
-    comp_div = compute_diversity(pts, "hypersphere_overlap_of_subset", pts)
+    comp_div = compute_diversity(pts, "hypersphere overlap of subset", pts)
     # Expected = overlap + edge penalty
     expected = (100.0 * 96 * 95 * 0.5) + 2.0
     assert_almost_equal(comp_div, expected)
@@ -78,8 +80,27 @@ def test_compute_diversity_hyperspheres():
 def test_compute_diversity_hypersphere_error():
     """Test compute diversity with hypersphere metric and no molecule library given."""
     assert_raises(
-        ValueError, compute_diversity, sample5, "hypersphere_overlap_of_subset"
+        ValueError, compute_diversity, sample5, "hypersphere overlap of subset"
     )
+
+
+def test_compute_diversity_edi():
+    """Test compute diversity with explicit diversity index div_type"""
+    z = np.array([[0, 1, 2], [1, 2, 0], [2, 0, 1]])
+    cs = 1
+    expected = 56.39551204
+    actual = compute_diversity(z, "explicit diversity index", cs=cs)
+    assert_almost_equal(expected, actual)
+
+
+def test_compute_diversity_edi_no_cs_error():
+    """Test compute diversity with explicit diversity index and no `cs` value given."""
+    assert_raises(ValueError, compute_diversity, sample5, "explicit diversity index")
+
+
+def test_compute_diversity_edi_zero_error():
+    """Test compute diversity with explicit diversity index and `cs` = 0."""
+    assert_raises(ValueError, compute_diversity, sample5, "explicit diversity index", cs=0)
 
 
 def test_compute_diversity_invalid():
@@ -137,6 +158,19 @@ def test_shannon_entropy_feature_error():
     """Test the shannon entropy function raises error with matrix with invalid feature."""
     x = np.array([[1, 0, 1], [0, 0, 0], [1, 0, 0]])
     assert_raises(ValueError, shannon_entropy, x)
+
+
+def test_explicit_diversity_index():
+    """Test the explicit diversity index function."""
+    z = np.array([[0, 1, 2],[1,2,0],[2,0,1]])
+    cs = 1
+    nc = 3
+    sdi = 0.75 / 0.7332902012
+    cr = -1 * 0.4771212547
+    edi = 0.5456661753 * 0.7071067811865476
+    edi_scaled = 56.395512045413
+    value = explicit_diversity_index(z, cs)
+    assert_almost_equal(value, edi_scaled, decimal=8)
 
 
 def test_wdud_uniform():
@@ -266,3 +300,39 @@ def test_gini_coefficient_with_alternative_definition():
         - 2 * ((b - 1) + (b - 2) * 2 + (b - 3) * 3 + (b - 4) * 4) / (10)
     ) / numb_features
     assert_almost_equal(result, desired)
+
+
+def test_nearest_average_tanimoto_bit():
+    """Test the nearest_average_tanimoto function with binary input."""
+    nat = nearest_average_tanimoto(sample2)
+    shortest_tani = [0.3333333, 0.3333333, 0, 0]
+    average = np.average(shortest_tani)
+    assert_almost_equal(nat, average)
+
+
+def test_nearest_average_tanimoto():
+    """Test the nearest_average_tanimoto function with non-binary input."""
+    nat = nearest_average_tanimoto(sample3)
+    shortest_tani = [(11/19), (11/19)]
+    average = np.average(shortest_tani)
+    assert_equal(nat, average)
+
+
+def test_nearest_average_tanimoto_3_x_3():
+    """Testpyth the nearest_average_tanimoto function with a 3x3 matrix."""
+    # all unequal distances b/w points
+    x = np.array([[0, 1, 2],[3,4,5],[4,5,6]])
+    nat_x = nearest_average_tanimoto(x)
+    avg_x = 0.749718574108818
+    assert_equal(nat_x, avg_x)
+    # one point equidistant from the other two
+    y = np.array([[0, 1, 2], [3, 4, 5], [6, 7, 8]])
+    nat_y = nearest_average_tanimoto(y)
+    avg_y = 0.4813295920569825
+    assert_equal(nat_y, avg_y)
+    # all points equidistant
+    z = np.array([[0, 1, 2],[1,2,0],[2,0,1]])
+    nat_z = nearest_average_tanimoto(z)
+    avg_z = 0.25
+    assert_equal(nat_z, avg_z)
+
