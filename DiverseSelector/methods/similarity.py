@@ -254,3 +254,133 @@ class SimilarityIndex:
             "w_p": w_p,
         }
         return counters
+    
+
+# Utility functions section
+# -------------------------
+
+# Functions that calculate the similarity indexes. The functions are named as the similarity
+# index they calculate. The _nw suffix indicates that the similarity index is not weighted.
+# More information about the similarity indexes can be found in the following paper:
+# https://jcheminf.biomedcentral.com/articles/10.1186/s13321-021-00505-3
+
+
+# AC: Austin-Colwell
+def _ac_nw(counters):
+    ac_nw = (2 / np.pi) * np.arcsin(np.sqrt(counters["total_w_sim"] / counters["p"]))
+    return ac_nw
+
+
+# BUB: Baroni-Urbani-Buser
+def _bub_nw(counters):
+    bub_nw = ((counters["w_a"] * counters["w_d"]) ** 0.5 + counters["w_a"]) / (
+        (counters["a"] * counters["d"]) ** 0.5 + counters["a"] + counters["total_dis"]
+    )
+    return bub_nw
+
+
+# CTn: Consoni-Todschini 1
+def _ct1_nw(counters):
+    ct1_nw = (log(1 + counters["w_a"] + counters["w_d"])) / (log(1 + counters["p"]))
+    return ct1_nw
+
+
+# CTn: Consoni-Todschini 2
+def _ct2_nw(counters):
+    ct2_nw = (log(1 + counters["w_p"]) - log(1 + counters["total_w_dis"])) / (
+        log(1 + counters["p"])
+    )
+    return ct2_nw
+
+
+# CTn: Consoni-Todschini 3
+def _ct3_nw(counters):
+    ct3_nw = (log(1 + counters["w_a"])) / (log(1 + counters["p"]))
+    return ct3_nw
+
+
+# CTn: Consoni-Todschini 4
+def _ct4_nw(counters):
+    ct4_nw = (log(1 + counters["w_a"])) / (log(1 + counters["a"] + counters["total_dis"]))
+    return ct4_nw
+
+
+# Fai: Faith
+def _fai_nw(counters):
+    fai_nw = (counters["w_a"] + 0.5 * counters["w_d"]) / (counters["p"])
+    return fai_nw
+
+
+# Gle: Gleason
+def _gle_nw(counters):
+    gle_nw = (2 * counters["w_a"]) / (2 * counters["a"] + counters["total_dis"])
+    return gle_nw
+
+
+# Ja: Jaccard
+def _ja_nw(counters):
+    ja_nw = (3 * counters["w_a"]) / (3 * counters["a"] + counters["total_dis"])
+    return ja_nw
+
+
+# Ja0: Jaccard 0-variant
+def _ja0_nw(counters):
+    ja0_nw = (3 * counters["total_w_sim"]) / (3 * counters["total_sim"] + counters["total_dis"])
+    return ja0_nw
+
+
+# JT: Jaccard-Tanimoto
+def _jt_nw(counters):
+    jt_nw = (counters["w_a"]) / (counters["a"] + counters["total_dis"])
+    return jt_nw
+
+
+# RT: Rogers-Tanimoto
+def _rt_nw(counters):
+    rt_nw = (counters["total_w_sim"]) / (counters["p"] + counters["total_dis"])
+    return rt_nw
+
+
+# RR: Russel-Rao
+def _rr_nw(counters):
+    rr_nw = (counters["w_a"]) / (counters["p"])
+    return rr_nw
+
+
+# SM: Sokal-Michener
+def _sm_nw(counters):
+    sm_nw = (counters["total_w_sim"]) / (counters["p"])
+    return sm_nw
+
+
+# SSn: Sokal-Sneath 1
+def _ss1_nw(counters):
+    ss1_nw = (counters["w_a"]) / (counters["a"] + 2 * counters["total_dis"])
+    return ss1_nw
+
+
+# SSn: Sokal-Sneath 2
+def _ss2_nw(counters):
+    ss2_nw = (2 * counters["total_w_sim"]) / (counters["p"] + counters["total_sim"])
+    return ss2_nw
+
+
+# Dictionary with the similarity indexes functions as values and the keys are the abbreviations
+_similarity_index_dict = {
+    "AC": _ac_nw,
+    "BUB": _bub_nw,
+    "CT1": _ct1_nw,
+    "CT2": _ct2_nw,
+    "CT3": _ct3_nw,
+    "CT4": _ct4_nw,
+    "Fai": _fai_nw,
+    "Gle": _gle_nw,
+    "Ja": _ja_nw,
+    "Ja0": _ja0_nw,
+    "JT": _jt_nw,
+    "RT": _rt_nw,
+    "RR": _rr_nw,
+    "SM": _sm_nw,
+    "SS1": _ss1_nw,
+    "SS2": _ss2_nw,
+}
