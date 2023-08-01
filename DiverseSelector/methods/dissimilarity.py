@@ -254,7 +254,7 @@ class OptiSim(SelectionBase):
         Returns
         -------
         selected: list
-            List of indices of selected sample.
+            List of indices of selected samples.
         """
         selected = [self.start_id]
         count = 1
