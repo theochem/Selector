@@ -333,6 +333,7 @@
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># install the DiverseSelector module</span>
 <span class="o">!</span>pip install git+https://github.com/theochem/DiverseSelector
+<span class="o">!</span>pip install rdkit
 </pre></div>
 </div>
 </div>
@@ -340,9 +341,82 @@
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">DiverseSelector</span>
-<span class="kn">from</span> <span class="nn">DiverseSelector.test.common</span> <span class="kn">import</span> <span class="n">generate_synthetic_data</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">sklearn.datasets</span> <span class="kn">import</span> <span class="n">make_blobs</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">pairwise_distances</span>
+
+<span class="k">def</span> <span class="nf">generate_synthetic_data</span><span class="p">(</span><span class="n">n_samples</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+                            <span class="n">n_features</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+                            <span class="n">n_clusters</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+                            <span class="n">cluster_std</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+                            <span class="n">center_box</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">),</span>
+                            <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;euclidean&quot;</span><span class="p">,</span>
+                            <span class="n">shuffle</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                            <span class="n">random_state</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">42</span><span class="p">,</span>
+                            <span class="n">pairwise_dist</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                            <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+                            <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
+                                       <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]]:</span>
+    <span class="sd">&quot;&quot;&quot;Generate synthetic data.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    n_samples : int, optional</span>
+<span class="sd">        The number of samples. Default=100.</span>
+<span class="sd">    n_features : int, optional</span>
+<span class="sd">        The number of features. Default=2.</span>
+<span class="sd">    n_clusters : int, optional</span>
+<span class="sd">        The number of clusters. Default=2.</span>
+<span class="sd">    cluster_std : float, optional</span>
+<span class="sd">        The standard deviation of the clusters. Default=1.0.</span>
+<span class="sd">    center_box : tuple[float, float], optional</span>
+<span class="sd">        The bounding box for each cluster center when centers are generated at random.</span>
+<span class="sd">        Default=(-10.0, 10.0).</span>
+<span class="sd">    metric : str, optional</span>
+<span class="sd">        The metric used for computing pairwise distances. For the supported</span>
+<span class="sd">        distance matrix, please refer to</span>
+<span class="sd">        https://scikit-learn.org/stable/modules/generated/sklearn.metrics.pairwise_distances.html.</span>
+<span class="sd">        Default=&quot;euclidean&quot;.</span>
+<span class="sd">    shuffle : bool, optional</span>
+<span class="sd">        Whether to shuffle the samples. Default=True.</span>
+<span class="sd">    random_state : int, optional</span>
+<span class="sd">        The random state used for generating synthetic data. Default=42.</span>
+<span class="sd">    pairwise_dist : bool, optional</span>
+<span class="sd">        If True, then compute and return the pairwise distances between samples. Default=False.</span>
+<span class="sd">    **kwargs : Any, optional</span>
+<span class="sd">            Additional keyword arguments for the scikit-learn `pairwise_distances` function.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    syn_data : np.ndarray</span>
+<span class="sd">        The synthetic data.</span>
+<span class="sd">    class_labels : np.ndarray</span>
+<span class="sd">        The integer labels for cluster membership of each sample.</span>
+<span class="sd">    dist: np.ndarray</span>
+<span class="sd">        The symmetric pairwise distances between samples.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># pylint: disable=W0632</span>
+    <span class="n">syn_data</span><span class="p">,</span> <span class="n">class_labels</span> <span class="o">=</span> <span class="n">make_blobs</span><span class="p">(</span><span class="n">n_samples</span><span class="o">=</span><span class="n">n_samples</span><span class="p">,</span>
+                                        <span class="n">n_features</span><span class="o">=</span><span class="n">n_features</span><span class="p">,</span>
+                                        <span class="n">centers</span><span class="o">=</span><span class="n">n_clusters</span><span class="p">,</span>
+                                        <span class="n">cluster_std</span><span class="o">=</span><span class="n">cluster_std</span><span class="p">,</span>
+                                        <span class="n">center_box</span><span class="o">=</span><span class="n">center_box</span><span class="p">,</span>
+                                        <span class="n">shuffle</span><span class="o">=</span><span class="n">shuffle</span><span class="p">,</span>
+                                        <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
+                                        <span class="n">return_centers</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">pairwise_dist</span><span class="p">:</span>
+        <span class="n">dist</span> <span class="o">=</span> <span class="n">pairwise_distances</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">syn_data</span><span class="p">,</span>
+                                  <span class="n">Y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                  <span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">,</span>
+                                  <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+                                  <span class="p">)</span>
+        <span class="k">return</span> <span class="n">syn_data</span><span class="p">,</span> <span class="n">class_labels</span><span class="p">,</span> <span class="n">dist</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">syn_data</span><span class="p">,</span> <span class="n">class_labels</span>
 </pre></div>
 </div>
 </div>
@@ -396,15 +470,16 @@
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># MaxMin method</span>
-<span class="kn">from</span> <span class="nn">DiverseSelector.selectors</span> <span class="kn">import</span> <span class="n">MaxMin</span><span class="p">,</span> <span class="n">OptiSim</span><span class="p">,</span> <span class="n">DirectedSphereExclusion</span><span class="p">,</span> <span class="n">GridPartitioning</span>
+<span class="kn">from</span> <span class="nn">DiverseSelector.methods.partition</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">DiverseSelector.methods.dissimilarity</span> <span class="kn">import</span> <span class="o">*</span>
 
 <span class="c1"># diverse subset selection from randomly generated data points</span>
 <span class="n">selector</span> <span class="o">=</span> <span class="n">MaxMin</span><span class="p">()</span>
-<span class="n">selected_ids1</span> <span class="o">=</span> <span class="n">selector</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">arr</span><span class="o">=</span><span class="n">arr_dist</span><span class="p">,</span> <span class="n">num_selected</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+<span class="n">selected_ids1</span> <span class="o">=</span> <span class="n">selector</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">arr</span><span class="o">=</span><span class="n">arr_dist</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
 
 <span class="c1"># diverse subset selection from data points with obvious patterns (different clusters)</span>
 <span class="n">selector</span> <span class="o">=</span> <span class="n">MaxMin</span><span class="p">()</span>
-<span class="n">selected_ids2</span> <span class="o">=</span> <span class="n">selector</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">arr</span><span class="o">=</span><span class="n">arr_dist_cluster</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">class_labels_cluster</span><span class="p">,</span> <span class="n">num_selected</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+<span class="n">selected_ids2</span> <span class="o">=</span> <span class="n">selector</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">arr</span><span class="o">=</span><span class="n">arr_dist_cluster</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">class_labels_cluster</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -429,7 +504,7 @@
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># diverse subset selection from randomly generated data points</span>
 <span class="n">selected_id3</span> <span class="o">=</span> <span class="n">OptiSim</span><span class="p">()</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">coords</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span>
 <span class="c1"># diverse subset selection from data points with obvious patterns (different clusters)</span>
-<span class="n">selected_id4</span> <span class="o">=</span> <span class="n">OptiSim</span><span class="p">()</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">coords_cluster</span><span class="p">,</span> <span class="n">num_selected</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">class_labels_cluster</span><span class="p">)</span>
+<span class="n">selected_id4</span> <span class="o">=</span> <span class="n">OptiSim</span><span class="p">()</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">coords_cluster</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">class_labels_cluster</span><span class="p">)</span>
 
 <span class="n">graph_data</span><span class="p">(</span><span class="n">coords</span><span class="p">,</span><span class="n">selected_id3</span><span class="p">)</span>
 <span class="n">graph_data</span><span class="p">(</span><span class="n">coords_cluster</span><span class="p">,</span><span class="n">selected_id4</span><span class="p">)</span>
@@ -449,7 +524,7 @@
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># diverse subset selection from randomly generated data points</span>
 <span class="n">selected_id5</span> <span class="o">=</span> <span class="n">DirectedSphereExclusion</span><span class="p">()</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">coords</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span>
 <span class="c1"># diverse subset selection from data points with obvious patterns (different clusters)</span>
-<span class="n">selected_id6</span> <span class="o">=</span> <span class="n">DirectedSphereExclusion</span><span class="p">()</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">coords_cluster</span><span class="p">,</span> <span class="n">num_selected</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">class_labels_cluster</span><span class="p">)</span>
+<span class="n">selected_id6</span> <span class="o">=</span> <span class="n">DirectedSphereExclusion</span><span class="p">()</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">coords_cluster</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">class_labels_cluster</span><span class="p">)</span>
 
 <span class="n">graph_data</span><span class="p">(</span><span class="n">coords</span><span class="p">,</span><span class="n">selected_id5</span><span class="p">)</span>
 <span class="n">graph_data</span><span class="p">(</span><span class="n">coords_cluster</span><span class="p">,</span><span class="n">selected_id6</span><span class="p">)</span>
@@ -470,7 +545,7 @@
 <span class="n">selected_id7</span> <span class="o">=</span> <span class="n">GridPartitioning</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;equisized_independent&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">coords</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span>
 <span class="c1"># diverse subset selection from data points with obvious patterns (different clusters)</span>
 <span class="n">selected_id8</span> <span class="o">=</span> <span class="n">GridPartitioning</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;equisized_independent&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">coords_cluster</span><span class="p">,</span> 
-                                                                   <span class="n">num_selected</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> 
+                                                                   <span class="n">size</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> 
                                                                    <span class="n">labels</span><span class="o">=</span><span class="n">class_labels_cluster</span><span class="p">)</span>
 
 <span class="n">graph_data</span><span class="p">(</span><span class="n">coords</span><span class="p">,</span><span class="n">selected_id7</span><span class="p">)</span>
@@ -491,7 +566,7 @@
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">selector</span> <span class="o">=</span> <span class="n">MaxMin</span><span class="p">()</span>
-<span class="n">selected_ids</span> <span class="o">=</span> <span class="n">selector</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">arr</span><span class="o">=</span><span class="n">arr_dist_cluster</span><span class="p">,</span> <span class="n">num_selected</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+<span class="n">selected_ids</span> <span class="o">=</span> <span class="n">selector</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">arr</span><span class="o">=</span><span class="n">arr_dist_cluster</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
 <span class="n">graph_data</span><span class="p">(</span><span class="n">coords_cluster</span><span class="p">,</span> <span class="n">selected_ids</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -514,7 +589,7 @@
 
 <span class="n">mocked_cluster_coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">cluster_one</span><span class="p">,</span> <span class="n">cluster_two</span><span class="p">,</span> <span class="n">cluster_three</span><span class="p">])</span>
 <span class="n">selector</span> <span class="o">=</span> <span class="n">MaxMin</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">pairwise_distances</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="s1">&#39;euclidean&#39;</span><span class="p">))</span>
-<span class="n">selected_mocked</span> <span class="o">=</span> <span class="n">selector</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">mocked_cluster_coords</span><span class="p">,</span> <span class="n">num_selected</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels_mocked</span><span class="p">)</span>
+<span class="n">selected_mocked</span> <span class="o">=</span> <span class="n">selector</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">mocked_cluster_coords</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels_mocked</span><span class="p">)</span>
 
 <span class="n">graph_data</span><span class="p">(</span><span class="n">mocked_cluster_coords</span><span class="p">,</span> <span class="n">selected_mocked</span><span class="p">)</span>
 
