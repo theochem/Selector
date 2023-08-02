@@ -13,15 +13,89 @@
 
 # install the DiverseSelector module
 get_ipython().system('pip install git+https://github.com/theochem/DiverseSelector')
+get_ipython().system('pip install rdkit')
 
 
 # In[1]:
 
 
 import DiverseSelector
-from DiverseSelector.test.common import generate_synthetic_data
 import matplotlib.pyplot as plt
 import numpy as np
+from typing import Any, Tuple, Union
+from sklearn.datasets import make_blobs
+from sklearn.metrics import pairwise_distances
+
+def generate_synthetic_data(n_samples: int = 100,
+                            n_features: int = 2,
+                            n_clusters: int = 2,
+                            cluster_std: float = 1.0,
+                            center_box: Tuple[float, float] = (-10.0, 10.0),
+                            metric: str = "euclidean",
+                            shuffle: bool = True,
+                            random_state: int = 42,
+                            pairwise_dist: bool = False,
+                            **kwargs: Any,
+                            ) -> Union[Tuple[np.ndarray, np.ndarray],
+                                       Tuple[np.ndarray, np.ndarray, np.ndarray]]:
+    """Generate synthetic data.
+
+    Parameters
+    ----------
+    n_samples : int, optional
+        The number of samples. Default=100.
+    n_features : int, optional
+        The number of features. Default=2.
+    n_clusters : int, optional
+        The number of clusters. Default=2.
+    cluster_std : float, optional
+        The standard deviation of the clusters. Default=1.0.
+    center_box : tuple[float, float], optional
+        The bounding box for each cluster center when centers are generated at random.
+        Default=(-10.0, 10.0).
+    metric : str, optional
+        The metric used for computing pairwise distances. For the supported
+        distance matrix, please refer to
+        https://scikit-learn.org/stable/modules/generated/sklearn.metrics.pairwise_distances.html.
+        Default="euclidean".
+    shuffle : bool, optional
+        Whether to shuffle the samples. Default=True.
+    random_state : int, optional
+        The random state used for generating synthetic data. Default=42.
+    pairwise_dist : bool, optional
+        If True, then compute and return the pairwise distances between samples. Default=False.
+    **kwargs : Any, optional
+            Additional keyword arguments for the scikit-learn `pairwise_distances` function.
+
+    Returns
+    -------
+    syn_data : np.ndarray
+        The synthetic data.
+    class_labels : np.ndarray
+        The integer labels for cluster membership of each sample.
+    dist: np.ndarray
+        The symmetric pairwise distances between samples.
+
+    """
+    # pylint: disable=W0632
+    syn_data, class_labels = make_blobs(n_samples=n_samples,
+                                        n_features=n_features,
+                                        centers=n_clusters,
+                                        cluster_std=cluster_std,
+                                        center_box=center_box,
+                                        shuffle=shuffle,
+                                        random_state=random_state,
+                                        return_centers=False,
+                                        )
+    if pairwise_dist:
+        dist = pairwise_distances(X=syn_data,
+                                  Y=None,
+                                  metric=metric,
+                                  **kwargs,
+                                  )
+        return syn_data, class_labels, dist
+    else:
+        return syn_data, class_labels
 
 
 # In[2]:
@@ -67,15 +141,16 @@ graph_data(coords_cluster)
 
 
 # MaxMin method
-from DiverseSelector.selectors import MaxMin, OptiSim, DirectedSphereExclusion, GridPartitioning
+from DiverseSelector.methods.partition import *
+from DiverseSelector.methods.dissimilarity import *
 
 # diverse subset selection from randomly generated data points
 selector = MaxMin()
-selected_ids1 = selector.select(arr=arr_dist, num_selected=12)
+selected_ids1 = selector.select(arr=arr_dist, size=12)
 
 # diverse subset selection from data points with obvious patterns (different clusters)
 selector = MaxMin()
-selected_ids2 = selector.select(arr=arr_dist_cluster, labels=class_labels_cluster, num_selected=12)
+selected_ids2 = selector.select(arr=arr_dist_cluster, labels=class_labels_cluster, size=12)
 
 
 # In[9]:
@@ -93,7 +168,7 @@ graph_data(coords_cluster,selected_ids2)
 # diverse subset selection from randomly generated data points
 selected_id3 = OptiSim().select(coords, 12)
 # diverse subset selection from data points with obvious patterns (different clusters)
-selected_id4 = OptiSim().select(coords_cluster, num_selected=12, labels=class_labels_cluster)
+selected_id4 = OptiSim().select(coords_cluster, size=12, labels=class_labels_cluster)
 
 graph_data(coords,selected_id3)
 graph_data(coords_cluster,selected_id4)
@@ -107,7 +182,7 @@ graph_data(coords_cluster,selected_id4)
 # diverse subset selection from randomly generated data points
 selected_id5 = DirectedSphereExclusion().select(coords, 12)
 # diverse subset selection from data points with obvious patterns (different clusters)
-selected_id6 = DirectedSphereExclusion().select(coords_cluster, num_selected=12, labels=class_labels_cluster)
+selected_id6 = DirectedSphereExclusion().select(coords_cluster, size=12, labels=class_labels_cluster)
 
 graph_data(coords,selected_id5)
 graph_data(coords_cluster,selected_id6)
@@ -122,7 +197,7 @@ graph_data(coords_cluster,selected_id6)
 selected_id7 = GridPartitioning(2, "equisized_independent").select(coords, 12)
 # diverse subset selection from data points with obvious patterns (different clusters)
 selected_id8 = GridPartitioning(2, "equisized_independent").select(coords_cluster, 
-                                                                   num_selected=12, 
+                                                                   size=12, 
                                                                    labels=class_labels_cluster)
 
 graph_data(coords,selected_id7)
@@ -136,7 +211,7 @@ graph_data(coords_cluster,selected_id8)
 
 
 selector = MaxMin()
-selected_ids = selector.select(arr=arr_dist_cluster, num_selected=15)
+selected_ids = selector.select(arr=arr_dist_cluster, size=15)
 graph_data(coords_cluster, selected_ids)
 
 
@@ -155,7 +230,7 @@ labels_mocked = np.hstack([[0 for i in range(3)],
 
 mocked_cluster_coords = np.vstack([cluster_one, cluster_two, cluster_three])
 selector = MaxMin(lambda x: pairwise_distances(x, metric='euclidean'))
-selected_mocked = selector.select(mocked_cluster_coords, num_selected=15, labels=labels_mocked)
+selected_mocked = selector.select(mocked_cluster_coords, size=15, labels=labels_mocked)
 
 graph_data(mocked_cluster_coords, selected_mocked)
 
