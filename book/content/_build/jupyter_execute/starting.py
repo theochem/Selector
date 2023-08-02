@@ -8,6 +8,13 @@
 
 # ## Generating Synthetic Data
 
+# In[ ]:
+
+
+# install the DiverseSelector module
+get_ipython().system('pip install git+https://github.com/theochem/DiverseSelector')
+
+
 # In[1]:
 
 

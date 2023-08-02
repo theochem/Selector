@@ -45,14 +45,14 @@
     <script src="_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
     <script async="async" src="https://unpkg.com/thebe@0.5.1/lib/index.js"></script>
     <script>
-        const thebe_selector = ".thebe"
-        const thebe_selector_input = "pre"
-        const thebe_selector_output = ".output"
+        const thebe_selector = ".thebe,.cell"
+        const thebe_selector_input = "pre,.cell_input div.highlight"
+        const thebe_selector_output = ".output,.cell_output"
     </script>
     <script async="async" src="_static/sphinx-thebe.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Dissimilarity based methods" href="dissimilarity.html" />
+    <link rel="next" title="Base class" href="base.html" />
     <link rel="prev" title="Installation &amp; Testing" href="installation.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="None">
@@ -106,6 +106,11 @@
  <li class="toctree-l1 current active">
   <a class="current reference internal" href="#">
    Getting started
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="base.html">
+   Base class
   </a>
  </li>
  <li class="toctree-l1">
@@ -180,11 +185,11 @@
         aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
     <div class="dropdown-buttons sourcebuttons">
         <a class="repository-button"
-            href="https://github.com/theochem/DiverseSelector"><button type="button" class="btn btn-secondary topbarbtn"
+            href="https://github.com/RichRick1/DiverseSelector"><button type="button" class="btn btn-secondary topbarbtn"
                 data-toggle="tooltip" data-placement="left" title="Source repository"><i
                     class="fab fa-github"></i>repository</button></a>
         <a class="issues-button"
-            href="https://github.com/theochem/DiverseSelector/issues/new?title=Issue%20on%20page%20%2Fstarting.html&body=Your%20issue%20content%20here."><button
+            href="https://github.com/RichRick1/DiverseSelector/issues/new?title=Issue%20on%20page%20%2Fstarting.html&body=Your%20issue%20content%20here."><button
                 type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
                 title="Open an issue"><i class="fas fa-lightbulb"></i>open issue</button></a>
         
@@ -205,7 +210,7 @@
         aria-label="Launch interactive content"><i class="fas fa-rocket"></i></button>
     <div class="dropdown-buttons">
         
-        <a class="binder-button" href="https://mybinder.org/v2/gh/theochem/DiverseSelector/master?urlpath=tree/book/content/starting.ipynb"><button type="button"
+        <a class="binder-button" href="https://mybinder.org/v2/gh/RichRick1/DiverseSelector/book?urlpath=tree/book/content/starting.ipynb"><button type="button"
                 class="btn btn-secondary topbarbtn" title="Launch Binder" data-toggle="tooltip"
                 data-placement="left"><img class="binder-button-logo"
                     src="_static/images/logo_binder.svg"
@@ -213,6 +218,14 @@
         
         
         
+        <a class="colab-button" href="https://colab.research.google.com/github/RichRick1/DiverseSelector/blob/book/book/content/starting.ipynb"><button type="button" class="btn btn-secondary topbarbtn"
+                title="Launch Colab" data-toggle="tooltip" data-placement="left"><img class="colab-button-logo"
+                    src="_static/images/logo_colab.png"
+                    alt="Interact on Colab">Colab</button></a>
+        
+        <button type="button" class="btn btn-secondary topbarbtn"
+            onclick="initThebeSBT()" title="Launch Thebe" data-toggle="tooltip" data-placement="left"><i
+                class="fas fa-play"></i><span style="margin-left: .4em;">Live Code</span></button>
         
     </div>
 </div>
@@ -317,6 +330,14 @@
 <h2>Generating Synthetic Data<a class="headerlink" href="#generating-synthetic-data" title="Permalink to this headline">¶</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># install the DiverseSelector module</span>
+<span class="o">!</span>pip install git+https://github.com/theochem/DiverseSelector
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">DiverseSelector</span>
 <span class="kn">from</span> <span class="nn">DiverseSelector.test.common</span> <span class="kn">import</span> <span class="n">generate_synthetic_data</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
@@ -362,8 +383,8 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/starting_5_0.png" src="_images/starting_5_0.png" />
-<img alt="_images/starting_5_1.png" src="_images/starting_5_1.png" />
+<img alt="_images/starting_6_0.png" src="_images/starting_6_0.png" />
+<img alt="_images/starting_6_1.png" src="_images/starting_6_1.png" />
 </div>
 </div>
 </section>
@@ -395,8 +416,8 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/starting_9_0.png" src="_images/starting_9_0.png" />
-<img alt="_images/starting_9_1.png" src="_images/starting_9_1.png" />
+<img alt="_images/starting_10_0.png" src="_images/starting_10_0.png" />
+<img alt="_images/starting_10_1.png" src="_images/starting_10_1.png" />
 </div>
 </div>
 </section>
@@ -415,8 +436,8 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/starting_11_0.png" src="_images/starting_11_0.png" />
-<img alt="_images/starting_11_1.png" src="_images/starting_11_1.png" />
+<img alt="_images/starting_12_0.png" src="_images/starting_12_0.png" />
+<img alt="_images/starting_12_1.png" src="_images/starting_12_1.png" />
 </div>
 </div>
 </section>
@@ -435,8 +456,8 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/starting_13_0.png" src="_images/starting_13_0.png" />
-<img alt="_images/starting_13_1.png" src="_images/starting_13_1.png" />
+<img alt="_images/starting_14_0.png" src="_images/starting_14_0.png" />
+<img alt="_images/starting_14_1.png" src="_images/starting_14_1.png" />
 </div>
 </div>
 </section>
@@ -458,8 +479,8 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/starting_15_0.png" src="_images/starting_15_0.png" />
-<img alt="_images/starting_15_1.png" src="_images/starting_15_1.png" />
+<img alt="_images/starting_16_0.png" src="_images/starting_16_0.png" />
+<img alt="_images/starting_16_1.png" src="_images/starting_16_1.png" />
 </div>
 </div>
 </section>
@@ -475,7 +496,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/starting_17_0.png" src="_images/starting_17_0.png" />
+<img alt="_images/starting_18_0.png" src="_images/starting_18_0.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -501,7 +522,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/starting_18_0.png" src="_images/starting_18_0.png" />
+<img alt="_images/starting_19_0.png" src="_images/starting_19_0.png" />
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[0, 1, 2, 3, 4, 5, 6, 7, 8, 14, 15, 10, 11, 9, 13]
 </pre></div>
 </div>
@@ -528,7 +549,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/starting_21_0.png" src="_images/starting_21_0.png" />
+<img alt="_images/starting_22_0.png" src="_images/starting_22_0.png" />
 </div>
 </div>
 </section>
@@ -554,7 +575,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/starting_24_0.png" src="_images/starting_24_0.png" />
+<img alt="_images/starting_25_0.png" src="_images/starting_25_0.png" />
 </div>
 </div>
 </section>
@@ -580,7 +601,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/starting_27_0.png" src="_images/starting_27_0.png" />
+<img alt="_images/starting_28_0.png" src="_images/starting_28_0.png" />
 </div>
 </div>
 </section>
@@ -605,7 +626,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/starting_30_0.png" src="_images/starting_30_0.png" />
+<img alt="_images/starting_31_0.png" src="_images/starting_31_0.png" />
 </div>
 </div>
 </section>
@@ -630,7 +651,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/starting_33_0.png" src="_images/starting_33_0.png" />
+<img alt="_images/starting_34_0.png" src="_images/starting_34_0.png" />
 </div>
 </div>
 </section>
@@ -641,8 +662,8 @@
     {
         requestKernel: true,
         binderOptions: {
-            repo: "binder-examples/jupyter-stacks-datascience",
-            ref: "master",
+            repo: "RichRick1/DiverseSelector",
+            ref: "book",
         },
         codeMirrorConfig: {
             theme: "abcdef",
@@ -669,10 +690,10 @@
             <p class="prev-next-title">Installation &amp; Testing</p>
         </div>
     </a>
-    <a class='right-next' id="next-link" href="dissimilarity.html" title="next page">
+    <a class='right-next' id="next-link" href="base.html" title="next page">
     <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Dissimilarity based methods</p>
+        <p class="prev-next-title">Base class</p>
     </div>
     <i class="fas fa-angle-right"></i>
     </a>
