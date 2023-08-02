@@ -16,8 +16,11 @@ latex:
     targetname: book.tex
 
 sphinx:
+  extra_extensions:
+  - 'sphinx.ext.autodoc'
   config:
     mathjax_path: https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+    
 
 #Read LaTeX
 parse:
