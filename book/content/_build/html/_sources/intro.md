@@ -1,7 +1,6 @@
+<!-- #region -->
 # Welcome to Diverse Selector
 
-You can also create content with Jupyter Notebooks. This means that you can include
-code blocks and their outputs in your book.
 
 ## Discover the Power of Diversity in Molecule Selection
 
@@ -16,3 +15,4 @@ In the world of chemistry, selecting the right subset of molecules is critical f
 2. Define Selection Criteria: Specify the desired level of diversity and other relevant parameters to tailor the subset selection to your unique requirements.
 3. Run the Analysis: Let Diverse Selector's powerful algorithms process your dataset and efficiently select the most diverse molecules.
 4. Export: Explore the diverse subset and export the results for further analysis and integration into your projects.
+<!-- #endregion -->
