@@ -3,10 +3,14 @@
 
 format: jb-book
 root: intro
-chapters:
-- file: installation
-- file: starting
-- file: base.rst
-- file: dissimilarity.rst
-- file: partition.rst
-- file: utils.rst
+parts:
+  - caption: Quick Start
+    chapters:
+    - file: installation.ipynb
+    - file: starting.ipynb
+  - caption: API
+    chapters:
+    - file: base.rst
+    - file: dissimilarity.rst
+    - file: partition.rst
+    - file: utils.rst
