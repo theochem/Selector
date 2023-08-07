@@ -37,7 +37,7 @@ jobs:
       run: |
         jupyter-book build ./book/content
     # Create an ghp-branch
-    - name ghp branch
+    - name: ghp branch
       run: |
         ghp-import -n -p -f ./book/content/_build/html
 
