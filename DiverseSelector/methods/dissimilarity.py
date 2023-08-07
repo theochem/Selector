@@ -49,9 +49,11 @@ class MaxMin(SelectionBase):
     2. Select the point which has the maximum distance among those calculated
        in the previous step.
 
-    Notes
-    -----
-    The algorithm is described well here: Quant. Struct.-Act. Relat., 21 (2002). https://doi.org/10.1002/qsar.200290002
+    References
+    ----------
+    [1] Ashton, Mark, et al., Identification of diverse database subsets using 
+    property‐based and fragment‐based molecular descriptions, Quantitative 
+    Structure‐Activity Relationships 21.6 (2002): 598-604.
     """
 
     def __init__(self, func_distance=None):
@@ -123,9 +125,11 @@ class MaxSum(SelectionBase):
     2. Select the point which has the maximum sum of distances among those calculated
        in the previous step.
 
-    Notes
-    -----
-    The following may be of use for further reading: https://doi.org/10.48550/arXiv.1203.6397
+    References
+    ----------
+    [1] Borodin, Allan, Hyun Chul Lee, and Yuli Ye, Max-sum diversification, monotone 
+    submodular functions and dynamic updates, Proceedings of the 31st ACM SIGMOD-SIGACT-SIGAI 
+    symposium on Principles of Database Systems. 2012.
     """
 
     def __init__(self, func_distance=None):
@@ -199,9 +203,9 @@ class OptiSim(SelectionBase):
     number of points have been added to the subsample, the point with the greatest minimum distance to
     the previously selected points is chosen. Then, the subsample is cleared and the process is repeated.
 
-    Notes
-    -----
-    J. Chem. Inf. Comput. Sci. 1997, 37, 6, 1181–1188. https://doi.org/10.1021/ci970282v
+    References
+    ----------
+    [1] J. Chem. Inf. Comput. Sci. 1997, 37, 6, 1181–1188. https://doi.org/10.1021/ci970282v
     """
 
     def __init__(self, r0=None, k=10, tol=5.0, eps=0, p=2, start_id=0, random_seed=42, n_iter=10):
