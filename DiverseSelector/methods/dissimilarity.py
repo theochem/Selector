@@ -60,7 +60,7 @@ class MaxMin(SelectionBase):
 
         Parameters
         ----------
-        func_distance: callable
+        func_distance : callable
             Function for calculating the pairwise distance between instances of the coordinates array.
         """
         self.func_distance = func_distance
@@ -70,17 +70,17 @@ class MaxMin(SelectionBase):
 
         Parameters
         ----------
-        X: np.ndarray
+        X : np.ndarray
             Distance matrix for points that needs to be selected if func_distance is None.
             Otherwise, treated as coordinates array.
-        size: int
+        size : int
             Number of samples to be selected.
-        cluster_ids: np.ndarray
+        cluster_ids : np.ndarray
             Indices of samples that form a cluster.
 
         Returns
         -------
-        selected: list
+        selected : list
             List of indices of selected samples.
         """
         if self.func_distance is not None:
@@ -134,7 +134,7 @@ class MaxSum(SelectionBase):
 
         Parameters
         ----------
-        func_distance: callable
+        func_distance : callable
             Function for calculating the pairwise distance between instances of the coordinates array.
         """
         self.func_distance = func_distance
@@ -144,17 +144,17 @@ class MaxSum(SelectionBase):
 
         Parameters
         ----------
-        X: np.ndarray
+        X : np.ndarray
             Distance matrix for points that needs to be selected if func_distance is None.
             Otherwise, treated as coordinates array.
-        size: int
+        size : int
             Number of samples to be selected.
-        cluster_ids: np.ndarray
+        cluster_ids : np.ndarray
             Indices of samples that form a cluster.
 
         Returns
         -------
-        selected: list
+        selected : list
             List of indices of selected samples.
         """
         if size > len(X):
@@ -209,27 +209,27 @@ class OptiSim(SelectionBase):
 
         Parameters
         ----------
-        r0: float
+        r0 : float
             Initial guess of radius for OptiSim algorithm. No points within r distance to an already
             selected point can be selected.
-        k: int
+        k : int
             Amount of points to add to subsample before selecting one of the points with the
             greatest minimum distance to the previously selected points.
-        tol: float
+        tol : float
             Percentage error of number of samples actually selected from number of samples
             requested.
-        eps: float
+        eps : float
             Approximate nearest neighbor search for eliminating close points. Branches of the tree
             are not explored if their nearest points are further than r / (1 + eps), and branches
             are added in bulk if their furthest points are nearer than r * (1 + eps).
-        p: float
+        p : float
             Which Minkowski p-norm to use. Should be in the range [1, inf]. A finite large p may
             cause a ValueError if overflow can occur.
-        start_id: int
+        start_id : int
             Index for the first point to be selected.
-        random_seed: int
+        random_seed : int
             Seed for random selection of points be evaluated.
-        n_iter: int
+        n_iter : int
             Number of iterations to execute when optimizing the size of exclusion radius. Default is 10.
         """
         self.r = r0
@@ -246,14 +246,14 @@ class OptiSim(SelectionBase):
 
         Parameters
         ----------
-        X: np.ndarray
+        X : np.ndarray
             Coordinate array of samples.
-        max_size: int
+        max_size : int
             Maximum number of samples to select.
 
         Returns
         -------
-        selected: list
+        selected : list
             List of indices of selected samples.
         """
         selected = [self.start_id]
@@ -310,16 +310,16 @@ class OptiSim(SelectionBase):
 
         Parameters
         ----------
-        X: np.ndarray
+        X : np.ndarray
             Coordinate array of samples.
-        size: int
+        size : int
             Number of samples to be selected.
-        cluster_ids: np.ndarray
+        cluster_ids : np.ndarray
             Indices of samples that form a cluster.
 
         Returns
         -------
-        selected: list
+        selected : list
             List of indices of selected samples.
         """
         return optimize_radius(self, X, size, cluster_ids)
