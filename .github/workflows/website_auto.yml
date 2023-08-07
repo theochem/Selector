@@ -27,10 +27,15 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: 3.8
-
+        
+  
     - name: Install dependencies
       run: |
         pip install -r book/content/requirements.txt
+    # Install DiverseSelector
+    - name: Install package
+      run: |
+        pip install -e .
 
     # Build the book
     - name: Build the book
