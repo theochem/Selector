@@ -30,12 +30,16 @@ jobs:
 
     - name: Install dependencies
       run: |
-        pip install -r book/requirements.txt
+        pip install -r book/content/requirements.txt
 
     # Build the book
     - name: Build the book
       run: |
         jupyter-book build ./book/content
+    # Create an ghp-branch
+    - name ghp branch
+      run: |
+        ghp-import -n -p -f ./book/content/_build/html
 
     # Push the book's HTML to github-pages
     - name: GitHub Pages action
