@@ -183,13 +183,14 @@ class MaxSum(SelectionBase):
         while len(selected) < size:
             # determine sum of pairwise distances between selected points and all other points
             sum_distances = np.sum(X_dist[selected], axis=0)
-            while True:
-                # determine which new point has the maximum sum of pairwise distances with already-selected points
+            # determine which point has the maximum sum of pairwise distances with already-selected points
+            new_id = np.argmax(sum_distances)
+            # make sure that new_id corresponds to a new point
+            while new_id in selected:
+                # set the sum of distances for the current point corresponding to new_id to 0
+                sum_distances[new_id] = 0
+                # find a different point with the maximum sum of pairwise distances with already-selected points
                 new_id = np.argmax(sum_distances)
-                if new_id in selected:
-                    sum_distances[new_id] = 0
-                else:
-                    break
             selected.append(new_id)
         return selected
 
