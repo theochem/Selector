@@ -58,22 +58,18 @@ class NSimilarity(SelectionBase):
     selected such as the similarity value of the group of selected data points is minimized. The
     process is repeated until the desired number of data points is selected.
 
-
     Notes
     -----
-
     The ideas behind the similarity-based selection methods are described in the following papers:
         https://jcheminf.biomedcentral.com/articles/10.1186/s13321-021-00505-3
         https://jcheminf.biomedcentral.com/articles/10.1186/s13321-021-00504-4
         https://link.springer.com/article/10.1007/s10822-022-00444-7
-
-
     """
 
     def __init__(
         self, similarity_index="RR", w_factor="fraction", c_threshold=None, preprocess_data=True
     ):
-        """Initializing class.
+        """Initialize class.
 
         Parameters
         ----------
@@ -171,13 +167,13 @@ class NSimilarity(SelectionBase):
         selected: int
             Index of the new selected sample.
         """
-
         data_array = np.array(data_array)
 
         # check if the data was previously scaled
         if np.max(data_array) > 1 or np.min(data_array) < 0:
             raise ValueError(
-                "The data was not scaled between 0 and 1. Use the _scale_data function to scale the data."
+                "The data was not scaled between 0 and 1. "
+                "Use the _scale_data function to scale the data."
             )
 
         # Number of total vectors used to calculate th similarity. It is the number of samples
@@ -195,7 +191,7 @@ class NSimilarity(SelectionBase):
 
         # create an instance of the SimilarityIndex class. It is used to calculate the similarity
         # index of the sets of selected objects.
-        si = SimilarityIndex(
+        similarity_index = SimilarityIndex(
             similarity_index=self.similarity_index,
             c_threshold=self.c_threshold,
             w_factor=self.w_factor,
@@ -207,7 +203,7 @@ class NSimilarity(SelectionBase):
             c_total = selected_condensed + data_array[sample_idx]
 
             # calculating similarity
-            sim_index = si(c_total, n_objects=n_total)
+            sim_index = similarity_index(c_total, n_objects=n_total)
 
             # if the sim of the set is less than the similarity of the previous diverse set,
             # update min_value and index
@@ -265,12 +261,13 @@ class NSimilarity(SelectionBase):
             # check if the data is between 0 and 1 and raise an error if it is not
             if np.max(data_array) > 1 or np.min(data_array) < 0:
                 raise ValueError(
-                    "The data was not scaled between 0 and 1. Use the _scale_data function to scale the data."
+                    "The data was not scaled between 0 and 1. "
+                    "Use the _scale_data function to scale the data."
                 )
 
         # create an instance of the SimilarityIndex class. It is used to calculate the medoid and
         # the outlier of the data.
-        SI = SimilarityIndex(
+        similarity_index = SimilarityIndex(
             similarity_index=self.similarity_index,
             c_threshold=self.c_threshold,
             w_factor=self.w_factor,
@@ -279,7 +276,7 @@ class NSimilarity(SelectionBase):
         # select the index (of the working data) corresponding to the medoid of the data using the
         # similarity index
         if start == "medoid":
-            seed = SI.calculate_medoid(data_array)
+            seed = similarity_index.calculate_medoid(data_array)
             selected = [seed]
         # select the index (of the working data)  corresponding to a random data point
         elif start == "random":
@@ -288,7 +285,7 @@ class NSimilarity(SelectionBase):
         # select the index (of the working data) corresponding to the outlier of the data using the
         # similarity index
         elif start == "outlier":
-            seed = SI.calculate_outlier(data_array)
+            seed = similarity_index.calculate_outlier(data_array)
             selected = [seed]
         # if a list of cluster_ids is provided, select the data_ids corresponding indices
         elif isinstance(start, list):
@@ -354,8 +351,8 @@ class SimilarityIndex:
         is used as the distance.
 
     calculate_outlier(data, c_total=None, similarity_index=None, c_threshold=None, w_factor=None):
-        Calculate the outlier of a set of real-valued vectors or binary objects. The similarity_index
-        is used as the distance.
+        Calculate the outlier of a set of real-valued vectors or binary objects. The
+        similarity_index is used as the distance.
 
     __call__(data=None, n_objects=None, similarity_index=None, c_threshold=None, w_factor=None):
         Calculate the similarity index of a set of vectors.
@@ -385,18 +382,22 @@ class SimilarityIndex:
             Default is 'RR'.
 
         c_threshold : {None, 'dissimilar', int}, optional
-            The coincidence threshold used for calculating similarity counters. A position in the elements
-            is considered a coincidence (coincides among all the elements considered) if the number of
-            elements that have the same value in that position is greater than the coincidence threshold.
+            The coincidence threshold used for calculating similarity counters. A position in the
+            elements is considered a coincidence (coincides among all the elements considered) if
+            the number of elements that have the same value in that position is greater than the
+            coincidence threshold.
                 - None : Default, c_threshold = n_objects % 2
                 - 'dissimilar' : c_threshold = ceil(n_objects / 2)
                 - int : Integer number < n_objects
 
         w_factor : {"fraction", "power_n"}, optional
             The type of weight function to be used.
-            - 'fraction' : similarity = d[k] / n, dissimilarity = 1 - (d[k] - n_objects % 2) / n_objects
-            - 'power_n' : similarity = n ** -(n_objects - d[k]), dissimilarity = n ** -(d[k] - n_objects % 2)
-            - other values : similarity = dissimilarity = 1
+            - 'fraction' :
+                similarity = d[k] / n, dissimilarity = 1 - (d[k] - n_objects % 2) / n_objects
+            - 'power_n' :
+                similarity = n ** -(n_objects - d[k]), dissimilarity = n ** -(d[k] - n_objects % 2)
+            - other values :
+                similarity = dissimilarity = 1
             Default is 'fraction'.
                 other values : similarity = dissimilarity = 1
         """
@@ -405,14 +406,15 @@ class SimilarityIndex:
         self.c_threshold = c_threshold
 
     def _calculate_counters(self, data=None, n_objects=None, c_threshold=None, w_factor=None):
-        """Calculate 1-similarity, 0-similarity, and dissimilarity counters
+        """Calculate 1-similarity, 0-similarity, and dissimilarity counters.
 
         Arguments
         ---------
         data : np.ndarray
-            Array of arrays, each sub-array contains the binary or real valued vector. The values must
-            be between 0 and 1. If the number of rows ==1, the data is treated as the columnwise sum
-            of the objects. If the number of rows > 1, the data is treated as the objects.
+            Array of arrays, each sub-array contains the binary or real valued vector. The values
+            must be between 0 and 1. If the number of rows ==1, the data is treated as the
+            columnwise sum of the objects. If the number of rows > 1, the data is treated as the
+            objects.
         n_objects: int
             Number of objects, only necessary if c_total is provided instead of data (num rows== 1).
             If data is provided, the number of objects is calculated as the length of the data.
@@ -436,11 +438,11 @@ class SimilarityIndex:
         counters : dict
             Dictionary with the weighted and non-weighted counters.
         """
-
         # Check if the data is a np.ndarray of a list
         if not isinstance(data, np.ndarray):
             raise TypeError(
-                "Warning: Input data is not a np.ndarray, to secure the right results please input the right data type"
+                "Warning: Input data is not a np.ndarray, to secure the right results please "
+                "input the right data type"
             )
 
         # Check if data is a columnwise sum or the objects
@@ -463,7 +465,8 @@ class SimilarityIndex:
         if isinstance(c_threshold, int):
             if c_threshold >= n_objects:
                 raise ValueError(
-                    f"c_threshold cannot be equal or greater than n_objects. \n c_threshold = {c_threshold}  n_objects = {n_objects}"
+                    "c_threshold cannot be equal or greater than n_objects. \n"
+                    f"c_threshold = {c_threshold}  n_objects = {n_objects}"
                 )
             c_threshold = c_threshold
 
@@ -491,7 +494,7 @@ class SimilarityIndex:
 
             else:
                 raise ValueError(
-                    "w_factor must be 'fraction' or 'power_n'. \n Given w_factor = {w_factor}"
+                    f"w_factor must be 'fraction' or 'power_n'. \n Given w_factor = {w_factor}"
                 )
         # default case, the similarity and dissimilarity counters are not weighted
         else:
@@ -563,9 +566,10 @@ class SimilarityIndex:
         Parameters
         ----------
         data : np.ndarray
-            Array of arrays, each sub-array contains the binary or real valued vector. The values must
-            be between 0 and 1. If the number of rows ==1, the data is treated as the columnwise sum
-            of the objects. If the number of rows > 1, the data is treated as the objects.
+            Array of arrays, each sub-array contains the binary or real valued vector. The values
+            must be between 0 and 1. If the number of rows ==1, the data is treated as the
+            columnwise sum of the objects. If the number of rows > 1, the data is treated as the
+            objects.
         n_objects: int
             Number of objects in the data. Is only necessary if the data is a columnwise sum of
             the objects. If the data is not the columnwise sum of the objects, the number of objects
@@ -594,7 +598,8 @@ class SimilarityIndex:
         """
         # check if data is provided
 
-        # If the parameters are not provided, the parameters provided in the class initialization are used.
+        # If the parameters are not provided, the parameters provided in the class initialization
+        # are used.
         if similarity_index is None:
             similarity_index = self.similarity_index
         if w_factor is None:
@@ -609,7 +614,8 @@ class SimilarityIndex:
         # check if data is a np.ndarray
         if not isinstance(data, np.ndarray):
             raise TypeError(
-                "Warning: Input data is not a np.ndarray, to secure the right results please input the right data type"
+                "Warning: Input data is not a np.ndarray, to secure the right results please input "
+                "the right data type"
             )
 
         # if the data is a columnwise sum of the objects check that n_objects is provided
@@ -675,7 +681,6 @@ class SimilarityIndex:
                         dissimilarity = n**-(d[k] - n_objects % 2)
             other values : similarity = dissimilarity = 1
         """
-
         # setting the default values for the parameters
         if similarity_index is None:
             similarity_index = self.similarity_index
@@ -708,7 +713,7 @@ class SimilarityIndex:
         # for each sample calculate the similarity index of the complete set without the sample
         for idx, obj in enumerate(comp_sums):
             # calculate the similarity index of the set of objects without the current object
-            sim_index = self.__call__(
+            sim_index = self(
                 data=obj,
                 n_objects=n_objects - 1,
                 similarity_index=similarity_index,
@@ -769,7 +774,6 @@ class SimilarityIndex:
                         dissimilarity = n**-(d[k] - n_objects % 2)
             other values : similarity = dissimilarity = 1
         """
-
         # setting the default values for the parameters
         if similarity_index is None:
             similarity_index = self.similarity_index
