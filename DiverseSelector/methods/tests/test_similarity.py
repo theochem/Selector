@@ -772,8 +772,8 @@ def _get_ref_outlier_dict():
 def test_calculate_outlier(c_threshold, w_factor, n_ary):
     """Test the function to calculate the outlier for binary data.
 
-    Test the function to calculate the outlier for binary data using the reference values and several
-    combinations of parameters. The reference values are obtained using the function
+    Test the function to calculate the outlier for binary data using the reference values and
+    several combinations of parameters. The reference values are obtained using the function
     _get_ref_outlier_dict().
 
     Parameters
@@ -923,6 +923,7 @@ def _get_ref_new_index():
 
     return selected_samples, new_index_dict
 
+
 @pytest.mark.parametrize("c_threshold, w_factor, n_ary", parameters)
 def test_get_new_index(c_threshold, w_factor, n_ary):
     """Test the function get a new sample from the binary data.
@@ -988,9 +989,10 @@ start_values = ["medoid", "outlier", [1, 2, 3]]
 # sample size values to test
 sample_size_values = [10, 20, 30]
 
-#--------------------------------------------------------------------------------------------- #
+# --------------------------------------------------------------------------------------------- #
 # Get reference data for testing the selection of the diverse subset
 # --------------------------------------------------------------------------------------------- #
+
 
 def get_data_file_path(file_name):
     # Get the absolute path of the data file inside the package
@@ -1034,7 +1036,9 @@ def _get_selections_ref_dict():
         data_dict[row[0]][row[1]][row[2]][row[3]][row[4]] = ast.literal_eval(row[5])
     return data_dict
 
+
 print(_get_selections_ref_dict())
+
 
 @pytest.mark.parametrize("c_threshold, w_factor, n_ary", parameters)
 @pytest.mark.parametrize("sample_size", sample_size_values)
@@ -1065,7 +1069,10 @@ def test_NSimilarity_select(c_threshold, w_factor, sample_size, n_ary, start):
 
     # create instance of the class SimilarityIndex to test the similarity indexes for binary data
     selector = NSimilarity(
-        similarity_index=n_ary, w_factor=w_factor, c_threshold=c_threshold, preprocess_data=False
+        similarity_index=n_ary,
+        w_factor=w_factor,
+        c_threshold=c_threshold,
+        preprocess_data=False,
     )
     # select the diverse subset using the similarity index
     selected_data = selector.select_from_cluster(data, size=sample_size, start=start)

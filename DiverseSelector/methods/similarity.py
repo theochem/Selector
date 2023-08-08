@@ -26,8 +26,8 @@ This module contains the classes and functions for the similarity-based selectio
 a diverse subset of molecules the similarity-based selection methods select the molecules such that
 the similarity between the molecules in the subset is minimized. The similarity of a set of
 molecules is calculated using an n-array similarity index. These indexes compare n molecules at a
-time and return a value between 0 and 1, where 0 means that all the molecules in the set are 
-completely different and 1 means that the molecules are identical. 
+time and return a value between 0 and 1, where 0 means that all the molecules in the set are
+completely different and 1 means that the molecules are identical.
 
 The ideas behind the similarity-based selection methods are described in the following papers:
     https://jcheminf.biomedcentral.com/articles/10.1186/s13321-021-00505-3
@@ -35,19 +35,18 @@ The ideas behind the similarity-based selection methods are described in the fol
 
 """
 
-from DiverseSelector.methods.base import SelectionBase
-import numpy as np
-import random
 import math
+import random
 from math import log
-import warnings
+
+import numpy as np
+from DiverseSelector.methods.base import SelectionBase
 
 __all__ = ["NSimilarity", "SimilarityIndex"]
 
 
 class NSimilarity(SelectionBase):
-    r"""
-    Select samples of vectors using n-ary similarity indexes between vectors
+    r"""Select samples of vectors using n-ary similarity indexes between vectors.
 
     The algorithms in this class select a diverse subset of vectors such that the similarity
     between the vectors in the subset is minimized. The similarity of a set of vectors is
@@ -74,8 +73,7 @@ class NSimilarity(SelectionBase):
     def __init__(
         self, similarity_index="RR", w_factor="fraction", c_threshold=None, preprocess_data=True
     ):
-        """
-        Initializing class.
+        """Initializing class.
 
         Parameters
         ----------
@@ -122,8 +120,7 @@ class NSimilarity(SelectionBase):
         self.preprocess_data = preprocess_data
 
     def _scale_data(self, data_array):
-        r"""
-        Scales the data between so it can be used with the similarity indexes.
+        r"""Scales the data between so it can be used with the similarity indexes.
 
         First each data point is normalized to be between 0 and 1.
         .. math::
@@ -152,8 +149,7 @@ class NSimilarity(SelectionBase):
         return data
 
     def _get_new_index(self, data_array, selected_condensed, num_selected, select_from):
-        r"""
-        Select a new diverse molecule from the data.
+        r"""Select a new diverse molecule from the data.
 
         The function selects a new molecule such that the similarity of the new set of selected
         molecules is minimized.
@@ -199,7 +195,7 @@ class NSimilarity(SelectionBase):
 
         # create an instance of the SimilarityIndex class. It is used to calculate the similarity
         # index of the sets of selected objects.
-        SI = SimilarityIndex(
+        si = SimilarityIndex(
             similarity_index=self.similarity_index,
             c_threshold=self.c_threshold,
             w_factor=self.w_factor,
@@ -211,7 +207,7 @@ class NSimilarity(SelectionBase):
             c_total = selected_condensed + data_array[sample_idx]
 
             # calculating similarity
-            sim_index = SI(c_total, n_objects=n_total)
+            sim_index = si(c_total, n_objects=n_total)
 
             # if the sim of the set is less than the similarity of the previous diverse set,
             # update min_value and index
@@ -221,10 +217,8 @@ class NSimilarity(SelectionBase):
 
         return index
 
-    
     def select_from_cluster(self, arr, size, cluster_ids=None, start="medoid"):
-        r"""
-        Algorithm of nary similarity selection for selecting points from cluster.
+        r"""Algorithm of nary similarity selection for selecting points from cluster.
 
         Parameters
         ----------
@@ -411,8 +405,7 @@ class SimilarityIndex:
         self.c_threshold = c_threshold
 
     def _calculate_counters(self, data=None, n_objects=None, c_threshold=None, w_factor=None):
-        """
-        Calculate 1-similarity, 0-similarity, and dissimilarity counters
+        """Calculate 1-similarity, 0-similarity, and dissimilarity counters
 
         Arguments
         ---------
@@ -735,8 +728,9 @@ class SimilarityIndex:
     def calculate_outlier(
         self, data, c_total=None, similarity_index=None, c_threshold=None, w_factor=None
     ):
-        r"""
-        Calculate the outlier of a set of real-valued vectors or binary objects. Using the
+        r"""Calculate the outlier of a set of real-valued vectors or binary objects.
+
+        Calculates the outlier of a set of real-valued vectors or binary objects. Using the
         similarity index provided in the class initialization.
 
         Parameters
