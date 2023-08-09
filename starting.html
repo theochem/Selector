@@ -1,0 +1,993 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Getting started &#8212; Ayers Lab</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" href="_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'starting';</script>
+    <link rel="shortcut icon" href="_static/logo.png"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Base class" href="base.html" />
+    <link rel="prev" title="Installation &amp; Testing" href="installation.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+  
+
+<a class="navbar-brand logo" href="intro.html">
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/logo.png" class="logo__image only-light" alt="Logo image"/>
+    <script>document.write(`<img src="_static/logo.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="intro.html">
+                    Welcome to QC-Selector
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Quick Start</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation &amp; Testing</a></li>
+
+
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Getting started</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="base.html">Base class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dissimilarity.html">Dissimilarity based methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="partition.html">Partition based methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Utilities</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-launch-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Launch interactive content">
+    <i class="fas fa-rocket"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://colab.research.google.com/github/theochem/DiverseSelector/blob/main/book/content/starting.ipynb" target="_blank"
+   class="btn btn-sm dropdown-item"
+   title="Launch onColab"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  
+    <img src="_static/images/logo_colab.png">
+  </span>
+<span class="btn__text-container">Colab</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="initThebeSBT()"
+  class="btn btn-sm btn-launch-thebe dropdown-item"
+  title="Launch Thebe"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-play"></i>
+  </span>
+<span class="btn__text-container">Live Code</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/theochem/DiverseSelector" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/theochem/DiverseSelector/issues/new?title=Issue%20on%20page%20%2Fstarting.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/starting.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script>
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Getting started</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#demo-dissimilarity-based-selection-synthetic-data">Demo - Dissimilarity Based Selection Synthetic Data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#generating-synthetic-data">Generating Synthetic Data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#running-dissimilarity-algorithms">Running Dissimilarity Algorithms</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#brute-strength-maxmin">Brute Strength - MaxMin</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#adapted-optimizable-k-dissimilarity-selection-optisim">Adapted Optimizable K-Dissimilarity Selection (OptiSim)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#directed-sphere-exclusion">Directed Sphere Exclusion</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#grid-partitioning-method">Grid Partitioning Method</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#minmax-selection-with-clusters-but-without-assuming-there-are-clusters">MinMax selection with clusters, but without assuming there are clusters</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#brute-strength-maxsum">Brute Strength - maxsum</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#grid-partitioning-equisized-independent">Grid Partitioning - Equisized Independent</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#grid-partitioning-equisized-dependent">Grid Partitioning - Equisized Dependent</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Directed Sphere Exclusion</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optisim">Optisim</a></li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="getting-started">
+<h1>Getting started<a class="headerlink" href="#getting-started" title="Permalink to this heading">#</a></h1>
+<section id="demo-dissimilarity-based-selection-synthetic-data">
+<h2>Demo - Dissimilarity Based Selection Synthetic Data<a class="headerlink" href="#demo-dissimilarity-based-selection-synthetic-data" title="Permalink to this heading">#</a></h2>
+<p>In this tutorial, we are going to show how the <code class="docutils literal notranslate"><span class="pre">QC-Selector</span></code> work with 2D synthstic data. Each axis represents one feature. For each example, we will have two different synthstic datasets where the first one can be seen as randomly generated data points and the latter generates data points beloing to different clusters. By using 2D feature data points, it makes visualization easy.</p>
+</section>
+<section id="generating-synthetic-data">
+<h2>Generating Synthetic Data<a class="headerlink" href="#generating-synthetic-data" title="Permalink to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># install the DiverseSelector module</span>
+<span class="o">!</span>pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com/theochem/DiverseSelector
+<span class="o">!</span>pip<span class="w"> </span>install<span class="w"> </span>rdkit
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">DiverseSelector</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">sklearn.datasets</span> <span class="kn">import</span> <span class="n">make_blobs</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">pairwise_distances</span>
+
+<span class="k">def</span> <span class="nf">generate_synthetic_data</span><span class="p">(</span><span class="n">n_samples</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+                            <span class="n">n_features</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+                            <span class="n">n_clusters</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+                            <span class="n">cluster_std</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+                            <span class="n">center_box</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">),</span>
+                            <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;euclidean&quot;</span><span class="p">,</span>
+                            <span class="n">shuffle</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                            <span class="n">random_state</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">42</span><span class="p">,</span>
+                            <span class="n">pairwise_dist</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                            <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+                            <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
+                                       <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate synthetic data.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    n_samples : int, optional</span>
+<span class="sd">        The number of samples. Default=100.</span>
+<span class="sd">    n_features : int, optional</span>
+<span class="sd">        The number of features. Default=2.</span>
+<span class="sd">    n_clusters : int, optional</span>
+<span class="sd">        The number of clusters. Default=2.</span>
+<span class="sd">    cluster_std : float, optional</span>
+<span class="sd">        The standard deviation of the clusters. Default=1.0.</span>
+<span class="sd">    center_box : tuple[float, float], optional</span>
+<span class="sd">        The bounding box for each cluster center when centers are generated at random.</span>
+<span class="sd">        Default=(-10.0, 10.0).</span>
+<span class="sd">    metric : str, optional</span>
+<span class="sd">        The metric used for computing pairwise distances. For the supported</span>
+<span class="sd">        distance matrix, please refer to</span>
+<span class="sd">        https://scikit-learn.org/stable/modules/generated/sklearn.metrics.pairwise_distances.html.</span>
+<span class="sd">        Default=&quot;euclidean&quot;.</span>
+<span class="sd">    shuffle : bool, optional</span>
+<span class="sd">        Whether to shuffle the samples. Default=True.</span>
+<span class="sd">    random_state : int, optional</span>
+<span class="sd">        The random state used for generating synthetic data. Default=42.</span>
+<span class="sd">    pairwise_dist : bool, optional</span>
+<span class="sd">        If True, then compute and return the pairwise distances between samples. Default=False.</span>
+<span class="sd">    **kwargs : Any, optional</span>
+<span class="sd">            Additional keyword arguments for the scikit-learn `pairwise_distances` function.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    syn_data : np.ndarray</span>
+<span class="sd">        The synthetic data.</span>
+<span class="sd">    class_labels : np.ndarray</span>
+<span class="sd">        The integer labels for cluster membership of each sample.</span>
+<span class="sd">    dist: np.ndarray</span>
+<span class="sd">        The symmetric pairwise distances between samples.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># pylint: disable=W0632</span>
+    <span class="n">syn_data</span><span class="p">,</span> <span class="n">class_labels</span> <span class="o">=</span> <span class="n">make_blobs</span><span class="p">(</span><span class="n">n_samples</span><span class="o">=</span><span class="n">n_samples</span><span class="p">,</span>
+                                        <span class="n">n_features</span><span class="o">=</span><span class="n">n_features</span><span class="p">,</span>
+                                        <span class="n">centers</span><span class="o">=</span><span class="n">n_clusters</span><span class="p">,</span>
+                                        <span class="n">cluster_std</span><span class="o">=</span><span class="n">cluster_std</span><span class="p">,</span>
+                                        <span class="n">center_box</span><span class="o">=</span><span class="n">center_box</span><span class="p">,</span>
+                                        <span class="n">shuffle</span><span class="o">=</span><span class="n">shuffle</span><span class="p">,</span>
+                                        <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
+                                        <span class="n">return_centers</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">pairwise_dist</span><span class="p">:</span>
+        <span class="n">dist</span> <span class="o">=</span> <span class="n">pairwise_distances</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">syn_data</span><span class="p">,</span>
+                                  <span class="n">Y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                  <span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">,</span>
+                                  <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+                                  <span class="p">)</span>
+        <span class="k">return</span> <span class="n">syn_data</span><span class="p">,</span> <span class="n">class_labels</span><span class="p">,</span> <span class="n">dist</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">syn_data</span><span class="p">,</span> <span class="n">class_labels</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">coords</span><span class="p">,</span> <span class="n">class_labels</span><span class="p">,</span> <span class="n">arr_dist</span> <span class="o">=</span> <span class="n">generate_synthetic_data</span><span class="p">(</span><span class="n">n_samples</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+                                                         <span class="n">n_features</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                                                         <span class="n">n_clusters</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                                                         <span class="n">pairwise_dist</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                                         <span class="n">metric</span><span class="o">=</span><span class="s2">&quot;euclidean&quot;</span><span class="p">,</span>
+                                                         <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+
+<span class="n">coords_cluster</span><span class="p">,</span> <span class="n">class_labels_cluster</span><span class="p">,</span> <span class="n">arr_dist_cluster</span> <span class="o">=</span> <span class="n">generate_synthetic_data</span><span class="p">(</span><span class="n">n_samples</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+                                                         <span class="n">n_features</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                                                         <span class="n">n_clusters</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+                                                         <span class="n">pairwise_dist</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                                         <span class="n">metric</span><span class="o">=</span><span class="s2">&quot;euclidean&quot;</span><span class="p">,</span>
+                                                         <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">graph_data</span><span class="p">(</span><span class="n">coords</span><span class="p">,</span> <span class="n">selected</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">reference</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">dpi</span><span class="o">=</span><span class="mi">150</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">coords</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">coords</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">selected</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">mol_id</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">selected</span><span class="p">):</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">coords</span><span class="p">[</span><span class="n">mol_id</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">coords</span><span class="p">[</span><span class="n">mol_id</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">coords</span><span class="p">[</span><span class="n">mol_id</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="n">coords</span><span class="p">[</span><span class="n">mol_id</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">reference</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">coords</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">coords</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">graph_data</span><span class="p">(</span><span class="n">coords</span><span class="p">)</span>
+<span class="n">graph_data</span><span class="p">(</span><span class="n">coords_cluster</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/70b94f574ef13c326890a8b42540d738e366611ae0b5977318dad73f6610d571.png" src="_images/70b94f574ef13c326890a8b42540d738e366611ae0b5977318dad73f6610d571.png" />
+<img alt="_images/4326b44cd004fabd6a4dfb3586fc99a0ded633754a0056eda0269eb98ea35645.png" src="_images/4326b44cd004fabd6a4dfb3586fc99a0ded633754a0056eda0269eb98ea35645.png" />
+</div>
+</div>
+</section>
+<section id="running-dissimilarity-algorithms">
+<h2>Running Dissimilarity Algorithms<a class="headerlink" href="#running-dissimilarity-algorithms" title="Permalink to this heading">#</a></h2>
+<section id="brute-strength-maxmin">
+<h3>Brute Strength - MaxMin<a class="headerlink" href="#brute-strength-maxmin" title="Permalink to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># MaxMin method</span>
+<span class="kn">from</span> <span class="nn">DiverseSelector.methods.partition</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">DiverseSelector.methods.dissimilarity</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="c1"># diverse subset selection from randomly generated data points</span>
+<span class="n">selector</span> <span class="o">=</span> <span class="n">MaxMin</span><span class="p">()</span>
+<span class="n">selected_ids1</span> <span class="o">=</span> <span class="n">selector</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">arr</span><span class="o">=</span><span class="n">arr_dist</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+
+<span class="c1"># diverse subset selection from data points with obvious patterns (different clusters)</span>
+<span class="n">selector</span> <span class="o">=</span> <span class="n">MaxMin</span><span class="p">()</span>
+<span class="n">selected_ids2</span> <span class="o">=</span> <span class="n">selector</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">arr</span><span class="o">=</span><span class="n">arr_dist_cluster</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">class_labels_cluster</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">graph_data</span><span class="p">(</span><span class="n">coords</span><span class="p">,</span><span class="n">selected_ids1</span><span class="p">)</span>
+<span class="n">graph_data</span><span class="p">(</span><span class="n">coords_cluster</span><span class="p">,</span><span class="n">selected_ids2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/c2111808388e1325ce66fe59d73fdce31e90779733679055d64776f5dcd11a2f.png" src="_images/c2111808388e1325ce66fe59d73fdce31e90779733679055d64776f5dcd11a2f.png" />
+<img alt="_images/ebbb1f2edb98e71a4c26d247635bd788922a78ca80e1f0184dc65165a059bffd.png" src="_images/ebbb1f2edb98e71a4c26d247635bd788922a78ca80e1f0184dc65165a059bffd.png" />
+</div>
+</div>
+</section>
+<section id="adapted-optimizable-k-dissimilarity-selection-optisim">
+<h3>Adapted Optimizable K-Dissimilarity Selection (OptiSim)<a class="headerlink" href="#adapted-optimizable-k-dissimilarity-selection-optisim" title="Permalink to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># diverse subset selection from randomly generated data points</span>
+<span class="n">selected_id3</span> <span class="o">=</span> <span class="n">OptiSim</span><span class="p">()</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">coords</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span>
+<span class="c1"># diverse subset selection from data points with obvious patterns (different clusters)</span>
+<span class="n">selected_id4</span> <span class="o">=</span> <span class="n">OptiSim</span><span class="p">()</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">coords_cluster</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">class_labels_cluster</span><span class="p">)</span>
+
+<span class="n">graph_data</span><span class="p">(</span><span class="n">coords</span><span class="p">,</span><span class="n">selected_id3</span><span class="p">)</span>
+<span class="n">graph_data</span><span class="p">(</span><span class="n">coords_cluster</span><span class="p">,</span><span class="n">selected_id4</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/ebb420fbb7444512a6b0e6f63f9e1aafef2ca30e455986405434be0b1ae45f8f.png" src="_images/ebb420fbb7444512a6b0e6f63f9e1aafef2ca30e455986405434be0b1ae45f8f.png" />
+<img alt="_images/05fa01e62685b0e6d061a60bfa9a071ae77806525d79b5b4b7a81bb841d96b76.png" src="_images/05fa01e62685b0e6d061a60bfa9a071ae77806525d79b5b4b7a81bb841d96b76.png" />
+</div>
+</div>
+</section>
+<section id="directed-sphere-exclusion">
+<h3>Directed Sphere Exclusion<a class="headerlink" href="#directed-sphere-exclusion" title="Permalink to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># diverse subset selection from randomly generated data points</span>
+<span class="n">selected_id5</span> <span class="o">=</span> <span class="n">DirectedSphereExclusion</span><span class="p">()</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">coords</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span>
+<span class="c1"># diverse subset selection from data points with obvious patterns (different clusters)</span>
+<span class="n">selected_id6</span> <span class="o">=</span> <span class="n">DirectedSphereExclusion</span><span class="p">()</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">coords_cluster</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">class_labels_cluster</span><span class="p">)</span>
+
+<span class="n">graph_data</span><span class="p">(</span><span class="n">coords</span><span class="p">,</span><span class="n">selected_id5</span><span class="p">)</span>
+<span class="n">graph_data</span><span class="p">(</span><span class="n">coords_cluster</span><span class="p">,</span><span class="n">selected_id6</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/e43029367a2e45eeb7a19399f13a6fcdf263a0a9ce7f1c94b68f3dc4a87cc771.png" src="_images/e43029367a2e45eeb7a19399f13a6fcdf263a0a9ce7f1c94b68f3dc4a87cc771.png" />
+<img alt="_images/3a9181f92396784f19c519f31bd03ae16d9ca14c3d330e74fd21713ff34ba1df.png" src="_images/3a9181f92396784f19c519f31bd03ae16d9ca14c3d330e74fd21713ff34ba1df.png" />
+</div>
+</div>
+</section>
+<section id="grid-partitioning-method">
+<h3>Grid Partitioning Method<a class="headerlink" href="#grid-partitioning-method" title="Permalink to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># diverse subset selection from randomly generated data points</span>
+<span class="n">selected_id7</span> <span class="o">=</span> <span class="n">GridPartitioning</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;equisized_independent&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">coords</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span>
+<span class="c1"># diverse subset selection from data points with obvious patterns (different clusters)</span>
+<span class="n">selected_id8</span> <span class="o">=</span> <span class="n">GridPartitioning</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;equisized_independent&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">coords_cluster</span><span class="p">,</span> 
+                                                                   <span class="n">size</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> 
+                                                                   <span class="n">labels</span><span class="o">=</span><span class="n">class_labels_cluster</span><span class="p">)</span>
+
+<span class="n">graph_data</span><span class="p">(</span><span class="n">coords</span><span class="p">,</span><span class="n">selected_id7</span><span class="p">)</span>
+<span class="n">graph_data</span><span class="p">(</span><span class="n">coords_cluster</span><span class="p">,</span><span class="n">selected_id8</span><span class="p">)</span>
+<span class="c1"># 20, 5, 3, &quot;equisized_independent&quot;</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/69f96639d55c183cedd2b17c002bcf8188adf6946c045c98b8ba1b3e943a24fa.png" src="_images/69f96639d55c183cedd2b17c002bcf8188adf6946c045c98b8ba1b3e943a24fa.png" />
+<img alt="_images/62edea49c38783ab401ce1776e971d59b491092233328552e837c60f4b672cfe.png" src="_images/62edea49c38783ab401ce1776e971d59b491092233328552e837c60f4b672cfe.png" />
+</div>
+</div>
+</section>
+</section>
+<section id="minmax-selection-with-clusters-but-without-assuming-there-are-clusters">
+<h2>MinMax selection with clusters, but without assuming there are clusters<a class="headerlink" href="#minmax-selection-with-clusters-but-without-assuming-there-are-clusters" title="Permalink to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">selector</span> <span class="o">=</span> <span class="n">MaxMin</span><span class="p">()</span>
+<span class="n">selected_ids</span> <span class="o">=</span> <span class="n">selector</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">arr</span><span class="o">=</span><span class="n">arr_dist_cluster</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+<span class="n">graph_data</span><span class="p">(</span><span class="n">coords_cluster</span><span class="p">,</span> <span class="n">selected_ids</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/6bfaec2546606aa7703abbe35aeb187011cbaf97e878b635944f565160f3dea8.png" src="_images/6bfaec2546606aa7703abbe35aeb187011cbaf97e878b635944f565160f3dea8.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">pairwise_distances</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+<span class="n">cluster_one</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
+<span class="n">cluster_two</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
+<span class="n">cluster_three</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
+<span class="n">labels_mocked</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">([[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)],</span>
+                          <span class="p">[</span><span class="mi">1</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">6</span><span class="p">)],</span>
+                          <span class="p">[</span><span class="mi">2</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">7</span><span class="p">)]])</span>
+
+<span class="n">mocked_cluster_coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">cluster_one</span><span class="p">,</span> <span class="n">cluster_two</span><span class="p">,</span> <span class="n">cluster_three</span><span class="p">])</span>
+<span class="n">selector</span> <span class="o">=</span> <span class="n">MaxMin</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">pairwise_distances</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="s1">&#39;euclidean&#39;</span><span class="p">))</span>
+<span class="n">selected_mocked</span> <span class="o">=</span> <span class="n">selector</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">mocked_cluster_coords</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels_mocked</span><span class="p">)</span>
+
+<span class="n">graph_data</span><span class="p">(</span><span class="n">mocked_cluster_coords</span><span class="p">,</span> <span class="n">selected_mocked</span><span class="p">)</span>
+
+<span class="n">selected_mocked</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/9ed4ca23f99a4eb3d991b099a42be8d42b3b70110753a0efc1b1d4b32d70ae86.png" src="_images/9ed4ca23f99a4eb3d991b099a42be8d42b3b70110753a0efc1b1d4b32d70ae86.png" />
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[0, 1, 2, 3, 4, 5, 6, 7, 8, 14, 15, 10, 11, 9, 13]
+</pre></div>
+</div>
+</div>
+</div>
+<section id="brute-strength-maxsum">
+<h3>Brute Strength - maxsum<a class="headerlink" href="#brute-strength-maxsum" title="Permalink to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">selector</span> <span class="o">=</span> <span class="n">DissimilaritySelection</span><span class="p">(</span><span class="n">num_selected</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span>
+                                  <span class="n">arr_dist</span><span class="o">=</span><span class="n">arr_dist</span><span class="p">,</span>
+                                  <span class="n">random_seed</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span>
+                                  <span class="n">method</span><span class="o">=</span><span class="s2">&quot;maxsum&quot;</span><span class="p">)</span>
+<span class="n">selector</span><span class="o">.</span><span class="n">starting_idx</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">selected_ids2</span> <span class="o">=</span> <span class="n">selector</span><span class="o">.</span><span class="n">select</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">graph_data</span><span class="p">(</span><span class="n">selected_ids2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/88d9d6b614ff5b8849381aee29c46516a463a21011a51eb9e4781fa1f1655e1d.png" src="_images/88d9d6b614ff5b8849381aee29c46516a463a21011a51eb9e4781fa1f1655e1d.png" />
+</div>
+</div>
+</section>
+<section id="grid-partitioning-equisized-independent">
+<h3>Grid Partitioning - Equisized Independent<a class="headerlink" href="#grid-partitioning-equisized-independent" title="Permalink to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">selector</span> <span class="o">=</span> <span class="n">DissimilaritySelection</span><span class="p">(</span><span class="n">features</span><span class="o">=</span><span class="n">coords</span><span class="p">,</span>
+                                  <span class="n">num_selected</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span>
+                                  <span class="n">arr_dist</span><span class="o">=</span><span class="n">arr_dist</span><span class="p">,</span>
+                                  <span class="n">grid_method</span><span class="o">=</span><span class="s2">&quot;grid_partioning&quot;</span><span class="p">,</span>
+                                  <span class="n">random_seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+<span class="n">selector</span><span class="o">.</span><span class="n">starting_idx</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">selected_ids3</span> <span class="o">=</span> <span class="n">selector</span><span class="o">.</span><span class="n">select</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">graph_data</span><span class="p">(</span><span class="n">selected_ids3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/88d9d6b614ff5b8849381aee29c46516a463a21011a51eb9e4781fa1f1655e1d.png" src="_images/88d9d6b614ff5b8849381aee29c46516a463a21011a51eb9e4781fa1f1655e1d.png" />
+</div>
+</div>
+</section>
+<section id="grid-partitioning-equisized-dependent">
+<h3>Grid Partitioning - Equisized Dependent<a class="headerlink" href="#grid-partitioning-equisized-dependent" title="Permalink to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">selector</span> <span class="o">=</span> <span class="n">DissimilaritySelection</span><span class="p">(</span><span class="n">num_selected</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span>
+                                  <span class="n">features</span> <span class="o">=</span> <span class="n">coords</span><span class="p">,</span>
+                                  <span class="n">random_seed</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span>
+                                  <span class="n">dissim_func</span><span class="o">=</span><span class="s2">&quot;grid_partitioning&quot;</span><span class="p">,</span>
+                                  <span class="n">grid_method</span><span class="o">=</span><span class="s2">&quot;equisized_dependent&quot;</span><span class="p">)</span>
+<span class="n">selector</span><span class="o">.</span><span class="n">starting_idx</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">selected_ids4</span> <span class="o">=</span> <span class="n">selector</span><span class="o">.</span><span class="n">select</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">graph_data</span><span class="p">(</span><span class="n">selected_ids4</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/ce7e0a32549e1b052968a3332a93c442776a5d7f28266111985d49126c002545.png" src="_images/ce7e0a32549e1b052968a3332a93c442776a5d7f28266111985d49126c002545.png" />
+</div>
+</div>
+</section>
+<section id="id1">
+<h3>Directed Sphere Exclusion<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">selector</span> <span class="o">=</span> <span class="n">DissimilaritySelection</span><span class="p">(</span><span class="n">num_selected</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span>
+                                  <span class="n">features</span><span class="o">=</span><span class="n">coords</span><span class="p">,</span>
+                                  <span class="n">dissim_func</span><span class="o">=</span><span class="s2">&quot;sphere_exclusion&quot;</span><span class="p">,</span>
+                                  <span class="n">random_seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+<span class="n">selector</span><span class="o">.</span><span class="n">starting_idx</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">selected_ids5</span> <span class="o">=</span> <span class="n">selector</span><span class="o">.</span><span class="n">select</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">graph_data</span><span class="p">(</span><span class="n">selected_ids5</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/3798c3d3748b9b85d864ddff977654119949bffcd03cdc29b2d752a7abb94eac.png" src="_images/3798c3d3748b9b85d864ddff977654119949bffcd03cdc29b2d752a7abb94eac.png" />
+</div>
+</div>
+</section>
+<section id="optisim">
+<h3>Optisim<a class="headerlink" href="#optisim" title="Permalink to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">selector</span> <span class="o">=</span> <span class="n">DissimilaritySelection</span><span class="p">(</span><span class="n">num_selected</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span>
+                                  <span class="n">features</span><span class="o">=</span><span class="n">coords</span><span class="p">,</span>
+                                  <span class="n">dissim_func</span><span class="o">=</span><span class="s2">&quot;optisim&quot;</span><span class="p">,</span>
+                                  <span class="n">random_seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+<span class="n">selector</span><span class="o">.</span><span class="n">starting_idx</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">selected_ids6</span> <span class="o">=</span> <span class="n">selector</span><span class="o">.</span><span class="n">select</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">graph_data</span><span class="p">(</span><span class="n">selected_ids6</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/de8d761a0dcd5f2a92a8e46c0a9230a616cb11e8e1d6ce9b447ac445dd8536ef.png" src="_images/de8d761a0dcd5f2a92a8e46c0a9230a616cb11e8e1d6ce9b447ac445dd8536ef.png" />
+</div>
+</div>
+</section>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "theochem/DiverseSelector",
+            ref: "main",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+                <footer class="bd-footer-article">
+                  
+<div class="footer-article-items footer-article__inner">
+  
+    <div class="footer-article-item"><!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="installation.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Installation &amp; Testing</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="base.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Base class</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div></div>
+  
+</div>
+
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#demo-dissimilarity-based-selection-synthetic-data">Demo - Dissimilarity Based Selection Synthetic Data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#generating-synthetic-data">Generating Synthetic Data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#running-dissimilarity-algorithms">Running Dissimilarity Algorithms</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#brute-strength-maxmin">Brute Strength - MaxMin</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#adapted-optimizable-k-dissimilarity-selection-optisim">Adapted Optimizable K-Dissimilarity Selection (OptiSim)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#directed-sphere-exclusion">Directed Sphere Exclusion</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#grid-partitioning-method">Grid Partitioning Method</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#minmax-selection-with-clusters-but-without-assuming-there-are-clusters">MinMax selection with clusters, but without assuming there are clusters</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#brute-strength-maxsum">Brute Strength - maxsum</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#grid-partitioning-equisized-independent">Grid Partitioning - Equisized Independent</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#grid-partitioning-equisized-dependent">Grid Partitioning - Equisized Dependent</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Directed Sphere Exclusion</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optisim">Optisim</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By The QC-Dev Community with the support of Digital Research Alliance of Canada and The Jupyter Book Community
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  <p class="copyright">
+    
+      © Copyright 2022-2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
