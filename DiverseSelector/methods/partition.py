@@ -88,7 +88,8 @@ class DirectedSphereExclusion(SelectionBase):
             r/(1+eps), and branches are added in bulk if their furthest points are nearer than
             r * (1+eps). eps has to be non-negative.
         tol: float, optional
-            Percentage error of number of samples actually selected from number of samples requested.
+            Percentage error of number of samples actually selected from number of samples
+            requested.
         n_iter: int, optional
             Number of iterations for optimizing the radius of exclusion sphere.
         random_seed: int, optional
@@ -138,7 +139,8 @@ class DirectedSphereExclusion(SelectionBase):
                 # return indices of selected samples, if desired number is selected
                 if len(selected) > max_size:
                     return selected
-                # find index of all samples within radius of sample idx (this includes the sample index itself)
+                # find index of all samples within radius of sample idx (this includes the sample
+                # index itself)
                 index_exclude = kdtree.query_ball_point(
                     X[idx], self.r, eps=self.eps, p=self.p, workers=-1
                 )
@@ -166,6 +168,11 @@ class DirectedSphereExclusion(SelectionBase):
         selected: list
             List of indices of selected samples.
         """
+
+        if cluster_ids is not None:
+            # extract the data corresponding to the cluster_ids
+            X = np.take(X, cluster_ids, axis=0)
+
         if X.shape[0] < size:
             raise RuntimeError(
                 f"Number of samples is less than the requested sample size: {X.shape[0]} < {size}."
@@ -351,11 +358,12 @@ class Medoid(SelectionBase):
     Adapted from: https://en.wikipedia.org/wiki/K-d_tree#Construction
     """
 
-    def __init__(self,
-                 start_id=0,
-                 func_distance=lambda x, y: spatial.minkowski_distance(x, y) ** 2,
-                 scaling=10,
-                 ):
+    def __init__(
+        self,
+        start_id=0,
+        func_distance=lambda x, y: spatial.minkowski_distance(x, y) ** 2,
+        scaling=10,
+    ):
         """
         Initializing class.
 
@@ -439,9 +447,9 @@ class Medoid(SelectionBase):
         num_eliminate: int
             Maximum number of points permitted to be eliminated.
         """
-        _, elim_candidates = tree.query(point, k=self.ratio,
-                                        distance_upper_bound=np.sqrt(threshold),
-                                        workers=-1)
+        _, elim_candidates = tree.query(
+            point, k=self.ratio, distance_upper_bound=np.sqrt(threshold), workers=-1
+        )
         if num_eliminate < 0:
             elim_candidates = elim_candidates[:num_eliminate]
         for index in elim_candidates:
@@ -496,8 +504,9 @@ class Medoid(SelectionBase):
                 close, away = tree.right, tree.left
 
             search(tree=away, depth=depth + 1)
-            if best is None or (close is not None and diff ** 2 <= 1.1 * (
-                    (point[axis] - close.value[axis]) ** 2)):
+            if best is None or (
+                close is not None and diff**2 <= 1.1 * ((point[axis] - close.value[axis]) ** 2)
+            ):
                 search(tree=close, depth=depth + 1)
 
         search(tree=kdtree, depth=0)
@@ -552,12 +561,16 @@ class Medoid(SelectionBase):
                 best_distance_av = (count * best_distance_av + new_point.distance) / (count + 1)
             if count == 1:
                 if num_eliminate > 0 and self.scaling != 0:
-                    num_eliminate = self._eliminate(neartree, arr[self.starting_idx],
-                                                    best_distance_av * self.scaling,
-                                                    num_eliminate, bv)
+                    num_eliminate = self._eliminate(
+                        neartree,
+                        arr[self.starting_idx],
+                        best_distance_av * self.scaling,
+                        num_eliminate,
+                        bv,
+                    )
             if num_eliminate > 0 and self.scaling != 0:
-                num_eliminate = self._eliminate(neartree, new_point.point,
-                                                best_distance_av * self.scaling,
-                                                num_eliminate, bv)
+                num_eliminate = self._eliminate(
+                    neartree, new_point.point, best_distance_av * self.scaling, num_eliminate, bv
+                )
             count += 1
         return selected
