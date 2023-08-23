@@ -308,6 +308,8 @@ class OptiSim(SelectionBase):
         selected: list
             List of ids of selected molecules
         """
+        if cluster_ids is not None:
+            arr = arr[cluster_ids]
         return optimize_radius(self, arr, num_selected, cluster_ids)
 
 
