@@ -40,6 +40,7 @@ import random
 from math import log
 
 import numpy as np
+from typing import Union, Optional
 from DiverseSelector.methods.base import SelectionBase
 
 __all__ = ["NSimilarity", "SimilarityIndex"]
@@ -67,13 +68,17 @@ class NSimilarity(SelectionBase):
     """
 
     def __init__(
-        self, similarity_index="RR", w_factor="fraction", c_threshold=None, preprocess_data=True
+        self,
+        similarity_index: str = "RR",
+        w_factor: str = "fraction",
+        c_threshold: Union[None, str, int] = None,
+        preprocess_data: bool = True,
     ):
         """Initialize class.
 
         Parameters
         ----------
-        n_similarity_measure: str
+        similarity_index: str
             Key with the abbreviation of the similarity index that will be used to perform the
             selection.
             Possible values are:
@@ -110,12 +115,32 @@ class NSimilarity(SelectionBase):
             scaled and it is assumed that the data is already between 0 and 1.
 
         """
+        # check if the similarity index is valid
+        if similarity_index not in _similarity_index_dict.keys():
+            raise ValueError(
+                f'Similarity index "{similarity_index}" is not available. '
+                f"See the documentation for the available similarity indexes."
+            )
+        # check if the w_factor is valid
+        if w_factor not in ["fraction", "power_n"]:
+            print(
+                f'Weight factor "{w_factor}" given. Using default value '
+                '"similarity = dissimilarity = 1".'
+            )
+        # check if the c_threshold is valid
+        if c_threshold not in ["dissimilar", None]:
+            if not isinstance(c_threshold, int):
+                raise ValueError(
+                    f'Invalid c_threshold. It must be an integer or "dissimilar" or None. '
+                    f"Given c_threshold = {c_threshold}"
+                )
+
         self.similarity_index = similarity_index
         self.w_factor = w_factor
         self.c_threshold = c_threshold
         self.preprocess_data = preprocess_data
 
-    def _scale_data(self, data_array):
+    def _scale_data(self, arr: np.ndarray):
         r"""Scales the data between so it can be used with the similarity indexes.
 
         First each data point is normalized to be between 0 and 1.
@@ -130,11 +155,16 @@ class NSimilarity(SelectionBase):
 
         where $x_ij$ is the element of the normalized array, and $a_j$ is the average of the j-th
         column of the normalized array.
+
+        Parameters
+        ----------
+        arr: np.ndarray
+            Array of features (columns) for each sample (rows).
         """
-        min_value = np.min(data_array)
-        max_value = np.max(data_array)
+        min_value = np.min(arr)
+        max_value = np.max(arr)
         # normalize the data to be between 0 and 1 for working with the similarity indexes
-        normalized_data = (data_array - min_value) / (max_value - min_value)
+        normalized_data = (arr - min_value) / (max_value - min_value)
         # calculate the average of the columns
         col_average = np.average(normalized_data, axis=0)
 
