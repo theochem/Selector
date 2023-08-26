@@ -174,7 +174,13 @@ class NSimilarity(SelectionBase):
         data = 1 - np.abs(normalized_data - col_average)
         return data
 
-    def _get_new_index(self, data_array, selected_condensed, num_selected, select_from):
+    def _get_new_index(
+        self,
+        arr: np.ndarray,
+        selected_condensed: np.ndarray,
+        num_selected: int,
+        select_from: np.ndarray,
+    ):
         r"""Select a new diverse molecule from the data.
 
         The function selects a new molecule such that the similarity of the new set of selected
@@ -182,7 +188,7 @@ class NSimilarity(SelectionBase):
 
         Parameters
         ----------
-        data_array: np.ndarray
+        arr: np.ndarray
             Array of features (columns) for each sample (rows).
         selected_condensed: np.ndarray
             Columnwise sum of all the samples selected so far.
@@ -197,10 +203,9 @@ class NSimilarity(SelectionBase):
         selected: int
             Index of the new selected sample.
         """
-        data_array = np.array(data_array)
 
         # check if the data was previously scaled
-        if np.max(data_array) > 1 or np.min(data_array) < 0:
+        if np.max(arr) > 1 or np.min(arr) < 0:
             raise ValueError(
                 "The data was not scaled between 0 and 1. "
                 "Use the _scale_data function to scale the data."
@@ -217,7 +222,7 @@ class NSimilarity(SelectionBase):
         min_value = 1.01
 
         # placeholder index, initiating variable with a number outside the possible index values
-        index = data_array.shape[0] + 1
+        index = arr.shape[0] + 1
 
         # create an instance of the SimilarityIndex class. It is used to calculate the similarity
         # index of the sets of selected objects.
@@ -230,7 +235,7 @@ class NSimilarity(SelectionBase):
         # for all indices that have not been selected
         for sample_idx in select_from:
             # column sum
-            c_total = selected_condensed + data_array[sample_idx]
+            c_total = selected_condensed + arr[sample_idx]
 
             # calculating similarity
             sim_index = similarity_index(c_total, n_objects=n_total)
