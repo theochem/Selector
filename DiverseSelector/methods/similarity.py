@@ -180,7 +180,7 @@ class NSimilarity(SelectionBase):
         selected_condensed: np.ndarray,
         num_selected: int,
         select_from: np.ndarray,
-    ):
+    ) -> int:
         r"""Select a new diverse molecule from the data.
 
         The function selects a new molecule such that the similarity of the new set of selected
@@ -252,8 +252,8 @@ class NSimilarity(SelectionBase):
         arr: np.ndarray,
         size: int,
         cluster_ids: Optional[np.ndarray] = None,
-        start: Union[str, list] = "medoid",
-    ):
+        start: Union[str, list[int]] = "medoid",
+    ) -> list[int]:
         r"""Algorithm of nary similarity selection for selecting points from cluster.
 
         Parameters
@@ -401,7 +401,12 @@ class SimilarityIndex:
 
     """
 
-    def __init__(self, similarity_index="RR", c_threshold=None, w_factor="fraction"):
+    def __init__(
+        self,
+        similarity_index: str = "RR",
+        c_threshold: Union[None, str, int] = None,
+        w_factor: str = "fraction",
+    ):
         """Initialize the class.
 
         Parameters
@@ -443,23 +448,50 @@ class SimilarityIndex:
             Default is 'fraction'.
                 other values : similarity = dissimilarity = 1
         """
+        # check if the similarity index is valid
+        if similarity_index not in _similarity_index_dict.keys():
+            raise ValueError(
+                f'Similarity index "{similarity_index}" is not available. '
+                f"See the documentation for the available similarity indexes."
+            )
+        # check if the c_threshold is valid
+        if c_threshold not in ["dissimilar", None]:
+            if not isinstance(c_threshold, int):
+                raise ValueError(
+                    f'Invalid c_threshold. It must be an integer or "dissimilar" or None. '
+                    f"Given c_threshold = {c_threshold}"
+                )
+        # check if the w_factor is valid
+        if w_factor not in ["fraction", "power_n"]:
+            print(
+                f'Weight factor "{w_factor}" given. Using default value '
+                '"similarity = dissimilarity = 1".'
+            )
+
         self.similarity_index = similarity_index
         self.w_factor = w_factor
         self.c_threshold = c_threshold
 
-    def _calculate_counters(self, data=None, n_objects=None, c_threshold=None, w_factor=None):
+    def _calculate_counters(
+        self,
+        arr: np.ndarray = None,
+        n_objects: Optional[int] = None,
+        c_threshold: Union[None, str, int] = None,
+        w_factor: Optional[str] = None,
+    ) -> dict:
         """Calculate 1-similarity, 0-similarity, and dissimilarity counters.
 
         Arguments
         ---------
-        data : np.ndarray
+        arr : np.ndarray
             Array of arrays, each sub-array contains the binary or real valued vector. The values
             must be between 0 and 1. If the number of rows ==1, the data is treated as the
             columnwise sum of the objects. If the number of rows > 1, the data is treated as the
             objects.
         n_objects: int
-            Number of objects, only necessary if c_total is provided instead of data (num rows== 1).
-            If data is provided, the number of objects is calculated as the length of the data.
+            Number of objects, only necessary if the columnwise sum of the objects is provided
+            instead of the data (num rows== 1). If the data is provided, the number of objects is
+            calculated as the length of the data.
         c_threshold: {None, 'dissimilar', int}
             Coincidence threshold used for calculating the similarity counters. A column of the
             elements is considered to be a coincidence among the elements if the number of elements
@@ -597,12 +629,12 @@ class SimilarityIndex:
 
     def __call__(
         self,
-        data=None,
-        n_objects=None,
-        similarity_index=None,
-        c_threshold=None,
-        w_factor=None,
-    ):
+        data: np.ndarray = None,
+        n_objects: int = None,
+        similarity_index: str = None,
+        c_threshold: Union[None, str, int] = None,
+        w_factor: str = None,
+    ) -> float:
         """Calculate the similarity index of a set of vectors.
 
         Parameters
@@ -616,6 +648,21 @@ class SimilarityIndex:
             Number of objects in the data. Is only necessary if the data is a columnwise sum of
             the objects. If the data is not the columnwise sum of the objects, the number of objects
             is calculated as the length of the data.
+        similarity_index: string
+            Key with the abbreviation of the desired similarity index to be calculated for the data.
+            Possible values are:
+                AC: Austin-Colwell
+                BUB: Baroni-Urbani-Buser
+                CTn: Consoni-Todschini
+                Fai: Faith
+                Gle: Gleason
+                Ja: Jaccard
+                Ja0: Jaccard 0-variant
+                JT: Jaccard-Tanimoto
+                RT: Rogers-Tanimoto
+                RR: Russel-Rao
+                SM: Sokal-Michener
+                SSn: Sokal-Sneath n
         c_threshold: {None, 'dissimilar', int}
             Coincidence threshold used for calculating the similarity counters. A position of the
             elements is considered to be a coincidence (coincides among all the elements considered)
@@ -683,8 +730,13 @@ class SimilarityIndex:
         return similarity_index
 
     def calculate_medoid(
-        self, data, c_total=None, similarity_index=None, c_threshold=None, w_factor=None
-    ):
+        self,
+        data: np.ndarray = None,
+        c_total=None,
+        similarity_index: str = None,
+        c_threshold=None,
+        w_factor: str = None,
+    ) -> int:
         """Calculate the medoid of a set of real-valued vectors or binary objects.
 
         Parameters
@@ -773,8 +825,13 @@ class SimilarityIndex:
         return index
 
     def calculate_outlier(
-        self, data, c_total=None, similarity_index=None, c_threshold=None, w_factor=None
-    ):
+        self,
+        data: np.ndarray = None,
+        c_total=None,
+        similarity_index: str = None,
+        c_threshold=None,
+        w_factor: str = None,
+    ) -> int:
         r"""Calculate the outlier of a set of real-valued vectors or binary objects.
 
         Calculates the outlier of a set of real-valued vectors or binary objects. Using the
@@ -875,13 +932,13 @@ class SimilarityIndex:
 
 
 # AC: Austin-Colwell
-def _ac_nw(counters):
+def _ac_nw(counters: dict) -> float:
     ac_nw = (2 / np.pi) * np.arcsin(np.sqrt(counters["total_w_sim"] / counters["p"]))
     return ac_nw
 
 
 # BUB: Baroni-Urbani-Buser
-def _bub_nw(counters):
+def _bub_nw(counters: dict) -> float:
     bub_nw = ((counters["w_a"] * counters["w_d"]) ** 0.5 + counters["w_a"]) / (
         (counters["a"] * counters["d"]) ** 0.5 + counters["a"] + counters["total_dis"]
     )
@@ -889,13 +946,13 @@ def _bub_nw(counters):
 
 
 # CTn: Consoni-Todschini 1
-def _ct1_nw(counters):
+def _ct1_nw(counters: dict) -> float:
     ct1_nw = (log(1 + counters["w_a"] + counters["w_d"])) / (log(1 + counters["p"]))
     return ct1_nw
 
 
 # CTn: Consoni-Todschini 2
-def _ct2_nw(counters):
+def _ct2_nw(counters: dict) -> float:
     ct2_nw = (log(1 + counters["w_p"]) - log(1 + counters["total_w_dis"])) / (
         log(1 + counters["p"])
     )
@@ -903,73 +960,73 @@ def _ct2_nw(counters):
 
 
 # CTn: Consoni-Todschini 3
-def _ct3_nw(counters):
+def _ct3_nw(counters: dict) -> float:
     ct3_nw = (log(1 + counters["w_a"])) / (log(1 + counters["p"]))
     return ct3_nw
 
 
 # CTn: Consoni-Todschini 4
-def _ct4_nw(counters):
+def _ct4_nw(counters: dict) -> float:
     ct4_nw = (log(1 + counters["w_a"])) / (log(1 + counters["a"] + counters["total_dis"]))
     return ct4_nw
 
 
 # Fai: Faith
-def _fai_nw(counters):
+def _fai_nw(counters: dict) -> float:
     fai_nw = (counters["w_a"] + 0.5 * counters["w_d"]) / (counters["p"])
     return fai_nw
 
 
 # Gle: Gleason
-def _gle_nw(counters):
+def _gle_nw(counters: dict) -> float:
     gle_nw = (2 * counters["w_a"]) / (2 * counters["a"] + counters["total_dis"])
     return gle_nw
 
 
 # Ja: Jaccard
-def _ja_nw(counters):
+def _ja_nw(counters: dict) -> float:
     ja_nw = (3 * counters["w_a"]) / (3 * counters["a"] + counters["total_dis"])
     return ja_nw
 
 
 # Ja0: Jaccard 0-variant
-def _ja0_nw(counters):
+def _ja0_nw(counters: dict) -> float:
     ja0_nw = (3 * counters["total_w_sim"]) / (3 * counters["total_sim"] + counters["total_dis"])
     return ja0_nw
 
 
 # JT: Jaccard-Tanimoto
-def _jt_nw(counters):
+def _jt_nw(counters: dict) -> float:
     jt_nw = (counters["w_a"]) / (counters["a"] + counters["total_dis"])
     return jt_nw
 
 
 # RT: Rogers-Tanimoto
-def _rt_nw(counters):
+def _rt_nw(counters: dict) -> float:
     rt_nw = (counters["total_w_sim"]) / (counters["p"] + counters["total_dis"])
     return rt_nw
 
 
 # RR: Russel-Rao
-def _rr_nw(counters):
+def _rr_nw(counters: dict) -> float:
     rr_nw = (counters["w_a"]) / (counters["p"])
     return rr_nw
 
 
 # SM: Sokal-Michener
-def _sm_nw(counters):
+def _sm_nw(counters: dict) -> float:
     sm_nw = (counters["total_w_sim"]) / (counters["p"])
     return sm_nw
 
 
 # SSn: Sokal-Sneath 1
-def _ss1_nw(counters):
+def _ss1_nw(counters: dict) -> float:
     ss1_nw = (counters["w_a"]) / (counters["a"] + 2 * counters["total_dis"])
     return ss1_nw
 
 
 # SSn: Sokal-Sneath 2
-def _ss2_nw(counters):
+def _ss2_nw(counters: dict) -> float:
     ss2_nw = (2 * counters["total_w_sim"]) / (counters["p"] + counters["total_sim"])
     return ss2_nw
 
