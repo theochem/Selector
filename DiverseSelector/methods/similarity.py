@@ -513,36 +513,41 @@ class SimilarityIndex:
             Dictionary with the weighted and non-weighted counters.
         """
         # Check if the data is a np.ndarray of a list
-        if not isinstance(data, np.ndarray):
+        if not isinstance(arr, np.ndarray):
             raise TypeError(
                 "Warning: Input data is not a np.ndarray, to secure the right results please "
                 "input the right data type"
             )
 
         # Check if data is a columnwise sum or the objects
-        if data.ndim == 1:
-            c_total = data
+        if arr.ndim == 1:
+            c_total = arr
             # If data is a columnwise sum, check if n_objects is provided
-            if not n_objects:
+            if n_objects is None:
                 raise ValueError(
                     "Input data is the columnwise sum, please specify number of objects"
                 )
         else:
-            c_total = np.sum(data, axis=0)
-            n_objects = len(data)
+            c_total = np.sum(arr, axis=0)
+            n_objects = len(arr)
 
         # Assign c_threshold
         if not c_threshold:
             c_threshold = n_objects % 2
-        if c_threshold == "dissimilar":
+        elif c_threshold == "dissimilar":
             c_threshold = math.ceil(n_objects / 2)
-        if isinstance(c_threshold, int):
+        elif isinstance(c_threshold, int):
             if c_threshold >= n_objects:
                 raise ValueError(
                     "c_threshold cannot be equal or greater than n_objects. \n"
                     f"c_threshold = {c_threshold}  n_objects = {n_objects}"
                 )
             c_threshold = c_threshold
+        else:
+            raise ValueError(
+                f"c_threshold must be None, 'dissimilar' or an integer. \n"
+                "Given c_threshold = {c_threshold}"
+            )
 
         # Set w_factor function (a weight factor for the similarity and dissimilarity) is
         # provided depending on the number of objects that are similar or not in a column
@@ -685,16 +690,36 @@ class SimilarityIndex:
         similarity_index: float
             Similarity index of the set of vectors.
         """
-        # check if data is provided
-
         # If the parameters are not provided, the parameters provided in the class initialization
-        # are used.
+        # are used. If the parameters are provided, the parameters values are checked and used.
         if similarity_index is None:
             similarity_index = self.similarity_index
+        else:
+            # check if the similarity index is valid
+            if similarity_index not in _similarity_index_dict.keys():
+                raise ValueError(
+                    f'Similarity index "{similarity_index}" is not available. '
+                    f"See the documentation for the available similarity indexes."
+                )
         if w_factor is None:
             w_factor = self.w_factor
+        else:
+            # check if the w_factor is valid
+            if w_factor not in ["fraction", "power_n"]:
+                print(
+                    f'Weight factor "{w_factor}" given. Using default value '
+                    '"similarity = dissimilarity = 1".'
+                )
         if c_threshold is None:
             c_threshold = self.c_threshold
+        else:
+            # check if the c_threshold is valid
+            if c_threshold not in ["dissimilar", None]:
+                if not isinstance(c_threshold, int):
+                    raise ValueError(
+                        f'Invalid c_threshold. It must be an integer or "dissimilar" or None. '
+                        f"Given c_threshold = {c_threshold}"
+                    )
 
         # check that data or c_total is provided
         if data is None:
@@ -722,7 +747,7 @@ class SimilarityIndex:
 
         # calculate the counters needed to calculate the similarity indexes
         counters = self._calculate_counters(
-            data=c_total, n_objects=n_objects, w_factor=w_factor, c_threshold=c_threshold
+            arr=c_total, n_objects=n_objects, w_factor=w_factor, c_threshold=c_threshold
         )
         # calculate the similarity index
         similarity_index = _similarity_index_dict[similarity_index](counters)
@@ -775,13 +800,36 @@ class SimilarityIndex:
                         dissimilarity = n**-(d[k] - n_objects % 2)
             other values : similarity = dissimilarity = 1
         """
-        # setting the default values for the parameters
+        # If the parameters are not provided, the parameters provided in the class initialization
+        # are used. If the parameters are provided, the parameters values are checked and used.
         if similarity_index is None:
             similarity_index = self.similarity_index
+        else:
+            # check if the similarity index is valid
+            if similarity_index not in _similarity_index_dict.keys():
+                raise ValueError(
+                    f'Similarity index "{similarity_index}" is not available. '
+                    f"See the documentation for the available similarity indexes."
+                )
         if w_factor is None:
             w_factor = self.w_factor
+        else:
+            # check if the w_factor is valid
+            if w_factor not in ["fraction", "power_n"]:
+                print(
+                    f'Weight factor "{w_factor}" given. Using default value '
+                    '"similarity = dissimilarity = 1".'
+                )
         if c_threshold is None:
             c_threshold = self.c_threshold
+        else:
+            # check if the c_threshold is valid
+            if c_threshold not in ["dissimilar", None]:
+                if not isinstance(c_threshold, int):
+                    raise ValueError(
+                        f'Invalid c_threshold. It must be an integer or "dissimilar" or None. '
+                        f"Given c_threshold = {c_threshold}"
+                    )
 
         # check if c_total is provided and if not, calculate it
         if c_total is None:
@@ -873,13 +921,36 @@ class SimilarityIndex:
                         dissimilarity = n**-(d[k] - n_objects % 2)
             other values : similarity = dissimilarity = 1
         """
-        # setting the default values for the parameters
+        # If the parameters are not provided, the parameters provided in the class initialization
+        # are used. If the parameters are provided, the parameters values are checked and used.
         if similarity_index is None:
             similarity_index = self.similarity_index
+        else:
+            # check if the similarity index is valid
+            if similarity_index not in _similarity_index_dict.keys():
+                raise ValueError(
+                    f'Similarity index "{similarity_index}" is not available. '
+                    f"See the documentation for the available similarity indexes."
+                )
         if w_factor is None:
             w_factor = self.w_factor
+        else:
+            # check if the w_factor is valid
+            if w_factor not in ["fraction", "power_n"]:
+                print(
+                    f'Weight factor "{w_factor}" given. Using default value '
+                    '"similarity = dissimilarity = 1".'
+                )
         if c_threshold is None:
             c_threshold = self.c_threshold
+        else:
+            # check if the c_threshold is valid
+            if c_threshold not in ["dissimilar", None]:
+                if not isinstance(c_threshold, int):
+                    raise ValueError(
+                        f'Invalid c_threshold. It must be an integer or "dissimilar" or None. '
+                        f"Given c_threshold = {c_threshold}"
+                    )
 
         # check if c_total is provided and if not, calculate it
         if c_total is None:
