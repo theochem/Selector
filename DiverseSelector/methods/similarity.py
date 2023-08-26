@@ -203,7 +203,6 @@ class NSimilarity(SelectionBase):
         selected: int
             Index of the new selected sample.
         """
-
         # check if the data was previously scaled
         if np.max(arr) > 1 or np.min(arr) < 0:
             raise ValueError(
@@ -248,7 +247,13 @@ class NSimilarity(SelectionBase):
 
         return index
 
-    def select_from_cluster(self, arr, size, cluster_ids=None, start="medoid"):
+    def select_from_cluster(
+        self,
+        arr: np.ndarray,
+        size: int,
+        cluster_ids: Optional[np.ndarray] = None,
+        start: Union[str, list] = "medoid",
+    ):
         r"""Algorithm of nary similarity selection for selecting points from cluster.
 
         Parameters
@@ -270,15 +275,19 @@ class NSimilarity(SelectionBase):
         selected: list
             Indices of the selected sample points.
         """
-        data_array = np.array(arr)
-
+        # check for valid start value and raise an error if it is not
+        if start not in ["medoid", "random", "outlier"]:
+            if not all(isinstance(i, int) for i in start):
+                raise ValueError(
+                    "Select a correct starting point: medoid, random, outlier or a list of indices."
+                )
         # check if cluster_ids are provided
         if cluster_ids is not None:
             # extract the data corresponding to the cluster_ids
-            data_array = np.take(data_array, cluster_ids, axis=0)
+            arr = np.take(arr, cluster_ids, axis=0)
 
         # total number of objects in the current cluster
-        samples = data_array.shape[0]
+        samples = arr.shape[0]
         # ids of the data points in the current cluster (0, 1, 2, ..., samples-1)
         data_ids = np.array(range(samples))
 
@@ -291,10 +300,10 @@ class NSimilarity(SelectionBase):
         # The data is marked to be preprocessed scale the data between 0 and 1 using a strategy
         # that is compatible with the similarity indexes
         if self.preprocess_data:
-            data_array = self._scale_data(data_array)
+            arr = self._scale_data(arr)
         else:
             # check if the data is between 0 and 1 and raise an error if it is not
-            if np.max(data_array) > 1 or np.min(data_array) < 0:
+            if np.max(arr) > 1 or np.min(arr) < 0:
                 raise ValueError(
                     "The data was not scaled between 0 and 1. "
                     "Use the _scale_data function to scale the data."
@@ -311,7 +320,7 @@ class NSimilarity(SelectionBase):
         # select the index (of the working data) corresponding to the medoid of the data using the
         # similarity index
         if start == "medoid":
-            seed = similarity_index.calculate_medoid(data_array)
+            seed = similarity_index.calculate_medoid(arr)
             selected = [seed]
         # select the index (of the working data)  corresponding to a random data point
         elif start == "random":
@@ -320,7 +329,7 @@ class NSimilarity(SelectionBase):
         # select the index (of the working data) corresponding to the outlier of the data using the
         # similarity index
         elif start == "outlier":
-            seed = similarity_index.calculate_outlier(data_array)
+            seed = similarity_index.calculate_outlier(arr)
             selected = [seed]
         # if a list of cluster_ids is provided, select the data_ids corresponding indices
         elif isinstance(start, list):
@@ -347,7 +356,7 @@ class NSimilarity(SelectionBase):
         num_selected = len(selected)
 
         # get selected samples form the working data array
-        selected_objects = np.take(data_array, selected, axis=0)
+        selected_objects = np.take(arr, selected, axis=0)
         # Calculate the columnwise sum of the selected samples
         selected_condensed = np.sum(selected_objects, axis=0)
 
@@ -358,12 +367,10 @@ class NSimilarity(SelectionBase):
 
             # Select new index. The new object is selected such that from all possible objects the
             # similarity of the set of (selected_objects + new_object) is a minimum.
-            new_index = self._get_new_index(
-                data_array, selected_condensed, num_selected, select_from
-            )
+            new_index = self._get_new_index(arr, selected_condensed, num_selected, select_from)
 
             # updating column sum vector
-            selected_condensed += data_array[new_index]
+            selected_condensed += arr[new_index]
 
             # updating selected indices
             selected.append(new_index)
