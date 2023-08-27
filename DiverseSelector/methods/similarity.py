@@ -40,7 +40,7 @@ import random
 from math import log
 
 import numpy as np
-from typing import Union, Optional
+from typing import Union, Optional, List
 from DiverseSelector.methods.base import SelectionBase
 
 __all__ = ["NSimilarity", "SimilarityIndex"]
@@ -252,8 +252,8 @@ class NSimilarity(SelectionBase):
         arr: np.ndarray,
         size: int,
         cluster_ids: Optional[np.ndarray] = None,
-        start: Union[str, list[int]] = "medoid",
-    ) -> list[int]:
+        start: Union[str, List[int]] = "medoid",
+    ) -> List[int]:
         r"""Algorithm of nary similarity selection for selecting points from cluster.
 
         Parameters
