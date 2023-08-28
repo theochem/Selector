@@ -278,7 +278,7 @@ class NSimilarity(SelectionBase):
         """
         # check for valid start value and raise an error if it is not
         if start not in ["medoid", "random", "outlier"]:
-            if not all(isinstance(i, int) for i in start):
+            if not isinstance(start, list) or not all(isinstance(i, int) for i in start):
                 raise ValueError(
                     "Select a correct starting point: medoid, random, outlier or a list of indices."
                 )
@@ -349,10 +349,6 @@ class NSimilarity(SelectionBase):
                     raise ValueError("Some of the provided initial indexes are not in the data.")
                 # select the indices of the data_ids that correspond to the provided starting points
                 selected = start[:]
-        else:
-            raise ValueError(
-                "Select a correct starting point: medoid, random, outlier or a list of indices"
-            )
         # Number of initial objects
         num_selected = len(selected)
 
