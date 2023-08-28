@@ -26,13 +26,56 @@ import ast
 import csv
 
 import numpy as np
-from numpy.testing import assert_almost_equal, assert_equal
+from numpy.testing import assert_almost_equal, assert_equal, assert_raises
 import pkg_resources
 import pytest
 from DiverseSelector.methods.similarity import NSimilarity, SimilarityIndex
 
+
+def test_SimilarityIndex_init_raises():
+    """Test the SimilarityIndex class for raised errors (initialization)."""
+    # check raised error wrong similarity index name
+    with pytest.raises(ValueError):
+        SimilarityIndex(similarity_index="ttt")
+    # check raised error wrong c_threshold - invalid string value
+    with pytest.raises(ValueError):
+        SimilarityIndex(c_threshold="ttt")
+    # check raised error wrong c_threshold - invalid type (not int)
+    with pytest.raises(ValueError):
+        SimilarityIndex(c_threshold=1.1)
+
+
+def test_SimilarityIndex_calculate_counters_raises():
+    sim_idx = SimilarityIndex()
+    # check raised error wrong data type
+    with pytest.raises(TypeError):
+        sim_idx._calculate_counters(arr=[1, 2, 3])
+    # check raised error - no n_objects with data of length 1
+    with pytest.raises(ValueError):
+        sim_idx._calculate_counters(arr=np.array([1, 2, 3]))
+    # check raised error - c_threshold bigger than n_objects
+    with pytest.raises(ValueError):
+        sim_idx._calculate_counters(arr=np.array([[1, 2, 3], [4, 5, 6]]), c_threshold=3)
+    # check raised error - invalid c_threshold string value
+    with pytest.raises(ValueError):
+        sim_idx._calculate_counters(arr=np.array([[1, 2, 3], [4, 5, 6]]), c_threshold="ttt")
+    # check raised error - invalid w_factor string value
+    with pytest.raises(ValueError):
+        sim_idx._calculate_counters(arr=np.array([[1, 2, 3], [4, 5, 6]]), w_factor="ttt")
+
+
+# --------------------------------------------------------------------------------------------- #
+# Tests for the function results of the SimilarityIndex and NSimilarity classes.
+# --------------------------------------------------------------------------------------------- #
+# The following part tests the results of the SimilarityIndex and NSimilarity classes methods
+# for a set of binary data. The proper results for the tests are known in advance.
+
 # Tests for binary data.
-# ----------------------
+# --------------------------------------------------------------------------------------------- #
+
+# --------------------------------------------------------------------------------------------- #
+# Section of the test for the SimilarityIndex class
+# --------------------------------------------------------------------------------------------- #
 
 
 def _get_binary_data():
@@ -1026,7 +1069,7 @@ def _get_selections_ref_dict():
     """
 
     file_path = get_data_file_path("ref_similarity_data.csv")
-    with  open(file_path, mode="r", encoding="utf-8") as file:
+    with open(file_path, mode="r", encoding="utf-8") as file:
         reader = csv.reader(file, delimiter=";")
         next(reader)  # skip header
         # initialize the dictionary

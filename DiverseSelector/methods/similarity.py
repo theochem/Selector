@@ -516,7 +516,7 @@ class SimilarityIndex:
         # Check if the data is a np.ndarray of a list
         if not isinstance(arr, np.ndarray):
             raise TypeError(
-                "Warning: Input data is not a np.ndarray, to secure the right results please "
+                "Input data is not a np.ndarray, to secure the right results please "
                 "input the right data type"
             )
 
@@ -540,14 +540,14 @@ class SimilarityIndex:
         elif isinstance(c_threshold, int):
             if c_threshold >= n_objects:
                 raise ValueError(
-                    "c_threshold cannot be equal or greater than n_objects. \n" +
-                    f"c_threshold = {c_threshold}  n_objects = {n_objects}"
+                    "c_threshold cannot be equal or greater than n_objects. \n"
+                    + f"c_threshold = {c_threshold}  n_objects = {n_objects}"
                 )
             c_threshold = c_threshold
         else:
             raise ValueError(
-                "c_threshold must be None, 'dissimilar' or an integer. \n" +
-                f"Given c_threshold = {c_threshold}"
+                "c_threshold must be None, 'dissimilar' or an integer. \n"
+                + f"Given c_threshold = {c_threshold}"
             )
 
         # Set w_factor function (a weight factor for the similarity and dissimilarity) is
