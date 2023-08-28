@@ -571,10 +571,6 @@ class SimilarityIndex:
                 def f_d(d):
                     return 1 - (d - n_objects % 2) / n_objects
 
-            else:
-                raise ValueError(
-                    f"w_factor must be 'fraction' or 'power_n'. \n Given w_factor = {w_factor}"
-                )
         # default case, the similarity and dissimilarity counters are not weighted
         else:
 
@@ -726,9 +722,7 @@ class SimilarityIndex:
             raise ValueError("Please provide data or c_total")
         # check if data is a np.ndarray
         if not isinstance(arr, np.ndarray):
-            raise TypeError(
-                "Input data is not a np.ndarray, please input the right data type"
-            )
+            raise TypeError("Input data is not a np.ndarray, please input the right data type")
 
         # if the data is a columnwise sum of the objects check that n_objects is provided
         if arr.ndim == 1:
@@ -802,9 +796,7 @@ class SimilarityIndex:
             raise ValueError("Please provide data or c_total")
         # Check if the data is a np.ndarray of a list
         if not isinstance(arr, np.ndarray):
-            raise TypeError(
-                "Input data is not a np.ndarray, please input the right data type"
-            )
+            raise TypeError("Input data is not a np.ndarray, please input the right data type")
         # Check if data is one dimensional
         if arr.ndim != 2:
             raise ValueError(
@@ -812,9 +804,7 @@ class SimilarityIndex:
             )
         # Check if data has at least 3 rows
         if arr.shape[0] < 3:
-            raise ValueError(
-                "Input data must have at least 3 rows to calculate the medoid. \n"
-            )
+            raise ValueError("Input data must have at least 3 rows to calculate the medoid.")
         # If the parameters are not provided, the parameters provided in the class initialization
         # are used. If the parameters are provided, the parameters values are checked and used.
         if similarity_index is None:
@@ -936,6 +926,20 @@ class SimilarityIndex:
                         dissimilarity = n**-(d[k] - n_objects % 2)
             other values : similarity = dissimilarity = 1
         """
+        # check if data is provided
+        if arr is None:
+            raise ValueError("Please provide data or c_total")
+        # Check if the data is a np.ndarray of a list
+        if not isinstance(arr, np.ndarray):
+            raise TypeError("Input data is not a np.ndarray, please input the right data type")
+        # Check if data is one dimensional
+        if arr.ndim != 2:
+            raise ValueError(
+                "Data must be a two dimensional np.ndarray for calculating the outlier."
+            )
+        # Check if data has at least 3 rows
+        if arr.shape[0] < 3:
+            raise ValueError("Input data must have at least 3 rows to calculate the outlier.")
         # If the parameters are not provided, the parameters provided in the class initialization
         # are used. If the parameters are provided, the parameters values are checked and used.
         if similarity_index is None:
