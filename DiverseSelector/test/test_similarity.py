@@ -47,6 +47,9 @@ def test_SimilarityIndex_init_raises():
 
 def test_SimilarityIndex_calculate_counters_raises():
     sim_idx = SimilarityIndex()
+    # check raised error no data
+    with pytest.raises(ValueError):
+        sim_idx(arr=None)
     # check raised error wrong data type
     with pytest.raises(TypeError):
         sim_idx._calculate_counters(arr=[1, 2, 3])
@@ -59,9 +62,173 @@ def test_SimilarityIndex_calculate_counters_raises():
     # check raised error - invalid c_threshold string value
     with pytest.raises(ValueError):
         sim_idx._calculate_counters(arr=np.array([[1, 2, 3], [4, 5, 6]]), c_threshold="ttt")
-    # check raised error - invalid w_factor string value
+
+
+def test_SimilarityIndex_call_raises():
+    """Test the SimilarityIndex class for raised errors (call)."""
+    sim_idx = SimilarityIndex()
+    # check raised error wrong similarity index name
     with pytest.raises(ValueError):
-        sim_idx._calculate_counters(arr=np.array([[1, 2, 3], [4, 5, 6]]), w_factor="ttt")
+        sim_idx(arr=np.array([[1, 2, 3], [4, 5, 6]]), similarity_index="ttt")
+    # check raised error wrong c_threshold - invalid string value
+    with pytest.raises(ValueError):
+        sim_idx(arr=np.array([[1, 2, 3], [4, 5, 6]]), c_threshold="ttt")
+    # check raised error wrong c_threshold - invalid type (not int)
+    with pytest.raises(ValueError):
+        sim_idx(arr=np.array([[1, 2, 3], [4, 5, 6]]), c_threshold=1.1)
+    # check raised error no data
+    with pytest.raises(ValueError):
+        sim_idx(arr=None)
+    # check raised error wrong data type
+    with pytest.raises(TypeError):
+        sim_idx(arr=[1, 2, 3])
+    # check raised error - no n_objects with data of length 1
+    with pytest.raises(ValueError):
+        sim_idx(arr=np.array([1, 2, 3]))
+    # check raised error - c_threshold bigger than n_objects
+    with pytest.raises(ValueError):
+        sim_idx(arr=np.array([[1, 2, 3], [4, 5, 6]]), c_threshold=3)
+    # check raised error - invalid c_threshold string value
+    with pytest.raises(ValueError):
+        sim_idx(arr=np.array([[1, 2, 3], [4, 5, 6]]), c_threshold="ttt")
+
+
+def test_SimilarityIndex_calculate_medoid_raises():
+    """Test the SimilarityIndex class for raised errors (calculate_medoid)."""
+    sim_idx = SimilarityIndex()
+    # check raised error wrong similarity index name
+    with pytest.raises(ValueError):
+        sim_idx.calculate_medoid(
+            arr=np.array([[1, 2, 3], [4, 5, 6], [6, 7, 8]]), similarity_index="ttt"
+        )
+    # check raised error wrong c_threshold - invalid string value
+    with pytest.raises(ValueError):
+        sim_idx.calculate_medoid(arr=np.array([[1, 2, 3], [4, 5, 6]]), c_threshold="ttt")
+    # check raised error wrong c_threshold - invalid type (not int)
+    with pytest.raises(ValueError):
+        sim_idx.calculate_medoid(arr=np.array([[1, 2, 3], [4, 5, 6]]), c_threshold=1.1)
+    # check raised error no data
+    with pytest.raises(ValueError):
+        sim_idx.calculate_medoid(arr=None)
+    # check raised error wrong data type
+    with pytest.raises(TypeError):
+        sim_idx.calculate_medoid(arr=[1, 2, 3])
+    # check raised error - no medoid with one dimensional data
+    with pytest.raises(ValueError):
+        sim_idx.calculate_medoid(arr=np.array([1, 2, 3]))
+    # check raised error - no medoid with less than three samples
+    with pytest.raises(ValueError):
+        sim_idx.calculate_medoid(arr=np.array([[1, 2, 3], [4, 5, 6]]))
+    # check raised error - c_threshold bigger than n_objects
+    with pytest.raises(ValueError):
+        sim_idx.calculate_medoid(arr=np.array([[1, 2, 3], [4, 5, 6], [6, 7, 8]]), c_threshold=4)
+    # check raised error - invalid c_threshold string value
+    with pytest.raises(ValueError):
+        sim_idx.calculate_medoid(arr=np.array([[1, 2, 3], [4, 5, 6], [6, 7, 8]]), c_threshold="ttt")
+    # check raised error - c_total and data have different number of columns
+    with pytest.raises(ValueError):
+        sim_idx.calculate_medoid(
+            arr=np.array([[1, 2, 3], [4, 5, 6], [6, 7, 8]]), c_total=np.array([1, 2, 3, 4])
+        )
+
+
+def test_SimilarityIndex_calculate_outlier_raises():
+    """Test the SimilarityIndex class for raised errors (calculate_outlier)."""
+    sim_idx = SimilarityIndex()
+    # check raised error wrong similarity index name
+    with pytest.raises(ValueError):
+        sim_idx.calculate_outlier(
+            arr=np.array([[1, 2, 3], [4, 5, 6], [6, 7, 8]]), similarity_index="ttt"
+        )
+    # check raised error wrong c_threshold - invalid string value
+    with pytest.raises(ValueError):
+        sim_idx.calculate_outlier(arr=np.array([[1, 2, 3], [4, 5, 6]]), c_threshold="ttt")
+    # check raised error wrong c_threshold - invalid type (not int)
+    with pytest.raises(ValueError):
+        sim_idx.calculate_outlier(arr=np.array([[1, 2, 3], [4, 5, 6]]), c_threshold=1.1)
+    # check raised error no data
+    with pytest.raises(ValueError):
+        sim_idx.calculate_outlier(arr=None)
+    # check raised error wrong data type
+    with pytest.raises(TypeError):
+        sim_idx.calculate_outlier(arr=[1, 2, 3])
+    # check raised error - no outlier with one dimensional data
+    with pytest.raises(ValueError):
+        sim_idx.calculate_outlier(arr=np.array([1, 2, 3]))
+    # check raised error - no outlier with less than three samples
+    with pytest.raises(ValueError):
+        sim_idx.calculate_outlier(arr=np.array([[1, 2, 3], [4, 5, 6]]))
+    # check raised error - c_threshold bigger than n_objects
+    with pytest.raises(ValueError):
+        sim_idx.calculate_outlier(arr=np.array([[1, 2, 3], [4, 5, 6], [6, 7, 8]]), c_threshold=4)
+    # check raised error - invalid c_threshold string value
+    with pytest.raises(ValueError):
+        sim_idx.calculate_outlier(
+            arr=np.array([[1, 2, 3], [4, 5, 6], [6, 7, 8]]), c_threshold="ttt"
+        )
+    # check raised error - c_total and data have different number of columns
+    with pytest.raises(ValueError):
+        sim_idx.calculate_outlier(
+            arr=np.array([[1, 2, 3], [4, 5, 6], [6, 7, 8]]), c_total=np.array([1, 2, 3, 4])
+        )
+
+
+def test_NSimilarity_init_raises():
+    """Test the NSimilarity class for raised errors (initialization)."""
+    # check raised error wrong similarity index name
+    with pytest.raises(ValueError):
+        NSimilarity(similarity_index="ttt")
+    # check raised error wrong c_threshold - invalid string value
+    with pytest.raises(ValueError):
+        NSimilarity(c_threshold="ttt")
+    # check raised error wrong c_threshold - invalid type (not int)
+    with pytest.raises(ValueError):
+        NSimilarity(c_threshold=1.1)
+
+
+def test_NSimilarity_get_new_index_raises():
+    """Test the NSimilarity class for raised errors (get_new_index)."""
+    with pytest.raises(ValueError):
+        NSimilarity()._get_new_index(
+            arr=np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]]),
+            num_selected=1,
+            selected_condensed=np.array([1, 2, 3]),
+            select_from=np.array([1, 2, 3]),
+        )
+
+
+def test_NSimilarity_select_from_cluster_raises():
+    """Test the NSimilarity class for raised errors (select_from_cluster)."""
+    data_array = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+    cluster_ids = np.array([0, 1, 2])
+    with pytest.raises(ValueError):
+        # select more samples than the number of samples in the cluster
+        NSimilarity().select_from_cluster(arr=data_array, size=5)
+    with pytest.raises(ValueError):
+        # start from sample index that is not in the cluster
+        NSimilarity().select_from_cluster(arr=data_array, size=2, start=[4])
+    with pytest.raises(ValueError):
+        # start from sample index that is not in the cluster
+        NSimilarity().select_from_cluster(arr=data_array, size=2, start=[4])
+    with pytest.raises(ValueError):
+        # start from invalid string value of start
+        NSimilarity().select_from_cluster(arr=data_array, size=2, start="ttt")
+    with pytest.raises(ValueError):
+        # start from invalid type of start
+        NSimilarity().select_from_cluster(arr=data_array, size=2, start=[1.2])
+    with pytest.raises(ValueError):
+        # try to data not scaled between 0 and 1
+        NSimilarity(preprocess_data=False).select_from_cluster(arr=data_array, size=2)
+    with pytest.raises(ValueError):
+        # try to use starting index that is not in the cluster
+        NSimilarity().select_from_cluster(
+            arr=data_array, size=2, start=[4], cluster_ids=cluster_ids
+        )
+    with pytest.raises(ValueError):
+        # try to use invalid starting index
+        NSimilarity().select_from_cluster(
+            arr=data_array, size=2, start=4.2, cluster_ids=cluster_ids
+        )
 
 
 # --------------------------------------------------------------------------------------------- #
