@@ -635,7 +635,7 @@ class SimilarityIndex:
 
     def __call__(
         self,
-        data: np.ndarray = None,
+        arr: np.ndarray = None,
         n_objects: int = None,
         similarity_index: str = None,
         c_threshold: Union[None, str, int] = None,
@@ -645,7 +645,7 @@ class SimilarityIndex:
 
         Parameters
         ----------
-        data : np.ndarray
+        arr : np.ndarray
             Array of arrays, each sub-array contains the binary or real valued vector. The values
             must be between 0 and 1. If the number of rows ==1, the data is treated as the
             columnwise sum of the objects. If the number of rows > 1, the data is treated as the
@@ -723,19 +723,19 @@ class SimilarityIndex:
                     )
 
         # check that data or c_total is provided
-        if data is None:
+        if arr is None:
             raise ValueError("Please provide data or c_total")
 
         # check if data is a np.ndarray
-        if not isinstance(data, np.ndarray):
+        if not isinstance(arr, np.ndarray):
             raise TypeError(
-                "Warning: Input data is not a np.ndarray, to secure the right results please input "
+                "Input data is not a np.ndarray, to secure the right results please input "
                 "the right data type"
             )
 
         # if the data is a columnwise sum of the objects check that n_objects is provided
-        if data.ndim == 1:
-            c_total = data
+        if arr.ndim == 1:
+            c_total = arr
             if not n_objects:
                 raise ValueError(
                     "Input data is the columnwise sum, please specify number of objects"
@@ -743,8 +743,8 @@ class SimilarityIndex:
         # if the data is not a columnwise sum of the objects, calculate the columnwise sum and the
         # number of objects
         else:
-            c_total = np.sum(data, axis=0)
-            n_objects = data.shape[0]
+            c_total = np.sum(arr, axis=0)
+            n_objects = arr.shape[0]
 
         # calculate the counters needed to calculate the similarity indexes
         counters = self._calculate_counters(
@@ -757,7 +757,7 @@ class SimilarityIndex:
 
     def calculate_medoid(
         self,
-        data: np.ndarray = None,
+        arr: np.ndarray = None,
         c_total=None,
         similarity_index: str = None,
         c_threshold=None,
@@ -767,7 +767,7 @@ class SimilarityIndex:
 
         Parameters
         ----------
-        data: np.array
+        arr: np.array
             np.array of all the real-valued vectors or binary objects.
         c_total:
             np.array with the columnwise sums of the data, not necessary to provide.
@@ -834,13 +834,13 @@ class SimilarityIndex:
 
         # check if c_total is provided and if not, calculate it
         if c_total is None:
-            c_total = np.sum(data, axis=0)
+            c_total = np.sum(arr, axis=0)
         # if c_total is provided, check if it has the same number of columns as the data
-        elif c_total is not None and len(data[0]) != len(c_total):
+        elif c_total is not None and len(arr[0]) != len(c_total):
             raise ValueError("Dimensions of objects and columnwise sum differ")
 
         # get the total number of objects
-        n_objects = data.shape[0]
+        n_objects = arr.shape[0]
 
         # Initialize the selected index with a number outside the possible index values
         index = n_objects + 1
@@ -851,13 +851,13 @@ class SimilarityIndex:
         min_sim = 1.01
 
         # For each sample in the set, calculate the columnwise sum of the data without the sample
-        comp_sums = c_total - data
+        comp_sums = c_total - arr
 
         # for each sample calculate the similarity index of the complete set without the sample
         for idx, obj in enumerate(comp_sums):
             # calculate the similarity index of the set of objects without the current object
             sim_index = self(
-                data=obj,
+                arr=obj,
                 n_objects=n_objects - 1,
                 similarity_index=similarity_index,
                 w_factor=w_factor,
@@ -875,7 +875,7 @@ class SimilarityIndex:
 
     def calculate_outlier(
         self,
-        data: np.ndarray = None,
+        arr: np.ndarray = None,
         c_total=None,
         similarity_index: str = None,
         c_threshold=None,
@@ -888,7 +888,7 @@ class SimilarityIndex:
 
         Parameters
         ----------
-        data: np.array
+        arr: np.array
             np.array of all the real-valued vectors or binary objects.
         c_total:
             np.array with the columnwise sums of the data, not necessary to provide.
@@ -955,12 +955,12 @@ class SimilarityIndex:
 
         # check if c_total is provided and if not, calculate it
         if c_total is None:
-            c_total = np.sum(data, axis=0)
+            c_total = np.sum(arr, axis=0)
         # if c_total is provided, check if it has the same number of columns as the data
-        elif c_total is not None and len(data[0]) != len(c_total):
+        elif c_total is not None and len(arr[0]) != len(c_total):
             raise ValueError("Dimensions of objects and columnwise sum differ")
 
-        n_objects = data.shape[0]
+        n_objects = arr.shape[0]
 
         # Initialize the selected index with a number outside the possible index values
         index = n_objects + 1
@@ -971,13 +971,13 @@ class SimilarityIndex:
         max_sim = -0.01
 
         # For each sample in the set, calculate the columnwise sum of the data without the sample
-        comp_sums = c_total - data
+        comp_sums = c_total - arr
 
         # for each sample calculate the similarity index of the complete set without the sample
         for idx, obj in enumerate(comp_sums):
             # calculate the similarity index of the set of objects without the current object
             sim_index = self.__call__(
-                data=obj,
+                arr=obj,
                 n_objects=n_objects - 1,
                 similarity_index=similarity_index,
                 w_factor=w_factor,
