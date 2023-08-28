@@ -1025,7 +1025,7 @@ def _get_selections_ref_dict():
             start: the method to use to select the first(s) sample(s)
     """
 
-    file_path = get_data_file_path("ref_similarity_data.txt")
+    file_path = get_data_file_path("ref_similarity_data.csv")
     with  open(file_path, mode="r", encoding="utf-8") as file:
         reader = csv.reader(file, delimiter=";")
         next(reader)  # skip header
