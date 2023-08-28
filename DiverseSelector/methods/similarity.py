@@ -36,12 +36,13 @@ The ideas behind the similarity-based selection methods are described in the fol
 """
 
 import math
-import random
 from math import log
+import random
+from typing import List, Optional, Union
 
-import numpy as np
-from typing import Union, Optional, List
 from DiverseSelector.methods.base import SelectionBase
+import numpy as np
+
 
 __all__ = ["NSimilarity", "SimilarityIndex"]
 
@@ -116,7 +117,7 @@ class NSimilarity(SelectionBase):
 
         """
         # check if the similarity index is valid
-        if similarity_index not in _similarity_index_dict.keys():
+        if similarity_index not in _similarity_index_dict:
             raise ValueError(
                 f'Similarity index "{similarity_index}" is not available. '
                 f"See the documentation for the available similarity indexes."
@@ -449,7 +450,7 @@ class SimilarityIndex:
                 other values : similarity = dissimilarity = 1
         """
         # check if the similarity index is valid
-        if similarity_index not in _similarity_index_dict.keys():
+        if similarity_index not in _similarity_index_dict:
             raise ValueError(
                 f'Similarity index "{similarity_index}" is not available. '
                 f"See the documentation for the available similarity indexes."
@@ -539,14 +540,14 @@ class SimilarityIndex:
         elif isinstance(c_threshold, int):
             if c_threshold >= n_objects:
                 raise ValueError(
-                    "c_threshold cannot be equal or greater than n_objects. \n"
+                    "c_threshold cannot be equal or greater than n_objects. \n" +
                     f"c_threshold = {c_threshold}  n_objects = {n_objects}"
                 )
             c_threshold = c_threshold
         else:
             raise ValueError(
-                f"c_threshold must be None, 'dissimilar' or an integer. \n"
-                "Given c_threshold = {c_threshold}"
+                "c_threshold must be None, 'dissimilar' or an integer. \n" +
+                f"Given c_threshold = {c_threshold}"
             )
 
         # Set w_factor function (a weight factor for the similarity and dissimilarity) is
@@ -696,7 +697,7 @@ class SimilarityIndex:
             similarity_index = self.similarity_index
         else:
             # check if the similarity index is valid
-            if similarity_index not in _similarity_index_dict.keys():
+            if similarity_index not in _similarity_index_dict:
                 raise ValueError(
                     f'Similarity index "{similarity_index}" is not available. '
                     f"See the documentation for the available similarity indexes."
@@ -806,7 +807,7 @@ class SimilarityIndex:
             similarity_index = self.similarity_index
         else:
             # check if the similarity index is valid
-            if similarity_index not in _similarity_index_dict.keys():
+            if similarity_index not in _similarity_index_dict:
                 raise ValueError(
                     f'Similarity index "{similarity_index}" is not available. '
                     f"See the documentation for the available similarity indexes."
@@ -927,7 +928,7 @@ class SimilarityIndex:
             similarity_index = self.similarity_index
         else:
             # check if the similarity index is valid
-            if similarity_index not in _similarity_index_dict.keys():
+            if similarity_index not in _similarity_index_dict:
                 raise ValueError(
                     f'Similarity index "{similarity_index}" is not available. '
                     f"See the documentation for the available similarity indexes."
