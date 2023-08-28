@@ -22,13 +22,14 @@
 
 """Test similarity-Based Selection Methods."""
 
-import pytest
-import csv
 import ast
-import pkg_resources
-from DiverseSelector.methods.similarity import SimilarityIndex, NSimilarity
+import csv
+
 import numpy as np
-from numpy.testing import assert_equal, assert_almost_equal
+from numpy.testing import assert_almost_equal, assert_equal
+import pkg_resources
+import pytest
+from DiverseSelector.methods.similarity import NSimilarity, SimilarityIndex
 
 # Tests for binary data.
 # ----------------------
@@ -363,21 +364,21 @@ def test_SimilarityIndex_call(c_threshold, w_factor, n_ary):
     data, ref_similarity_binary = _get_binary_data(), _get_ref_similarity_dict()
 
     # create instance of the class SimilarityIndex to test the similarity indexes for binary data
-    si = SimilarityIndex(similarity_index=n_ary, c_threshold=c_threshold, w_factor=w_factor)
+    sim_idx = SimilarityIndex(similarity_index=n_ary, c_threshold=c_threshold, w_factor=w_factor)
 
     # calculate the similarity index for the binary data
-    si_value = si(data)
+    sim_idx_value = sim_idx(data)
 
     # get the reference value for the similarity index
-    if c_threshold == None:
+    if c_threshold is None:
         c_threshold = "None"
     ref_value = ref_similarity_binary[w_factor][c_threshold][n_ary]
 
-    # calculate the absolute tolerance based on the relative tolerance and the magnitudes of the numbers
-    tol = _get_absolute_decimal_places_for_comparison(si_value, ref_value)
+    # calculate the absolute tolerance based on the relative tolerance and the numbers magnitude
+    tol = _get_absolute_decimal_places_for_comparison(sim_idx_value, ref_value)
 
     # check that the calculated value is equal to the reference value
-    assert_almost_equal(si_value, ref_value, decimal=tol)
+    assert_almost_equal(sim_idx_value, ref_value, decimal=tol)
 
 
 # --------------------------------------------------------------------------------------------- #
@@ -418,14 +419,14 @@ def _get_test_parameters():
             n_ary: the similarity index to use
     """
     # The cases where the similarity of the samples is zero are not considered because these will be
-    # inconsistent with the reference values for the selection of the new indexes, and the calculation
-    # of the medoid and the outlier.
+    # inconsistent with the reference values for the selection of the new indexes, and the
+    # calculation of the medoid and the outlier.
     test_parameters = []
     for w in w_factor_values:
         for c in c_treshold_values:
             # small hack to avoid using the None value as a key in the dictionary
             c_key = c
-            if c == None:
+            if c is None:
                 c_key = "None"
             for n in n_ary_values:
                 # ignore the cases where the similarity of the samples less than two percent
@@ -608,7 +609,7 @@ def test_calculate_medoid(c_threshold, w_factor, n_ary):
 
     # small hack to avoid using the None value as a key in the dictionary
     c_threshold_key = c_threshold
-    if c_threshold == None:
+    if c_threshold is None:
         c_threshold_key = "None"
 
     ref_medoid = ref_medoid_dict[c_threshold_key][w_factor][n_ary]
@@ -793,7 +794,7 @@ def test_calculate_outlier(c_threshold, w_factor, n_ary):
 
     # small hack to avoid using the None value as a key in the dictionary
     c_threshold_key = c_threshold
-    if c_threshold == None:
+    if c_threshold is None:
         c_threshold_key = "None"
 
     ref_outlier = ref_outlier_dict[c_threshold_key][w_factor][n_ary]
@@ -928,8 +929,8 @@ def _get_ref_new_index():
 def test_get_new_index(c_threshold, w_factor, n_ary):
     """Test the function get a new sample from the binary data.
 
-    Test the function to get a new sample from the binary data using the reference values and several
-    combinations of parameters. The reference values are obtained using the function
+    Test the function to get a new sample from the binary data using the reference values and
+    several combinations of parameters. The reference values are obtained using the function
     _get_ref_new_index().
 
     Parameters
@@ -956,16 +957,15 @@ def test_get_new_index(c_threshold, w_factor, n_ary):
 
     # small hack to avoid using the None value as a key in the dictionary
     c_threshold_key = c_threshold
-    if c_threshold == None:
+    if c_threshold is None:
         c_threshold_key = "None"
 
     ref_new_index = ref_new_index_dict[c_threshold_key][w_factor][n_ary]
 
     # calculate the outlier for the binary data
-    NSI = NSimilarity(similarity_index=n_ary, w_factor=w_factor, c_threshold=c_threshold)
+    nsi = NSimilarity(similarity_index=n_ary, w_factor=w_factor, c_threshold=c_threshold)
 
-    # index = NSI._get_new_index(data_array = data, selected_condensed = selected_condensed_data, num_selected = n, select_from = select_from_n)
-    new_index = NSI._get_new_index(
+    new_index = nsi._get_new_index(
         arr=data,
         selected_condensed=selected_condensed_data,
         select_from=select_from_n,
@@ -995,7 +995,18 @@ sample_size_values = [10, 20, 30]
 
 
 def get_data_file_path(file_name):
-    # Get the absolute path of the data file inside the package
+    """Get the absolute path of the data file inside the package.
+
+    Parameters
+    ----------
+    file_name : str
+        The name of the data file to load.
+
+    Returns
+    -------
+    str
+        The absolute path of the data file inside the package
+    """
     data_file_path = pkg_resources.resource_filename(__name__, f"data/{file_name}")
     return data_file_path
 
@@ -1015,25 +1026,25 @@ def _get_selections_ref_dict():
     """
 
     file_path = get_data_file_path("ref_similarity_data.txt")
-    file = open(file_path, mode="r")
-    reader = csv.reader(file, delimiter=";")
-    next(reader)  # skip header
-    # initialize the dictionary
-    data_dict = {}
+    with  open(file_path, mode="r", encoding="utf-8") as file:
+        reader = csv.reader(file, delimiter=";")
+        next(reader)  # skip header
+        # initialize the dictionary
+        data_dict = {}
 
-    for row in reader:
-        # The first column is the c_threshold
-        data_dict[row[0]] = data_dict.get(row[0], {})
-        # The second column is the w_factor
-        data_dict[row[0]][row[1]] = data_dict[row[0]].get(row[1], {})
-        # The third column is the sample_size
-        data_dict[row[0]][row[1]][row[2]] = data_dict[row[0]][row[1]].get(row[2], {})
-        # The fourth column is the start_idx
-        data_dict[row[0]][row[1]][row[2]][row[3]] = data_dict[row[0]][row[1]][row[2]].get(
-            row[3], {}
-        )
-        # The fifth column stores the n_ary and the sixth column stores the reference value
-        data_dict[row[0]][row[1]][row[2]][row[3]][row[4]] = ast.literal_eval(row[5])
+        for row in reader:
+            # The first column is the c_threshold
+            data_dict[row[0]] = data_dict.get(row[0], {})
+            # The second column is the w_factor
+            data_dict[row[0]][row[1]] = data_dict[row[0]].get(row[1], {})
+            # The third column is the sample_size
+            data_dict[row[0]][row[1]][row[2]] = data_dict[row[0]][row[1]].get(row[2], {})
+            # The fourth column is the start_idx
+            data_dict[row[0]][row[1]][row[2]][row[3]] = data_dict[row[0]][row[1]][row[2]].get(
+                row[3], {}
+            )
+            # The fifth column stores the n_ary and the sixth column stores the reference value
+            data_dict[row[0]][row[1]][row[2]][row[3]][row[4]] = ast.literal_eval(row[5])
     return data_dict
 
 
@@ -1079,7 +1090,7 @@ def test_NSimilarity_select(c_threshold, w_factor, sample_size, n_ary, start):
 
     # get the reference value for the similarity index
     # transform invalid keys to strings
-    if c_threshold == None:
+    if c_threshold is None:
         c_threshold = "None"
     # transform sample_size to string (as it is used as a key in the dictionary)
     sample_size = str(sample_size)
@@ -1093,4 +1104,4 @@ def test_NSimilarity_select(c_threshold, w_factor, sample_size, n_ary, start):
     assert_equal(len(selected_data), len(ref_list))
 
     # check if the selected data is equal to the reference data
-    assert all([x in ref_list for x in selected_data])
+    assert all(x in ref_list for x in selected_data)
