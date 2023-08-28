@@ -519,7 +519,6 @@ class SimilarityIndex:
                 "Input data is not a np.ndarray, to secure the right results please "
                 "input the right data type"
             )
-
         # Check if data is a columnwise sum or the objects
         if arr.ndim == 1:
             c_total = arr
@@ -725,12 +724,10 @@ class SimilarityIndex:
         # check that data or c_total is provided
         if arr is None:
             raise ValueError("Please provide data or c_total")
-
         # check if data is a np.ndarray
         if not isinstance(arr, np.ndarray):
             raise TypeError(
-                "Input data is not a np.ndarray, to secure the right results please input "
-                "the right data type"
+                "Input data is not a np.ndarray, please input the right data type"
             )
 
         # if the data is a columnwise sum of the objects check that n_objects is provided
@@ -801,6 +798,23 @@ class SimilarityIndex:
                         dissimilarity = n**-(d[k] - n_objects % 2)
             other values : similarity = dissimilarity = 1
         """
+        if arr is None:
+            raise ValueError("Please provide data or c_total")
+        # Check if the data is a np.ndarray of a list
+        if not isinstance(arr, np.ndarray):
+            raise TypeError(
+                "Input data is not a np.ndarray, please input the right data type"
+            )
+        # Check if data is one dimensional
+        if arr.ndim != 2:
+            raise ValueError(
+                "Data must be a two dimensional np.ndarray for calculating the medoid."
+            )
+        # Check if data has at least 3 rows
+        if arr.shape[0] < 3:
+            raise ValueError(
+                "Input data must have at least 3 rows to calculate the medoid. \n"
+            )
         # If the parameters are not provided, the parameters provided in the class initialization
         # are used. If the parameters are provided, the parameters values are checked and used.
         if similarity_index is None:
