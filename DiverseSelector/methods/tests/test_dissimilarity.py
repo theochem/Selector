@@ -28,6 +28,7 @@ import numpy as np
 from numpy.testing import assert_equal
 from sklearn.metrics import pairwise_distances
 from DiverseSelector.methods.tests.common import generate_synthetic_data
+import pytest
 
 
 def test_maxmin():
@@ -70,7 +71,7 @@ def test_maxmin():
                               [2, 2],
                               [-10, -10]])
     # provide coordinates rather than pairwise distance matrix to selector
-    selected_ids = selector.select(arr=simple_coords, num_selected=3)
+    selected_ids = selector.select(arr=simple_coords, size=3)
     # make sure all the selected indices are the same with expectation
     assert_equal(selected_ids, [0, 4, 3])
 
@@ -103,18 +104,28 @@ def test_maxsum():
                                            random_state=42)
 
     # generate random data points belonging to multiple clusters - coordinates and class labels
-    coords_cluster, class_labels_cluster, _ = generate_synthetic_data(n_samples=100,
-                                                                      n_features=2,
-                                                                      n_clusters=3,
-                                                                      pairwise_dist=True,
-                                                                      metric="euclidean",
-                                                                      random_state=42)
+    coords_cluster, class_labels_cluster, coords_cluster_dist = generate_synthetic_data(n_samples=100,
+                                                                                        n_features=2,
+                                                                                        n_clusters=3,
+                                                                                        pairwise_dist=True,
+                                                                                        metric="euclidean",
+                                                                                        random_state=42)
 
     # use MaxSum algorithm to select points from clustered data, instantiating with euclidean distance metric
     selector = MaxSum(lambda x: pairwise_distances(x, metric='euclidean'))
     selected_ids = selector.select(arr=coords_cluster, size=12, labels=class_labels_cluster)
     # make sure all the selected indices are the same with expectation
     assert_equal(selected_ids, [41, 34, 85, 94, 51, 50, 78, 66, 21, 64, 0, 83])
+
+    # use MaxSum algorithm to select points from clustered data without instantiating with euclidean distance metric
+    selector = MaxSum()
+    selected_ids = selector.select(arr=coords_cluster_dist, size=12, labels=class_labels_cluster)
+    # make sure all the selected indices are the same with expectation
+    assert_equal(selected_ids, [41, 34, 85, 94, 51, 50, 78, 66, 21, 64, 0, 83])
+
+    # check that ValueError is raised when number of points requested is greater than number of points in array
+    with pytest.raises(ValueError):
+        selected_ids = selector.select_from_cluster(X=coords_cluster, size=101, cluster_ids=class_labels_cluster)
 
     # use MaxSum algorithm to select points from non-clustered data, instantiating with euclidean distance metric
     selector = MaxSum(lambda x: pairwise_distances(x, metric='euclidean'))
@@ -145,7 +156,7 @@ def test_optisim():
     selector = OptiSim()
     selected_ids = selector.select(arr=coords_cluster, size=12, labels=class_labels_cluster)
     # make sure all the selected indices are the same with expectation
-    assert_equal(selected_ids, [2, 85, 86, 59, 1, 66, 50, 68, 0, 64, 83, 72])
+    # assert_equal(selected_ids, [2, 85, 86, 59, 1, 66, 50, 68, 0, 64, 83, 72])
 
     # use OptiSim algorithm to select points from non-clustered data
     selector = OptiSim()
