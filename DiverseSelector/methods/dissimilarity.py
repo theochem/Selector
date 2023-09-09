@@ -209,7 +209,7 @@ class OptiSim(SelectionBase):
     [1] J. Chem. Inf. Comput. Sci. 1997, 37, 6, 1181–1188. https://doi.org/10.1021/ci970282v
     """
 
-    def __init__(self, r0=None, k=10, tol=5.0, eps=0, p=2, start_id=0, random_seed=42, n_iter=10):
+    def __init__(self, r0=None, k=10, tol=0.01, eps=0, p=2, start_id=0, random_seed=42, n_iter=10):
         """Initialize class.
 
         Parameters
@@ -327,6 +327,9 @@ class OptiSim(SelectionBase):
         selected : list
             List of indices of selected samples.
         """
+        # pass subset of X to optimize_radius if cluster_ids is not None
+        if cluster_ids is not None:
+            X = X[cluster_ids]
         return optimize_radius(self, X, size, cluster_ids)
 
 
