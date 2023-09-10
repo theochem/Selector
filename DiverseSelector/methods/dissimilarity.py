@@ -187,7 +187,7 @@ class OptiSim(SelectionBase):
     Adapted from  https://doi.org/10.1021/ci970282v
     """
 
-    def __init__(self, r=None, k=10, tol=5.0, eps=0, p=2, start_id=0, random_seed=42, n_iter=10):
+    def __init__(self, r=None, k=10, tol=0.05, eps=0, p=2, start_id=0, random_seed=42, n_iter=10):
         """
         Initializing class.
 
