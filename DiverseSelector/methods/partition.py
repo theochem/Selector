@@ -86,8 +86,7 @@ class DirectedSphereExclusion(SelectionBase):
             r/(1+eps), and branches are added in bulk if their furthest points are nearer than
             r * (1+eps). eps has to be non-negative.
         tol: float, optional
-            Percentage error of number of samples actually selected from number of samples
-            requested.
+            Percentage error of number of samples actually selected from number of samples requested.
         n_iter: int, optional
             Number of iterations for optimizing the radius of exclusion sphere.
         random_seed: int, optional
@@ -137,8 +136,7 @@ class DirectedSphereExclusion(SelectionBase):
                 # return indices of selected samples, if desired number is selected
                 if len(selected) > max_size:
                     return selected
-                # find index of all samples within radius of sample idx (this includes the sample
-                # index itself)
+                # find index of all samples within radius of sample idx (this includes the sample index itself)
                 index_exclude = kdtree.query_ball_point(
                     X[idx], self.r, eps=self.eps, p=self.p, workers=-1
                 )
@@ -174,16 +172,34 @@ class DirectedSphereExclusion(SelectionBase):
 
 
 class GridPartitioning(SelectionBase):
-    """Selecting points using the Grid Partitioning algorithm.
+    r"""Selecting points using the Grid Partitioning algorithm.
 
-    Points are partitioned into grids using an algorithm (equisized independent or equisized
-    dependent). A point is selected from each of the grids while the number of selected points is
+    Points are partitioned into grids using various methods.
+
+    - The equisized independent partitions the space into bins of equal size in all dimensions.
+      This is determined by the user based on the number of bins to have in each
+      axis/dimension.
+
+    - The equisized dependent partitions space where the bins can be of
+      different length in each dimension, each `l`th dimension partition depends on the previous
+      `l-1`th dimension.  The order of points affects the latter method.
+
+    - The equifrequent independent partitions the space into bins of approximately equal
+      number of points in each bins.
+
+    - The equifrequent dependent is similar to equisized dependent where the partition in each
+      dimension will depend on the previous dimensions.
+
+    A point is selected from each of the grids while the number of selected points is
     less than the number requested and while the grid has available points remaining, looping until
     the number of requested points is satisfied. If at the end, the number of points needed is less
     than the number of grids available to select from, the points are chosen from the grids with the
     greatest diversity.
 
-    Adapted from https://doi.org/10.1016/S1093-3263(99)00016-9.
+    References
+    ----------
+    .. [1] Bayley, Martin J., and Peter Willett. "Binning schemes for partition-based
+           compound selection." Journal of Molecular Graphics and Modelling 17.1 (1999): 10-18.
     """
 
     def __init__(self, cells, grid_method="equisized_independent", max_dim=None, random_seed=42):
@@ -192,16 +208,14 @@ class GridPartitioning(SelectionBase):
 
         Parameters
         ----------
-        cells: int
-            Number of cells to partition each axis into, the number of resulting grids is cells to
-            the power of the dimensionality of the coordinate array.
-        grid_method: str
-            Grid method used to partition the points into grids. "equisized_independent" and
-            "equisized_dependent" are supported options.
-        max_dim: int
-            Maximum dimensionality of coordinate array, if the dimensionality is greater than the
-            max_dim provided then dimensionality reduction is done using PCA.
-        random_seed: int
+        numb_bins_axis: int
+            Number of bins/cells to partition each axis into, the number of resulting grids is 
+            bins/cells to the power of the dimensionality of the coordinate array.
+        grid_method: str, optional
+            Grid method used to partition the points into grids. "equisized_independent",
+            "equisized_dependent", "equifrequent_independent" and "equifrequent_dependent"
+            are supported options.
+        random_seed: int, optional
             Seed for random selection of points to be selected from each grid.
         """
         self.random_seed = random_seed
@@ -224,8 +238,12 @@ class GridPartitioning(SelectionBase):
 
         Returns
         -------
-        selected: list
-            List of ids of selected molecules
+        unique_bins_ids, inverse_ids: ndarray, ndarray(int,)
+            `unique_bins_ids` is the unique (without duplication) bin ids that points are assigned to.
+            The bin ids are integer arrays :math:`(i_1, \cdot, i_D)` that corresponds to each partition
+            in each dimension.
+            `inverse_ids` contains indices of `unique_bins_ids` for each of the :math:`N` points that
+            it is assigned to.
         """
 
         if self.grid_method == "equisized_independent":
