@@ -29,7 +29,7 @@ import bitarray
 import scipy.spatial
 
 from DiverseSelector.methods.base import SelectionBase
-from DiverseSelector.diversity import compute_diversity
+from DiverseSelector.diversity import hypersphere_overlap_of_subset
 from DiverseSelector.methods.utils import optimize_radius
 import numpy as np
 from scipy import spatial
@@ -328,11 +328,12 @@ class GridPartitioning(SelectionBase):
                 for idx in to_delete:
                     del bins[idx]
                 to_delete = []
-
             else:
-                diversity = []
-                for bin_idx, bin_list in bins.items():
-                    diversity.append((compute_diversity(arr[bin_list]), bin_idx))
+                # If number of points is less than the number of bins,
+                # Calculate the diversity of each bin and pick based on the highest diversity
+                diversity = [
+                    (hypersphere_overlap_of_subset(X, X[bin_list, :]), bin_idx) for bin_idx, bin_list in bins.items()
+                ]
                 diversity.sort(reverse=True)
                 for _, bin_idx in diversity[:num_needed]:
                     random_int = rng.integers(low=0, high=len(bins[bin_idx]), size=1)[0]
