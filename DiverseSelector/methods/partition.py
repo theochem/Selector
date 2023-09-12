@@ -233,18 +233,18 @@ class GridPartitioning(SelectionBase):
         self.numb_bins_axis = numb_bins_axis
         self.grid_method = grid_method
 
-    def select_from_cluster(self, arr, num_selected, cluster_ids=None):
-        """
-        Grid partitioning algorithm for selecting points from cluster.
+    def partition_points_to_bins_equisized(self, features):
+        r"""
+        Find all bins ids that has points in them and assign each point to each of those bins.
+
+        Go through each :math:`D` dimension and get the minimum, maximum and length of each cell
+           of that dimension. This is then used to define the size of the bins, where the bins are
+           equal length within each dimension.
 
         Parameters
         ----------
-        arr: np.ndarray
-            Coordinate array of points
-        num_selected: int
-            Number of molecules that need to be selected.
-        cluster_ids: np.ndarray
-            Indices of molecules that form a cluster
+        features: ndarray(N, D)
+            The points used to partition the grid into bins and assign each points to each bin.
 
         Returns
         -------
@@ -255,81 +255,86 @@ class GridPartitioning(SelectionBase):
             `inverse_ids` contains indices of `unique_bins_ids` for each of the :math:`N` points that
             it is assigned to.
         """
+        axis_minimum = np.min(features, axis=0)
+        axis_maximum = np.max(features, axis=0)
+        cell_length = (axis_maximum - axis_minimum) / self.numb_bins_axis
+        # Rows correspond to the points and the columns correspond to bin id
+        bin_ids = np.array(np.floor_divide(features - axis_minimum, cell_length), dtype=int)
+        # `unique_bin_ids` corresponds to unique bin ids and `inverse_ids` which point corresponds
+        #   to which bin
+        unique_bin_ids, inverse_ids = np.unique(bin_ids, return_inverse=True, axis=0)
+        return unique_bin_ids, inverse_ids
 
-        if self.grid_method == "equisized_independent":
-            axis_info = []
-            for i in range(data_dim):
-                axis_min, axis_max = min(arr[:, i]), max(arr[:, i])
-                cell_length = (axis_max - axis_min) / self.cells
-                axis_info.append([axis_min, axis_max, cell_length])
-            bins = {}
-            for index, point in enumerate(arr):
-                point_bin = []
-                for dim, value in enumerate(point):
-                    if value == axis_info[dim][0]:
-                        index_bin = 0
-                    elif value == axis_info[dim][1]:
-                        index_bin = self.cells - 1
-                    else:
-                        index_bin = int((value - axis_info[dim][0]) // axis_info[dim][2])
-                    point_bin.append(index_bin)
-                bins.setdefault(tuple(point_bin), [])
-                bins[tuple(point_bin)].append(index)
+    def partition_points_to_bins_equifrequent(self, features):
+        r"""
+        Find all bins ids that contains points using the equifrequent method.
 
-        elif self.grid_method == "equisized_dependent":
-            bins = {}
-            for i in range(data_dim):
-                if len(bins) == 0:
-                    axis_min, axis_max = min(arr[:, i]), max(arr[:, i])
-                    cell_length = (axis_max - axis_min) / self.cells
-                    axis_info = [axis_min, axis_max, cell_length]
+        The equifrequent method partitions each bin to have equal number of points.
+        This is done by doing a linear interpolation from integer indices and points, where
+        it is then evaluated on a uniform grid with number of bins as the spacing in each axis.
 
-                    for index, point in enumerate(arr):
-                        point_bin = []
-                        if point[i] == axis_info[0]:
-                            index_bin = 0
-                        elif point[i] == axis_info[1]:
-                            index_bin = self.cells - 1
-                        else:
-                            index_bin = int((point[i] - axis_info[0]) // axis_info[2])
-                        point_bin.append(index_bin)
-                        bins.setdefault(tuple(point_bin), [])
-                        bins[tuple(point_bin)].append(index)
-                else:
-                    new_bins = {}
-                    for bin_idx, bin_list in bins.items():
-                        axis_min = min(arr[bin_list, i])
-                        axis_max = max(arr[bin_list, i])
-                        cell_length = (axis_max - axis_min) / self.cells
-                        axis_info = [axis_min, axis_max, cell_length]
+        Parameters
+        ----------
+        features: ndarray(N, D)
+            The points used to partition the grid into bins and assign each points to each bin.
 
-                        for point_idx in bin_list:
-                            point_bin = [num for num in bin_idx]
-                            if arr[point_idx][i] == axis_info[0]:
-                                index_bin = 0
-                            elif arr[point_idx][i] == axis_info[1]:
-                                index_bin = self.cells - 1
-                            else:
-                                index_bin = int((arr[point_idx][i] - axis_info[0]) // axis_info[2])
-                            point_bin.append(index_bin)
-                            new_bins.setdefault(tuple(point_bin), [])
-                            new_bins[tuple(point_bin)].append(point_idx)
-                    bins = new_bins
+        Returns
+        -------
+        unique_bins_ids, inverse_ids: ndarray, ndarray(int,)
+            `unique_bins_ids` is the unique (without duplication) bin ids that points are assigned to.
+            The bin ids are integer arrays :math:`(i_1, \cdot, i_D)` that corresponds to each partition
+            in each dimension.
+            `inverse_ids` contains indices of `unique_bins_ids` for each of the :math:`N` points that
+            it is assigned to.
+        """
+        n_pt = len(features)
 
-        elif self.grid_method == "equifrequent_independent":
-            raise NotImplementedError(f"{self.grid_method} not implemented.")
-        elif self.grid_method == "equifrequent_dependent":
-            raise NotImplementedError(f"{self.grid_method} not implemented.")
-        else:
-            raise ValueError(f"{self.grid_method} not a valid grid_method")
+        # This gives [l_1, l_2, l_3, ..., l_{B+1}] where [l_1, l_2] is the first bin and
+        #    [l_2, l_3] is the second bin. Note that l_1 is always the minimum and l_{B+1}
+        #    is always the maximum.  interp does linear interpolation between integer indices
+        #    and the output is the ith dimension of the points.
+        bins_length = np.interp(np.linspace(0, n_pt, self.numb_bins_axis + 1),
+                                np.arange(n_pt),
+                                np.sort(features))
+        # Using the bin length, partition each point to the correct bin. This is done by
+        #   subtracting each point with each interval \{l_i\} and where it switches
+        #   from negative to positive, is the bin index that it is assigned to.
+        pt_to_bind = bins_length - features[:, None]
+        pt_to_bind[pt_to_bind >= 0.0] = -np.inf
+        bin_ids_oned = np.argmax(pt_to_bind, axis=1)
+        unique_bin_ids, inverse_ids = np.unique(bin_ids_oned, return_inverse=True)
+        return unique_bin_ids, inverse_ids
 
+    def select_from_bins(self, X, bins, num_selected):
+        r"""
+        From the bins, select a certain number of points of the bins.
+
+        Parameters
+        ----------
+        X: ndarray of shape (n_samples, n_features)
+            Feature matrix of `n_samples` samples in `n_features` dimensional space.
+        bins: dict(tuple(int), list[int])
+            The bins that map to the id the bin (as a typle of integers) and returns
+            the indices of the points that are contained in that bin.
+        num_selected: int
+            Number of points to select from the bins.
+
+        Returns
+        -------
+        List[int]:
+            Indices of the points that were selected.
+        """
         old_len = 0
         to_delete = []
+        selected = []
         rng = np.random.default_rng(seed=self.random_seed)
         while len(selected) < num_selected:
             num_needed = num_selected - len(selected)
             bin_count = len(bins)
+            # If the number of point needed is greater than number of bins then randomly
+            #   select points from the bins.
             if bin_count <= num_needed:
+                # Go through each bin and select a point at random from it and delete it later
                 for bin_idx, bin_list in bins.items():
                     random_int = rng.integers(low=0, high=len(bin_list), size=1)[0]
                     mol_id = bin_list.pop(random_int)
@@ -353,6 +358,126 @@ class GridPartitioning(SelectionBase):
             if len(selected) == old_len:
                 break
             old_len = len(selected)
+        return selected
+
+    def select_from_cluster(self, X: np.ndarray, num_selected: int, cluster_ids: np.ndarray = None):
+        """
+        Grid partitioning algorithm for selecting points from cluster.
+
+        Parameters
+        ----------
+        X: ndarray of shape (n_samples, n_features)
+            Feature matrix of `n_samples` samples in `n_features` dimensional space.
+        num_selected: int
+            Number of molecules that need to be selected.
+        cluster_ids: ndarray
+            Indices of molecules that form a cluster
+
+        Returns
+        -------
+        selected: list[int]
+            List of ids of selected molecules with size `num_selected`.
+        """
+        if not isinstance(X, np.ndarray):
+            raise TypeError(f"X {type(X)} should of type numpy array.")
+        if not isinstance(num_selected, int):
+            raise TypeError(f"num_selected {type(num_selected)} should be of type int.")
+        if cluster_ids is not None and not isinstance(cluster_ids, np.ndarray):
+            raise TypeError(f"cluster_ids {type(cluster_ids)} should be either None or numpy "
+                            f"array.")
+
+        if cluster_ids is not None:
+            X = X[cluster_ids]
+        data_dim = len(X[0])
+
+        if self.grid_method == "equisized_independent":
+            unique_bin_ids, inverse_ids = self.partition_points_to_bins_equisized(X)
+            # The unique bins ids is the keys and the items are the list of indices of points that
+            #   corresponds to that bin.
+            bins = {
+                tuple(key): list(np.where(inverse_ids == i)[0])
+                for i, key in enumerate(unique_bin_ids)
+            }
+        elif self.grid_method == "equisized_dependent":
+            # Partition the first dimension using the same procedure as `equisized_independent`.
+            unique_bin_ids, inverse_ids = self.partition_points_to_bins_equisized(X[:, 0])
+            bins = {
+                tuple([key, ]): list(np.where(inverse_ids == i)[0])
+                for i, key in enumerate(unique_bin_ids)
+            }
+            # Apply the partition scheme at the next features/dimension dependent on the previous
+            #   partition
+            for i in range(1, data_dim):
+                new_bins = {}  # Need another dictionary because bins is being iterated on
+                for bin_idx, bin_list in bins.items():
+                    # Go through each bin and grab the new axis based on it and partition as usual
+                    unique_bin_ids, inverse_ids = self.partition_points_to_bins_equisized(X[bin_list, i])
+                    # Add the previous bin_ids to the current unique_bin_ids.
+                    unique_bin_ids = np.array([list(bin_idx) + [x] for x in unique_bin_ids])
+                    # Update the new bins to include the next dimension/feature.
+                    new_bins.update(
+                        {
+                            tuple(key): list(np.array(bin_list)[np.where(inverse_ids == i)[0]])
+                            for i, key in enumerate(unique_bin_ids)
+                        }
+                    )
+                bins = new_bins
+        elif self.grid_method == "equifrequent_independent":
+            npt, ndim = X.shape
+            all_bins = np.zeros(X.shape, dtype=int)
+            for i in range(0, ndim):
+                # This gives [l_1, l_2, l_3, ..., l_{B+1}] where [l_1, l_2] is the first bin and
+                #    [l_2, l_3] is the second bin. Note that l_1 is always the minimum and l_{B+1}
+                #    is always the maximum.  interp does linear interpolation between integer indices
+                #    and the output is the ith dimension of the points.
+                bins_length = np.interp(np.linspace(0, npt, self.numb_bins_axis + 1),
+                                 np.arange(npt),
+                                 np.sort(X[:, i]))
+
+                # Using the bin length, partition each point to the correct bin. This is done by
+                #   subtracting each point with each interval \{l_i\} and where it switches
+                #   from negative to positive, is the bin index that it is assigned to.
+                pt_to_bind = bins_length - X[:, i][:, None]
+                pt_to_bind[pt_to_bind >= 0.0] = -np.inf
+                all_bins[:, i] = np.argmax(pt_to_bind, axis=1)
+
+            unique_bin_ids, inverse_ids = np.unique(all_bins, return_inverse=True, axis=0)
+
+            # The unique bins ids is the keys and the items are the list of indices of points that
+            #   corresponds to that bin.
+            bins = {
+                tuple(key): list(np.where(inverse_ids == i)[0])
+                for i, key in enumerate(unique_bin_ids)
+            }
+
+        elif self.grid_method == "equifrequent_dependent":
+            # Partition the first using the same procedure as `equifrequent_independent`.
+            unique_bin_ids, inverse_ids = self.partition_points_to_bins_equifrequent(X[:, 0])
+            # The unique bins ids is the keys and the items are the list of indices of points that
+            #   corresponds to that bin.
+            bins = {
+                tuple([key, ]): list(np.where(inverse_ids == i)[0]) for i, key in enumerate(unique_bin_ids)
+            }
+            # Do the next following dimensions
+            for i in range(1, X.shape[1]):
+                new_bins = {}  # Need another dictionary because bins is being iterated on
+                for bin_idx, bin_list in bins.items():
+                    pts_in_bin = X[bin_list, i]
+                    unique_bin_ids, inverse_ids = self.partition_points_to_bins_equifrequent(pts_in_bin)
+                    # Add the previous bin_ids to the current unique_bin_ids.
+                    unique_bin_ids = np.array([list(bin_idx) + [x] for x in unique_bin_ids])
+                    # Update the new bins to include the next dimension/feature.
+                    new_bins.update(
+                        {
+                            tuple(key): list(np.array(bin_list)[np.where(inverse_ids == i)[0]])
+                            for i, key in enumerate(unique_bin_ids)
+                        }
+                    )
+                bins = new_bins
+        else:
+            raise ValueError(f"{self.grid_method} not a valid grid_method")
+
+        selected = self.select_from_bins(X, bins, num_selected)
         return selected
 
 
