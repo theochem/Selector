@@ -202,7 +202,12 @@ class GridPartitioning(SelectionBase):
            compound selection." Journal of Molecular Graphics and Modelling 17.1 (1999): 10-18.
     """
 
-    def __init__(self, cells, grid_method="equisized_independent", max_dim=None, random_seed=42):
+    def __init__(
+        self,
+        numb_bins_axis: int,
+        grid_method: str = "equisized_independent",
+        random_seed: int = 42
+    ):
         """
         Initializing class.
 
@@ -218,9 +223,14 @@ class GridPartitioning(SelectionBase):
         random_seed: int, optional
             Seed for random selection of points to be selected from each grid.
         """
+        if not isinstance(numb_bins_axis, int):
+            raise TypeError(f"Number of bins {type(numb_bins_axis)} should be integer.")
+        if not isinstance(random_seed, int):
+            raise TypeError(f"The random seed {type(random_seed)} should be integer.")
+        if not isinstance(grid_method, str):
+            raise TypeError(f"The grid method {type(grid_method)} should be a string.")
         self.random_seed = random_seed
-        self.cells = cells
-        self.max_dim = max_dim
+        self.numb_bins_axis = numb_bins_axis
         self.grid_method = grid_method
 
     def select_from_cluster(self, arr, num_selected, cluster_ids=None):
