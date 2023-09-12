@@ -33,8 +33,6 @@ from DiverseSelector.diversity import hypersphere_overlap_of_subset
 from DiverseSelector.methods.utils import optimize_radius
 import numpy as np
 from scipy import spatial
-from sklearn.decomposition import PCA
-from sklearn.preprocessing import StandardScaler
 
 
 __all__ = [
@@ -168,11 +166,6 @@ class DirectedSphereExclusion(SelectionBase):
         selected: list
             List of indices of selected samples.
         """
-
-        if cluster_ids is not None:
-            # extract the data corresponding to the cluster_ids
-            X = np.take(X, cluster_ids, axis=0)
-
         if X.shape[0] < size:
             raise RuntimeError(
                 f"Number of samples is less than the requested sample size: {X.shape[0]} < {size}."
@@ -234,16 +227,6 @@ class GridPartitioning(SelectionBase):
         selected: list
             List of ids of selected molecules
         """
-        if cluster_ids is not None:
-            arr = arr[cluster_ids]
-
-        selected = []
-        data_dim = len(arr[0])
-        if self.max_dim is not None and data_dim > self.max_dim:
-            norm_data = StandardScaler().fit_transform(arr)
-            pca = PCA(n_components=self.max_dim)
-            arr = pca.fit_transform(norm_data)
-            data_dim = self.max_dim
 
         if self.grid_method == "equisized_independent":
             axis_info = []
