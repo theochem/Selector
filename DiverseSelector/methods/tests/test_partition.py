@@ -175,25 +175,28 @@ def test_grid_partitioning_equifrequent_dependent_on_simple_example(numb_pts):
 
 
 @pytest.mark.parametrize("numb_pts", [10, 20, 30])
-def test_grid_paritioning_equisized_dependent_same_as_independent_on_uniform_grid(numb_pts):
-    r"""Test grid partitioning is the same between the two equisized methods on uniform grid in three-dimensions."""
+@pytest.mark.parametrize("method", ["equifrequent", "equisized"])
+def test_bins_from_both_methods_dependent_same_as_independent_on_uniform_grid(numb_pts, method):
+    r"""Test bins is the same between the two equisized methods on uniform grid in three-dimensions."""
     x = np.linspace(0, 10, numb_pts)
     y = np.linspace(0, 11, numb_pts)
     X = np.meshgrid(x, y, y)
     grid = np.vstack(list(map(np.ravel, X))).T
     grid = np.array([1.0, 0.0, 0.0]) + grid
-    # Make one bin have an extra point
-    # grid = np.vstack((grid, np.array([1.1, 0.0, 0.0])))
 
     # Here the number of cells should be equal to the number of points in each dimension
     #  excluding the extra point, so that the answer is unique/known.
-    selector = GridPartitioning(numb_bins_axis=numb_pts, grid_method="equifrequent_independent")
-    # Sort the points so that they're comparable to the expected answer.
-    selected_ids_indep = np.sort(selector.select(grid, size=len(grid) - 1))
+    selector_indept = GridPartitioning(numb_bins_axis=numb_pts, grid_method=f"{method}_independent")
+    selector_depend = GridPartitioning(numb_bins_axis=numb_pts, grid_method=f"{method}_dependent")
 
-    selector = GridPartitioning(numb_bins_axis=numb_pts, grid_method="equifrequent_dependent")
-    selected_ids_dep = np.sort(selector.select(grid, size=len(grid) - 1))
-    assert_equal(selected_ids_dep, selected_ids_indep)
+    # Get the bins from the method
+    bins_indept = selector_indept.get_bins_from_method(grid)
+    bins_dept = selector_depend.get_bins_from_method(grid)
+
+    # Test the bins are the same
+    for key in bins_indept.keys():
+        assert_equal(bins_dept[key], bins_indept[key])
+
 
 
 def test_raises_grid_partitioning():
