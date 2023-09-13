@@ -82,30 +82,10 @@ def test_directed_sphere_on_line_with_larger_radius():
     assert_equal(selector.r, 1.0)
 
 
-@pytest.mark.parametrize("numb_pts", [10, 20, 30])
-def test_grid_partitioning_equisized_independent_on_simple_example(numb_pts):
-    r"""Test equisized_independent grid partitioning on an example each bin has only one point."""
-    # Construct feature array where each molecule is known to be in which bin
-    # The grid is a uniform grid from 0 to 10 in X-axis and 0 to 11 on y-axis.
-    x = np.linspace(0, 10, numb_pts)
-    y = np.linspace(0, 11, numb_pts)
-    X, Y = np.meshgrid(x, y)
-    grid = np.array([1.0, 0.0]) + np.vstack([X.ravel(), Y.ravel()]).T
-    # Make one bin have an extra point
-    grid = np.vstack((grid, np.array([1.1, 0.0])))
-
-    # Here the number of cells should be equal to the number of points in each dimension
-    #  excluding the extra point, so that the answer is unique/known.
-    selector = GridPartitioning(numb_bins_axis=numb_pts)
-    # Sort the points so that they're comparable to the expected answer.
-    selected_ids = np.sort(selector.select(grid, size=len(grid) - 1))
-    expected = np.arange(len(grid) - 1)
-    assert_equal(selected_ids, expected)
-
-
 @pytest.mark.parametrize("numb_pts", [4])
-def test_grid_partitioning_equifrequent_independent_on_simple_example(numb_pts):
-    r"""Test equisized_independent grid partitioning on an example each bin has only one point."""
+@pytest.mark.parametrize("method", ["equifrequent", "equisized"])
+def test_grid_partitioning_independent_on_simple_example(numb_pts, method):
+    r"""Test grid partitioning on an example each bin has only one point."""
     # Construct feature array where each molecule is known to be in which bin
     # The grid is a uniform grid from 0 to 10 in X-axis and 0 to 11 on y-axis.
     x = np.linspace(0, 3, numb_pts)
@@ -117,7 +97,7 @@ def test_grid_partitioning_equifrequent_independent_on_simple_example(numb_pts):
 
     # Here the number of cells should be equal to the number of points in each dimension
     #  excluding the extra point, so that the answer is unique/known.
-    selector = GridPartitioning(numb_bins_axis=4, grid_method="equifrequent_independent")
+    selector = GridPartitioning(numb_bins_axis=4, grid_method=f"{method}_independent")
     # Sort the points so that they're comparable to the expected answer.
     selected_ids = np.sort(selector.select(grid, size=len(grid) - 1))
     expected = np.arange(len(grid) - 1)
@@ -142,7 +122,7 @@ def test_grid_partitioning_equisized_dependent_on_simple_example():
 
     # The number of bins makes it so that it approxiamtely be a single point in each bin
     selector = GridPartitioning(numb_bins_axis=4, grid_method="equisized_dependent")
-            # Two bins have an extra point in them and so has more diversity than other bins
+    # Two bins have an extra point in them and so has more diversity than other bins
     #   then the two expected molecules should be in those bins.
     selected_ids = selector.select(grid, size=2)
     right_molecules = True
@@ -198,7 +178,6 @@ def test_bins_from_both_methods_dependent_same_as_independent_on_uniform_grid(nu
         assert_equal(bins_dept[key], bins_indept[key])
 
 
-
 def test_raises_grid_partitioning():
     r"""Test raises error for grid partitioning."""
     grid = np.random.uniform(0.0, 1.0, size=(10, 3))
@@ -215,6 +194,7 @@ def test_raises_grid_partitioning():
     assert_raises(TypeError, selector.select_from_cluster, [5.0], 5)  # Test X is numpy array
     assert_raises(TypeError, selector.select_from_cluster, grid, 5.0)  # Test number selected should be int
     assert_raises(TypeError, selector.select_from_cluster, grid, 5, [5.0])
+
 
 def test_medoid():
     """Testing Medoid class."""
