@@ -174,7 +174,7 @@ class DirectedSphereExclusion(SelectionBase):
 class GridPartitioning(SelectionBase):
     r"""Selecting points using the Grid Partitioning algorithm.
 
-    Points are partitioned into grids using various methods.
+    Points are partitioned into bins using various methods.
 
     - The equisized independent partitions the space into bins of equal size in all dimensions.
       This is determined by the user based on the number of bins to have in each
@@ -408,9 +408,9 @@ class GridPartitioning(SelectionBase):
         r"""
         From the bins, select a certain number of points of the bins.
 
-        Points are selected in an iterative manner. If the number of point needed to be selected
+        Points are selected in an iterative manner. If the number of points needed to be selected
          is greater than number of bins left then randomly select points from each of the bins. If
-         any of the bins are empty then remove the binds. If it is less than the number of bins left,
+         any of the bins are empty then remove the bins. If it is less than the number of bins left,
          then calculate the diversity of each bin and choose points of bins with the highest diversity.
 
         Parameters
@@ -418,7 +418,7 @@ class GridPartitioning(SelectionBase):
         X: ndarray of shape (n_samples, n_features)
             Feature matrix of `n_samples` samples in `n_features` dimensional space.
         bins: dict(tuple(int), list[int])
-            The bins that map to the id the bin (as a typle of integers) and returns
+            The bins that map to the id the bin (as a tuple of integers) and returns
             the indices of the points that are contained in that bin.
         num_selected: int
             Number of points to select from the bins.
