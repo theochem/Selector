@@ -29,7 +29,7 @@ import bitarray
 import scipy.spatial
 
 from DiverseSelector.methods.base import SelectionBase
-from DiverseSelector.diversity import hypersphere_overlap_of_subset
+from DiverseSelector.diversity import compute_diversity, hypersphere_overlap_of_subset
 from DiverseSelector.methods.utils import optimize_radius
 import numpy as np
 from scipy import spatial
@@ -404,7 +404,7 @@ class GridPartitioning(SelectionBase):
 
         return bins
 
-    def select_from_bins(self, X, bins, num_selected):
+    def select_from_bins(self, X, bins, num_selected, diversity_type="hypersphere_overlap"):
         r"""
         From the bins, select a certain number of points of the bins.
 
@@ -422,6 +422,8 @@ class GridPartitioning(SelectionBase):
             the indices of the points that are contained in that bin.
         num_selected: int
             Number of points to select from the bins.
+        diversity_type: str, optional
+            Type of diversity to use. Default="hypersphere_overlap".
 
         Returns
         -------
@@ -453,9 +455,11 @@ class GridPartitioning(SelectionBase):
             else:
                 # If number of points is less than the number of bins,
                 # Calculate the diversity of each bin and pick based on the highest diversity
-                diversity = [
-                    (hypersphere_overlap_of_subset(X, X[bin_list, :]), bin_idx) for bin_idx, bin_list in bins.items()
-                ]
+                diversity = [compute_diversity(features=X,
+                                               feature_subset=X[bin_list, :],
+                                               div_type=diversity_type)
+                             for bin_idx, bin_list in bins.items()]
+
                 diversity.sort(reverse=True)
                 for _, bin_idx in diversity[:num_needed]:
                     random_int = rng.integers(low=0, high=len(bins[bin_idx]), size=1)[0]
