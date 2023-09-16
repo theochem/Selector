@@ -107,8 +107,8 @@ def entropy(x: np.ndarray) -> float:
     .. math::
         E = -\frac{\sum{\frac{y_i}{N}\ln{\frac{y_i}{N}}}}{L\frac{\ln{2}}{2}}
 
-    where N is the number of molecules in the set, L is the length of the fingerprint,
-    and :math:y_i is a vector of the bitcounts of each feature in the fingerprints.
+    where :math:`N` is the number of molecules in the set, :math:`L` is the length of the
+    fingerprint, and :math:`y_i` is a vector of the bit-counts of each feature in the fingerprints.
 
     Higher values mean more diversity.
 
@@ -128,9 +128,11 @@ def entropy(x: np.ndarray) -> float:
     However, the features should be encoded in a binary way, such that 0 means
     absence of the feature, and nonzero means presence of the feature.
 
-    Weidlich, I. E., and Filippov, I. V. (2016)
-    Using the Gini coefficient to measure the chemical diversity of small-molecule libraries.
-    Journal of Computational Chemistry 37, 2091-2097.
+    References
+    -----------
+    Weidlich, I. E., and Filippov, I. V., Using the Gini coefficient to measure the chemical
+    diversity of small-molecule libraries, Journal of Computational Chemistry, (2016) 37, 2091-2097.
+
     """
 
     # initialize variables
