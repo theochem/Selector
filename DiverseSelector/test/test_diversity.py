@@ -60,7 +60,7 @@ def test_compute_diversity_default():
 
 def test_compute_diversity_specified():
     """Test compute diversity with a specified div_type."""
-    comp_div = compute_diversity(sample4, "shannon entropy")
+    comp_div = compute_diversity(sample4, "shannon_entropy")
     expected = 0.301029995
     assert_almost_equal(comp_div, expected)
 
@@ -89,13 +89,13 @@ def test_compute_diversity_edi():
     z = np.array([[0, 1, 2], [1, 2, 0], [2, 0, 1]])
     cs = 1
     expected = 56.39551204
-    actual = compute_diversity(z, "explicit diversity index", cs=cs)
+    actual = compute_diversity(z, "explicit_diversity_index", cs=cs)
     assert_almost_equal(expected, actual)
 
 
 def test_compute_diversity_edi_no_cs_error():
     """Test compute diversity with explicit diversity index and no `cs` value given."""
-    assert_raises(ValueError, compute_diversity, sample5, "explicit diversity index")
+    assert_raises(ValueError, compute_diversity, sample5, "explicit_diversity_index")
 
 
 def test_compute_diversity_edi_zero_error():
