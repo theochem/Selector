@@ -404,7 +404,13 @@ class GridPartitioning(SelectionBase):
 
         return bins
 
-    def select_from_bins(self, X, bins, num_selected, diversity_type="hypersphere_overlap"):
+    def select_from_bins(self,
+                         X,
+                         bins,
+                         num_selected,
+                         diversity_type="hypersphere_overlap",
+                         cs=None,
+                         ):
         r"""
         From the bins, select a certain number of points of the bins.
 
@@ -424,6 +430,9 @@ class GridPartitioning(SelectionBase):
             Number of points to select from the bins.
         diversity_type: str, optional
             Type of diversity to use. Default="hypersphere_overlap".
+        cs : int, optional
+            Number of common substructures in molecular compound dataset. Used only if calculating
+            `explicit_diversity_index`. Default is "None".
 
         Returns
         -------
@@ -457,7 +466,8 @@ class GridPartitioning(SelectionBase):
                 # Calculate the diversity of each bin and pick based on the highest diversity
                 diversity = [compute_diversity(features=X,
                                                feature_subset=X[bin_list, :],
-                                               div_type=diversity_type)
+                                               div_type=diversity_type,
+                                               cs=cs)
                              for bin_idx, bin_list in bins.items()]
 
                 diversity.sort(reverse=True)
