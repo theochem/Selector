@@ -32,9 +32,9 @@ from DiverseSelector.diversity import (
     shannon_entropy,
     hypersphere_overlap_of_subset,
     wdud,
-    nearest_average_tanimoto
+    nearest_average_tanimoto,
 )
-from DiverseSelector.utils import distance_to_similarity
+
 import numpy as np
 from numpy.testing import assert_almost_equal, assert_equal, assert_raises, assert_warns
 
@@ -336,3 +336,16 @@ def test_nearest_average_tanimoto_3_x_3():
     avg_z = 0.25
     assert_equal(nat_z, avg_z)
 
+
+def test_nearest_average_tanimoto_nonsquare():
+    """Test the nearest_average_tanimoto function with non-binary input"""
+    x = np.array([[3.5, 4.0, 10.5, 0.5], [1.25, 4.0, 7.0, 0.1], [0.0, 0.0, 0.0, 0.0]])
+    # nearest neighbor of sample 0, 1, and 2 are sample 1, 0, and 1, respectively.
+    expected = np.average(
+        [
+            np.sum(x[0] * x[1]) / (np.sum(x[0] ** 2) + np.sum(x[1] ** 2) - np.sum(x[0] * x[1])),
+            np.sum(x[1] * x[0]) / (np.sum(x[1] ** 2) + np.sum(x[0] ** 2) - np.sum(x[1] * x[0])),
+            np.sum(x[2] * x[1]) / (np.sum(x[2] ** 2) + np.sum(x[1] ** 2) - np.sum(x[2] * x[1])),
+        ]
+    )
+    assert_equal(nearest_average_tanimoto(x), expected)
