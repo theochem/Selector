@@ -79,9 +79,9 @@ def compute_diversity(
     func_dict = {
         "entropy": entropy,
         "logdet": logdet,
-        "shannon entropy": shannon_entropy,
+        "shannon_entropy": shannon_entropy,
         "wdud": wdud,
-        "gini coefficient": gini_coefficient,
+        "gini_coefficient": gini_coefficient,
     }
 
     if div_type in func_dict:
@@ -93,7 +93,7 @@ def compute_diversity(
                 "dataset when calculating hypersphere overlap."
             )
         return hypersphere_overlap_of_subset(features, feature_subset)
-    elif div_type == "explicit diversity index":
+    elif div_type == "explicit_diversity_index":
         if cs is None:
             raise ValueError("Attribute `cs` is missing. "
                              "Please input `cs` value to use explicit_diversity_index." )
@@ -197,8 +197,8 @@ def shannon_entropy(x: np.ndarray) -> float:
     .. math::
         H(X) = \sum_{i=1}^{n}-P_i(X)\log{P_i(X)}
 
-    where :math:`X` is the feature matrix, :math:`n` is the number of features, and :math:`P_i(X)` is the
-    proportion of molecules that have feature :math:`i` in :math:`X`.
+    where :math:`X` is the feature matrix, :math:`n` is the number of features, and :math:`P_i(X)`
+    is the proportion of molecules that have feature :math:`i` in :math:`X`.
 
     Higher values mean more diversity.
 
@@ -233,7 +233,8 @@ def shannon_entropy(x: np.ndarray) -> float:
         # sum all non-zero terms
         if p_i == 0:
             raise ValueError(
-                f"Feature {i} has value 0 for all molecules. Remove extraneous feature from data set."
+                f"Feature {i} has value 0 for all molecules. "
+                f"Remove extraneous feature from data set."
             )
         h_x += (-1 * p_i) * np.log10(p_i)
     return h_x
