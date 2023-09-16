@@ -26,9 +26,11 @@ import collections
 import math
 
 import bitarray
+import scipy.spatial
+
 from DiverseSelector.methods.base import SelectionBase
 from DiverseSelector.diversity import compute_diversity
-from DiverseSelector.methods.utils import predict_radius
+from DiverseSelector.methods.utils import optimize_radius
 import numpy as np
 from scipy import spatial
 from sklearn.decomposition import PCA
@@ -43,113 +45,139 @@ __all__ = [
 
 
 class DirectedSphereExclusion(SelectionBase):
-    """Selecting points using Directed Sphere Exclusion algorithm.
+    """Select samples using Directed Sphere Exclusion (DISE) algorithm.
 
-    Starting point is chosen as the reference point and not included in the selected molecules. The
-    distance of each point is calculated to the reference point and the points are then sorted based
-    on the ascending order of distances. The points are then evaluated in their sorted order, and
-    are selected if their distance to all the other selected points is at least r away. Euclidian
-    distance is used by default and the r value is automatically generated if not passed to satisfy
-    the number of molecules requested.
+    In a nutshell, this algorithm iteratively excludes any sample within a given radius from
+    any already selected sample. The radius of the exclusion sphere is an adjustable parameter.
+    Compared to Sphere Exclusion algorithm, the Directed Sphere Exclusion algorithm achieves a
+    more evenly distributed subset selection by abandoning the random selection approach and
+    instead imposing a directed selection.
 
-    Adapted from https://doi.org/10.1021/ci025554v
+    Reference sample is chosen based on the `ref_index`, which is excluded from the selected
+    subset. All samples are sorted (ascending order) based on their Minkowski p-norm distance
+    from the reference sample. Looping through sorted samples, the sample is selected if it is
+    not already excluded. If selected, all its neighboring samples within a sphere of radius r
+    (i.e., exclusion sphere) are excluded from being selected. When the selected number of points
+    is greater than specified subset `size`, the selection process terminates. The `r0` is used
+    as the initial radius of exclusion sphere, however, it is optimized to select the desired
+    number of samples.
+
+    Notes
+    -----
+    Gobbi, A., and Lee, M.-L. (2002). DISE: directed sphere exclusion.
+    Journal of Chemical Information and Computer Sciences,
+    43(1), 317–323. https://doi.org/10.1021/ci025554v
     """
 
-    def __init__(self, r=None, tolerance=5.0, eps=0, p=2, start_id=0, random_seed=42):
-        """
-        Initializing class.
+    def __init__(self, r0=None, ref_index=0, p=2.0, eps=0.0, tol=0.05, n_iter=10, random_seed=42):
+        """Initialize class.
 
         Parameters
         ----------
-        r: float
-            Initial guess of radius for directed sphere exclusion algorithm, no points within r
-            distance to an already selected point can be selected.
-        tolerance: float
-            Percentage error of number of molecules actually selected from number of molecules
+        r0: float, optional
+            Initial guess for radius of the exclusion sphere.
+        ref_index: int, optional
+            Index of the reference sample to start the selection algorithm from.
+            This sample is not included in the selected subset.
+        p: float, optional
+            Which Minkowski p-norm to use. The values of `p` should be within [1, inf].
+            A finite large p may cause a ValueError if overflow can occur.
+        eps: float, optional
+            Approximate nearest neighbor search used in `KDTree.query_ball_tree`.
+            Branches of the tree are not explored if their nearest points are further than
+            r/(1+eps), and branches are added in bulk if their furthest points are nearer than
+            r * (1+eps). eps has to be non-negative.
+        tol: float, optional
+            Percentage error of number of samples actually selected from number of samples
             requested.
-        eps: float
-            Approximate nearest neighbor search for eliminating close points. Branches of the tree
-            are not explored if their nearest points are further than r / (1 + eps), and branches
-            are added in bulk if their furthest points are nearer than r * (1 + eps).
-        p: float
-            Which Minkowski p-norm to use. Should be in the range [1, inf]. A finite large p may
-            cause a ValueError if overflow can occur.
-        start_id: int
-            Index for the first point to be selected.
-        random_seed: int
+        n_iter: int, optional
+            Number of iterations for optimizing the radius of exclusion sphere.
+        random_seed: int, optional
             Seed for random selection of points be evaluated.
         """
-        self.r = r
-        self.tolerance = tolerance
-        self.eps = eps
+        self.r = r0
+        self.ref_index = ref_index
         self.p = p
-        self.starting_idx = start_id
+        self.eps = eps
+        self.tol = tol
+        self.n_iter = n_iter
         self.random_seed = random_seed
 
-    def algorithm(self, arr, uplimit):
-        """
-        Directed sphere exclusion algorithm logic.
+    def algorithm(self, X, max_size):
+        """Return selected samples based on directed sphere exclusion algorithm.
 
         Parameters
         ----------
-        arr: np.ndarray
-            Coordinate array of points.
-        uplimit: int
-            Maximum number of points to select.
+        X: ndarray of shape (n_samples, n_features)
+           Feature matrix of `n_samples` samples in `n_features` dimensional space.
+        max_size: int
+            Maximum number of samples to select.
 
         Returns
         -------
         selected: list
-            List of ids of selected molecules
+            List of indices of selected samples.
         """
+
+        # calculate distance of all samples from reference sample; distance is a (n_samples,) array
+        distances = scipy.spatial.minkowski_distance(X[self.ref_index], X, p=self.p)
+        # get sorted index of samples based on their distance from reference (closest to farthest)
+        index_sorted = np.argsort(distances)
+        # construct KDTree for quick nearest-neighbor lookup
+        kdtree = spatial.KDTree(X)
+
+        # construct bitarray to track selected samples (1 means exclude)
+        bv = bitarray.bitarray(list(np.zeros(len(X), dtype=int)))
+        bv[self.ref_index] = 1
+
         selected = []
-        count = 0
-        candidates = np.delete(np.arange(0, len(arr)), self.starting_idx)
-        distances = []
-        for idx in candidates:
-            ref_point = arr[self.starting_idx]
-            data_point = arr[idx]
-            distance = spatial.distance.minkowski(ref_point, data_point, p=self.p)
-            distances.append((distance, idx))
-        distances.sort()
-        order = [idx for dist, idx in distances]
-
-        kdtree = spatial.KDTree(arr)
-        bv = bitarray.bitarray(len(arr))
-        bv[:] = 0
-        bv[self.starting_idx] = 1
-
-        for idx in order:
-            if not bv[idx]:
+        for idx in index_sorted:
+            # select sample if it is not already excluded from consideration
+            # indexing a single item of a bitarray will always return an integer
+            if bv[idx] == 0:
                 selected.append(idx)
-                count += 1
-                if count > uplimit:
+                # return indices of selected samples, if desired number is selected
+                if len(selected) > max_size:
                     return selected
-                elim = kdtree.query_ball_point(arr[idx], self.r, eps=self.eps, p=self.p, workers=-1)
-                for index in elim:
+                # find index of all samples within radius of sample idx (this includes the sample
+                # index itself)
+                index_exclude = kdtree.query_ball_point(
+                    X[idx], self.r, eps=self.eps, p=self.p, workers=-1
+                )
+                # exclude samples within radius r of sample idx (measure by Minkowski p-norm) from
+                # future consideration by setting their bitarray value to 1
+                for index in index_exclude:
                     bv[index] = 1
 
         return selected
 
-    def select_from_cluster(self, arr, num_selected, cluster_ids=None):
-        """
-        Algorithm that uses sphere_exclusion for selecting points from cluster.
+    def select_from_cluster(self, X, size, cluster_ids=None):
+        """Return selected samples from a cluster based on directed sphere exclusion algorithm
 
         Parameters
         ----------
-        arr: np.ndarray
-            Coordinate array of points
-        num_selected: int
-            Number of molecules that need to be selected.
+        X: ndarray of shape (n_samples, n_features)
+           Feature matrix of `n_samples` samples in `n_features` dimensional space.
+        size: int
+            Number of samples to be selected.
         cluster_ids: np.ndarray
-            Indices of molecules that form a cluster
+            Indices of samples that form a cluster.
 
         Returns
         -------
         selected: list
-            List of ids of selected molecules
+            List of indices of selected samples.
         """
-        return predict_radius(self, arr, num_selected, cluster_ids)
+
+        if cluster_ids is not None:
+            # extract the data corresponding to the cluster_ids
+            X = np.take(X, cluster_ids, axis=0)
+
+        if X.shape[0] < size:
+            raise RuntimeError(
+                f"Number of samples is less than the requested sample size: {X.shape[0]} < {size}."
+            )
+        return optimize_radius(self, X, size, cluster_ids)
 
 
 class GridPartitioning(SelectionBase):
@@ -330,11 +358,12 @@ class Medoid(SelectionBase):
     Adapted from: https://en.wikipedia.org/wiki/K-d_tree#Construction
     """
 
-    def __init__(self,
-                 start_id=0,
-                 func_distance=lambda x, y: spatial.minkowski_distance(x, y) ** 2,
-                 scaling=10,
-                 ):
+    def __init__(
+        self,
+        start_id=0,
+        func_distance=lambda x, y: spatial.minkowski_distance(x, y) ** 2,
+        scaling=10,
+    ):
         """
         Initializing class.
 
@@ -418,9 +447,9 @@ class Medoid(SelectionBase):
         num_eliminate: int
             Maximum number of points permitted to be eliminated.
         """
-        _, elim_candidates = tree.query(point, k=self.ratio,
-                                        distance_upper_bound=np.sqrt(threshold),
-                                        workers=-1)
+        _, elim_candidates = tree.query(
+            point, k=self.ratio, distance_upper_bound=np.sqrt(threshold), workers=-1
+        )
         if num_eliminate < 0:
             elim_candidates = elim_candidates[:num_eliminate]
         for index in elim_candidates:
@@ -475,8 +504,9 @@ class Medoid(SelectionBase):
                 close, away = tree.right, tree.left
 
             search(tree=away, depth=depth + 1)
-            if best is None or (close is not None and diff ** 2 <= 1.1 * (
-                    (point[axis] - close.value[axis]) ** 2)):
+            if best is None or (
+                close is not None and diff**2 <= 1.1 * ((point[axis] - close.value[axis]) ** 2)
+            ):
                 search(tree=close, depth=depth + 1)
 
         search(tree=kdtree, depth=0)
@@ -531,12 +561,16 @@ class Medoid(SelectionBase):
                 best_distance_av = (count * best_distance_av + new_point.distance) / (count + 1)
             if count == 1:
                 if num_eliminate > 0 and self.scaling != 0:
-                    num_eliminate = self._eliminate(neartree, arr[self.starting_idx],
-                                                    best_distance_av * self.scaling,
-                                                    num_eliminate, bv)
+                    num_eliminate = self._eliminate(
+                        neartree,
+                        arr[self.starting_idx],
+                        best_distance_av * self.scaling,
+                        num_eliminate,
+                        bv,
+                    )
             if num_eliminate > 0 and self.scaling != 0:
-                num_eliminate = self._eliminate(neartree, new_point.point,
-                                                best_distance_av * self.scaling,
-                                                num_eliminate, bv)
+                num_eliminate = self._eliminate(
+                    neartree, new_point.point, best_distance_av * self.scaling, num_eliminate, bv
+                )
             count += 1
         return selected

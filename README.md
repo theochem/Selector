@@ -4,7 +4,6 @@
 [![GPLv3 License](https://img.shields.io/badge/License-GPL%20v3-yellow.svg)](https://opensource.org/licenses/)
 [![GitHub Actions CI Tox Status](https://github.com/theochem/DiverseSelector/actions/workflows/ci_tox.yml/badge.svg?branch=main)](https://github.com/theochem/DiverseSelector/actions/workflows/ci_tox.yml)
 [![codecov](https://codecov.io/gh/theochem/DiverseSelector/branch/main/graph/badge.svg?token=0UJixrJfNJ)](https://codecov.io/gh/theochem/DiverseSelector)
-[![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/theochem/DiverseSelector.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/theochem/DiverseSelector/context:python)
 
 The DiverseSelector library provides methods for selecting a diverse subset of a (molecular) dataset.
 
@@ -44,7 +43,7 @@ first, and then:
     conda activate myenv
 
     # Install the stable release.
-    conda install -c theochem qc-
+    conda install -c theochem qc-selector
 ```
 
 To install DiverseSelector with pip, you may want to create a
@@ -53,7 +52,7 @@ To install DiverseSelector with pip, you may want to create a
 
 ```bash
     # Install the stable release.
-    pip install qc-
+    pip install qc-selector
 ```
 
-See HTML for full details.
+See https://selector.qcdevs.org for full details.

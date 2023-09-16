@@ -21,72 +21,97 @@
 # --
 
 """Module for Selection Utilities."""
+import warnings
 
 import numpy as np
 
 
 __all__ = [
-    "predict_radius",
+    "optimize_radius",
 ]
 
 
-def predict_radius(obj, arr, num_selected, cluster_ids=None):
-    """
-    Algorithm that uses sphere_exclusion for selecting points from cluster.
+def optimize_radius(obj, X, size, cluster_ids=None):
+    """Algorithm that uses sphere exclusion for selecting points from cluster.
+
+    Iteratively searches for the optimal radius to obtain the correct number
+    of selected samples. If the radius cannot converge to return `size` points,
+    the function returns the closest number of samples to `size` as possible.
 
     Parameters
     ----------
     obj: object
-        Instance of dissimilarity selection class
-    arr: np.ndarray
-        Coordinate array of points
-    num_selected: int
-        Number of molecules that need to be selected.
+        Instance of `DirectedSphereExclusion` or `OptiSim` selection class.
+    X: ndarray of shape (n_samples, n_features)
+        Feature matrix of `n_samples` samples in `n_features` dimensional space.
+    size: int
+        Number of sample points to select (i.e. size of the subset).
     cluster_ids: np.ndarray
-        Indices of molecules that form a cluster
+        Indices of points that form a cluster.
 
     Returns
     -------
     selected: list
-        List of ids of selected molecules
+        List of indices of selected samples.
     """
-    error = num_selected * obj.tolerance / 100
-    lowlimit = num_selected - error
-    uplimit = num_selected + error
+    if X.shape[0] < size:
+        raise RuntimeError(
+            f"Size of samples to be selected is greater than existing the number of samples; "
+            f"{size} > {X.shape[0]}."
+        )
+    # set the limits on # of selected points according to the tolerance percentage
+    error = size * obj.tol
+    lower_size = round(size - error)
+    upper_size = round(size + error)
 
-    if cluster_ids is not None:
-        arr = arr[cluster_ids]
-
-    original_r = None
+    # select `upper_size` number of samples
     if obj.r is not None:
-        original_r = obj.r
-        result = obj.algorithm(arr, uplimit)
-    # Use numpy.optimize.bisect instead
+        # use initial sphere radius
+        selected = obj.algorithm(X, upper_size)
     else:
-        rg = max(np.ptp(arr, axis=0)) / num_selected * 3
-        obj.r = rg
-        result = obj.algorithm(arr, uplimit)
-    if len(result) == num_selected:
-        return result
+        # calculate a sphere radius based on maximum of n_features range
+        # np.ptp returns range of values (maximum - minimum) along an axis
+        obj.r = max(np.ptp(X, axis=0)) / size * 3
+        selected = obj.algorithm(X, upper_size)
 
-    low = obj.r if len(result) > num_selected else 0
-    high = obj.r if low == 0 else None
-    bounds = [low, high]
-    count = 0
-    while (len(result) < lowlimit or len(result) > uplimit) and count < 10:
-        if bounds[1] is None:
-            rg = bounds[0] * 2
+    # return selected if the correct number of samples chosen
+    if len(selected) == size:
+        return selected
+
+    # optimize radius to select the correct number of samples
+    # first, set a sensible range for optimizing r value within that range
+    if len(selected) > size:
+        # radius should become bigger, b/c too many samples were selected
+        bounds = [obj.r, np.inf]
+    else:
+        # radius should become smaller, b/c too few samples were selected
+        bounds = [0, obj.r]
+
+    n_iter = 0
+    while (len(selected) < lower_size or len(selected) > upper_size) and n_iter < obj.n_iter:
+        # change sphere radius based on the defined bound
+        if bounds[1] == np.inf:
+            # make sphere radius larger by a factor of 2
+            obj.r = bounds[0] * 2
         else:
-            rg = (bounds[0] + bounds[1]) / 2
-        obj.r = rg
-        result = obj.algorithm(arr, uplimit)
-        if len(result) > num_selected:
-            bounds[0] = rg
+            # make sphere radius smaller by a factor of 1/2
+            obj.r = (bounds[0] + bounds[1]) / 2
+
+        # re-select samples with the new radius
+        selected = obj.algorithm(X, upper_size)
+
+        # adjust lower/upper bounds of radius range
+        if len(selected) > size:
+            bounds[0] = obj.r
         else:
-            bounds[1] = rg
-        count += 1
-    if count >= 10:
-        print(f"Optimal radius finder failed to converge, selected {len(result)} molecules instead "
-              f"of requested {num_selected}.")
-    obj.r = original_r
-    return result
+            bounds[1] = obj.r
+        n_iter += 1
+
+    # cannot find radius that produces desired number of selected points
+    if n_iter >= obj.n_iter:
+        warnings.warn(
+            f"Optimal radius finder failed to converge, selected {len(selected)} points instead "
+            f"of requested {size}."
+        )
+
+    return selected

@@ -23,12 +23,15 @@
 
 """Molecule dataset diversity calculation module."""
 
+import warnings
 from typing import List
 
 import numpy as np
 from scipy.spatial.distance import euclidean
+
 from DiverseSelector.distance import tanimoto
 import warnings
+
 
 __all__ = [
     "compute_diversity",
@@ -67,6 +70,7 @@ def compute_diversity(
     cs : int, optional
         Number of common substructures in molecular compound dataset.
         Used only if calculating `explicit_diversity_index`. Default is "None".
+
     Returns
     -------
     float, computed diversity.
@@ -384,12 +388,14 @@ def hypersphere_overlap_of_subset(x: np.ndarray, x_subset: np.array) -> float:
     # Find the maximum and minimum over each feature across all molecules.
     max_x = np.max(x, axis=0)
     min_x = np.min(x, axis=0)
-    # Normalization of each feature to [0, 1]
+    # normalization of each feature to [0, 1]
     if np.any(np.abs(max_x - min_x) < 1e-30):
         raise ValueError(
             f"One of the features is redundant and causes normalization to fail."
         )
-    x_norm = (x_subset - min_x) / (max_x - min_x)
+
+    x_norm = (x - min_x) / (max_x - min_x)
+
     # r_o = hypersphere radius
     r_o = d * np.sqrt(1 / k)
     if r_o > 0.5:
@@ -399,7 +405,9 @@ def hypersphere_overlap_of_subset(x: np.ndarray, x_subset: np.array) -> float:
         )
     g_s = 0
     edge = 0
-    lam = (d - 1.0) / d  # Lambda parameter controls edge penalty
+
+    # lambda parameter controls edge penalty
+    lam = (d - 1.0) / d
     # calculate overlap volume
     for i in range(0, (k - 1)):
         for j in range((i + 1), k):

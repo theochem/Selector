@@ -23,36 +23,6 @@
 
 """Utils module."""
 
-
 import numpy as np
 
-
-__all__ = [
-    "ExplicitBitVector",
-    "RDKitMol",
-    "PandasDataFrame",
-    "mol_loader",
-    "distance_to_similarity",
-]
-
-
-def distance_to_similarity(x: np.ndarray, dist: bool = True) -> np.ndarray:
-    """Convert between distance and similarity matrix.
-
-    Parameters
-    ----------
-    x : ndarray
-        Symmetric distance or similarity array.
-    dist : bool
-        Confirms the matrix is distance.
-
-    Returns
-    -------
-    y : ndarray
-        Symmetric distance or similarity array.
-    """
-    if dist is True:
-        y = 1 / (1 + x)
-    else:
-        y = (1 / x) - 1
-    return y
+__all__ = []
