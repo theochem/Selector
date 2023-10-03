@@ -27,6 +27,10 @@ import warnings
 
 import numpy as np
 
+__all__ = [
+    "SelectionBase"
+]
+
 
 class SelectionBase(ABC):
     """Base class for selecting subset of sample points."""
