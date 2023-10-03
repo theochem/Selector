@@ -24,48 +24,83 @@
 """Testing for the diversity algorithms in the diversity.py module."""
 
 from DiverseSelector.diversity import (
-                                       compute_diversity,
-                                       # compute_diversity_matrix,
-                                       entropy,
-                                       gini_coefficient,
-                                       logdet,
-                                       shannon_entropy,
-                                       hypersphere_overlap_of_subset,
-                                       wdud,
-                                       )
-from DiverseSelector.utils import distance_to_similarity
+    compute_diversity,
+    entropy,
+    gini_coefficient,
+    explicit_diversity_index,
+    logdet,
+    shannon_entropy,
+    hypersphere_overlap_of_subset,
+    wdud,
+    nearest_average_tanimoto,
+)
+
 import numpy as np
-from numpy.testing import assert_almost_equal, assert_equal, assert_raises
+from numpy.testing import assert_almost_equal, assert_equal, assert_raises, assert_warns
 
 # each row is a feature and each column is a molecule
-sample1 = np.array([[4, 2, 6],
-                    [4, 9, 6],
-                    [2, 5, 0],
-                    [2, 0, 9],
-                    [5, 3, 0]])
+sample1 = np.array([[4, 2, 6], [4, 9, 6], [2, 5, 0], [2, 0, 9], [5, 3, 0]])
 
 # each row is a molecule and each column is a feature (scipy)
-sample2 = np.array([[1, 1, 0, 0, 0],
-                    [0, 1, 1, 0, 0],
-                    [0, 0, 0, 1, 0],
-                    [0, 0, 0, 0, 1]])
+sample2 = np.array([[1, 1, 0, 0, 0], [0, 1, 1, 0, 0], [0, 0, 0, 1, 0], [0, 0, 0, 0, 1]])
 
-sample3 = np.array([[1, 4],
-                    [3, 2]])
+sample3 = np.array([[1, 4], [3, 2]])
 
-sample4 = np.array([[1, 0, 1],
-                    [0, 1, 1]])
+sample4 = np.array([[1, 0, 1], [0, 1, 1]])
 
-sample5 = np.array([[0, 2, 4, 0],
-                    [1, 2, 4, 0],
-                    [2, 2, 4, 0]])
+sample5 = np.array([[0, 2, 4, 0], [1, 2, 4, 0], [2, 2, 4, 0]])
 
 
-def test_compute_diversity():
-    """Test compute diversity with a non-explicit_diversity_index div type."""
-    comp_div = compute_diversity(sample4, "entropy")
-    expected = (2/3)
+def test_compute_diversity_default():
+    """Test compute diversity with default div_type."""
+    comp_div = compute_diversity(sample4)
+    expected = 2 / 3
     assert_almost_equal(comp_div, expected)
+
+
+def test_compute_diversity_specified():
+    """Test compute diversity with a specified div_type."""
+    comp_div = compute_diversity(sample4, "shannon_entropy")
+    expected = 0.301029995
+    assert_almost_equal(comp_div, expected)
+
+
+def test_compute_diversity_hyperspheres():
+    """Test compute diversity with two arguments for hypersphere_overlap method"""
+    corner_pts = np.array([[0.0, 0.0], [0.0, 1.0], [1.0, 0.0], [1.0, 1.0]])
+    centers_pts = np.array([[0.5, 0.5]] * (100 - 4))
+    pts = np.vstack((corner_pts, centers_pts))
+
+    comp_div = compute_diversity(pts, "hypersphere overlap of subset", pts)
+    # Expected = overlap + edge penalty
+    expected = (100.0 * 96 * 95 * 0.5) + 2.0
+    assert_almost_equal(comp_div, expected)
+
+
+def test_compute_diversity_hypersphere_error():
+    """Test compute diversity with hypersphere metric and no molecule library given."""
+    assert_raises(
+        ValueError, compute_diversity, sample5, "hypersphere overlap of subset"
+    )
+
+
+def test_compute_diversity_edi():
+    """Test compute diversity with explicit diversity index div_type"""
+    z = np.array([[0, 1, 2], [1, 2, 0], [2, 0, 1]])
+    cs = 1
+    expected = 56.39551204
+    actual = compute_diversity(z, "explicit_diversity_index", cs=cs)
+    assert_almost_equal(expected, actual)
+
+
+def test_compute_diversity_edi_no_cs_error():
+    """Test compute diversity with explicit diversity index and no `cs` value given."""
+    assert_raises(ValueError, compute_diversity, sample5, "explicit_diversity_index")
+
+
+def test_compute_diversity_edi_zero_error():
+    """Test compute diversity with explicit diversity index and `cs` = 0."""
+    assert_raises(ValueError, compute_diversity, sample5, "explicit diversity index", cs=0)
 
 
 def test_compute_diversity_invalid():
@@ -76,7 +111,7 @@ def test_compute_diversity_invalid():
 def test_entropy():
     """Test the entropy function with predefined matrix."""
     ent = entropy(sample4)
-    expected = (2 / 3)
+    expected = 2 / 3
     assert_almost_equal(ent, expected)
 
 
@@ -114,9 +149,28 @@ def test_shannon_entropy():
     assert_almost_equal(selected, expected)
 
 
-def test_shannon_entropy_error():
-    """Test the shannon entropy function raises error with matrix with invalid feature."""
+def test_shannon_entropy_binary_error():
+    """Test the shannon entropy function raises error with a non binary matrix."""
     assert_raises(ValueError, shannon_entropy, sample5)
+
+
+def test_shannon_entropy_feature_error():
+    """Test the shannon entropy function raises error with matrix with invalid feature."""
+    x = np.array([[1, 0, 1], [0, 0, 0], [1, 0, 0]])
+    assert_raises(ValueError, shannon_entropy, x)
+
+
+def test_explicit_diversity_index():
+    """Test the explicit diversity index function."""
+    z = np.array([[0, 1, 2],[1,2,0],[2,0,1]])
+    cs = 1
+    nc = 3
+    sdi = 0.75 / 0.7332902012
+    cr = -1 * 0.4771212547
+    edi = 0.5456661753 * 0.7071067811865476
+    edi_scaled = 56.395512045413
+    value = explicit_diversity_index(z, cs)
+    assert_almost_equal(value, edi_scaled, decimal=8)
 
 
 def test_wdud_uniform():
@@ -129,7 +183,7 @@ def test_wdud_uniform():
 
 def test_wdud_repeat_yi():
     """Test wdud when a feature has multiple identical values."""
-    dist = np.array([[0,0.5,0.5,0.75,1]]).T
+    dist = np.array([[0, 0.5, 0.5, 0.75, 1]]).T
     wdud_val = wdud(dist)
     # calculated using wolfram alpha:
     expected = 0.065 + 0.01625 + 0.02125
@@ -138,24 +192,34 @@ def test_wdud_repeat_yi():
 
 def test_wdud_mult_features():
     """Test wdud when there are multiple features per molecule."""
-    dist = np.array([[0, 0.5, 0.5, 0.75, 1],
-                     [0, 0.5, 0.5, 0.75, 1],
-                     [0, 0.5, 0.5, 0.75, 1],
-                     [0, 0.5, 0.5, 0.75, 1]]).T
+    dist = np.array(
+        [
+            [0, 0.5, 0.5, 0.75, 1],
+            [0, 0.5, 0.5, 0.75, 1],
+            [0, 0.5, 0.5, 0.75, 1],
+            [0, 0.5, 0.5, 0.75, 1],
+        ]
+    ).T
     wdud_val = wdud(dist)
     # calculated using wolfram alpha:
     expected = 0.065 + 0.01625 + 0.02125
     assert_almost_equal(wdud_val, expected, decimal=4)
 
 
+def test_wdud_dimension_error():
+    """Test wdud method raises error when input has incorrect dimensions."""
+    arr = np.zeros((2, 2, 2))
+    assert_raises(ValueError, wdud, arr)
+
+
+def test_wdud_normalization_error():
+    """Test wdud method raises error when normalization fails."""
+    assert_raises(ValueError, wdud, sample5)
+
+
 def test_hypersphere_overlap_of_subset_with_only_corners_and_center():
-    """Test the total diversity volume method with predefined matrix."""
-    corner_pts = np.array([
-        [0.0, 0.0],
-        [0.0, 1.0],
-        [1.0, 0.0],
-        [1.0, 1.0]
-    ])
+    """Test the hypersphere overlap method with predefined matrix."""
+    corner_pts = np.array([[0.0, 0.0], [0.0, 1.0], [1.0, 0.0], [1.0, 1.0]])
     # Many duplicate pts cause r_0 to be much smaller than 1.0,
     #   which is required due to normalization of the feature space
     centers_pts = np.array([[0.5, 0.5]] * (100 - 4))
@@ -171,8 +235,19 @@ def test_hypersphere_overlap_of_subset_with_only_corners_and_center():
     assert_almost_equal(true, expected)
 
 
+def test_hypersphere_normalization_error():
+    """Test the hypersphere overlap method raises error when normalization fails."""
+    assert_raises(ValueError, hypersphere_overlap_of_subset, sample5, sample5)
+
+
+def test_hypersphere_radius_warning():
+    """Test the hypersphere overlap method gives warning when radius is too large."""
+    corner_pts = np.array([[0.0, 0.0], [0.0, 1.0], [1.0, 0.0], [1.0, 1.0]])
+    assert_warns(Warning, hypersphere_overlap_of_subset, corner_pts, corner_pts)
+
+
 def test_gini_coefficient_of_non_diverse_set():
-    r"""Test Gini coefficient of the least diverse set. Expected return is zero."""
+    """Test Gini coefficient of the least diverse set. Expected return is zero."""
     # Finger-prints where columns are all the same
     numb_molecules = 5
     numb_features = 10
@@ -185,41 +260,92 @@ def test_gini_coefficient_of_non_diverse_set():
     assert_almost_equal(result, 0.0, decimal=8)
 
 
-def test_gini_coefficient_errors():
-    r"""Test input error cases for Gini coefficient"""
-    assert_raises(ValueError, gini_coefficient, np.array([[1, 2], [0, 1]]))
+def test_gini_coefficient_non_binary_error():
+    """Test Gini coefficient error when input is not binary."""
+    assert_raises(ValueError, gini_coefficient, np.array([[7, 0], [2, 1]]))
+
+
+def test_gini_coefficient_dimension_error():
+    """Test Gini coefficient error when input has incorrect dimensions."""
     assert_raises(ValueError, gini_coefficient, np.array([1, 0, 0, 0]))
 
 
 def test_gini_coefficient_of_most_diverse_set():
-    r"""Test Gini coefficient of the most diverse set."""
+    """Test Gini coefficient of the most diverse set."""
     #  Finger-prints where one feature has more `wealth` than all others.
     #  Note: Transpose is done so one column has all ones.
-    finger_prints = np.array([
-                                 [1, 1, 1, 1, 1, 1, 1],
-
-                             ] + [[0, 0, 0, 0, 0, 0, 0]] * 100000).T
+    finger_prints = np.array(
+        [
+            [1, 1, 1, 1, 1, 1, 1],
+        ]
+        + [[0, 0, 0, 0, 0, 0, 0]] * 100000
+    ).T
     result = gini_coefficient(finger_prints)
     # Since they are all the same, then gini coefficient should be zero.
     assert_almost_equal(result, 1.0, decimal=4)
 
 
 def test_gini_coefficient_with_alternative_definition():
-    r"""Test Gini coefficient with alternative definition."""
+    """Test Gini coefficient with alternative definition."""
     # Finger-prints where they are all different
     numb_features = 4
-    finger_prints = np.array([
-        [1, 1, 1, 1],
-        [0, 1, 1, 1],
-        [0, 0, 1, 1],
-        [0, 0, 0, 1]
-    ])
+    finger_prints = np.array([[1, 1, 1, 1], [0, 1, 1, 1], [0, 0, 1, 1], [0, 0, 0, 1]])
     result = gini_coefficient(finger_prints)
 
     # Alternative definition from wikipedia
     b = numb_features + 1
     desired = (
-                      numb_features + 1 - 2 * (
-                          (b - 1) + (b - 2) * 2 + (b - 3) * 3 + (b - 4) * 4) / (10)
-              ) / numb_features
+        numb_features
+        + 1
+        - 2 * ((b - 1) + (b - 2) * 2 + (b - 3) * 3 + (b - 4) * 4) / (10)
+    ) / numb_features
     assert_almost_equal(result, desired)
+
+
+def test_nearest_average_tanimoto_bit():
+    """Test the nearest_average_tanimoto function with binary input."""
+    nat = nearest_average_tanimoto(sample2)
+    shortest_tani = [0.3333333, 0.3333333, 0, 0]
+    average = np.average(shortest_tani)
+    assert_almost_equal(nat, average)
+
+
+def test_nearest_average_tanimoto():
+    """Test the nearest_average_tanimoto function with non-binary input."""
+    nat = nearest_average_tanimoto(sample3)
+    shortest_tani = [(11/19), (11/19)]
+    average = np.average(shortest_tani)
+    assert_equal(nat, average)
+
+
+def test_nearest_average_tanimoto_3_x_3():
+    """Testpyth the nearest_average_tanimoto function with a 3x3 matrix."""
+    # all unequal distances b/w points
+    x = np.array([[0, 1, 2],[3,4,5],[4,5,6]])
+    nat_x = nearest_average_tanimoto(x)
+    avg_x = 0.749718574108818
+    assert_equal(nat_x, avg_x)
+    # one point equidistant from the other two
+    y = np.array([[0, 1, 2], [3, 4, 5], [6, 7, 8]])
+    nat_y = nearest_average_tanimoto(y)
+    avg_y = 0.4813295920569825
+    assert_equal(nat_y, avg_y)
+    # all points equidistant
+    z = np.array([[0, 1, 2],[1,2,0],[2,0,1]])
+    nat_z = nearest_average_tanimoto(z)
+    avg_z = 0.25
+    assert_equal(nat_z, avg_z)
+
+
+def test_nearest_average_tanimoto_nonsquare():
+    """Test the nearest_average_tanimoto function with non-binary input"""
+    x = np.array([[3.5, 4.0, 10.5, 0.5], [1.25, 4.0, 7.0, 0.1], [0.0, 0.0, 0.0, 0.0]])
+    # nearest neighbor of sample 0, 1, and 2 are sample 1, 0, and 1, respectively.
+    expected = np.average(
+        [
+            np.sum(x[0] * x[1]) / (np.sum(x[0] ** 2) + np.sum(x[1] ** 2) - np.sum(x[0] * x[1])),
+            np.sum(x[1] * x[0]) / (np.sum(x[1] ** 2) + np.sum(x[0] ** 2) - np.sum(x[1] * x[0])),
+            np.sum(x[2] * x[1]) / (np.sum(x[2] ** 2) + np.sum(x[1] ** 2) - np.sum(x[2] * x[1])),
+        ]
+    )
+    assert_equal(nearest_average_tanimoto(x), expected)

@@ -212,6 +212,7 @@ class OptiSim(SelectionBase):
     def __init__(self, r0=None, k=10, tol=0.01, eps=0, p=2, start_id=0, random_seed=42, n_iter=10):
         """Initialize class.
 
+
         Parameters
         ----------
         r0 : float
@@ -331,5 +332,3 @@ class OptiSim(SelectionBase):
         if cluster_ids is not None:
             X = X[cluster_ids]
         return optimize_radius(self, X, size, cluster_ids)
-
-

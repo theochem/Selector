@@ -23,9 +23,9 @@
 
 """Test distance.py Module."""
 
+
 from DiverseSelector.distance import (
     pairwise_similarity_bit,
-    nearest_average_tanimoto,
     tanimoto,
     modified_tanimoto,
 )
@@ -111,33 +111,3 @@ def test_modified_tanimoto_matrix():
     s = pairwise_similarity_bit(x, "modified_tanimoto")
     expceted = np.array([[1, (4 / 27)], [(4 / 27), 1]])
     assert_equal(s, expceted)
-
-
-def test_nearest_average_tanimoto_bit():
-    """Test the nearest_average_tanimoto function with binary input"""
-    x = np.array([[1, 1, 0, 0, 0], [0, 1, 1, 0, 0], [0, 0, 0, 1, 0], [0, 0, 0, 0, 1]])
-    nat = nearest_average_tanimoto(x)
-    shortest_tani = [0.3333333, 0.3333333, 0, 0]
-    average = np.average(shortest_tani)
-    assert_almost_equal(nat, average)
-
-
-def test_nearest_average_tanimoto():
-    """Test the nearest_average_tanimoto function with non-binary input"""
-    x = np.array([[1, 4], [3, 2]])
-    # expected: (1x3 + 4x2) / (1 + 4^2 + 3^3 + 2^2 - 1x3 - 4x2)
-    assert_equal(nearest_average_tanimoto(x), 11 / 19)
-
-
-def test_nearest_average_tanimoto_nonsquare():
-    """Test the nearest_average_tanimoto function with non-binary input"""
-    x = np.array([[3.5, 4.0, 10.5, 0.5], [1.25, 4.0, 7.0, 0.1], [0.0, 0.0, 0.0, 0.0]])
-    # nearest neighbor of sample 0, 1, and 2 are sample 1, 0, and 1, respectively.
-    expected = np.average(
-        [
-            np.sum(x[0] * x[1]) / (np.sum(x[0] ** 2) + np.sum(x[1] ** 2) - np.sum(x[0] * x[1])),
-            np.sum(x[1] * x[0]) / (np.sum(x[1] ** 2) + np.sum(x[0] ** 2) - np.sum(x[1] * x[0])),
-            np.sum(x[2] * x[1]) / (np.sum(x[2] ** 2) + np.sum(x[1] ** 2) - np.sum(x[2] * x[1])),
-        ]
-    )
-    assert_equal(nearest_average_tanimoto(x), expected)
