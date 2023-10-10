@@ -20,29 +20,27 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-
 """Base class for diversity based subset selection."""
-from abc import ABC, abstractmethod
-import warnings
 
 import numpy as np
+import warnings
 
-__all__ = [
-    "SelectionBase"
-]
+from abc import ABC, abstractmethod
+
+__all__ = ["SelectionBase"]
 
 
 class SelectionBase(ABC):
     """Base class for selecting subset of sample points."""
 
-    def select(self, arr: np.ndarray, size: int, labels: np.ndarray = None) -> np.ndarray:
+    def select(self, X: np.ndarray, size: int, labels: np.ndarray = None) -> np.ndarray:
         """Return indices representing subset of sample points.
 
         Parameters
         ----------
-        arr: np.ndarray
-            Array of features if fun_distance is provided.
-            Otherwise, treated as distance matrix.
+        X: ndarray of shape (n_samples, n_features) or (n_samples, n_samples)
+            Feature matrix of `n_samples` samples in `n_features` dimensional feature space.
+            If fun_distance is `None`, this X is treated as a square pairwise distance matrix.
         size: int
             Number of sample points to select (i.e. size of the subset).
         labels: np.ndarray, optional
@@ -56,13 +54,13 @@ class SelectionBase(ABC):
             Indices of the selected sample points.
         """
         # check size
-        if size > len(arr):
+        if size > len(X):
             raise ValueError(
-                f"Size of subset {size} cannot be larger than number of samples {len(arr)}."
+                f"Size of subset {size} cannot be larger than number of samples {len(X)}."
             )
 
         if labels is None:
-            return self.select_from_cluster(arr, size)
+            return self.select_from_cluster(X, size)
 
         # compute the number of samples (i.e. population or pop) in each cluster
         unique_labels = np.unique(labels)
@@ -101,22 +99,22 @@ class SelectionBase(ABC):
             if pop_clusters[unique_label] != 0:
                 # sample n ids from cluster labeled unique_label
                 cluster_ids = np.where(labels == unique_label)[0]
-                selected = self.select_from_cluster(arr, n, cluster_ids)
+                selected = self.select_from_cluster(X, n, cluster_ids)
                 selected_ids.append(cluster_ids[selected])
 
         return np.hstack(selected_ids).flatten().tolist()
 
     @abstractmethod
     def select_from_cluster(
-        self, arr: np.ndarray, size: int, labels: np.ndarray = None
+        self, X: np.ndarray, size: int, labels: np.ndarray = None
     ) -> np.ndarray:
         """Return indices representing subset of sample points from one cluster.
 
         Parameters
         ----------
-        arr: np.ndarray
-            Array of features (columns) for each sample (rows). If fun_distance is `None`,
-            this arr is treated as a pairwise distance array.
+        X: ndarray of shape (n_samples, n_features) or (n_samples, n_samples)
+            Feature matrix of `n_samples` samples in `n_features` dimensional feature space.
+            If fun_distance is `None`, this X is treated as a square pairwise distance matrix.
         size: int
             Number of sample points to select (i.e. size of the subset).
         labels: np.ndarray, optional
@@ -129,4 +127,4 @@ class SelectionBase(ABC):
         selected: list
             Indices of the selected sample points.
         """
-        pass
+        raise NotImplementedError
