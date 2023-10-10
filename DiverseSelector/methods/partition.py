@@ -408,7 +408,7 @@ class GridPartitioning(SelectionBase):
                          X,
                          bins,
                          num_selected,
-                         diversity_type="hypersphere_overlap",
+                         diversity_type="hypersphere overlap of subset",
                          cs=None,
                          ):
         r"""
