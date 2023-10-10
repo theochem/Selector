@@ -464,12 +464,18 @@ class GridPartitioning(SelectionBase):
             else:
                 # If number of points is less than the number of bins,
                 # Calculate the diversity of each bin and pick based on the highest diversity
-                diversity = [compute_diversity(features=X,
-                                               feature_subset=X[bin_list, :],
-                                               div_type=diversity_type,
-                                               cs=cs)
-                             for bin_idx, bin_list in bins.items()]
-
+                diversity = [
+                    (
+                        compute_diversity(
+                            features=X,
+                            feature_subset=X[bin_list, :],
+                            div_type=diversity_type,
+                            cs=cs,
+                        ),
+                        bin_idx,
+                    )
+                    for bin_idx, bin_list in bins.items()
+                ]
                 diversity.sort(reverse=True)
                 for _, bin_idx in diversity[:num_needed]:
                     random_int = rng.integers(low=0, high=len(bins[bin_idx]), size=1)[0]
