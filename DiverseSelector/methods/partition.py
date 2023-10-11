@@ -377,37 +377,18 @@ class GridPartitioning(SelectionBase):
                 bins = bins_axis
 
         elif self.grid_method == "equifrequent_independent":
-            n_samples, n_features = X.shape
-            all_bins = np.zeros(X.shape, dtype=int)
-            for i in range(0, n_features):
-                #     unique_bin_index, inverse_index = self.partition_points_to_bins_equifrequent(
-                #         X[:, index_feature], self.numb_bins_axis
-                #     )
-                #     all_bins[:, index_feature] = unique_bin_index[inverse_index]
-                # This gives [l_1, l_2, l_3, ..., l_{B+1}] where [l_1, l_2] is the first bin and
-                #    [l_2, l_3] is the second bin. Note that l_1 is always the minimum and l_{B+1}
-                #    is always the maximum.  interp does linear interpolation between integer indices
-                #    and the output is the ith dimension of the points.
-                bins_values = np.interp(
-                    np.linspace(0, n_samples, self.numb_bins_axis + 1),
-                    np.arange(n_samples),
-                    np.sort(X[:, i]),
+            # partition each dimension of feature space independently into `num_bins_axis` bins
+            bins_features = np.zeros(X.shape, dtype=int)
+            for index_feature in range(0, X.shape[1]):
+                unique_bin_index, inverse_index = self.partition_points_to_bins_equifrequent(
+                    X[:, index_feature], self.numb_bins_axis
                 )
-                # Using the bin length, partition each point to the correct bin. This is done by
-                #   subtracting each point with each interval \{l_i\} and where it switches
-                #   from negative to positive, is the bin index that it is assigned to.
-                pt_to_bin = bins_values - X[:, i][:, None]
-                pt_to_bin[pt_to_bin >= 0.0] = -np.inf
-                all_bins[:, i] = np.argmax(pt_to_bin, axis=1)
+                bins_features[:, index_feature] = unique_bin_index[inverse_index]
+            unique_bin_index, inverse_index = np.unique(bins_features, return_inverse=True, axis=0)
 
-            unique_bin_index, inverse_index = np.unique(all_bins, return_inverse=True, axis=0)
-
-            # The unique bins ids is the keys and the items are the list of indices of points that
-            #   corresponds to that bin.
-            bins = {
-                tuple(key): list(np.where(inverse_index == i)[0])
-                for i, key in enumerate(unique_bin_index)
-            }
+            # populate bins dictionary
+            for i, key in enumerate(unique_bin_index):
+                bins[tuple(key)] = list(np.where(inverse_index == i)[0])
 
         elif self.grid_method == "equifrequent_dependent":
             # partition the first dimension (1st feature axis) into `num_bins_axis` bins
