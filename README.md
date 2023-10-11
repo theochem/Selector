@@ -18,17 +18,6 @@ Please use the following citation in any publication using DiverseSelector libra
 }
 ```
 
-Dependencies
-------------
-
-The following dependencies are required to run DiverseSelector properly,
-
-* Python >= 3.6: http://www.python.org/
-* NumPy >= 1.21.5: http://www.numpy.org/
-* SciPy >= 1.5.0: http://www.scipy.org/
-* PyTest >= 5.3.4: https://docs.pytest.org/
-* PyTest-Cov >= 2.8.0: https://pypi.org/project/pytest-cov/
-
 
 Installation
 ------------
@@ -38,9 +27,9 @@ To install DiverseSelector using the conda package management system, install
 first, and then:
 
 ```bash
-    # Create and activate myenv conda environment (optional, but recommended)
-    conda create -n myenv python=3.6
-    conda activate myenv
+    # Create and activate qcdevs conda environment (optional, but recommended)
+    conda create -n qcdevs python=3.10
+    conda activate qcdevs
 
     # Install the stable release.
     conda install -c theochem qc-selector
