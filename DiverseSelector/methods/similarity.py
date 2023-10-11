@@ -462,12 +462,13 @@ class SimilarityIndex:
                     f"Given c_threshold = {c_threshold}"
                 )
         # check if the w_factor is valid
-        if w_factor not in ["fraction", "power_n"]:
-            print(
-                f'Weight factor "{w_factor}" given. Using default value '
-                '"similarity = dissimilarity = 1".'
-            )
-            w_factor = False
+        if w_factor != "fraction":
+            if w_factor.split("_")[0] != "power" or not w_factor.split("_")[-1].isdigit():
+                print(
+                    f'Invalid weight factor "{w_factor}" given. Using default value '
+                    '"similarity = dissimilarity = 1".'
+                )
+                w_factor = False
 
         self.similarity_index = similarity_index
         self.w_factor = w_factor
