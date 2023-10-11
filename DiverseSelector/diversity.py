@@ -23,14 +23,11 @@
 
 """Molecule dataset diversity calculation module."""
 
-import warnings
-from typing import List
-
 import numpy as np
-from scipy.spatial.distance import euclidean
-
-from DiverseSelector.distance import tanimoto
 import warnings
+
+from typing import List
+from DiverseSelector.distance import tanimoto
 
 
 __all__ = [
@@ -95,8 +92,10 @@ def compute_diversity(
         return hypersphere_overlap_of_subset(features, feature_subset)
     elif div_type == "explicit_diversity_index":
         if cs is None:
-            raise ValueError("Attribute `cs` is missing. "
-                             "Please input `cs` value to use explicit_diversity_index." )
+            raise ValueError(
+                "Attribute `cs` is missing. "
+                "Please input `cs` value to use explicit_diversity_index."
+            )
         elif cs == 0:
             raise ValueError("Divide by zero error: Attribute `cs` cannot be 0.")
         return explicit_diversity_index(feature_subset, cs)
@@ -242,7 +241,8 @@ def shannon_entropy(x: np.ndarray) -> float:
 
 # todo: add tests for edi
 def explicit_diversity_index(
-    x: np.ndarray, cs: int,
+    x: np.ndarray,
+    cs: int,
 ) -> float:
     """Computes the explicit diversity index.
     Parameters
@@ -269,7 +269,7 @@ def explicit_diversity_index(
     """
     nc = len(x)
     sdi = (1 - nearest_average_tanimoto(x)) / (0.8047 - (0.065 * (np.log(nc))))
-    cr = -1 * np.log10(nc / (cs ** 2))
+    cr = -1 * np.log10(nc / (cs**2))
     edi = (sdi + cr) * 0.7071067811865476
     edi_scaled = ((np.tanh(edi / 3) + 1) / 2) * 100
     return edi_scaled
@@ -319,9 +319,7 @@ def wdud(x: np.ndarray) -> float:
     min_x = np.min(x, axis=0)
     # Normalization of each feature to [0, 1]
     if np.any(np.abs(max_x - min_x) < 1e-30):
-        raise ValueError(
-            f"One of the features is redundant and causes normalization to fail."
-        )
+        raise ValueError(f"One of the features is redundant and causes normalization to fail.")
     x_norm = (x - min_x) / (max_x - min_x)
     ans = []  # store the Wasserstein distance for each feature
     for i in range(0, num_features):
@@ -391,9 +389,7 @@ def hypersphere_overlap_of_subset(x: np.ndarray, x_subset: np.array) -> float:
     min_x = np.min(x, axis=0)
     # normalization of each feature to [0, 1]
     if np.any(np.abs(max_x - min_x) < 1e-30):
-        raise ValueError(
-            f"One of the features is redundant and causes normalization to fail."
-        )
+        raise ValueError("One of the features is redundant and causes normalization to fail.")
 
     x_norm = (x - min_x) / (max_x - min_x)
 
@@ -401,8 +397,7 @@ def hypersphere_overlap_of_subset(x: np.ndarray, x_subset: np.array) -> float:
     r_o = d * np.sqrt(1 / k)
     if r_o > 0.5:
         warnings.warn(
-            f"The number of molecules should be much larger"
-            " than the number of features."
+            "The number of molecules should be much larger" " than the number of features."
         )
     g_s = 0
     edge = 0
@@ -472,9 +467,7 @@ def gini_coefficient(x: np.ndarray):
     if np.count_nonzero((x != 0) & (x != 1)) != 0:
         raise ValueError("Attribute `x` should have binary values.")
     if x.ndim != 2:
-        raise ValueError(
-            f"Attribute `x` should have dimension two rather than {x.ndim}."
-        )
+        raise ValueError(f"Attribute `x` should have dimension two rather than {x.ndim}.")
 
     num_features = x.shape[1]
     # Take the bit-count of each column/molecule.
@@ -522,7 +515,7 @@ def nearest_average_tanimoto(x: np.ndarray) -> float:
         b = 0
         # search for shortest distance point from idx
         for jdx, _ in enumerate(x):
-            dist = np.linalg.norm(x[idx]-x[jdx])
+            dist = np.linalg.norm(x[idx] - x[jdx])
             if dist < short and idx != jdx:
                 short = dist
                 a = idx
@@ -532,4 +525,3 @@ def nearest_average_tanimoto(x: np.ndarray) -> float:
     # compute average of all shortest tanimoto coeffs
     nat = np.average(tani)
     return nat
-
