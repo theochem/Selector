@@ -385,15 +385,15 @@ class SimilarityIndex:
 
     Methods
     -------
-    calculate_medoid(data, c_total=None, similarity_index=None, c_threshold=None, w_factor=None):
+    calculate_medoid(data, c_total=None):
         Calculate the medoid of a set of real-valued vectors or binary objects. The similarity_index
         is used as the distance.
 
-    calculate_outlier(data, c_total=None, similarity_index=None, c_threshold=None, w_factor=None):
+    calculate_outlier(data, c_total=None):
         Calculate the outlier of a set of real-valued vectors or binary objects. The
         similarity_index is used as the distance.
 
-    __call__(data=None, n_objects=None, similarity_index=None, c_threshold=None, w_factor=None):
+    __call__(data=None, n_objects=None):
         Calculate the similarity index of a set of vectors.
 
     """
@@ -464,6 +464,7 @@ class SimilarityIndex:
                 f'Weight factor "{w_factor}" given. Using default value '
                 '"similarity = dissimilarity = 1".'
             )
+            w_factor = False
 
         self.similarity_index = similarity_index
         self.w_factor = w_factor
