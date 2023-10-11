@@ -20,11 +20,11 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-
 """Module for converting similarity measures to distance/dissimilarity measures."""
-from typing import Union
 
 import numpy as np
+
+from typing import Union
 
 
 __all__ = [
@@ -77,23 +77,19 @@ def sim_to_dist(x: Union[int, float, np.ndarray], metric: str) -> Union[float, n
     }
 
     # check if x is a single value
-    single = False
-    if type(x) == float or type(x) == int:
+    single_value = False
+    if isinstance(x, (float, int)):
         x = np.array([[x]])
-        single = True
+        single_value = True
 
-    # check if x is 1 array with invalid metric
-    if x.ndim == 1 and metric in ["co-occurrence","gravity"]:
-        raise ValueError(
-            f"The {metric} operation is not supported with 1D array. "
-            f"Please make sure `x` is a 2D array when using the {metric} metric."
-        )
-
+    # check x
+    if not isinstance(x, np.ndarray):
+        raise ValueError(f"Argument x should be a numpy array instead of {type(x)}")
     # check that x is a valid array
     if x.ndim != 1 and x.ndim != 2:
-        raise ValueError(
-            f"Attribute `x` should have dimension 1 or 2 rather than {x.ndim}."
-        )
+        raise ValueError(f"Argument x should either have 1 or 2 dimensions, got {x.ndim}.")
+    if x.ndim == 1 and metric in ["co-occurrence", "gravity"]:
+        raise ValueError(f"Argument x should be a 2D array when using the {metric} metric.")
 
     # call correct metric function
     if metric in frequency:
@@ -117,7 +113,7 @@ def sim_to_dist(x: Union[int, float, np.ndarray], metric: str) -> Union[float, n
         raise ValueError(f"{metric} is an unsupported metric.")
 
     # convert back to float if input was single value
-    if single:
+    if single_value:
         dist = dist.item((0, 0))
 
     return dist
@@ -171,8 +167,7 @@ def reciprocal(x: np.ndarray) -> np.ndarray:
 
     if np.any(x <= 0):
         raise ValueError(
-            "There is an out of bounds value. Please make "
-            "sure all similarities are positive."
+            "There is an out of bounds value. Please make " "sure all similarities are positive."
         )
     return 1 / x
 
@@ -407,6 +402,6 @@ def covariance(x: np.ndarray) -> np.ndarray:
     if np.any(variance < 0):
         raise ValueError("Variance of a single variable cannot be negative.")
 
-    dist = variance + variance.T - 2*x
+    dist = variance + variance.T - 2 * x
     dist = np.sqrt(dist)
     return dist
