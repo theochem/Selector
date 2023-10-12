@@ -363,10 +363,10 @@ def test_SimilarityIndex_call(c_threshold, w_factor, n_ary):
     data, ref_similarity_binary = _get_binary_data(), _get_ref_similarity_dict()
 
     # create instance of the class SimilarityIndex to test the similarity indexes for binary data
-    si = SimilarityIndex(similarity_index=n_ary, c_threshold=c_threshold, w_factor=w_factor)
+    sim_idx = SimilarityIndex(similarity_index=n_ary, c_threshold=c_threshold, w_factor=w_factor)
 
     # calculate the similarity index for the binary data
-    si_value = si(data)
+    si_value = sim_idx(data)
 
     # get the reference value for the similarity index
     if c_threshold == None:
@@ -614,9 +614,8 @@ def test_calculate_medoid(c_threshold, w_factor, n_ary):
     ref_medoid = ref_medoid_dict[c_threshold_key][w_factor][n_ary]
 
     # calculate the medoid for the binary data
-    medoid = SimilarityIndex().calculate_medoid(
-        data, similarity_index=n_ary, w_factor=w_factor, c_threshold=c_threshold
-    )
+    sim_idx = SimilarityIndex(similarity_index=n_ary, w_factor=w_factor, c_threshold=c_threshold)
+    medoid = sim_idx.calculate_medoid(data)
 
     # check that the calculated medoid is equal to the reference medoid
     assert_equal(medoid, ref_medoid)
@@ -799,9 +798,8 @@ def test_calculate_outlier(c_threshold, w_factor, n_ary):
     ref_outlier = ref_outlier_dict[c_threshold_key][w_factor][n_ary]
 
     # calculate the outlier for the binary data
-    outlier = SimilarityIndex().calculate_outlier(
-        data, similarity_index=n_ary, w_factor=w_factor, c_threshold=c_threshold
-    )
+    sim_idx = SimilarityIndex(similarity_index=n_ary, w_factor=w_factor, c_threshold=c_threshold)
+    outlier = sim_idx.calculate_outlier(data)
 
     # check that the calculated outlier is equal to the reference outlier
     assert_equal(outlier, ref_outlier)
