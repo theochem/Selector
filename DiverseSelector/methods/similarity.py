@@ -675,21 +675,6 @@ class SimilarityIndex:
             np.array with the columnwise sums of the data, not necessary to provide.
         """
 
-        # check if the similarity index is valid
-        if self.similarity_index not in _similarity_index_dict.keys():
-            raise ValueError(
-                f'Similarity index "{self.similarity_index}" is not available. '
-                f"See the documentation for the available similarity indexes."
-            )
-
-        # check if the c_threshold is valid
-        if self.c_threshold not in ["dissimilar", None]:
-            if not isinstance(self.c_threshold, int):
-                raise ValueError(
-                    f'Invalid c_threshold. It must be an integer or "dissimilar" or None. '
-                    f"Current c_threshold = {self.c_threshold}"
-                )
-
         # check if c_total is provided and if not, calculate it
         if c_total is None:
             c_total = np.sum(data, axis=0)
@@ -738,19 +723,6 @@ class SimilarityIndex:
         c_total:
             np.array with the columnwise sums of the data, not necessary to provide.
         """
-        # check if the similarity index is valid
-        if self.similarity_index not in _similarity_index_dict.keys():
-            raise ValueError(
-                f'Similarity index "{similarity_index}" is not available. '
-                f"See the documentation for the available similarity indexes."
-            )
-        # check if the c_threshold is valid
-        if self.c_threshold not in ["dissimilar", None]:
-            if not isinstance(self.c_threshold, int):
-                raise ValueError(
-                    f'Invalid c_threshold. It must be an integer or "dissimilar" or None. '
-                    f"Current c_threshold = {self.c_threshold}"
-                )
 
         # check if c_total is provided and if not, calculate it
         if c_total is None:
@@ -775,7 +747,7 @@ class SimilarityIndex:
         # for each sample calculate the similarity index of the complete set without the sample
         for idx, obj in enumerate(comp_sums):
             # calculate the similarity index of the set of objects without the current object
-            sim_index = self.__call__(data=obj, n_objects=n_objects - 1)
+            sim_index = self(data=obj, n_objects=n_objects - 1)
             # if the similarity is bigger than the previous minimum similarity, update the minimum
             # similarity and the index
             if sim_index > max_sim:
