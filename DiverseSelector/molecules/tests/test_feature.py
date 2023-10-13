@@ -48,7 +48,7 @@ def test_feature_desc_mordred_2d():
     df_mordred_desc = DescriptorGenerator(mols).mordred_desc(ignore_3D=True)
 
     # load the expected descriptor dataframe
-    with path("DiverseSelector.test.data", "drug_mols_desc_smi.csv") as smi_csv:
+    with path("DiverseSelector.tests.data", "drug_mols_desc_smi.csv") as smi_csv:
         df_mordred_desc_exp = pd.read_csv(smi_csv,
                                           sep=",",
                                           )
@@ -69,7 +69,7 @@ def test_feature_desc_mordred_3d():
     df_mordred_desc = DescriptorGenerator(mols=mols).mordred_desc(ignore_3D=False)
 
     # load the expected descriptor dataframe
-    with path("DiverseSelector.test.data", "drug_mols_desc_sdf_3d.csv") as sdf_csv:
+    with path("DiverseSelector.tests.data", "drug_mols_desc_sdf_3d.csv") as sdf_csv:
         df_mordred_desc_exp = pd.read_csv(sdf_csv,
                                           sep=",",
                                           )
@@ -84,7 +84,7 @@ def test_feature_desc_mordred_3d():
 def test_feature_desc_padelpy_3d():
     """Testing molecular PaDEL descriptor with SMILES strings."""
     # generate molecular descriptors with the DescriptorGenerator
-    with path("DiverseSelector.test.data", "drug_mols.sdf") as sdf_drugs:
+    with path("DiverseSelector.tests.data", "drug_mols.sdf") as sdf_drugs:
         df_padel_desc = DescriptorGenerator(mols=None).padelpy_desc(mol_file=sdf_drugs,
                                                                     keep_csv=False,
                                                                     maxruntime=-1,
@@ -110,7 +110,7 @@ def test_feature_desc_padelpy_3d():
                                                                     )
 
     # load the expected descriptor dataframe
-    with path("DiverseSelector.test.data", "drug_mols_desc_padel.csv") as sdf_csv:
+    with path("DiverseSelector.tests.data", "drug_mols_desc_padel.csv") as sdf_csv:
         df_padel_desc_exp = pd.read_csv(sdf_csv,
                                         sep=",",
                                         index_col="Name")
@@ -130,7 +130,7 @@ def test_feature_desc_rdkit():
     df_rdkit_desc = DescriptorGenerator(mols=mols).rdkit_desc(use_fragment=True,
                                                               ipc_avg=True)
     # load the expected descriptor dataframe
-    with path("DiverseSelector.test.data", "drug_mols_desc_rdkit.csv") as rdkit_csv:
+    with path("DiverseSelector.tests.data", "drug_mols_desc_rdkit.csv") as rdkit_csv:
         df_rdkit_desc_exp = pd.read_csv(rdkit_csv,
                                         sep=",")
     # check if the dataframes are equal
@@ -147,7 +147,7 @@ def test_feature_desc_rdkit_frag():
     # generate molecular descriptors with the DescriptorGenerator
     df_rdkit_frag_desc = DescriptorGenerator(mols=mols).rdkit_frag_desc()
     # load the expected descriptor dataframe
-    with path("DiverseSelector.test.data", "drug_mols_desc_rdkit_frag.csv") as rdkit_frag_csv:
+    with path("DiverseSelector.tests.data", "drug_mols_desc_rdkit_frag.csv") as rdkit_frag_csv:
         df_rdkit_desc_exp = pd.read_csv(rdkit_frag_csv,
                                         sep=",")
     # check if the dataframes are equal
@@ -172,7 +172,7 @@ def test_feature_fp_secfp6():
                                                                     kekulize=False)
 
     # load the expected descriptor dataframe
-    with path("DiverseSelector.test.data", "drug_mols_secfp6.csv") as secfp6_csv:
+    with path("DiverseSelector.tests.data", "drug_mols_secfp6.csv") as secfp6_csv:
         df_secfp6_exp = pd.read_csv(secfp6_csv,
                                     sep=",",
                                     index_col=0)
@@ -197,7 +197,7 @@ def test_feature_fp_ecfp6():
                                                                    isomeric=True,
                                                                    kekulize=False)
     # load the expected descriptor dataframe
-    with path("DiverseSelector.test.data", "drug_mols_ecfp6.csv") as ecfp6_csv:
+    with path("DiverseSelector.tests.data", "drug_mols_ecfp6.csv") as ecfp6_csv:
         df_ecfp6_exp = pd.read_csv(ecfp6_csv,
                                    sep=",",
                                    index_col=0)
@@ -222,7 +222,7 @@ def test_feature_fp_morgan():
                                                                     isomeric=True,
                                                                     kekulize=False)
     # load the expected descriptor dataframe
-    with path("DiverseSelector.test.data", "drug_mols_morgan.csv") as morgan_csv:
+    with path("DiverseSelector.tests.data", "drug_mols_morgan.csv") as morgan_csv:
         df_morgan_exp = pd.read_csv(morgan_csv,
                                     sep=",",
                                     index_col=0)
@@ -247,7 +247,7 @@ def test_feature_fp_rdkit():
                                                                       isomeric=True,
                                                                       kekulize=False, )
     # load the expected descriptor dataframe
-    with path("DiverseSelector.test.data", "drug_mols_RDKitfp.csv") as rdkit_fp_csv:
+    with path("DiverseSelector.tests.data", "drug_mols_RDKitfp.csv") as rdkit_fp_csv:
         df_rdkit_fp_exp = pd.read_csv(rdkit_fp_csv,
                                       sep=",",
                                       index_col=0)
@@ -272,7 +272,7 @@ def test_feature_fp_maccskeys():
                                                                           isomeric=True,
                                                                           kekulize=False)
     # load the expected descriptor dataframe
-    with path("DiverseSelector.test.data", "drug_mols_MaCCSKeys.csv") as maccskeys_fp_csv:
+    with path("DiverseSelector.tests.data", "drug_mols_MaCCSKeys.csv") as maccskeys_fp_csv:
         df_maccskeys_fp_exp = pd.read_csv(maccskeys_fp_csv,
                                           sep=",",
                                           index_col=0)
@@ -295,7 +295,7 @@ def test_feature_fp_invalid():
 def test_feature_reader_csv():
     """Testing the feature reader function."""
     # load mock features
-    with path("DiverseSelector.test.data", "mock_features.csv") as mock_feature_csv:
+    with path("DiverseSelector.tests.data", "mock_features.csv") as mock_feature_csv:
         df_features = feature_reader(str(mock_feature_csv),
                                      sep=",",
                                      engine="python",
@@ -319,7 +319,7 @@ def test_feature_reader_csv():
 def test_feature_reader_xlsx():
     """Testing the feature reader function."""
     # load mock features
-    with path("DiverseSelector.test.data", "mock_features.xlsx") as mock_feature_xlsx:
+    with path("DiverseSelector.tests.data", "mock_features.xlsx") as mock_feature_xlsx:
         df_features = feature_reader(str(mock_feature_xlsx),
                                      engine="openpyxl",
                                      )
@@ -341,7 +341,7 @@ def test_feature_reader_xlsx():
 
 def test_feature_get_features_load():
     """Testing the feature getter function by loading features."""
-    with path("DiverseSelector.test.data", "mock_features.xlsx") as mock_feature_xlsx:
+    with path("DiverseSelector.tests.data", "mock_features.xlsx") as mock_feature_xlsx:
         df_features = feature_reader(file_name=str(mock_feature_xlsx),
                                      engine="openpyxl",
                                      )
@@ -370,7 +370,7 @@ def test_feature_get_features_fp_generate():
                                                                     rings=True,
                                                                     isomeric=True,
                                                                     kekulize=False)
-    with path("DiverseSelector.test.data", "drug_mols_secfp6.csv") as secfp6_csv:
+    with path("DiverseSelector.tests.data", "drug_mols_secfp6.csv") as secfp6_csv:
         df_secfp6_exp = pd.read_csv(secfp6_csv,
                                     sep=",",
                                     index_col=0)
@@ -387,7 +387,7 @@ def test_feature_get_features_desc_generate():
     mols = load_testing_mols(mol_type="3d")
     df_desc_rdkit_frag = DescriptorGenerator(mols=mols).rdkit_frag_desc()
 
-    with path("DiverseSelector.test.data", "drug_mols_desc_rdkit_frag.csv") as desc_csv:
+    with path("DiverseSelector.tests.data", "drug_mols_desc_rdkit_frag.csv") as desc_csv:
         df_desc_rdkit_frag_exp = pd.read_csv(desc_csv,
                                              sep=",",
                                              )
