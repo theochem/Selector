@@ -73,7 +73,7 @@ setup(
     # Additional entries you may want simply uncomment the lines you want and fill in the data
     url="https://github.com/theochem/DiverseSelector",  # Website
     install_requires=["numpy>=1.21.2",
-                      "scipy>=1.7.3",
+                      "scipy==1.11.1",
                       "pytest>=6.2.4",
                       "scikit-learn",
                       "bitarray",
