@@ -658,9 +658,6 @@ class SimilarityIndex:
         similarity_index: float
             Similarity index of the set of vectors.
         """
-        # check that data or c_total is provided
-        if arr is None:
-            raise ValueError("Please provide data or c_total")
         # check if arr is a np.ndarray
         if not isinstance(arr, np.ndarray):
             raise TypeError("Input data is not a np.ndarray, please input the right data type")
