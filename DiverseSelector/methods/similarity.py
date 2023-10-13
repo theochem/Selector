@@ -713,14 +713,7 @@ class SimilarityIndex:
         # returned (the medoid)
         return index
 
-    def calculate_outlier(
-        self,
-        arr: np.ndarray = None,
-        c_total=None,
-        similarity_index: str = None,
-        c_threshold=None,
-        w_factor: str = None,
-    ) -> int:
+    def calculate_outlier(self, arr: np.ndarray = None, c_total=None) -> int:
         r"""Calculate the outlier of a set of real-valued vectors or binary objects.
 
         Calculates the outlier of a set of real-valued vectors or binary objects. Using the
@@ -732,35 +725,6 @@ class SimilarityIndex:
             np.array of all the real-valued vectors or binary objects.
         c_total:
             np.array with the columnwise sums of the data, not necessary to provide.
-        similarity_index: string
-            Key with the abbreviation of the desired similarity index to calculate the medoid from.
-            Possible values are:
-                AC: Austin-Colwell
-                BUB: Baroni-Urbani-Buser
-                CTn: Consoni-Todschini
-                Fai: Faith
-                Gle: Gleason
-                Ja: Jaccard
-                Ja0: Jaccard 0-variant
-                JT: Jaccard-Tanimoto
-                RT: Rogers-Tanimoto
-                RR: Russel-Rao
-                SM: Sokal-Michener
-                SSn: Sokal-Sneath n
-        c_threshold: {None, 'dissimilar', int}
-            Coincidence threshold used for calculating the similarity counters. A column of the
-            elements is considered to be a coincidence among the elements if the number of elements
-            that have the same value in that position is greater than the coincidence threshold.
-                None : Default, c_threshold = n_objects % 2
-                'dissimilar' : c_threshold = ceil(n_objects / 2)
-                int : Integer number < n_objects
-        w_factor: {"fraction", "power_n"}
-            Type of weight function that will be used.
-            'fraction' : similarity = d[k]/n
-                            dissimilarity = 1 - (d[k] - n_objects % 2)/n_objects
-            'power_n' : similarity = n**-(n_objects - d[k])
-                        dissimilarity = n**-(d[k] - n_objects % 2)
-            other values : similarity = dissimilarity = 1
         """
         # Check if the data is a np.ndarray of a list
         if not isinstance(arr, np.ndarray):
@@ -773,37 +737,6 @@ class SimilarityIndex:
         # Check if the data has at least 3 rows
         if arr.shape[0] < 3:
             raise ValueError("Input data must have at least 3 rows to calculate the outlier.")
-
-        # If the parameters are not provided, the parameters provided in the class initialization
-        # are used. If the parameters are provided, the parameters values are checked and used.
-        if similarity_index is None:
-            similarity_index = self.similarity_index
-        else:
-            # check if the similarity index is valid
-            if similarity_index not in _similarity_index_dict:
-                raise ValueError(
-                    f'Similarity index "{similarity_index}" is not available. '
-                    f"See the documentation for the available similarity indexes."
-                )
-        if w_factor is None:
-            w_factor = self.w_factor
-        else:
-            # check if the w_factor is valid
-            if w_factor not in ["fraction", "power_n"]:
-                print(
-                    f'Weight factor "{w_factor}" given. Using default value '
-                    '"similarity = dissimilarity = 1".'
-                )
-        if c_threshold is None:
-            c_threshold = self.c_threshold
-        else:
-            # check if the c_threshold is valid
-            if c_threshold not in ["dissimilar", None]:
-                if not isinstance(c_threshold, int):
-                    raise ValueError(
-                        f'Invalid c_threshold. It must be an integer or "dissimilar" or None. '
-                        f"Given c_threshold = {c_threshold}"
-                    )
 
         # check if c_total is provided and if not, calculate it
         if c_total is None:
@@ -828,13 +761,7 @@ class SimilarityIndex:
         # for each sample calculate the similarity index of the complete set without the sample
         for idx, obj in enumerate(comp_sums):
             # calculate the similarity index of the set of objects without the current object
-            sim_index = self.__call__(
-                arr=obj,
-                n_objects=n_objects - 1,
-                similarity_index=similarity_index,
-                w_factor=w_factor,
-                c_threshold=c_threshold,
-            )
+            sim_index = self(arr=obj, n_objects=n_objects - 1)
             # if the similarity is bigger than the previous minimum similarity, update the minimum
             # similarity and the index
             if sim_index > max_sim:
