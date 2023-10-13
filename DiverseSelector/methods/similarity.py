@@ -40,7 +40,7 @@ import random
 from math import log
 
 import numpy as np
-from typing import Union, Optional
+from typing import Any, Union, Optional
 from DiverseSelector.methods.base import SelectionBase
 
 __all__ = ["NSimilarity", "SimilarityIndex"]
@@ -532,41 +532,6 @@ class SimilarityIndex:
                 f"Given c_threshold = {self.c_threshold}"
             )
 
-        # Set w_factor function (a weight factor for the similarity and dissimilarity) is
-        # provided depending on the number of objects that are similar or not in a column
-        if self.w_factor:
-            # power_n case
-            if "power" in self.w_factor:
-                power = int(self.w_factor.split("_")[-1])
-
-                def f_s(d):
-                    return power ** -(n_objects - d).astype(float)
-
-                def f_d(d):
-                    return power ** -(d - n_objects % 2).astype(float)
-
-            # fraction case
-            elif self.w_factor == "fraction":
-
-                def f_s(d):
-                    return d / n_objects
-
-                def f_d(d):
-                    return 1 - (d - n_objects % 2) / n_objects
-
-            else:
-                raise ValueError(
-                    f"w_factor must be 'fraction' or 'power_n'. \n Given w_factor = {self.w_factor}"
-                )
-        # default case, the similarity and dissimilarity counters are not weighted
-        else:
-
-            def f_s(d):
-                return 1
-
-            def f_d(d):
-                return 1
-
         # Calculate a, d, b + c
         # Calculate the positions (columns) of common on bits (common 1s) between the objects
         a_indices = 2 * c_total - n_objects > tmp_c_threshold
@@ -584,11 +549,11 @@ class SimilarityIndex:
         total_dis = np.sum(dis_indices)
 
         # calculate the weights for each column indexed as with common on bits (common 1s)
-        a_w_array = f_s(2 * c_total[a_indices] - n_objects)
+        a_w_array = self._f_s(2 * c_total[a_indices] - n_objects, n_objects)
         # calculate the weights for each column indexed as with common off bits (common 0s)
-        d_w_array = f_s(abs(2 * c_total[d_indices] - n_objects))
+        d_w_array = self._f_s(abs(2 * c_total[d_indices] - n_objects), n_objects)
         # calculate the weights for each column indexed as with dissimilar bits
-        total_w_dis_array = f_d(abs(2 * c_total[dis_indices] - n_objects))
+        total_w_dis_array = self._f_d(abs(2 * c_total[dis_indices] - n_objects), n_objects)
 
         # calculate the total weight for each type of counter
         w_a = np.sum(a_w_array)
@@ -614,6 +579,70 @@ class SimilarityIndex:
             "w_p": w_p,
         }
         return counters
+
+    def _f_s(self, d, n) -> float:
+        """Calculate the similarity weight factor for a given number of similar objects in a set.
+
+        Parameters
+        ----------
+        d : int
+            Number of similar objects.
+        n : int
+            Total number of objects.
+
+        Returns
+        -------
+        w_s : float
+            Weight factor for the similarity depending on the number of objects that are similar (d)
+            in a set of (n) objects.
+        """
+        if self.w_factor:
+            # power_n case
+            if "power" in self.w_factor:
+                power = int(self.w_factor.split("_")[-1])
+                return power ** -(n - d).astype(float)
+            # fraction case
+            elif self.w_factor == "fraction":
+                return d / n
+            else:
+                raise ValueError(
+                    f"w_factor must be 'fraction' or 'power_n'. \n Given w_factor = {self.w_factor}"
+                )
+        # default case, the similarity counters are not weighted
+        else:
+            return 1
+
+    def _f_d(self, d, n) -> float:
+        """Calculate the dissimilarity weight factor for a given number of similar objects in a set.
+
+        Parameters
+        ----------
+        d : int
+            Number of similar objects.
+        n : int
+            Total number of objects.
+
+        Returns
+        -------
+        w_s : float
+            Weight factor for the dissimilarity depending on the number of objects that are similar
+            (d) in a set of (n) objects.
+        """
+        if self.w_factor:
+            # power_n case
+            if "power" in self.w_factor:
+                power = int(self.w_factor.split("_")[-1])
+                return power ** -(d - n % 2).astype(float)
+            # fraction case
+            elif self.w_factor == "fraction":
+                return 1 - (d - n % 2) / n
+            else:
+                raise ValueError(
+                    f"w_factor must be 'fraction' or 'power_n'. \n Given w_factor = {self.w_factor}"
+                )
+        # default case, the dissimilarity counters are not weighted
+        else:
+            return 1
 
     def __call__(self, data: np.ndarray, n_objects: int = None) -> float:
         """Calculate the similarity index of a set of vectors.
