@@ -12,3 +12,4 @@ importlib-resources>=5.6.0
 openpyxl
 bitarray~=2.5.1
 hypothesis
+pre-commit
