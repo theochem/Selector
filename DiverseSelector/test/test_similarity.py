@@ -47,85 +47,67 @@ def test_SimilarityIndex_init_raises():
 
 def test_SimilarityIndex_calculate_counters_raises():
     sim_idx = SimilarityIndex()
-    # check raised error no data
-    with pytest.raises(ValueError):
-        sim_idx(arr=None)
+
     # check raised error wrong data type
     with pytest.raises(TypeError):
         sim_idx._calculate_counters(arr=[1, 2, 3])
+
     # check raised error - no n_objects with data of length 1
     with pytest.raises(ValueError):
         sim_idx._calculate_counters(arr=np.array([1, 2, 3]))
+
     # check raised error - c_threshold bigger than n_objects
+    sim_idx = SimilarityIndex(c_threshold=3)
     with pytest.raises(ValueError):
-        sim_idx._calculate_counters(arr=np.array([[1, 2, 3], [4, 5, 6]]), c_threshold=3)
+        sim_idx._calculate_counters(arr=np.array([[1, 2, 3], [4, 5, 6]]))
+
     # check raised error - invalid c_threshold string value
+    sim_idx = SimilarityIndex()
+    sim_idx.c_threshold = "ttt"
     with pytest.raises(ValueError):
-        sim_idx._calculate_counters(arr=np.array([[1, 2, 3], [4, 5, 6]]), c_threshold="ttt")
+        sim_idx._calculate_counters(arr=np.array([[1, 2, 3], [4, 5, 6]]))
+
+    # check raised error - invalid weight factor string value
+    sim_idx = SimilarityIndex()
+    sim_idx.w_factor = "ttt"
+    with pytest.raises(ValueError):
+        sim_idx._calculate_counters(arr=np.array([[1, 2, 3], [4, 5, 6]]))
 
 
 def test_SimilarityIndex_call_raises():
     """Test the SimilarityIndex class for raised errors (call)."""
     sim_idx = SimilarityIndex()
-    # check raised error wrong similarity index name
-    with pytest.raises(ValueError):
-        sim_idx(arr=np.array([[1, 2, 3], [4, 5, 6]]), similarity_index="ttt")
-    # check raised error wrong c_threshold - invalid string value
-    with pytest.raises(ValueError):
-        sim_idx(arr=np.array([[1, 2, 3], [4, 5, 6]]), c_threshold="ttt")
-    # check raised error wrong c_threshold - invalid type (not int)
-    with pytest.raises(ValueError):
-        sim_idx(arr=np.array([[1, 2, 3], [4, 5, 6]]), c_threshold=1.1)
-    # check raised error no data
-    with pytest.raises(ValueError):
-        sim_idx(arr=None)
     # check raised error wrong data type
     with pytest.raises(TypeError):
         sim_idx(arr=[1, 2, 3])
     # check raised error - no n_objects with data of length 1
     with pytest.raises(ValueError):
         sim_idx(arr=np.array([1, 2, 3]))
-    # check raised error - c_threshold bigger than n_objects
-    with pytest.raises(ValueError):
-        sim_idx(arr=np.array([[1, 2, 3], [4, 5, 6]]), c_threshold=3)
-    # check raised error - invalid c_threshold string value
-    with pytest.raises(ValueError):
-        sim_idx(arr=np.array([[1, 2, 3], [4, 5, 6]]), c_threshold="ttt")
 
 
 def test_SimilarityIndex_calculate_medoid_raises():
     """Test the SimilarityIndex class for raised errors (calculate_medoid)."""
     sim_idx = SimilarityIndex()
-    # check raised error wrong similarity index name
-    with pytest.raises(ValueError):
-        sim_idx.calculate_medoid(
-            arr=np.array([[1, 2, 3], [4, 5, 6], [6, 7, 8]]), similarity_index="ttt"
-        )
-    # check raised error wrong c_threshold - invalid string value
-    with pytest.raises(ValueError):
-        sim_idx.calculate_medoid(arr=np.array([[1, 2, 3], [4, 5, 6]]), c_threshold="ttt")
-    # check raised error wrong c_threshold - invalid type (not int)
-    with pytest.raises(ValueError):
-        sim_idx.calculate_medoid(arr=np.array([[1, 2, 3], [4, 5, 6]]), c_threshold=1.1)
-    # check raised error no data
-    with pytest.raises(ValueError):
-        sim_idx.calculate_medoid(arr=None)
+
     # check raised error wrong data type
     with pytest.raises(TypeError):
         sim_idx.calculate_medoid(arr=[1, 2, 3])
+
     # check raised error - no medoid with one dimensional data
     with pytest.raises(ValueError):
         sim_idx.calculate_medoid(arr=np.array([1, 2, 3]))
+
     # check raised error - no medoid with less than three samples
     with pytest.raises(ValueError):
         sim_idx.calculate_medoid(arr=np.array([[1, 2, 3], [4, 5, 6]]))
+
     # check raised error - c_threshold bigger than n_objects
+    sim_idx = SimilarityIndex(c_threshold=4)
     with pytest.raises(ValueError):
-        sim_idx.calculate_medoid(arr=np.array([[1, 2, 3], [4, 5, 6], [6, 7, 8]]), c_threshold=4)
-    # check raised error - invalid c_threshold string value
-    with pytest.raises(ValueError):
-        sim_idx.calculate_medoid(arr=np.array([[1, 2, 3], [4, 5, 6], [6, 7, 8]]), c_threshold="ttt")
+        sim_idx.calculate_medoid(arr=np.array([[1, 2, 3], [4, 5, 6], [6, 7, 8]]))
+
     # check raised error - c_total and data have different number of columns
+    sim_idx = SimilarityIndex()
     with pytest.raises(ValueError):
         sim_idx.calculate_medoid(
             arr=np.array([[1, 2, 3], [4, 5, 6], [6, 7, 8]]), c_total=np.array([1, 2, 3, 4])
@@ -135,38 +117,26 @@ def test_SimilarityIndex_calculate_medoid_raises():
 def test_SimilarityIndex_calculate_outlier_raises():
     """Test the SimilarityIndex class for raised errors (calculate_outlier)."""
     sim_idx = SimilarityIndex()
-    # check raised error wrong similarity index name
-    with pytest.raises(ValueError):
-        sim_idx.calculate_outlier(
-            arr=np.array([[1, 2, 3], [4, 5, 6], [6, 7, 8]]), similarity_index="ttt"
-        )
-    # check raised error wrong c_threshold - invalid string value
-    with pytest.raises(ValueError):
-        sim_idx.calculate_outlier(arr=np.array([[1, 2, 3], [4, 5, 6]]), c_threshold="ttt")
-    # check raised error wrong c_threshold - invalid type (not int)
-    with pytest.raises(ValueError):
-        sim_idx.calculate_outlier(arr=np.array([[1, 2, 3], [4, 5, 6]]), c_threshold=1.1)
-    # check raised error no data
-    with pytest.raises(ValueError):
-        sim_idx.calculate_outlier(arr=None)
+
     # check raised error wrong data type
     with pytest.raises(TypeError):
         sim_idx.calculate_outlier(arr=[1, 2, 3])
-    # check raised error - no outlier with one dimensional data
+
+    # check raised error - no medoid with one dimensional data
     with pytest.raises(ValueError):
         sim_idx.calculate_outlier(arr=np.array([1, 2, 3]))
-    # check raised error - no outlier with less than three samples
+
+    # check raised error - no medoid with less than three samples
     with pytest.raises(ValueError):
         sim_idx.calculate_outlier(arr=np.array([[1, 2, 3], [4, 5, 6]]))
+
     # check raised error - c_threshold bigger than n_objects
+    sim_idx = SimilarityIndex(c_threshold=4)
     with pytest.raises(ValueError):
-        sim_idx.calculate_outlier(arr=np.array([[1, 2, 3], [4, 5, 6], [6, 7, 8]]), c_threshold=4)
-    # check raised error - invalid c_threshold string value
-    with pytest.raises(ValueError):
-        sim_idx.calculate_outlier(
-            arr=np.array([[1, 2, 3], [4, 5, 6], [6, 7, 8]]), c_threshold="ttt"
-        )
+        sim_idx.calculate_outlier(arr=np.array([[1, 2, 3], [4, 5, 6], [6, 7, 8]]))
+
     # check raised error - c_total and data have different number of columns
+    sim_idx = SimilarityIndex()
     with pytest.raises(ValueError):
         sim_idx.calculate_outlier(
             arr=np.array([[1, 2, 3], [4, 5, 6], [6, 7, 8]]), c_total=np.array([1, 2, 3, 4])
@@ -825,9 +795,8 @@ def test_calculate_medoid(c_threshold, w_factor, n_ary):
     ref_medoid = ref_medoid_dict[c_threshold_key][w_factor][n_ary]
 
     # calculate the medoid for the binary data
-    medoid = SimilarityIndex().calculate_medoid(
-        data, similarity_index=n_ary, w_factor=w_factor, c_threshold=c_threshold
-    )
+    sim_idx = SimilarityIndex(similarity_index=n_ary, c_threshold=c_threshold, w_factor=w_factor)
+    medoid = sim_idx.calculate_medoid(arr=data)
 
     # check that the calculated medoid is equal to the reference medoid
     assert_equal(medoid, ref_medoid)
@@ -1010,9 +979,8 @@ def test_calculate_outlier(c_threshold, w_factor, n_ary):
     ref_outlier = ref_outlier_dict[c_threshold_key][w_factor][n_ary]
 
     # calculate the outlier for the binary data
-    outlier = SimilarityIndex().calculate_outlier(
-        data, similarity_index=n_ary, w_factor=w_factor, c_threshold=c_threshold
-    )
+    sim_idx = SimilarityIndex(similarity_index=n_ary, c_threshold=c_threshold, w_factor=w_factor)
+    outlier = sim_idx.calculate_outlier(arr=data)
 
     # check that the calculated outlier is equal to the reference outlier
     assert_equal(outlier, ref_outlier)
