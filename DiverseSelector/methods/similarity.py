@@ -123,11 +123,13 @@ class NSimilarity(SelectionBase):
                 f"See the documentation for the available similarity indexes."
             )
         # check if the w_factor is valid
-        if w_factor not in ["fraction", "power_n"]:
-            print(
-                f'Weight factor "{w_factor}" given. Using default value '
-                '"similarity = dissimilarity = 1".'
-            )
+        if w_factor != "fraction":
+            if w_factor.split("_")[0] != "power" or not w_factor.split("_")[-1].isdigit():
+                print(
+                    f'Invalid weight factor "{w_factor}" given. Using default value '
+                    '"similarity = dissimilarity = 1".'
+                )
+                w_factor = False
         # check if the c_threshold is valid
         if c_threshold not in ["dissimilar", None]:
             if not isinstance(c_threshold, int):
