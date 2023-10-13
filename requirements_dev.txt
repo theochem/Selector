@@ -16,3 +16,4 @@ scikit-learn>=1.0.1
 importlib-resources>=5.6.0
 openpyxl
 bitarray~=2.5.1
+hypothesis
