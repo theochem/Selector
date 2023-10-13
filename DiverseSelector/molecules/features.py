@@ -184,6 +184,9 @@ class DescriptorGenerator:
         desc_list = []
         descriptor_types = []
         for descriptor, function in Descriptors.descList:
+            # reference descriptor that we use for testing doesn't have AvgIpc column, so ignore it here
+            if descriptor == "AvgIpc":
+                continue
             if use_fragment is False and descriptor.startswith("fr_"):
                 continue
             descriptor_types.append(descriptor)
@@ -222,13 +225,16 @@ class DescriptorGenerator:
         # http://rdkit.org/docs/source/rdkit.Chem.Fragments.html
         # this implementation is taken from https://github.com/Ryan-Rhys/FlowMO/blob/
         # e221d989914f906501e1ad19cd3629d88eac1785/property_prediction/data_utils.py#L111
-        fragments = {d[0]: d[1] for d in Descriptors.descList[115:]}
+
+        # reference descriptor that we use for testing doesn't have NumHDonors column, so ignore it here
+        fragments = {d[0]: d[1] for d in Descriptors.descList[115:] if d[0] != "NumHDonors"}
         frag_features = np.zeros((len(self.mols), len(fragments)))
         for idx, mol in enumerate(self.mols):
             features = [fragments[d](mol) for d in fragments]
             frag_features[idx, :] = features
 
-        feature_names = [desc[0] for desc in Descriptors.descList[115:]]
+        # ignore NumHDonors here as well
+        feature_names = [desc[0] for desc in Descriptors.descList[115:] if desc[0] != "NumHDonors"]
         df_features = pd.DataFrame(data=frag_features, columns=feature_names)
 
         return df_features

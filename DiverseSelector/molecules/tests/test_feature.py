@@ -41,7 +41,10 @@ except ImportError:
 
 
 def test_feature_desc_mordred_2d():
-    """Testing molecular mordred descriptor with SMILES strings."""
+    """
+    Testing molecular mordred descriptor with SMILES strings. You need newtorkx version <= 2.3 for this
+    test to pass.
+    """
     # load molecules
     mols = load_testing_mols(mol_type="2d")
     # generate molecular descriptors with the DescriptorGenerator
@@ -62,7 +65,10 @@ def test_feature_desc_mordred_2d():
 
 
 def test_feature_desc_mordred_3d():
-    """Testing molecular mordred descriptor with 3d SDF formats."""
+    """
+    Testing molecular mordred descriptor with 3d SDF formats. You need newtorkx version <= 2.3 for this
+    test to pass.
+    """
     # load molecules
     mols = load_testing_mols(mol_type="3d")
     # generate molecular descriptors with the DescriptorGenerator
@@ -82,7 +88,7 @@ def test_feature_desc_mordred_3d():
 
 
 def test_feature_desc_padelpy_3d():
-    """Testing molecular PaDEL descriptor with SMILES strings."""
+    """Testing molecular PaDEL descriptor with SMILES strings. You need Java installed for this test to pass."""
     # generate molecular descriptors with the DescriptorGenerator
     with path("DiverseSelector.tests.data", "drug_mols.sdf") as sdf_drugs:
         df_padel_desc = DescriptorGenerator(mols=None).padelpy_desc(mol_file=sdf_drugs,
@@ -133,6 +139,9 @@ def test_feature_desc_rdkit():
     with path("DiverseSelector.tests.data", "drug_mols_desc_rdkit.csv") as rdkit_csv:
         df_rdkit_desc_exp = pd.read_csv(rdkit_csv,
                                         sep=",")
+    # need to make sure columns of expected and actual array are in the same order
+    df_rdkit_desc_exp = df_rdkit_desc_exp.reindex(sorted(df_rdkit_desc_exp.columns), axis=1)
+    df_rdkit_desc = df_rdkit_desc.reindex(sorted(df_rdkit_desc.columns), axis=1)
     # check if the dataframes are equal
     assert_equal(df_rdkit_desc.shape, df_rdkit_desc_exp.shape)
     assert_almost_equal(df_rdkit_desc.to_numpy(float),
