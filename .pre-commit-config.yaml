@@ -1,10 +1,10 @@
 minimum_pre_commit_version: 3.4.0
 repos:
   - repo: https://github.com/theochem/DiverseSelector
-    rev:  v0.0.2
+    rev: v0.0.2-alpha
     hooks:
       - id: no-commit-to-branch
-        args: [ "--branch", "main", "--branch", "staging"]
+        args: ["--branch", "main"]
       - id: check-merge-conflict  # Check for files that contain merge conflict strings.
       - id: trailing-whitespace   # Trims trailing whitespace.
         args: [--markdown-linebreak-ext=md]
