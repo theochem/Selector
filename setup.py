@@ -51,11 +51,11 @@ setup(
     cmdclass=versioneer.get_cmdclass(),
     license="GNU (Version 3)",
 
-    # Which Python importable modules should be included when your package is installed
-    # Handled automatically by setuptools. Use "exclude" to prevent some specific
-    # subpackage(s) from being added, if needed
     package_dir={"DiverseSelector": "DiverseSelector"},
-    packages=["DiverseSelector", "DiverseSelector.methods", "DiverseSelector.test", "DiverseSelector.methods.tests"],
+    packages=["DiverseSelector",
+              "DiverseSelector.methods",
+              "DiverseSelector.tests",
+              "DiverseSelector.methods.tests"],
 
     # Optional include package data to ship with your package
     # Customize MANIFEST.in if the general case does not suit your needs
@@ -73,7 +73,7 @@ setup(
     # Additional entries you may want simply uncomment the lines you want and fill in the data
     url="https://github.com/theochem/DiverseSelector",  # Website
     install_requires=["numpy>=1.21.2",
-                      "scipy>=1.7.3",
+                      "scipy==1.11.1",
                       "pytest>=6.2.4",
                       "scikit-learn",
                       "bitarray",
@@ -81,8 +81,9 @@ setup(
     # platforms=["Linux",
     #            "Mac OS-X",
     #            "Unix",
-    #            "Windows"],            # Valid platforms your code works on, adjust to your flavor
-    python_requires=">=3.7",  # Python version restrictions
+    #            "Windows"],
+    # Python version restrictions
+    python_requires=">=3.7",
 
     # Manual control if final package is compressible or not, set False to prevent the .egg
     # from being made
