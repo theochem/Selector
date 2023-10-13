@@ -28,7 +28,7 @@ from pathlib import PurePath
 import sys
 from typing import Union
 
-from DiverseSelector.utils import (
+from DiverseSelector.molecules.utils import (
     ExplicitBitVector,
     PandasDataFrame,
     RDKitMol,

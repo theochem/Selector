@@ -23,12 +23,12 @@
 
 """Testing for feature generation module."""
 
-from DiverseSelector.features import (aug_features,
+from DiverseSelector.molecules.features import (aug_features,
                                       DescriptorGenerator,
                                       feature_reader,
                                       FingerprintGenerator,
                                       )
-from DiverseSelector.test.common import load_testing_mols
+from DiverseSelector.tests.common import load_testing_mols
 import numpy as np
 from numpy.testing import assert_almost_equal, assert_equal
 import pandas as pd
