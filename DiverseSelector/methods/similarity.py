@@ -459,12 +459,13 @@ class SimilarityIndex:
                     f"Given c_threshold = {c_threshold}"
                 )
         # check if the w_factor is valid
-        if w_factor not in ["fraction", "power_n"]:
-            print(
-                f'Weight factor "{w_factor}" given. Using default value '
-                '"similarity = dissimilarity = 1".'
-            )
-            w_factor = False
+        if w_factor != "fraction":
+            if w_factor.split("_")[0] != "power" or not w_factor.split("_")[-1].isdigit():
+                print(
+                    f'Invalid weight factor "{w_factor}" given. Using default value '
+                    '"similarity = dissimilarity = 1".'
+                )
+                w_factor = False
 
         self.similarity_index = similarity_index
         self.w_factor = w_factor
@@ -472,10 +473,8 @@ class SimilarityIndex:
 
     def _calculate_counters(
         self,
-        arr: np.ndarray = None,
+        arr: np.ndarray,
         n_objects: Optional[int] = None,
-        c_threshold: Union[None, str, int] = None,
-        w_factor: Optional[str] = None,
     ) -> dict:
         """Calculate 1-similarity, 0-similarity, and dissimilarity counters.
 
@@ -490,20 +489,6 @@ class SimilarityIndex:
             Number of objects, only necessary if the columnwise sum of the objects is provided
             instead of the data (num rows== 1). If the data is provided, the number of objects is
             calculated as the length of the data.
-        c_threshold: {None, 'dissimilar', int}
-            Coincidence threshold used for calculating the similarity counters. A column of the
-            elements is considered to be a coincidence among the elements if the number of elements
-            that have the same value in that position is greater than the coincidence threshold.
-                None : Default, c_threshold = n_objects % 2
-                'dissimilar' : c_threshold = ceil(n_objects / 2)
-                int : Integer number < n_objects
-        w_factor: {"fraction", "power_n"}
-            Type of weight function that will be used.
-            'fraction' : similarity = d[k]/n
-                            dissimilarity = 1 - (d[k] - n_objects % 2)/n_objects
-            'power_n' : similarity = n**-(n_objects - d[k])
-                        dissimilarity = n**-(d[k] - n_objects % 2)
-            other values : similarity = dissimilarity = 1
 
         Returns
         -------
@@ -529,29 +514,29 @@ class SimilarityIndex:
             n_objects = len(arr)
 
         # Assign c_threshold
-        if not c_threshold:
-            c_threshold = n_objects % 2
-        elif c_threshold == "dissimilar":
-            c_threshold = math.ceil(n_objects / 2)
-        elif isinstance(c_threshold, int):
-            if c_threshold >= n_objects:
+        if self.c_threshold is None:
+            tmp_c_threshold = n_objects % 2
+        elif self.c_threshold == "dissimilar":
+            tmp_c_threshold = math.ceil(n_objects / 2)
+        elif isinstance(self.c_threshold, int):
+            if self.c_threshold >= n_objects:
                 raise ValueError(
                     "c_threshold cannot be equal or greater than n_objects. \n"
-                    + f"c_threshold = {c_threshold}  n_objects = {n_objects}"
+                    f"c_threshold = {self.c_threshold}  n_objects = {n_objects}"
                 )
-            c_threshold = c_threshold
+            tmp_c_threshold = self.c_threshold
         else:
             raise ValueError(
                 "c_threshold must be None, 'dissimilar' or an integer. \n"
-                + f"Given c_threshold = {c_threshold}"
+                f"Given c_threshold = {self.c_threshold}"
             )
 
         # Set w_factor function (a weight factor for the similarity and dissimilarity) is
         # provided depending on the number of objects that are similar or not in a column
-        if w_factor:
+        if self.w_factor:
             # power_n case
-            if "power" in w_factor:
-                power = int(w_factor.split("_")[-1])
+            if "power" in self.w_factor:
+                power = int(self.w_factor.split("_")[-1])
 
                 def f_s(d):
                     return power ** -(n_objects - d).astype(float)
@@ -560,7 +545,7 @@ class SimilarityIndex:
                     return power ** -(d - n_objects % 2).astype(float)
 
             # fraction case
-            elif w_factor == "fraction":
+            elif self.w_factor == "fraction":
 
                 def f_s(d):
                     return d / n_objects
@@ -568,6 +553,10 @@ class SimilarityIndex:
                 def f_d(d):
                     return 1 - (d - n_objects % 2) / n_objects
 
+            else:
+                raise ValueError(
+                    f"w_factor must be 'fraction' or 'power_n'. \n Given w_factor = {self.w_factor}"
+                )
         # default case, the similarity and dissimilarity counters are not weighted
         else:
 
@@ -579,12 +568,12 @@ class SimilarityIndex:
 
         # Calculate a, d, b + c
         # Calculate the positions (columns) of common on bits (common 1s) between the objects
-        a_indices = 2 * c_total - n_objects > c_threshold
+        a_indices = 2 * c_total - n_objects > tmp_c_threshold
         # Calculate the positions (columns) common off bits (common 0s) between the objects
-        d_indices = n_objects - 2 * c_total > c_threshold
+        d_indices = n_objects - 2 * c_total > tmp_c_threshold
         # Calculate the positions (columns) of dissimilar bits between the objects (b + c)
         # the dissimilar bits are the bits that are not common between the objects
-        dis_indices = np.abs(2 * c_total - n_objects) <= c_threshold
+        dis_indices = np.abs(2 * c_total - n_objects) <= tmp_c_threshold
 
         # Calculate the number of columns with common on bits (common 1s) between the objects
         a = np.sum(a_indices)
