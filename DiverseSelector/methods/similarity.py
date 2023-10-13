@@ -769,102 +769,102 @@ class SimilarityIndex:
 # https://jcheminf.biomedcentral.com/articles/10.1186/s13321-021-00505-3
 
 
-# AC: Austin-Colwell
 def _ac_nw(counters: dict) -> float:
+    """Calculate the Austin-Colwell (AC) similarity index."""
     ac_nw = (2 / np.pi) * np.arcsin(np.sqrt(counters["total_w_sim"] / counters["p"]))
     return ac_nw
 
 
-# BUB: Baroni-Urbani-Buser
 def _bub_nw(counters: dict) -> float:
+    """Calculate the Baroni-Urbani-Buser (BUB) similarity index."""
     bub_nw = ((counters["w_a"] * counters["w_d"]) ** 0.5 + counters["w_a"]) / (
         (counters["a"] * counters["d"]) ** 0.5 + counters["a"] + counters["total_dis"]
     )
     return bub_nw
 
 
-# CTn: Consoni-Todschini 1
 def _ct1_nw(counters: dict) -> float:
+    """Calculate the Consoni-Todschini 1 (CT1) similarity index."""
     ct1_nw = (log(1 + counters["w_a"] + counters["w_d"])) / (log(1 + counters["p"]))
     return ct1_nw
 
 
-# CTn: Consoni-Todschini 2
 def _ct2_nw(counters: dict) -> float:
+    """Calculate the Consoni-Todschini 2 (CT2) similarity index."""
     ct2_nw = (log(1 + counters["w_p"]) - log(1 + counters["total_w_dis"])) / (
         log(1 + counters["p"])
     )
     return ct2_nw
 
 
-# CTn: Consoni-Todschini 3
 def _ct3_nw(counters: dict) -> float:
+    """Calculate the Consoni-Todschini 3 (CT3) similarity index."""
     ct3_nw = (log(1 + counters["w_a"])) / (log(1 + counters["p"]))
     return ct3_nw
 
 
-# CTn: Consoni-Todschini 4
 def _ct4_nw(counters: dict) -> float:
+    """Calculate the Consoni-Todschini 4 (CT4) similarity index."""
     ct4_nw = (log(1 + counters["w_a"])) / (log(1 + counters["a"] + counters["total_dis"]))
     return ct4_nw
 
 
-# Fai: Faith
 def _fai_nw(counters: dict) -> float:
+    """Calculate the Faith (Fai) similarity index."""
     fai_nw = (counters["w_a"] + 0.5 * counters["w_d"]) / (counters["p"])
     return fai_nw
 
 
-# Gle: Gleason
 def _gle_nw(counters: dict) -> float:
+    """Calculate the Gleason (Gle) similarity index."""
     gle_nw = (2 * counters["w_a"]) / (2 * counters["a"] + counters["total_dis"])
     return gle_nw
 
 
-# Ja: Jaccard
 def _ja_nw(counters: dict) -> float:
+    """Calculate the Jaccard (Ja) similarity index."""
     ja_nw = (3 * counters["w_a"]) / (3 * counters["a"] + counters["total_dis"])
     return ja_nw
 
 
-# Ja0: Jaccard 0-variant
 def _ja0_nw(counters: dict) -> float:
+    """Calculate the Jaccard 0-variant (Ja0) similarity index."""
     ja0_nw = (3 * counters["total_w_sim"]) / (3 * counters["total_sim"] + counters["total_dis"])
     return ja0_nw
 
 
-# JT: Jaccard-Tanimoto
 def _jt_nw(counters: dict) -> float:
+    """Calculate the Jaccard-Tanimoto (JT) similarity index."""
     jt_nw = (counters["w_a"]) / (counters["a"] + counters["total_dis"])
     return jt_nw
 
 
-# RT: Rogers-Tanimoto
 def _rt_nw(counters: dict) -> float:
+    """Calculate the Rogers-Tanimoto (RT) similarity index."""
     rt_nw = (counters["total_w_sim"]) / (counters["p"] + counters["total_dis"])
     return rt_nw
 
 
-# RR: Russel-Rao
 def _rr_nw(counters: dict) -> float:
+    """Calculate the Russel-Rao (RR) similarity index."""
     rr_nw = (counters["w_a"]) / (counters["p"])
     return rr_nw
 
 
-# SM: Sokal-Michener
 def _sm_nw(counters: dict) -> float:
+    """Calculate the Sokal-Michener (SM) similarity index."""
     sm_nw = (counters["total_w_sim"]) / (counters["p"])
     return sm_nw
 
 
-# SSn: Sokal-Sneath 1
 def _ss1_nw(counters: dict) -> float:
+    """Calculate the Sokal-Sneath 1 (SS1) similarity index."""
     ss1_nw = (counters["w_a"]) / (counters["a"] + 2 * counters["total_dis"])
     return ss1_nw
 
 
-# SSn: Sokal-Sneath 2
 def _ss2_nw(counters: dict) -> float:
+    """Calculate the Sokal-Sneath 2 (SS2) similarity index."""
     ss2_nw = (2 * counters["total_w_sim"]) / (counters["p"] + counters["total_sim"])
     return ss2_nw
 
