@@ -3,7 +3,7 @@ networkx==2.3.0
 # networkx
 mordred==1.2.0
 numpy>=1.21.2
-scipy>=1.7.3
+scipy==1.11.1
 padelpy>=0.1.11
 pandas>=1.3.5
 # pytest>=6.2.5
