@@ -385,15 +385,15 @@ class SimilarityIndex:
 
     Methods
     -------
-    calculate_medoid(data, c_total=None):
+    calculate_medoid(arr, c_total=None):
         Calculate the medoid of a set of real-valued vectors or binary objects. The similarity_index
         is used as the distance.
 
-    calculate_outlier(data, c_total=None):
+    calculate_outlier(arr, c_total=None):
         Calculate the outlier of a set of real-valued vectors or binary objects. The
         similarity_index is used as the distance.
 
-    __call__(data=None, n_objects=None):
+    __call__(arr=None, n_objects=None):
         Calculate the similarity index of a set of vectors.
 
     """
@@ -639,7 +639,7 @@ class SimilarityIndex:
         else:
             return 1
 
-    def __call__(self, data: np.ndarray, n_objects: int = None) -> float:
+    def __call__(self, arr: np.ndarray, n_objects: int = None) -> float:
         """Calculate the similarity index of a set of vectors.
 
         Parameters
