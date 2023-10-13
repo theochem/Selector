@@ -54,7 +54,7 @@ setup(
     package_dir={"DiverseSelector": "DiverseSelector"},
     packages=["DiverseSelector",
               "DiverseSelector.methods",
-              "DiverseSelector.DiverseSelector.tests",
+              "DiverseSelector.tests",
               "DiverseSelector.methods.tests"],
 
     # Optional include package data to ship with your package
