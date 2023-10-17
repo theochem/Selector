@@ -60,7 +60,7 @@ jobs:
     - name: Run tests
       shell: bash
       run: |
-        pytest --cov-config=.coveragerc --cov-report=xml --color=yes DiverseSelector/test/
+        pytest --cov-config=.coveragerc --cov-report=xml --color=yes DiverseSelector
 
     - name: CodeCov
       uses: codecov/codecov-action@v3
