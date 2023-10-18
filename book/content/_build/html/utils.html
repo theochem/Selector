@@ -93,7 +93,7 @@
         <ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="intro.html">
-   Welcome to QC-Selector
+   Welcome to QC-Selector’s Documentation!
   </a>
  </li>
 </ul>
@@ -105,7 +105,7 @@
 <ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="installation.html">
-   Installation &amp; Testing
+   Installation
   </a>
  </li>
  <li class="toctree-l1">
@@ -232,19 +232,26 @@
                 
   <section id="module-DiverseSelector.utils">
 <span id="utilities"></span><h1>Utilities<a class="headerlink" href="#module-DiverseSelector.utils" title="Permalink to this headline">¶</a></h1>
-<p>Utils module.</p>
+<p>Module for Selection Utilities.</p>
 <dl class="py function">
-<dt class="sig sig-object py" id="DiverseSelector.utils.distance_to_similarity">
-<span class="sig-prename descclassname"><span class="pre">DiverseSelector.utils.</span></span><span class="sig-name descname"><span class="pre">distance_to_similarity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dist</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#DiverseSelector.utils.distance_to_similarity" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convert between distance and similarity matrix.</p>
+<dt class="sig sig-object py" id="DiverseSelector.utils.optimize_radius">
+<span class="sig-prename descclassname"><span class="pre">DiverseSelector.utils.</span></span><span class="sig-name descname"><span class="pre">optimize_radius</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#DiverseSelector.utils.optimize_radius" title="Permalink to this definition">¶</a></dt>
+<dd><p>Algorithm that uses sphere exclusion for selecting points from cluster.</p>
+<p>Iteratively searches for the optimal radius to obtain the correct number
+of selected samples. If the radius cannot converge to return <cite>size</cite> points,
+the function returns the closest number of samples to <cite>size</cite> as possible.</p>
 <dl class="simple">
-<dt>x<span class="classifier">ndarray</span></dt><dd><p>Symmetric distance or similarity array.</p>
+<dt>obj: object</dt><dd><p>Instance of <cite>DirectedSphereExclusion</cite> or <cite>OptiSim</cite> selection class.</p>
 </dd>
-<dt>dist<span class="classifier">bool</span></dt><dd><p>Confirms the matrix is distance.</p>
+<dt>X: ndarray of shape (n_samples, n_features)</dt><dd><p>Feature matrix of <cite>n_samples</cite> samples in <cite>n_features</cite> dimensional space.</p>
+</dd>
+<dt>size: int</dt><dd><p>Number of sample points to select (i.e. size of the subset).</p>
+</dd>
+<dt>cluster_ids: np.ndarray</dt><dd><p>Indices of points that form a cluster.</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt>y<span class="classifier">ndarray</span></dt><dd><p>Symmetric distance or similarity array.</p>
+<dt>selected: list</dt><dd><p>List of indices of selected samples.</p>
 </dd>
 </dl>
 </dd></dl>
