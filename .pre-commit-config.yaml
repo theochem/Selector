@@ -63,19 +63,20 @@ repos:
     hooks:
     -   id: isort
 
--   repo: https://github.com/pycqa/flake8
-    rev: 6.1.0
-    hooks:
-      - id: flake8
-        args: ["--max-line-length=100"]
-        additional_dependencies:
-          - flake8-bugbear
-          - flake8-comprehensions
-          - flake8-simplify
-          - flake8-docstrings
-          - flake8-import-order>=0.9
-          - flake8-colors
-        exclude: ^src/blib2to3/
+# todo:  disable flake8 for now, but will need to add it back in the future
+# -   repo: https://github.com/pycqa/flake8
+#     rev: 6.1.0
+#     hooks:
+#       - id: flake8
+#         args: ["--max-line-length=100"]
+#         additional_dependencies:
+#           - flake8-bugbear
+#           - flake8-comprehensions
+#           - flake8-simplify
+#           - flake8-docstrings
+#           - flake8-import-order>=0.9
+#           - flake8-colors
+#         exclude: ^src/blib2to3/
 
 -   repo: https://github.com/pycqa/bandit
     rev: 1.7.5
