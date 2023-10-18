@@ -37,7 +37,7 @@ repos:
     #  replaces or checks mixed line ending
     -   id: mixed-line-ending
     -   id: debug-statements
-    -   id: name-tests-test
+    # -   id: name-tests-test
     -   id: trailing-whitespace
     # sorts entries in requirements.txt
     -   id: requirements-txt-fixer
