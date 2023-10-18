@@ -55,7 +55,6 @@ repos:
     -    id: black
          args: [
            --line-length=100,
-           --inplace,
            ]
 
 -   repo: https://github.com/pycqa/isort
@@ -92,8 +91,9 @@ repos:
               ^doc/
           )
         args: [
-               "-r DiverseSelector",
-               "-c .bandit.yml"
+               "-r",
+               "-c .bandit.yml",
+               "DiverseSelector"
               ]
 
 -   repo: https://github.com/asottile/pyupgrade
