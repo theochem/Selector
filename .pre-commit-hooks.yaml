@@ -57,7 +57,7 @@
     description: ensures that a file is either empty, or ends with one newline.
     entry: end-of-file-fixer
     language: python
-    types: [text]
+    types: [python]
     stages: [commit, push, manual]
 
 -   id: debug-statements
