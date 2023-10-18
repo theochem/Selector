@@ -24,7 +24,7 @@ coverage:
 
   # ignore statistics for the testing folders
   ignore:
-    - .*/test/.*
+    - .*/tests/.*
     - .*/examples/.*
     - .*/__int__.py
     - .*/_version.py
