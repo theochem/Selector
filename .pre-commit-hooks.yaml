@@ -6,7 +6,7 @@
     entry: trailing-whitespace-fixer
     language: python
     types: [text]
-    exclude: ^(book/|^devtools/|^docs/|^doc/)
+    exclude: ^(book|devtools|docs|doc)/
     stages: [commit, push, manual]
 
 -   id: sort-simple-yaml
@@ -37,10 +37,7 @@
     description: checks yaml files for parseable syntax.
     entry: check-yaml
     language: python
-    exclude: |
-            (?x)^(
-                website.yml
-            )$
+    exclude: ^website.yml
     types: [yaml]
 
 -   id: requirements-txt-fixer
