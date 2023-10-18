@@ -3,7 +3,7 @@
 
 title: Ayers Lab
 author: The QC-Dev Community with the support of Digital Research Alliance of Canada and The Jupyter Book Community
-logo: logo.png
+logo: selector_logo.png
 
 # Force re-execution of notebooks on each build.
 # See https://jupyterbook.org/content/execute.html
@@ -61,5 +61,5 @@ copyright: "2022-2023"
 html:
   use_issues_button: true
   use_repository_button: true
-  favicon: selector_logo.png
+  favicon: "selector_logo.png"
   use_multitoc_numbering: false
