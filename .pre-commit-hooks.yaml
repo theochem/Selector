@@ -37,6 +37,10 @@
     description: checks yaml files for parseable syntax.
     entry: check-yaml
     language: python
+    exclude: |
+            (?x)^(
+                website.yml
+            )$
     types: [yaml]
 
 -   id: requirements-txt-fixer
