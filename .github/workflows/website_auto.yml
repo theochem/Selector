@@ -20,6 +20,9 @@ on:
 jobs:
   deploy-book:
     runs-on: ubuntu-latest
+    permissions:
+      pages: write
+
     steps:
       - uses: actions/checkout@v4
 
