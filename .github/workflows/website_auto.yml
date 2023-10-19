@@ -2,9 +2,11 @@ name: deploy-book
 
 # Only run this when the master branch changes
 on:
-  push:
-    branches:
-      - main
+  # disable for now to avoid spamming the repo
+  # this can also duplicate the pull requests
+  # push:
+  #   branches:
+  #     - main
   pull_request:
     types: [opened, synchronize, reopened, closed]
     branches:
@@ -20,6 +22,9 @@ on:
 jobs:
   deploy-book:
     runs-on: ubuntu-latest
+    permissions:
+      pages: write
+
     steps:
       - uses: actions/checkout@v4
 
