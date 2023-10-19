@@ -2,11 +2,9 @@ name: deploy-book
 
 # Only run this when the master branch changes
 on:
-  # disable for now to avoid spamming the repo
-  # this can also duplicate the pull requests
-  # push:
-  #   branches:
-  #     - main
+  push:
+    branches:
+      - main
   pull_request:
     types: [opened, synchronize, reopened, closed]
     branches:
@@ -50,9 +48,10 @@ jobs:
           jupyter-book build ./book/content
 
       # Push the book's HTML to github-pages
-      # https://github.com/orgs/community/discussions/26724
+      # inspired by https://github.com/orgs/community/discussions/26724
+      # only push to gh-pages if the main branch has been updated
       - name: GitHub Pages Action
-        if: ${{ github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true }}
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
