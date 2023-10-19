@@ -420,9 +420,9 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#stable-releases">Stable releases</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation-with-ana-or-miniconda">Installation with Ana- or Miniconda:</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation-with-pip">Installation with Pip</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#stable-releases">Stable Releases</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation-with-anaconda-or-miniconda">Installation with Anaconda or Miniconda:</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation-with-pip">Installation with <code class="docutils literal notranslate"><span class="pre">pip</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#latest-git-revision">Latest git revision</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#testing">Testing</a></li>
 </ul>
@@ -439,11 +439,11 @@ document.write(`
   <section class="tex2jax_ignore mathjax_ignore" id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this heading">#</a></h1>
 <section id="stable-releases">
-<h2>Stable releases<a class="headerlink" href="#stable-releases" title="Permalink to this heading">#</a></h2>
+<h2>Stable Releases<a class="headerlink" href="#stable-releases" title="Permalink to this heading">#</a></h2>
 <div class="alert alert-block alert-warning">
 <b>Warning:
 </b>
-<p>We are preparing a 1.0 release. Until then, these instructions for installing a stable release will not work yet. If you enjoy living on the edge, try the development release as explained in the “Latest git revision” section below.</p>
+<p>We are preparing a 1.0 release. Until then, these instructions for installing a stable release will not work yet. If you enjoy living on the edge, try the development release as explained in the “Latest Git Revision” section below.</p>
 </div>
 <p>The following dependencies are required to run DiverseSelector properly,</p>
 <ul class="simple">
@@ -455,8 +455,8 @@ document.write(`
 </ul>
 <p>Normally, you don’t need to install these dependencies manually. They will be installed automatically when you follow the instructions below.</p>
 </section>
-<section id="installation-with-ana-or-miniconda">
-<h2>Installation with Ana- or Miniconda:<a class="headerlink" href="#installation-with-ana-or-miniconda" title="Permalink to this heading">#</a></h2>
+<section id="installation-with-anaconda-or-miniconda">
+<h2>Installation with Anaconda or Miniconda:<a class="headerlink" href="#installation-with-anaconda-or-miniconda" title="Permalink to this heading">#</a></h2>
 <ol class="arabic simple">
 <li><p>To install DiverseSelector using the conda package management system, install <a class="reference external" href="https://conda.io/miniconda.html">miniconda</a> or <a class="reference external" href="https://www.anaconda.com/download">anaconda</a> first, and then:</p></li>
 </ol>
@@ -479,9 +479,10 @@ document.write(`
 <span class="n">conda</span> <span class="n">install</span> <span class="o">-</span><span class="n">c</span> <span class="n">theochem</span><span class="o">/</span><span class="n">label</span><span class="o">/</span><span class="n">dev</span> <span class="n">qc</span><span class="o">-</span><span class="n">selector</span>
 </pre></div>
 </div>
+<p>Please note, it is also possible to install use <a class="reference external" href="https://mamba.readthedocs.io/en/latest/#"><code class="docutils literal notranslate"><span class="pre">mamba</span></code></a> instead of <code class="docutils literal notranslate"><span class="pre">conda</span></code> for faster Python package environment management.</p>
 </section>
 <section id="installation-with-pip">
-<h2>Installation with Pip<a class="headerlink" href="#installation-with-pip" title="Permalink to this heading">#</a></h2>
+<h2>Installation with <code class="docutils literal notranslate"><span class="pre">pip</span></code><a class="headerlink" href="#installation-with-pip" title="Permalink to this heading">#</a></h2>
 <ol class="arabic simple">
 <li><p>You can work in a <a class="reference external" href="https://docs.python.org/3/tutorial/venv.html">virtual environment</a>:</p></li>
 </ol>
@@ -522,7 +523,7 @@ Python modules.</p>
 </section>
 <section id="latest-git-revision">
 <h2>Latest git revision<a class="headerlink" href="#latest-git-revision" title="Permalink to this heading">#</a></h2>
-<p>This section shows how one can install the latest revision of DiverseSelector from the git repository. This kind of installation comes with some risks (sudden API changes, bugs, …) and so be prepared to accept them when using the following installation instructions.</p>
+<p>This section shows how one can install the latest revision of <code class="docutils literal notranslate"><span class="pre">DiverseSelector</span></code> from the git repository. This kind of installation comes with some risks (sudden API changes, bugs, …) and so be prepared to accept them when using the following installation instructions.</p>
 <p>There are two installation methods:</p>
 <ol class="arabic simple">
 <li><p><strong>Quick and dirty.</strong> Of this method, there are four variants, depending on the correctness of your <code class="docutils literal notranslate"><span class="pre">PATH</span></code> variable and the presence of a virtual or conda environment. These different scenarios are explained in more detail in the previous section.</p></li>
@@ -655,9 +656,9 @@ Python modules.</p>
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#stable-releases">Stable releases</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation-with-ana-or-miniconda">Installation with Ana- or Miniconda:</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation-with-pip">Installation with Pip</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#stable-releases">Stable Releases</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation-with-anaconda-or-miniconda">Installation with Anaconda or Miniconda:</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation-with-pip">Installation with <code class="docutils literal notranslate"><span class="pre">pip</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#latest-git-revision">Latest git revision</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#testing">Testing</a></li>
 </ul>
