@@ -223,26 +223,41 @@ def shannon_entropy(x: np.ndarray) -> float:
     if np.count_nonzero((x != 0) & (x != 1)) != 0:
         raise ValueError("Attribute `x` should have binary values.")
 
-    num_feat = x.shape[1]
-    num_mols = x.shape[0]
+    p_i_arr = np.sum(x, axis=0) / x.shape[0]
     h_x = 0
-    for i in np.arange(0, num_feat):
-        # calculate feature proportion
-        p_i = np.count_nonzero(x[:, i]) / num_mols
-        # sum all non-zero terms
+
+    for p_i in p_i_arr:
         if p_i == 0 or p_i == 1:
             # p_i = 0
             se_i = 0
         else:
             # from https://pubs.acs.org/doi/10.1021/ci900159f
-            # se_i = -p_i * np.log2(p_i) - (1 - p_i) * np.log2(1 - p_i)
+            se_i = -p_i * np.log2(p_i) - (1 - p_i) * np.log2(1 - p_i)
 
             # from Eq. q of https://pubs.acs.org/doi/10.1021/ci900159f
-            se_i = -p_i * np.log10(p_i)
+            # se_i = -p_i * np.log10(p_i)
 
         h_x += se_i
 
     return h_x
+
+    # for i in np.arange(0, num_feat):
+    #     # calculate feature proportion
+    #     p_i = np.count_nonzero(x[:, i]) / num_mols
+    #     # sum all non-zero terms
+    #     if p_i == 0 or p_i == 1:
+    #         # p_i = 0
+    #         se_i = 0
+    #     else:
+    #         # from https://pubs.acs.org/doi/10.1021/ci900159f
+    #         se_i = -p_i * np.log2(p_i) - (1 - p_i) * np.log2(1 - p_i)
+
+    #         # from Eq. q of https://pubs.acs.org/doi/10.1021/ci900159f
+    #         # se_i = -p_i * np.log10(p_i)
+
+    #     h_x += se_i
+
+    # return h_x
 
 
 # todo: add tests for edi
