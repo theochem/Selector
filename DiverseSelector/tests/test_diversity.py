@@ -50,6 +50,8 @@ sample4 = np.array([[1, 0, 1], [0, 1, 1]])
 
 sample5 = np.array([[0, 2, 4, 0], [1, 2, 4, 0], [2, 2, 4, 0]])
 
+sample6 = np.array([[1, 0, 1, 0], [0, 1, 1, 0], [1, 0, 1, 0], [0, 0, 1, 0]])
+
 
 def test_compute_diversity_default():
     """Test compute diversity with default div_type."""
@@ -60,10 +62,9 @@ def test_compute_diversity_default():
 
 def test_compute_diversity_specified():
     """Test compute diversity with a specified div_type."""
-    # comp_div = compute_diversity(sample4, "shannon_entropy")
-    # expected = 0.301029995
-    # assert_almost_equal(comp_div, expected)
-    pass
+    comp_div = compute_diversity(sample6, "shannon_entropy")
+    expected = 1.81
+    assert round(comp_div, 2) == expected
 
 
 def test_compute_diversity_hyperspheres():
@@ -155,13 +156,6 @@ def test_shannon_entropy():
     x3 = np.vstack((x1, [0, 1, 0, 1]))
     expected = 3.39
     assert round(shannon_entropy(x3), 2) == expected
-
-
-# def test_shannon_entropy_practical():
-#     """Test the shannon entropy function with binary matrix."""
-#     selected = shannon_entropy(sample4)
-#     expected = 0.301029995
-#     assert_almost_equal(selected, expected)
 
 
 def test_shannon_entropy_binary_error():
