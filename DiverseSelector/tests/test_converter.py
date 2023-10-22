@@ -66,9 +66,7 @@ def test_sim_2_dist():
 def test_sim_2_dist_frequency():
     """Test similarity to distance method with a frequency metric."""
     x = np.array([[4, 9, 1], [9, 1, 25], [1, 25, 16]])
-    expected = np.array(
-        [[(1 / 2), (1 / 3), 1], [(1 / 3), 1, (1 / 5)], [1, (1 / 5), (1 / 4)]]
-    )
+    expected = np.array([[(1 / 2), (1 / 3), 1], [(1 / 3), 1, (1 / 5)], [1, (1 / 5), (1 / 4)]])
     actual = cv.sim_to_dist(x, "transition")
     assert_almost_equal(actual, expected, decimal=10)
 
@@ -85,8 +83,9 @@ def test_sim_2_dist_frequency_error():
 
 def test_sim_2_dist_membership():
     """Test similarity to distance method with the membership metric."""
-    x = np.array([[(1 / 2), (1 / 5)], [(1 / 4), (1 / 3)]])
-    expected = np.array([[(1 / 2), (4 / 5)], [(3 / 4), (2 / 3)]])
+    # x = np.array([[(1 / 2), (1 / 5)], [(1 / 4), (1 / 3)]])
+    x = np.array([[1, 1 / 5, 1 / 3], [1 / 5, 1, 4 / 5], [1 / 3, 4 / 5, 1]])
+    expected = np.array([[0, 4 / 5, 2 / 3], [4 / 5, 0, 1 / 5], [2 / 3, 1 / 5, 0]])
     actual = cv.sim_to_dist(x, "membership")
     assert_almost_equal(actual, expected, decimal=10)
 
@@ -100,6 +99,12 @@ def test_sim_2_dist_membership_error():
 def test_sim_2_dist_invalid_metric():
     """Test similarity to distance method with an unsupported metric."""
     assert_raises(ValueError, cv.sim_to_dist, np.ones(5), "testing")
+
+
+def test_sim_2_dist_non_symmetric():
+    """Test the invalid 2D symmetric matrix error."""
+    x = np.array([[1, 2], [4, 5]])
+    assert_raises(ValueError, cv.sim_to_dist, x, "reverse")
 
 
 # Tests for individual metrics
@@ -195,9 +200,7 @@ def test_correlation_error():
 def test_transition():
     """Test the transition function for frequency to distance conversion."""
     x = np.array([[4, 9, 1], [9, 1, 25], [1, 25, 16]])
-    expected = np.array(
-        [[(1 / 2), (1 / 3), 1], [(1 / 3), 1, (1 / 5)], [1, (1 / 5), (1 / 4)]]
-    )
+    expected = np.array([[(1 / 2), (1 / 3), 1], [(1 / 3), 1, (1 / 5)], [1, (1 / 5), (1 / 4)]])
 
     actual = cv.transition(x)
     assert_almost_equal(actual, expected, decimal=10)

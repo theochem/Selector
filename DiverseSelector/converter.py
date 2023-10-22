@@ -42,7 +42,9 @@ __all__ = [
 ]
 
 
-def sim_to_dist(x: Union[int, float, np.ndarray], metric: str) -> Union[float, np.ndarray]:
+def sim_to_dist(
+    x: Union[int, float, np.ndarray], metric: str, scaling_factor: float = 1.0
+) -> Union[float, np.ndarray]:
     """Convert similarity coefficients to distance array.
 
     Parameters
@@ -55,12 +57,17 @@ def sim_to_dist(x: Union[int, float, np.ndarray], metric: str) -> Union[float, n
         Supported metrics are "reverse", "reciprocal", "exponential",
         "gaussian", "membership", "correlation", "transition", "co-occurrence",
         "gravity", "confusion", "probability", and "covariance".
+    scaling_factor : float, optional
+        Scaling factor for the distance array. Default is 1.0.
 
     Returns
     -------
     dist : float or ndarray
          Distance value or array.
     """
+    # scale the distance matrix
+    x = x * scaling_factor
+
     frequency = {
         "transition": transition,
         "co-occurrence": co_occurrence,
@@ -90,6 +97,9 @@ def sim_to_dist(x: Union[int, float, np.ndarray], metric: str) -> Union[float, n
         raise ValueError(f"Argument x should either have 1 or 2 dimensions, got {x.ndim}.")
     if x.ndim == 1 and metric in ["co-occurrence", "gravity"]:
         raise ValueError(f"Argument x should be a 2D array when using the {metric} metric.")
+    # check if x is symmetric
+    if x.ndim == 2 and not np.allclose(x, x.T):
+        raise ValueError("Argument x should be a symmetric array.")
 
     # call correct metric function
     if metric in frequency:
