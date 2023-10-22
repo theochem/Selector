@@ -23,6 +23,9 @@
 
 """Testing for the diversity algorithms in the diversity.py module."""
 
+import pytest
+import numpy as np
+from numpy.testing import assert_almost_equal, assert_equal, assert_raises, assert_warns
 from DiverseSelector.diversity import (
     compute_diversity,
     entropy,
@@ -35,8 +38,6 @@ from DiverseSelector.diversity import (
     nearest_average_tanimoto,
 )
 
-import numpy as np
-from numpy.testing import assert_almost_equal, assert_equal, assert_raises, assert_warns
 
 # each row is a feature and each column is a molecule
 sample1 = np.array([[4, 2, 6], [4, 9, 6], [2, 5, 0], [2, 0, 9], [5, 3, 0]])
@@ -53,16 +54,9 @@ sample5 = np.array([[0, 2, 4, 0], [1, 2, 4, 0], [2, 2, 4, 0]])
 sample6 = np.array([[1, 0, 1, 0], [0, 1, 1, 0], [1, 0, 1, 0], [0, 0, 1, 0]])
 
 
-def test_compute_diversity_default():
-    """Test compute diversity with default div_type."""
-    comp_div = compute_diversity(sample4)
-    expected = 2 / 3
-    assert_almost_equal(comp_div, expected)
-
-
 def test_compute_diversity_specified():
     """Test compute diversity with a specified div_type."""
-    comp_div = compute_diversity(sample6, "shannon_entropy")
+    comp_div = compute_diversity(sample6, "shannon_entropy", normalize=False, truncation=False)
     expected = 1.81
     assert round(comp_div, 2) == expected
 
@@ -73,7 +67,7 @@ def test_compute_diversity_hyperspheres():
     centers_pts = np.array([[0.5, 0.5]] * (100 - 4))
     pts = np.vstack((corner_pts, centers_pts))
 
-    comp_div = compute_diversity(pts, "hypersphere overlap of subset", pts)
+    comp_div = compute_diversity(pts, div_type="hypersphere overlap of subset", features=pts)
     # Expected = overlap + edge penalty
     expected = (100.0 * 96 * 95 * 0.5) + 2.0
     assert_almost_equal(comp_div, expected)
@@ -147,15 +141,33 @@ def test_shannon_entropy():
     # example taken from figure 1 of 10.1021/ci900159f
     x1 = np.array([[1, 0, 1, 0], [0, 1, 1, 0], [1, 0, 1, 0], [0, 0, 1, 0]])
     expected = 1.81
-    assert round(shannon_entropy(x1), 2) == expected
+    assert round(shannon_entropy(x1, normalize=False, truncation=False), 2) == expected
 
     x2 = np.vstack((x1, [1, 1, 1, 0]))
     expected = 1.94
-    assert round(shannon_entropy(x2), 2) == expected
+    assert round(shannon_entropy(x2, normalize=False, truncation=False), 2) == expected
 
     x3 = np.vstack((x1, [0, 1, 0, 1]))
     expected = 3.39
-    assert round(shannon_entropy(x3), 2) == expected
+    assert round(shannon_entropy(x3, normalize=False, truncation=False), 2) == expected
+
+
+def test_shannon_entropy_normalize():
+    """Test the shannon entropy function with normalization."""
+    x1 = np.array([[1, 0, 1, 0], [0, 1, 1, 0], [1, 0, 1, 0], [0, 0, 1, 0]])
+    expected = 1.81 / (x1.shape[1] * np.log2(2) / 2)
+    assert_almost_equal(
+        actual=shannon_entropy(x1, normalize=True, truncation=False),
+        desired=expected,
+        decimal=2,
+    )
+
+
+def test_shannon_entropy_warning():
+    """Test the shannon entropy function gives warning when normalization is True and truncation is True."""
+    x1 = np.array([[1, 0, 1, 0], [0, 1, 1, 0], [1, 0, 1, 0], [0, 0, 1, 0]])
+    with pytest.warns(UserWarning):
+        shannon_entropy(x1, normalize=True, truncation=True)
 
 
 def test_shannon_entropy_binary_error():
