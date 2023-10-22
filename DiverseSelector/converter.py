@@ -43,7 +43,7 @@ __all__ = [
 
 
 def sim_to_dist(
-    x: Union[int, float, np.ndarray], metric: str, scale: float = 1.0
+    x: Union[int, float, np.ndarray], metric: str, scaling_factor: float = 1.0
 ) -> Union[float, np.ndarray]:
     """Convert similarity coefficients to distance array.
 
@@ -57,7 +57,7 @@ def sim_to_dist(
         Supported metrics are "reverse", "reciprocal", "exponential",
         "gaussian", "membership", "correlation", "transition", "co-occurrence",
         "gravity", "confusion", "probability", and "covariance".
-    scaler : float, optional
+    scaling_factor : float, optional
         Scaling factor for the distance array. Default is 1.0.
 
     Returns
@@ -66,7 +66,7 @@ def sim_to_dist(
          Distance value or array.
     """
     # scale the distance matrix
-    x = x * scale
+    x = x * scaling_factor
 
     frequency = {
         "transition": transition,
