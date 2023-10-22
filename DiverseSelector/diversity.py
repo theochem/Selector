@@ -191,8 +191,6 @@ def logdet(x: np.ndarray) -> float:
 def shannon_entropy(x: np.ndarray) -> float:
     r"""Computes the shannon entropy of a binary matrix.
 
-
-
     Higher values mean more diversity.
 
     Parameters
@@ -243,9 +241,6 @@ def shannon_entropy(x: np.ndarray) -> float:
         else:
             # from https://pubs.acs.org/doi/10.1021/ci900159f
             se_i = -p_i * np.log2(p_i) - (1 - p_i) * np.log2(1 - p_i)
-
-            # from Eq. q of https://pubs.acs.org/doi/10.1021/ci900159f
-            # se_i = -p_i * np.log10(p_i)
 
         h_x += se_i
 
