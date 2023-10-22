@@ -191,13 +191,7 @@ def logdet(x: np.ndarray) -> float:
 def shannon_entropy(x: np.ndarray) -> float:
     r"""Computes the shannon entropy of a binary matrix.
 
-    The equation for Shannon entropy is
 
-    .. math::
-        H(X) = \sum_{i=1}^{n}-P_i(X)\log{P_i(X)}
-
-    where :math:`X` is the feature matrix, :math:`n` is the number of features, and :math:`P_i(X)`
-    is the proportion of molecules that have feature :math:`i` in :math:`X`.
 
     Higher values mean more diversity.
 
@@ -213,10 +207,26 @@ def shannon_entropy(x: np.ndarray) -> float:
 
     Notes
     -----
-    Leguy, J., Glavatskikh, M., Cauchy, T., and Benoit. (2021)
-    Scalable estimator of the diversity for de novo molecular generation resulting
-    in a more robust QM dataset (OD9) and a more efficient molecular optimization.
-    Journal of Cheminformatics 13.
+    Suppose we have :math:`m` compounds and each compound has :math:`n` bits binary fingerprints.
+    The binary matrix (feature matrix) is :math:`\mathbf{X} \in m \times n`, where each
+    row is a compound and each column contains the :math:`n`-bit binary fingerprint.
+    The equation for Shannon entropy is given by [1]_
+
+    .. math::
+        SE = \sum_i^m SE_i
+
+    where :math:`SE_i` is the Shannon entropy of the :math:`i`th column of :math:`\mathbf{X}`, which
+    can be calculated as
+
+    .. math::
+        SE_i  =  - p_i \log_2{p_i }  - (1 - p_i)\log_2(1 - p_i)
+
+    where :math:`p_i` represents the relative frequency of `1` bits at the fingerprint position
+    :math:`i` for each molecule. When :math:`p_i = 0` or :math:`p_i = 1`, the :math:`SE_i` is zero.
+
+    .. [1] Wang, Y., Geppert, H., & Bajorath, J. (2009). Shannon entropy-based fingerprint similarity
+    search strategy. Journal of Chemical Information and Modeling, 49(7), 1687-1691.
+
     """
 
     # check if matrix is binary
@@ -240,24 +250,6 @@ def shannon_entropy(x: np.ndarray) -> float:
         h_x += se_i
 
     return h_x
-
-    # for i in np.arange(0, num_feat):
-    #     # calculate feature proportion
-    #     p_i = np.count_nonzero(x[:, i]) / num_mols
-    #     # sum all non-zero terms
-    #     if p_i == 0 or p_i == 1:
-    #         # p_i = 0
-    #         se_i = 0
-    #     else:
-    #         # from https://pubs.acs.org/doi/10.1021/ci900159f
-    #         se_i = -p_i * np.log2(p_i) - (1 - p_i) * np.log2(1 - p_i)
-
-    #         # from Eq. q of https://pubs.acs.org/doi/10.1021/ci900159f
-    #         # se_i = -p_i * np.log10(p_i)
-
-    #     h_x += se_i
-
-    # return h_x
 
 
 # todo: add tests for edi
