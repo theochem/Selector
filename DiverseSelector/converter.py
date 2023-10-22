@@ -97,6 +97,9 @@ def sim_to_dist(
         raise ValueError(f"Argument x should either have 1 or 2 dimensions, got {x.ndim}.")
     if x.ndim == 1 and metric in ["co-occurrence", "gravity"]:
         raise ValueError(f"Argument x should be a 2D array when using the {metric} metric.")
+    # check if x is symmetric
+    if x.ndim == 2 and not np.allclose(x, x.T):
+        raise ValueError("Argument x should be a symmetric array.")
 
     # call correct metric function
     if metric in frequency:
