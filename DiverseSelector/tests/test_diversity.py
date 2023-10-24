@@ -28,7 +28,6 @@ import numpy as np
 from numpy.testing import assert_almost_equal, assert_equal, assert_raises, assert_warns
 from DiverseSelector.diversity import (
     compute_diversity,
-    entropy,
     gini_coefficient,
     explicit_diversity_index,
     logdet,
@@ -100,25 +99,6 @@ def test_compute_diversity_edi_zero_error():
 def test_compute_diversity_invalid():
     """Test compute diversity with a non-supported div_type."""
     assert_raises(ValueError, compute_diversity, sample1, "diversity_type")
-
-
-def test_entropy():
-    """Test the entropy function with predefined matrix."""
-    ent = entropy(sample4)
-    expected = 2 / 3
-    assert_almost_equal(ent, expected)
-
-
-def test_entropy_conversion():
-    """Test the entropy function with matrix that is not in bit form."""
-    ent = entropy(sample3)
-    expected = 0
-    assert_almost_equal(ent, expected)
-
-
-def test_entropy_value_error():
-    """Test the entropy function with a matrix that causes a value error"""
-    assert_raises(ValueError, entropy, sample5)
 
 
 def test_logdet():
