@@ -23,9 +23,9 @@
 """Test Dissimilarity-Based Selection Methods."""
 
 
-from selector.methods.dissimilarity import MaxMin, MaxSum, OptiSim
+from selector.methods.dissimilarity import MaxMin, MaxSum, OptiSim, DirectedSphereExclusion
 import numpy as np
-from numpy.testing import assert_equal
+from numpy.testing import assert_equal, assert_raises
 from sklearn.metrics import pairwise_distances
 from selector.methods.tests.common import generate_synthetic_data
 import pytest
@@ -176,3 +176,80 @@ def test_optisim():
     selector = MaxMin()
     selected_ids_maxmin = selector.select(arr_dist, size=12)
     assert_equal(selected_ids_optisim, selected_ids_maxmin)
+
+
+def test_directed_sphere_size_error():
+    """Test DirectedSphereExclusion error when too many points requested."""
+    x = np.array([[1, 9]] * 100)
+    selector = DirectedSphereExclusion()
+    assert_raises(ValueError, selector.select, x, size=105)
+
+
+def test_directed_sphere_same_number_of_pts():
+    """Test DirectSphereExclusion with `size` = number of points in dataset."""
+    # (0,0) as the reference point
+    x = np.array([[0, 0], [0, 1], [0, 2], [0, 3]])
+    selector = DirectedSphereExclusion(r0=1, tol=0)
+    selected = selector.select(x, size=3)
+    assert_equal(selected, [1, 2, 3])
+    assert_equal(selector.r, 0.5)
+
+
+def test_directed_sphere_exclusion_select_more_number_of_pts():
+    """Test DirectSphereExclusion on points on the line with `size` < number of points in dataset."""
+    # (0,0) as the reference point
+    x = np.array([[0, 0], [0, 1], [0, 2], [0, 3], [0, 4], [0, 5], [0, 6]])
+    selector = DirectedSphereExclusion(r0=0.5, tol=0)
+    selected = selector.select(x, size=3)
+    expected = [1, 3, 5]
+    assert_equal(selected, expected)
+    assert_equal(selector.r, 1.0)
+
+
+def test_directed_sphere_exclusion_on_line_with_():
+    """Test Direct Sphere Exclusion on points on line with smaller distribution than the radius."""
+    # (0,0) as the reference point
+    x = np.array(
+        [
+            [0, 0],
+            [0, 1],
+            [0, 1.1],
+            [0, 1.2],
+            [0, 2],
+            [0, 3],
+            [0, 3.1],
+            [0, 3.2],
+            [0, 4],
+            [0, 5],
+            [0, 6],
+        ]
+    )
+    selector = DirectedSphereExclusion(r0=0.5, tol=0)
+    selected = selector.select(x, size=3)
+    expected = [1, 5, 9]
+    assert_equal(selected, expected)
+    assert_equal(selector.r, 1.0)
+
+
+def test_directed_sphere_on_line_with_larger_radius():
+    """Test Direct Sphere Exclusion on points on the line with a too large radius size."""
+    # (0,0) as the reference point
+    x = np.array(
+        [
+            [0, 0],
+            [0, 1],
+            [0, 1.1],
+            [0, 1.2],
+            [0, 2],
+            [0, 3],
+            [0, 3.1],
+            [0, 3.2],
+            [0, 4],
+            [0, 5],
+        ]
+    )
+    selector = DirectedSphereExclusion(r0=2.0, tol=0)
+    selected = selector.select(x, size=3)
+    expected = [1, 5, 9]
+    assert_equal(selected, expected)
+    assert_equal(selector.r, 1.0)

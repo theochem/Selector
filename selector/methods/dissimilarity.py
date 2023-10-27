@@ -22,8 +22,9 @@
 # --
 """Module for Dissimilarity-Based Selection Methods."""
 
+import bitarray
 import numpy as np
-from scipy import spatial
+import scipy
 
 from selector.methods.base import SelectionBase
 from selector.methods.utils import optimize_radius
@@ -33,6 +34,7 @@ __all__ = [
     "MaxMin",
     "MaxSum",
     "OptiSim",
+    "DirectedSphereExclusion",
 ]
 
 
@@ -272,7 +274,7 @@ class OptiSim(SelectionBase):
         count = 1
 
         # establish a kd-tree for nearest-neighbor lookup
-        tree = spatial.KDTree(X)
+        tree = scipy.spatial.KDTree(X)
         # use a random number generator that will be used to randomly select points
         rng = np.random.default_rng(seed=self.random_seed)
 
@@ -296,7 +298,7 @@ class OptiSim(SelectionBase):
                 sublist = candidates.compressed()
 
             # create a new kd-tree for nearest neighbor lookup with candidates
-            newtree = spatial.KDTree(X[selected])
+            newtree = scipy.spatial.KDTree(X[selected])
             # query the kd-tree for nearest neighbors to selected samples
             search, _ = newtree.query(X[sublist], eps=self.eps, p=self.p, workers=-1)
             # identify the nearest neighbor with the largest distance from previously selected samples
@@ -338,3 +340,129 @@ class OptiSim(SelectionBase):
         if labels is not None:
             X = X[labels]
         return optimize_radius(self, X, size, labels)
+
+
+class DirectedSphereExclusion(SelectionBase):
+    """Select samples using Directed Sphere Exclusion (DISE) algorithm.
+
+    In a nutshell, this algorithm iteratively excludes any sample within a given radius from
+    any already selected sample. The radius of the exclusion sphere is an adjustable parameter.
+    Compared to Sphere Exclusion algorithm, the Directed Sphere Exclusion algorithm achieves a
+    more evenly distributed subset selection by abandoning the random selection approach and
+    instead imposing a directed selection.
+
+    Reference sample is chosen based on the `ref_index`, which is excluded from the selected
+    subset. All samples are sorted (ascending order) based on their Minkowski p-norm distance
+    from the reference sample. Looping through sorted samples, the sample is selected if it is
+    not already excluded. If selected, all its neighboring samples within a sphere of radius r
+    (i.e., exclusion sphere) are excluded from being selected. When the selected number of points
+    is greater than specified subset `size`, the selection process terminates. The `r0` is used
+    as the initial radius of exclusion sphere, however, it is optimized to select the desired
+    number of samples.
+
+    Notes
+    -----
+    Gobbi, A., and Lee, M.-L. (2002). DISE: directed sphere exclusion.
+    Journal of Chemical Information and Computer Sciences,
+    43(1), 317–323. https://doi.org/10.1021/ci025554v
+    """
+
+    def __init__(self, r0=None, ref_index=0, p=2.0, eps=0.0, tol=0.05, n_iter=10):
+        """Initialize class.
+
+        Parameters
+        ----------
+        r0: float, optional
+            Initial guess for radius of the exclusion sphere.
+        ref_index: int, optional
+            Index of the reference sample to start the selection algorithm from.
+            This sample is not included in the selected subset.
+        p: float, optional
+            Which Minkowski p-norm to use. The values of `p` should be within [1, inf].
+            A finite large p may cause a ValueError if overflow can occur.
+        eps: float, optional
+            Approximate nearest neighbor search used in `KDTree.query_ball_tree`.
+            Branches of the tree are not explored if their nearest points are further than
+            r/(1+eps), and branches are added in bulk if their furthest points are nearer than
+            r * (1+eps). eps has to be non-negative.
+        tol: float, optional
+            Percentage error of number of samples actually selected from number of samples requested.
+        n_iter: int, optional
+            Number of iterations for optimizing the radius of exclusion sphere.
+        """
+        self.r = r0
+        self.ref_index = ref_index
+        self.p = p
+        self.eps = eps
+        self.tol = tol
+        self.n_iter = n_iter
+
+    def algorithm(self, X, max_size):
+        """Return selected samples based on directed sphere exclusion algorithm.
+
+        Parameters
+        ----------
+        X: ndarray of shape (n_samples, n_features)
+           Feature matrix of `n_samples` samples in `n_features` dimensional space.
+        max_size: int
+            Maximum number of samples to select.
+
+        Returns
+        -------
+        selected: list
+            List of indices of selected samples.
+        """
+
+        # calculate distance of all samples from reference sample; distance is a (n_samples,) array
+        distances = scipy.spatial.minkowski_distance(X[self.ref_index], X, p=self.p)
+        # get sorted index of samples based on their distance from reference (closest to farthest)
+        index_sorted = np.argsort(distances)
+        # construct KDTree for quick nearest-neighbor lookup
+        kdtree = scipy.spatial.KDTree(X)
+
+        # construct bitarray to track selected samples (1 means exclude)
+        bv = bitarray.bitarray(list(np.zeros(len(X), dtype=int)))
+        bv[self.ref_index] = 1
+
+        selected = []
+        for idx in index_sorted:
+            # select sample if it is not already excluded from consideration
+            # indexing a single item of a bitarray will always return an integer
+            if bv[idx] == 0:
+                selected.append(idx)
+                # return indices of selected samples, if desired number is selected
+                if len(selected) > max_size:
+                    return selected
+                # find index of all samples within radius of sample idx (this includes the sample index itself)
+                index_exclude = kdtree.query_ball_point(
+                    X[idx], self.r, eps=self.eps, p=self.p, workers=-1
+                )
+                # exclude samples within radius r of sample idx (measure by Minkowski p-norm) from
+                # future consideration by setting their bitarray value to 1
+                for index in index_exclude:
+                    bv[index] = 1
+
+        return selected
+
+    def select_from_cluster(self, X, size, cluster_ids=None):
+        """Return selected samples from a cluster based on directed sphere exclusion algorithm
+
+        Parameters
+        ----------
+        X: ndarray of shape (n_samples, n_features)
+           Feature matrix of `n_samples` samples in `n_features` dimensional space.
+        size: int
+            Number of samples to be selected.
+        cluster_ids: np.ndarray
+            Indices of samples that form a cluster.
+
+        Returns
+        -------
+        selected: list
+            List of indices of selected samples.
+        """
+        if X.shape[0] < size:
+            raise RuntimeError(
+                f"Number of samples is less than the requested sample size: {X.shape[0]} < {size}."
+            )
+        return optimize_radius(self, X, size, cluster_ids)
