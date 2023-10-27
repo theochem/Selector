@@ -1,7 +1,7 @@
 [run]
 omit =
     DiverseSelector/*/tests/*
-    DiverseSelector/test/*
+    DiverseSelector/tests/*
     DiverseSelector/__init__.py
     DiverseSelector/_version.py
 
