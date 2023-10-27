@@ -34,12 +34,12 @@ from selector.diversity import compute_diversity
 
 
 __all__ = [
-    "GridPartitioning",
+    "GridPartition",
     "Medoid",
 ]
 
 
-class GridPartitioning(SelectionBase):
+class GridPartition(SelectionBase):
     r"""Select subset of sample points using the grid partitioning algorithms.
 
     Given the number of bins along each axis, samples are partitioned using various methods:

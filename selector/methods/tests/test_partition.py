@@ -27,7 +27,7 @@ from numpy.testing import assert_equal, assert_raises
 import pytest
 
 from selector.methods.partition import (
-    GridPartitioning,
+    GridPartition,
     Medoid,
 )
 from selector.methods.tests.common import generate_synthetic_data
@@ -48,7 +48,7 @@ def test_grid_partitioning_independent_on_simple_example(numb_pts, method):
 
     # Here the number of cells should be equal to the number of points in each dimension
     #  excluding the extra point, so that the answer is unique/known.
-    selector = GridPartitioning(numb_bins_axis=4, grid_method=f"{method}_independent")
+    selector = GridPartition(numb_bins_axis=4, grid_method=f"{method}_independent")
     # Sort the points so that they're comparable to the expected answer.
     selected_ids = np.sort(selector.select(grid, size=len(grid) - 1))
     expected = np.arange(len(grid) - 1)
@@ -74,7 +74,7 @@ def test_grid_partitioning_equisized_dependent_on_simple_example():
     )
 
     # The number of bins makes it so that it approximately be a single point in each bin
-    selector = GridPartitioning(numb_bins_axis=4, grid_method="equisized_dependent")
+    selector = GridPartition(numb_bins_axis=4, grid_method="equisized_dependent")
     # Two bins have an extra point in them and so has more diversity than other bins
     #   then the two expected molecules should be in those bins.
     selected_ids = selector.select(grid, size=2, labels=None)
@@ -100,7 +100,7 @@ def test_grid_partitioning_equifrequent_dependent_on_simple_example(numb_pts):
 
     # Here the number of cells should be equal to the number of points in each dimension
     #  excluding the extra point, so that the answer is unique/known.
-    selector = GridPartitioning(numb_bins_axis=numb_pts, grid_method="equifrequent_dependent")
+    selector = GridPartition(numb_bins_axis=numb_pts, grid_method="equifrequent_dependent")
     # Sort the points so that they're comparable to the expected answer.
     selected_ids = np.sort(selector.select(grid, size=len(grid) - 1))
     expected = np.arange(len(grid) - 1)
@@ -119,8 +119,8 @@ def test_bins_from_both_methods_dependent_same_as_independent_on_uniform_grid(nu
 
     # Here the number of cells should be equal to the number of points in each dimension
     #  excluding the extra point, so that the answer is unique/known.
-    selector_indept = GridPartitioning(numb_bins_axis=numb_pts, grid_method=f"{method}_independent")
-    selector_depend = GridPartitioning(numb_bins_axis=numb_pts, grid_method=f"{method}_dependent")
+    selector_indept = GridPartition(numb_bins_axis=numb_pts, grid_method=f"{method}_independent")
+    selector_depend = GridPartition(numb_bins_axis=numb_pts, grid_method=f"{method}_dependent")
 
     # Get the bins from the method
     bins_indept = selector_indept.get_bins_from_method(grid)
@@ -135,17 +135,15 @@ def test_raises_grid_partitioning():
     r"""Test raises error for grid partitioning."""
     grid = np.random.uniform(0.0, 1.0, size=(10, 3))
 
-    assert_raises(TypeError, GridPartitioning, 5.0)  # Test number of axis should be integer
-    assert_raises(TypeError, GridPartitioning, 5, 5.0)  # Test grid method should be string
-    assert_raises(
-        TypeError, GridPartitioning, 5, "string", []
-    )  # Test random seed should be integer
+    assert_raises(TypeError, GridPartition, 5.0)  # Test number of axis should be integer
+    assert_raises(TypeError, GridPartition, 5, 5.0)  # Test grid method should be string
+    assert_raises(TypeError, GridPartition, 5, "string", [])  # Test random seed should be integer
 
     # Test the selector grid method is not the correct string
-    selector = GridPartitioning(numb_bins_axis=5, grid_method="string")
+    selector = GridPartition(numb_bins_axis=5, grid_method="string")
     assert_raises(ValueError, selector.select_from_cluster, grid, 5)
 
-    selector = GridPartitioning(numb_bins_axis=5)
+    selector = GridPartition(numb_bins_axis=5)
     assert_raises(TypeError, selector.select_from_cluster, [5.0], 5)  # Test X is numpy array
     assert_raises(
         TypeError, selector.select_from_cluster, grid, 5.0
