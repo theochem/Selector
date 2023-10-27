@@ -24,10 +24,9 @@
 """Molecule dataset diversity calculation module."""
 
 import warnings
-from typing import List
 
 import numpy as np
-from selector.distance import tanimoto
+from selector.similarity import tanimoto
 
 
 __all__ = [
