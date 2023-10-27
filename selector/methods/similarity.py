@@ -40,7 +40,7 @@ from math import log
 import random
 from typing import List, Optional, Union
 
-from DiverseSelector.methods.base import SelectionBase
+from selector.methods.base import SelectionBase
 import numpy as np
 
 
@@ -807,6 +807,7 @@ class SimilarityIndex:
 # Functions that calculate the similarity indexes. The functions are named as the similarity
 # index they calculate. The _nw suffix indicates that the similarity index is not weighted.
 # More information about the similarity indexes can be found in the following paper:
+
 
 def _ac_nw(counters: dict) -> float:
     """Calculate the Austin-Colwell (AC) similarity index.

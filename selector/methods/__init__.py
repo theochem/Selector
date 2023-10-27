@@ -21,6 +21,6 @@
 #
 # --
 
-from DiverseSelector.methods.dissimilarity import *
-from DiverseSelector.methods.partition import *
-from DiverseSelector.methods.similarity import *
+from selector.methods.dissimilarity import *
+from selector.methods.partition import *
+from selector.methods.similarity import *

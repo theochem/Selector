@@ -41,7 +41,7 @@ except ValueError:
 
 
 setup(
-    name="DiverseSelector",
+    name="selector",
     author="QC-Devs Community",
     author_email="qcdevs@gmail.com",
     description=short_description,
@@ -50,44 +50,38 @@ setup(
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
     license="GNU (Version 3)",
-
-    package_dir={"DiverseSelector": "DiverseSelector"},
-    packages=["DiverseSelector",
-              "DiverseSelector.methods",
-              "DiverseSelector.tests",
-              "DiverseSelector.methods.tests"],
-
+    package_dir={"selector": "selector"},
+    packages=["selector", "selector.methods", "selector.tests", "selector.methods.tests"],
     # Optional include package data to ship with your package
     # Customize MANIFEST.in if the general case does not suit your needs
     # Comment out this line to prevent the files from being packaged with your software
     include_package_data=True,
-
     # Allows `setup.py test` to work correctly with pytest
-    setup_requires=["numpy>=1.21.2",
-                    "scipy==1.11.1",
-                    "pytest>=6.2.4",
-                    "scikit-learn",
-                    "bitarray",
-                    ] + pytest_runner,
-
+    setup_requires=[
+        "numpy>=1.21.2",
+        "scipy==1.11.1",
+        "pytest>=6.2.4",
+        "scikit-learn",
+        "bitarray",
+    ]
+    + pytest_runner,
     # Additional entries you may want simply uncomment the lines you want and fill in the data
     url="https://github.com/theochem/DiverseSelector",  # Website
-    install_requires=["numpy>=1.21.2",
-                      "scipy==1.11.1",
-                      "pytest>=6.2.4",
-                      "scikit-learn",
-                      "bitarray",
-                      ],
+    install_requires=[
+        "numpy>=1.21.2",
+        "scipy==1.11.1",
+        "pytest>=6.2.4",
+        "scikit-learn",
+        "bitarray",
+    ],
     # platforms=["Linux",
     #            "Mac OS-X",
     #            "Unix",
     #            "Windows"],
     # Python version restrictions
     python_requires=">=3.7",
-
     # Manual control if final package is compressible or not, set False to prevent the .egg
     # from being made
     # zip_safe=False,
-
     # todo: add classifiers
 )

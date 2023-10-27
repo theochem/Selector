@@ -26,7 +26,7 @@
 import pytest
 import numpy as np
 from numpy.testing import assert_almost_equal, assert_equal, assert_raises, assert_warns
-from DiverseSelector.diversity import (
+from selector.diversity import (
     compute_diversity,
     gini_coefficient,
     explicit_diversity_index,

@@ -26,12 +26,12 @@ import numpy as np
 from numpy.testing import assert_equal, assert_raises
 import pytest
 
-from DiverseSelector.methods.partition import (
+from selector.methods.partition import (
     DirectedSphereExclusion,
     GridPartitioning,
     Medoid,
 )
-from DiverseSelector.methods.tests.common import generate_synthetic_data
+from selector.methods.tests.common import generate_synthetic_data
 
 
 def test_directed_sphere_size_error():
@@ -96,11 +96,11 @@ def test_directed_sphere_on_line_with_larger_radius():
           [0, 1],
           [0, 1.1],
           [0, 1.2],
-          [0, 2], 
-          [0, 3], 
-          [0, 3.1], 
+          [0, 2],
+          [0, 3],
+          [0, 3.1],
           [0, 3.2],
-          [0, 4], 
+          [0, 4],
           [0, 5],
         ]
     )

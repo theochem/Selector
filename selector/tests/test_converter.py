@@ -23,7 +23,7 @@
 
 """Testing for Converter.py."""
 
-import DiverseSelector.converter as cv
+import selector.converter as cv
 import numpy as np
 from numpy.testing import assert_almost_equal, assert_equal, assert_raises
 
