@@ -23,3 +23,4 @@
 
 from DiverseSelector.methods.dissimilarity import *
 from DiverseSelector.methods.partition import *
+from DiverseSelector.methods.similarity import *
