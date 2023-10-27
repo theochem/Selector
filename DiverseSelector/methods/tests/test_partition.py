@@ -46,9 +46,8 @@ def test_directed_sphere_same_number_of_pts():
     # (0,0) as the reference point
     x = np.array([[0, 0], [0, 1], [0, 2], [0, 3]])
     selector = DirectedSphereExclusion(r0=1, tol=0)
-    selected = selector.select(arr=x, size=3)
-    expected = [1, 2, 3]
-    assert_equal(selected, expected)
+    selected = selector.select(x, size=3)
+    assert_equal(selected, [1, 2, 3])
     assert_equal(selector.r, 0.5)
 
 
@@ -57,7 +56,7 @@ def test_directed_sphere_exclusion_select_more_number_of_pts():
     # (0,0) as the reference point
     x = np.array([[0, 0], [0, 1], [0, 2], [0, 3], [0, 4], [0, 5], [0, 6]])
     selector = DirectedSphereExclusion(r0=0.5, tol=0)
-    selected = selector.select(arr=x, size=3)
+    selected = selector.select(x, size=3)
     expected = [1, 3, 5]
     assert_equal(selected, expected)
     assert_equal(selector.r, 1.0)
@@ -82,7 +81,7 @@ def test_directed_sphere_exclusion_on_line_with_():
         ]
     )
     selector = DirectedSphereExclusion(r0=0.5, tol=0)
-    selected = selector.select(arr=x, size=3)
+    selected = selector.select(x, size=3)
     expected = [1, 5, 9]
     assert_equal(selected, expected)
     assert_equal(selector.r, 1.0)
@@ -93,20 +92,20 @@ def test_directed_sphere_on_line_with_larger_radius():
     # (0,0) as the reference point
     x = np.array(
         [
-            [0, 0],
-            [0, 1],
-            [0, 1.1],
-            [0, 1.2],
-            [0, 2],
-            [0, 3],
-            [0, 3.1],
-            [0, 3.2],
-            [0, 4],
-            [0, 5],
+          [0, 0],
+          [0, 1],
+          [0, 1.1],
+          [0, 1.2],
+          [0, 2], 
+          [0, 3], 
+          [0, 3.1], 
+          [0, 3.2],
+          [0, 4], 
+          [0, 5],
         ]
     )
     selector = DirectedSphereExclusion(r0=2.0, tol=0)
-    selected = selector.select(arr=x, size=3)
+    selected = selector.select(x, size=3)
     expected = [1, 5, 9]
     assert_equal(selected, expected)
     assert_equal(selector.r, 1.0)
@@ -252,11 +251,11 @@ def test_medoid():
         random_state=42,
     )
     selector = Medoid()
-    selected_ids = selector.select(arr=coords_cluster, size=12, labels=class_labels_cluster)
+    selected_ids = selector.select(coords_cluster, size=12, labels=class_labels_cluster)
     # make sure all the selected indices are the same with expectation
     assert_equal(selected_ids, [2, 73, 94, 86, 1, 50, 93, 78, 0, 54, 33, 72])
 
     selector = Medoid()
-    selected_ids = selector.select(arr=coords, size=12)
+    selected_ids = selector.select(coords, size=12)
     # make sure all the selected indices are the same with expectation
     assert_equal(selected_ids, [0, 95, 57, 41, 25, 9, 8, 6, 66, 1, 42, 82])
