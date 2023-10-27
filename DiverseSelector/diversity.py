@@ -23,16 +23,15 @@
 
 """Molecule dataset diversity calculation module."""
 
-import numpy as np
 import warnings
-
 from typing import List
+
+import numpy as np
 from DiverseSelector.distance import tanimoto
 
 
 __all__ = [
     "compute_diversity",
-    "entropy",
     "logdet",
     "shannon_entropy",
     "explicit_diversity_index",
@@ -45,7 +44,9 @@ __all__ = [
 
 def compute_diversity(
     feature_subset: np.array,
-    div_type: str = "entropy",
+    div_type: str = "shannon_entropy",
+    normalize: bool = False,
+    truncation: bool = False,
     features: np.array = None,
     cs: int = None,
 ) -> float:
@@ -61,6 +62,10 @@ def compute_diversity(
         "gini coefficient" "hypersphere overlap of subset", and
         "explicit diversity index".
         The default is "entropy".
+    normalize : bool, optional
+        Normalize the entropy to [0, 1]. Default is "False".
+    truncation : bool, optional
+        Use the truncated Shannon entropy. Default is "False".
     features : np.ndarray, optional
         Feature matrix of entire molecule library, used only if
         calculating `hypersphere_overlap_of_subset`. Default is "None".
@@ -68,21 +73,21 @@ def compute_diversity(
         Number of common substructures in molecular compound dataset.
         Used only if calculating `explicit_diversity_index`. Default is "None".
 
+
     Returns
     -------
     float, computed diversity.
 
     """
     func_dict = {
-        "entropy": entropy,
         "logdet": logdet,
-        "shannon_entropy": shannon_entropy,
         "wdud": wdud,
         "gini_coefficient": gini_coefficient,
     }
 
     if div_type in func_dict:
         return func_dict[div_type](feature_subset)
+
     elif div_type == "hypersphere overlap of subset":
         if features is None:
             raise ValueError(
@@ -90,6 +95,10 @@ def compute_diversity(
                 "dataset when calculating hypersphere overlap."
             )
         return hypersphere_overlap_of_subset(features, feature_subset)
+
+    elif div_type == "shannon_entropy":
+        return shannon_entropy(feature_subset, normalize=normalize, truncation=truncation)
+
     elif div_type == "explicit_diversity_index":
         if cs is None:
             raise ValueError(
@@ -101,58 +110,6 @@ def compute_diversity(
         return explicit_diversity_index(feature_subset, cs)
     else:
         raise ValueError(f"Diversity type {div_type} not supported.")
-
-
-def entropy(x: np.ndarray) -> float:
-    r"""Compute entropy of matrix.
-
-    The equation for entropy is
-    .. math::
-        E = -\frac{\sum{\frac{y_i}{N}\ln{\frac{y_i}{N}}}}{L\frac{\ln{2}}{2}}
-
-    where :math:`N` is the number of molecules in the set, :math:`L` is the length of the
-    fingerprint, and :math:`y_i` is a vector of the bit-counts of each feature in the fingerprints.
-
-    Higher values mean more diversity.
-
-    Parameters
-    ----------
-    x : ndarray
-        Feature matrix.
-
-    Returns
-    -------
-    e : float
-        Entropy of matrix in the range [0,1].
-
-    Notes
-    -----
-    The feature matrix does not need to be in bitstring form to use this function.
-    However, the features should be encoded in a binary way, such that 0 means
-    absence of the feature, and nonzero means presence of the feature.
-
-    References
-    -----------
-    Weidlich, I. E., and Filippov, I. V., Using the Gini coefficient to measure the chemical
-    diversity of small-molecule libraries, Journal of Computational Chemistry, (2016) 37, 2091-2097.
-
-    """
-
-    # initialize variables
-
-    num_features = len(x[0])
-    num_points = len(x)
-    top = 0
-    # count bits in fingerprint and order them
-    counts = np.count_nonzero(x, axis=0)
-    counts = np.sort(counts)
-    # sum entropy calculation for each feature
-    if 0 in counts:
-        raise ValueError("Redundant feature in matrix. Please remove it and try again.")
-    for i in range(0, num_features):
-        top += ((counts[i]) / num_points) * (np.log(counts[i] / num_points))
-    ent = -1 * (top / (num_features * 0.34657359027997264))
-    return ent
 
 
 def logdet(x: np.ndarray) -> float:
@@ -188,16 +145,8 @@ def logdet(x: np.ndarray) -> float:
     return f_logdet
 
 
-def shannon_entropy(x: np.ndarray) -> float:
+def shannon_entropy(x: np.ndarray, normalize=True, truncation=False) -> float:
     r"""Computes the shannon entropy of a binary matrix.
-
-    The equation for Shannon entropy is
-
-    .. math::
-        H(X) = \sum_{i=1}^{n}-P_i(X)\log{P_i(X)}
-
-    where :math:`X` is the feature matrix, :math:`n` is the number of features, and :math:`P_i(X)`
-    is the proportion of molecules that have feature :math:`i` in :math:`X`.
 
     Higher values mean more diversity.
 
@@ -205,6 +154,11 @@ def shannon_entropy(x: np.ndarray) -> float:
     ----------
     x : ndarray
         Bit-string matrix.
+    normalize : bool, optional
+        Normalize the entropy to [0, 1]. Default=True.
+    truncation : bool, optional
+        Use the truncated Shannon entropy by only counting the contributions of one-bits.
+        Default=False.
 
     Returns
     -------
@@ -213,29 +167,70 @@ def shannon_entropy(x: np.ndarray) -> float:
 
     Notes
     -----
-    Leguy, J., Glavatskikh, M., Cauchy, T., and Benoit. (2021)
-    Scalable estimator of the diversity for de novo molecular generation resulting
-    in a more robust QM dataset (OD9) and a more efficient molecular optimization.
-    Journal of Cheminformatics 13.
-    """
+    Suppose we have :math:`m` compounds and each compound has :math:`n` bits binary fingerprints.
+    The binary matrix (feature matrix) is :math:`\mathbf{X} \in m \times n`, where each
+    row is a compound and each column contains the :math:`n`-bit binary fingerprint.
+    The equation for Shannon entropy is given by [1]_
 
+    .. math::
+        H = \sum_i^m \left[ - p_i \log_2{p_i }  - (1 - p_i)\log_2(1 - p_i) \right]
+
+    where :math:`p_i` represents the relative frequency of `1` bits at the fingerprint position
+    :math:`i`. When :math:`p_i = 0` or :math:`p_i = 1`, the :math:`SE_i` is zero.
+    When `completeness` is True, the entropy is calculated as in [2]_ instead
+
+    .. math::
+        H = \sum_i^m \left[ - p_i \log_2{p_i } \right]
+
+    When `normalize` is True, the entropy is normalized by a scaling factor so that the entropy is in the range of
+    [0, 1], [2]_
+
+    .. math::
+        H = \frac{ \sum_i^m \left[ - p_i \log_2{p_i }  - (1 - p_i)\log_2(1 - p_i) \right]}
+            {n \log_2{2} / 2}
+
+    But please note, when `completeness` is False and `normalize` is True, the formula has not been
+    used in any literature. It is just a simple normalization of the entropy and the user can use it at their own risk.
+
+    .. [1] Wang, Y., Geppert, H., & Bajorath, J. (2009). Shannon entropy-based fingerprint similarity
+    search strategy. Journal of Chemical Information and Modeling, 49(7), 1687-1691.
+    .. [2] Leguy, J., Glavatskikh, M., Cauchy, T., & Da Mota, B. (2021). Scalable estimator of the
+    diversity for de novo molecular generation resulting in a more robust QM dataset (OD9) and a
+    more efficient molecular optimization. Journal of Cheminformatics, 13(1), 1-17.
+    .. [3] Weidlich, I. E., & Filippov, I. V. (2016). Using the Gini coefficient to measure the
+    chemical diversity of small molecule libraries. Journal of Computational Chemistry, 37(22), 2091-2097.
+
+    """
     # check if matrix is binary
     if np.count_nonzero((x != 0) & (x != 1)) != 0:
         raise ValueError("Attribute `x` should have binary values.")
 
-    num_feat = len(x[0, :])
-    num_mols = len(x[:, 0])
+    p_i_arr = np.sum(x, axis=0) / x.shape[0]
     h_x = 0
-    for i in range(0, num_feat):
-        # calculate feature proportion
-        p_i = np.count_nonzero(x[:, i]) / num_mols
-        # sum all non-zero terms
-        if p_i == 0:
-            raise ValueError(
-                f"Feature {i} has value 0 for all molecules. "
-                f"Remove extraneous feature from data set."
+
+    for p_i in p_i_arr:
+        if p_i == 0 or p_i == 1:
+            # p_i = 0
+            se_i = 0
+        else:
+            if truncation:
+                # from https://jcheminf.biomedcentral.com/articles/10.1186/s13321-021-00554-8
+                se_i = -p_i * np.log2(p_i)
+            else:
+                # from https://pubs.acs.org/doi/10.1021/ci900159f
+                se_i = -p_i * np.log2(p_i) - (1 - p_i) * np.log2(1 - p_i)
+
+        h_x += se_i
+
+    if normalize:
+        if truncation:
+            warnings.warn(
+                "Computing the normalized Shannon entropy only counting the on-bits has not been reported in "
+                "literature. The user can use it at their own risk."
             )
-        h_x += (-1 * p_i) * np.log10(p_i)
+
+        h_x /= x.shape[1] * np.log2(2) / 2
+
     return h_x
 
 
@@ -319,7 +314,7 @@ def wdud(x: np.ndarray) -> float:
     min_x = np.min(x, axis=0)
     # Normalization of each feature to [0, 1]
     if np.any(np.abs(max_x - min_x) < 1e-30):
-        raise ValueError(f"One of the features is redundant and causes normalization to fail.")
+        raise ValueError("One of the features is redundant and causes normalization to fail.")
     x_norm = (x - min_x) / (max_x - min_x)
     ans = []  # store the Wasserstein distance for each feature
     for i in range(0, num_features):

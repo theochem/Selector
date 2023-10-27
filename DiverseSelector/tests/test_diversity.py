@@ -23,9 +23,11 @@
 
 """Testing for the diversity algorithms in the diversity.py module."""
 
+import pytest
+import numpy as np
+from numpy.testing import assert_almost_equal, assert_equal, assert_raises, assert_warns
 from DiverseSelector.diversity import (
     compute_diversity,
-    entropy,
     gini_coefficient,
     explicit_diversity_index,
     logdet,
@@ -35,8 +37,6 @@ from DiverseSelector.diversity import (
     nearest_average_tanimoto,
 )
 
-import numpy as np
-from numpy.testing import assert_almost_equal, assert_equal, assert_raises, assert_warns
 
 # each row is a feature and each column is a molecule
 sample1 = np.array([[4, 2, 6], [4, 9, 6], [2, 5, 0], [2, 0, 9], [5, 3, 0]])
@@ -50,19 +50,14 @@ sample4 = np.array([[1, 0, 1], [0, 1, 1]])
 
 sample5 = np.array([[0, 2, 4, 0], [1, 2, 4, 0], [2, 2, 4, 0]])
 
-
-def test_compute_diversity_default():
-    """Test compute diversity with default div_type."""
-    comp_div = compute_diversity(sample4)
-    expected = 2 / 3
-    assert_almost_equal(comp_div, expected)
+sample6 = np.array([[1, 0, 1, 0], [0, 1, 1, 0], [1, 0, 1, 0], [0, 0, 1, 0]])
 
 
 def test_compute_diversity_specified():
     """Test compute diversity with a specified div_type."""
-    comp_div = compute_diversity(sample4, "shannon_entropy")
-    expected = 0.301029995
-    assert_almost_equal(comp_div, expected)
+    comp_div = compute_diversity(sample6, "shannon_entropy", normalize=False, truncation=False)
+    expected = 1.81
+    assert round(comp_div, 2) == expected
 
 
 def test_compute_diversity_hyperspheres():
@@ -71,7 +66,7 @@ def test_compute_diversity_hyperspheres():
     centers_pts = np.array([[0.5, 0.5]] * (100 - 4))
     pts = np.vstack((corner_pts, centers_pts))
 
-    comp_div = compute_diversity(pts, "hypersphere overlap of subset", pts)
+    comp_div = compute_diversity(pts, div_type="hypersphere overlap of subset", features=pts)
     # Expected = overlap + edge penalty
     expected = (100.0 * 96 * 95 * 0.5) + 2.0
     assert_almost_equal(comp_div, expected)
@@ -79,9 +74,7 @@ def test_compute_diversity_hyperspheres():
 
 def test_compute_diversity_hypersphere_error():
     """Test compute diversity with hypersphere metric and no molecule library given."""
-    assert_raises(
-        ValueError, compute_diversity, sample5, "hypersphere overlap of subset"
-    )
+    assert_raises(ValueError, compute_diversity, sample5, "hypersphere overlap of subset")
 
 
 def test_compute_diversity_edi():
@@ -108,25 +101,6 @@ def test_compute_diversity_invalid():
     assert_raises(ValueError, compute_diversity, sample1, "diversity_type")
 
 
-def test_entropy():
-    """Test the entropy function with predefined matrix."""
-    ent = entropy(sample4)
-    expected = 2 / 3
-    assert_almost_equal(ent, expected)
-
-
-def test_entropy_conversion():
-    """Test the entropy function with matrix that is not in bit form."""
-    ent = entropy(sample3)
-    expected = 0
-    assert_almost_equal(ent, expected)
-
-
-def test_entropy_value_error():
-    """Test the entropy function with a matrix that causes a value error"""
-    assert_raises(ValueError, entropy, sample5)
-
-
 def test_logdet():
     """Test the log determinant function with predefined subset matrix."""
     sel = logdet(sample3)
@@ -142,11 +116,38 @@ def test_logdet_non_square_matrix():
 
 
 def test_shannon_entropy():
-    """Test the shannon entropy function with predefined matrix."""
-    selected = shannon_entropy(sample4)
-    # expected = -log10(1/2)
-    expected = 0.301029995
-    assert_almost_equal(selected, expected)
+    """Test the shannon entropy function with example from the original paper."""
+
+    # example taken from figure 1 of 10.1021/ci900159f
+    x1 = np.array([[1, 0, 1, 0], [0, 1, 1, 0], [1, 0, 1, 0], [0, 0, 1, 0]])
+    expected = 1.81
+    assert round(shannon_entropy(x1, normalize=False, truncation=False), 2) == expected
+
+    x2 = np.vstack((x1, [1, 1, 1, 0]))
+    expected = 1.94
+    assert round(shannon_entropy(x2, normalize=False, truncation=False), 2) == expected
+
+    x3 = np.vstack((x1, [0, 1, 0, 1]))
+    expected = 3.39
+    assert round(shannon_entropy(x3, normalize=False, truncation=False), 2) == expected
+
+
+def test_shannon_entropy_normalize():
+    """Test the shannon entropy function with normalization."""
+    x1 = np.array([[1, 0, 1, 0], [0, 1, 1, 0], [1, 0, 1, 0], [0, 0, 1, 0]])
+    expected = 1.81 / (x1.shape[1] * np.log2(2) / 2)
+    assert_almost_equal(
+        actual=shannon_entropy(x1, normalize=True, truncation=False),
+        desired=expected,
+        decimal=2,
+    )
+
+
+def test_shannon_entropy_warning():
+    """Test the shannon entropy function gives warning when normalization is True and truncation is True."""
+    x1 = np.array([[1, 0, 1, 0], [0, 1, 1, 0], [1, 0, 1, 0], [0, 0, 1, 0]])
+    with pytest.warns(UserWarning):
+        shannon_entropy(x1, normalize=True, truncation=True)
 
 
 def test_shannon_entropy_binary_error():
@@ -154,15 +155,9 @@ def test_shannon_entropy_binary_error():
     assert_raises(ValueError, shannon_entropy, sample5)
 
 
-def test_shannon_entropy_feature_error():
-    """Test the shannon entropy function raises error with matrix with invalid feature."""
-    x = np.array([[1, 0, 1], [0, 0, 0], [1, 0, 0]])
-    assert_raises(ValueError, shannon_entropy, x)
-
-
 def test_explicit_diversity_index():
     """Test the explicit diversity index function."""
-    z = np.array([[0, 1, 2],[1,2,0],[2,0,1]])
+    z = np.array([[0, 1, 2], [1, 2, 0], [2, 0, 1]])
     cs = 1
     nc = 3
     sdi = 0.75 / 0.7332902012
@@ -295,9 +290,7 @@ def test_gini_coefficient_with_alternative_definition():
     # Alternative definition from wikipedia
     b = numb_features + 1
     desired = (
-        numb_features
-        + 1
-        - 2 * ((b - 1) + (b - 2) * 2 + (b - 3) * 3 + (b - 4) * 4) / (10)
+        numb_features + 1 - 2 * ((b - 1) + (b - 2) * 2 + (b - 3) * 3 + (b - 4) * 4) / (10)
     ) / numb_features
     assert_almost_equal(result, desired)
 
@@ -313,7 +306,7 @@ def test_nearest_average_tanimoto_bit():
 def test_nearest_average_tanimoto():
     """Test the nearest_average_tanimoto function with non-binary input."""
     nat = nearest_average_tanimoto(sample3)
-    shortest_tani = [(11/19), (11/19)]
+    shortest_tani = [(11 / 19), (11 / 19)]
     average = np.average(shortest_tani)
     assert_equal(nat, average)
 
@@ -321,7 +314,7 @@ def test_nearest_average_tanimoto():
 def test_nearest_average_tanimoto_3_x_3():
     """Testpyth the nearest_average_tanimoto function with a 3x3 matrix."""
     # all unequal distances b/w points
-    x = np.array([[0, 1, 2],[3,4,5],[4,5,6]])
+    x = np.array([[0, 1, 2], [3, 4, 5], [4, 5, 6]])
     nat_x = nearest_average_tanimoto(x)
     avg_x = 0.749718574108818
     assert_equal(nat_x, avg_x)
@@ -331,7 +324,7 @@ def test_nearest_average_tanimoto_3_x_3():
     avg_y = 0.4813295920569825
     assert_equal(nat_y, avg_y)
     # all points equidistant
-    z = np.array([[0, 1, 2],[1,2,0],[2,0,1]])
+    z = np.array([[0, 1, 2], [1, 2, 0], [2, 0, 1]])
     nat_z = nearest_average_tanimoto(z)
     avg_z = 0.25
     assert_equal(nat_z, avg_z)
