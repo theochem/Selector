@@ -20,7 +20,7 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-"""Module for Dissimilarity-Based Selection Methods."""
+"""Module for Distance-Based Selection Methods."""
 
 import bitarray
 import numpy as np

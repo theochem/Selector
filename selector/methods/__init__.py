@@ -21,6 +21,6 @@
 #
 # --
 
-from selector.methods.dissimilarity import *
+from selector.methods.distance import *
 from selector.methods.partition import *
 from selector.methods.similarity import *
