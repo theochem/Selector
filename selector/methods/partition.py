@@ -1,16 +1,17 @@
-# The DiverseSelector library provides a set of tools to select molecule
-# subset with maximum molecular diversity.
+# -*- coding: utf-8 -*-
+# The Selector library provides a set of tools for selecting a
+# subset of the dataset and computing diversity.
 #
-# Copyright (C) 2022 The QC-Devs Community
+# Copyright (C) 2023 The QC-Devs Community
 #
-# This file is part of DiverseSelector.
+# This file is part of Selector.
 #
-# DiverseSelector is free software; you can redistribute it and/or
+# Selector is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
 # as published by the Free Software Foundation; either version 3
 # of the License, or (at your option) any later version.
 #
-# DiverseSelector is distributed in the hope that it will be useful,
+# Selector is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
@@ -19,7 +20,6 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-
 """Module for Partition-Based Selection Methods."""
 
 import collections
@@ -29,7 +29,7 @@ import bitarray
 import scipy.spatial
 
 from selector.methods.base import SelectionBase
-from selector.diversity import compute_diversity, hypersphere_overlap_of_subset
+from selector.diversity import compute_diversity
 from selector.methods.utils import optimize_radius
 import numpy as np
 from scipy import spatial

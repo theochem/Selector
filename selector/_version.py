@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
-# The DiverseSelector library provides a set of tools to select molecule
-# subset with maximum molecular diversity.
+# The Selector library provides a set of tools for selecting a
+# subset of the dataset and computing diversity.
 #
-# Copyright (C) 2022 The QC-Devs Community
+# Copyright (C) 2023 The QC-Devs Community
 #
-# This file is part of DiverseSelector.
+# This file is part of Selector.
 #
-# DiverseSelector is free software; you can redistribute it and/or
+# Selector is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
 # as published by the Free Software Foundation; either version 3
 # of the License, or (at your option) any later version.
 #
-# DiverseSelector is distributed in the hope that it will be useful,
+# Selector is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
@@ -348,9 +348,7 @@ def git_pieces_from_vcs(tag_prefix, root, verbose, run_command=run_command):
         pieces["distance"] = int(count_out)  # total number of commits
 
     # commit date: see ISO-8601 comment in git_versions_from_keywords()
-    date = run_command(GITS, ["show", "-s", "--format=%ci", "HEAD"], cwd=root)[
-        0
-    ].strip()
+    date = run_command(GITS, ["show", "-s", "--format=%ci", "HEAD"], cwd=root)[0].strip()
     pieces["date"] = date.strip().replace(" ", "T", 1).replace(" ", "", 1)
 
     return pieces
