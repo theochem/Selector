@@ -67,7 +67,7 @@ class DirectedSphereExclusion(SelectionBase):
     43(1), 317–323. https://doi.org/10.1021/ci025554v
     """
 
-    def __init__(self, r0=None, ref_index=0, p=2.0, eps=0.0, tol=0.05, n_iter=10, random_seed=42):
+    def __init__(self, r0=None, ref_index=0, p=2.0, eps=0.0, tol=0.05, n_iter=10):
         """Initialize class.
 
         Parameters
@@ -89,8 +89,6 @@ class DirectedSphereExclusion(SelectionBase):
             Percentage error of number of samples actually selected from number of samples requested.
         n_iter: int, optional
             Number of iterations for optimizing the radius of exclusion sphere.
-        random_seed: int, optional
-            Seed for random selection of points be evaluated.
         """
         self.r = r0
         self.ref_index = ref_index
@@ -98,7 +96,6 @@ class DirectedSphereExclusion(SelectionBase):
         self.eps = eps
         self.tol = tol
         self.n_iter = n_iter
-        self.random_seed = random_seed
 
     def algorithm(self, X, max_size):
         """Return selected samples based on directed sphere exclusion algorithm.
