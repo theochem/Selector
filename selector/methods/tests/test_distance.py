@@ -20,10 +20,10 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-"""Test Dissimilarity-Based Selection Methods."""
+"""Test selector/methods/distance.py."""
 
 
-from selector.methods.dissimilarity import MaxMin, MaxSum, OptiSim, DISE
+from selector.methods.distance import MaxMin, MaxSum, OptiSim, DISE
 import numpy as np
 from numpy.testing import assert_equal, assert_raises
 from sklearn.metrics import pairwise_distances
