@@ -34,7 +34,7 @@ __all__ = [
     "MaxMin",
     "MaxSum",
     "OptiSim",
-    "DirectedSphereExclusion",
+    "DISE",
 ]
 
 
@@ -342,7 +342,7 @@ class OptiSim(SelectionBase):
         return optimize_radius(self, X, size, labels)
 
 
-class DirectedSphereExclusion(SelectionBase):
+class DISE(SelectionBase):
     """Select samples using Directed Sphere Exclusion (DISE) algorithm.
 
     In a nutshell, this algorithm iteratively excludes any sample within a given radius from
