@@ -50,7 +50,7 @@
         const thebe_selector_output = ".output,.cell_output"
     </script>
     <script async="async" src="_static/sphinx-thebe.js"></script>
-    <link rel="shortcut icon" href="_static/logo.png"/>
+    <link rel="shortcut icon" href="_static/selector_logo.png"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Partition based methods" href="partition.html" />
@@ -80,7 +80,7 @@
         
       
       
-      <img src="_static/logo.png" class="logo" alt="logo">
+      <img src="_static/selector_logo.png" class="logo" alt="logo">
       
       
       <h1 class="site-logo" id="site-title">Ayers Lab</h1>
@@ -94,7 +94,7 @@
         <ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="intro.html">
-   Welcome to QC-Selector
+   Welcome to QC-Selector’s Documentation!
   </a>
  </li>
 </ul>
@@ -106,7 +106,7 @@
 <ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="installation.html">
-   Installation &amp; Testing
+   Installation
   </a>
  </li>
  <li class="toctree-l1">
@@ -237,31 +237,36 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="DiverseSelector.dissimilarity.MaxMin">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">DiverseSelector.dissimilarity.</span></span><span class="sig-name descname"><span class="pre">MaxMin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func_distance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#DiverseSelector.dissimilarity.MaxMin" title="Permalink to this definition">¶</a></dt>
-<dd><p>Selecting compounds using MaxMin algorithm.</p>
-<p>Initial point is chosen as medoid center. The second point is
-the furthest point away. All the following points are selected
-using the rule:
-1. Find minimum distance from every point to the selected ones.
-2. Select a point the has the maximum distance among calculated</p>
-<blockquote>
-<div><p>on the previous step.</p>
-</div></blockquote>
-<p>The algorithm is described well here: <a class="reference external" href="https://doi.org/10.1002/qsar.200290002">https://doi.org/10.1002/qsar.200290002</a></p>
+<dd><p>Selecting samples using MaxMin algorithm.</p>
+<p>MaxMin is possibly the most widely used method for dissimilarity-based
+compound selection. When presented with a dataset of samples, the
+initial point is chosen as the dataset’s medoid center. Next, the second
+point is chosen to be that which is furthest from this initial point.
+Subsequently, all following points are selected via the following
+logic:</p>
+<ol class="arabic simple">
+<li><p>Find the minimum distance from every point to the already-selected ones.</p></li>
+<li><p>Select the point which has the maximum distance among those calculated
+in the previous step.</p></li>
+</ol>
+<p>[1] Ashton, Mark, et al., Identification of diverse database subsets using
+property‐based and fragment‐based molecular descriptions, Quantitative
+Structure‐Activity Relationships 21.6 (2002): 598-604.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="DiverseSelector.dissimilarity.MaxMin.select_from_cluster">
-<span class="sig-name descname"><span class="pre">select_from_cluster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_selected</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#DiverseSelector.dissimilarity.MaxMin.select_from_cluster" title="Permalink to this definition">¶</a></dt>
-<dd><p>Algorithm MaxMin for selecting points from cluster.</p>
+<span class="sig-name descname"><span class="pre">select_from_cluster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#DiverseSelector.dissimilarity.MaxMin.select_from_cluster" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return selected samples from a cluster based on MaxMin algorithm.</p>
 <dl class="simple">
-<dt>arr: np.ndarray</dt><dd><p>Distance matrix for points that needs to be selected if func_distance is None.
-Otherwise, treated as coordinates array.</p>
+<dt>X: ndarray of shape (n_samples, n_features) or (n_samples, n_samples)</dt><dd><p>Feature matrix of <cite>n_samples</cite> samples in <cite>n_features</cite> dimensional feature space.
+If fun_distance is <cite>None</cite>, this X is treated as a square pairwise distance matrix.</p>
 </dd>
-<dt>num_selected: int</dt><dd><p>Number of molecules that need to be selected</p>
+<dt>size: int</dt><dd><p>Number of sample points to select (i.e. size of the subset).</p>
 </dd>
-<dt>cluster_ids: np.ndarray</dt><dd><p>Indices of molecules that form a cluster</p>
+<dt>labels: np.ndarray</dt><dd><p>Indices of samples that form a cluster.</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt>selected: list</dt><dd><p>List of ids of selected molecules</p>
+<dt>selected<span class="classifier">list</span></dt><dd><p>List of indices of selected samples.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -271,30 +276,38 @@ Otherwise, treated as coordinates array.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="DiverseSelector.dissimilarity.MaxSum">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">DiverseSelector.dissimilarity.</span></span><span class="sig-name descname"><span class="pre">MaxSum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func_distance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#DiverseSelector.dissimilarity.MaxSum" title="Permalink to this definition">¶</a></dt>
-<dd><p>Selecting compounds using MaxSum algorithm.</p>
-<p>Initial point is chosen as medoid center. The second point is
-the furthest point away. All the following points are selected
-using the rule:
-1. Determine the sum of distances from every point to the selected ones.
-2. Select a point the has the maximum sum of distance among calculated</p>
-<blockquote>
-<div><p>on the previous step.</p>
-</div></blockquote>
+<dd><p>Selecting samples using MaxSum algorithm.</p>
+<p>Whereas the goal of the MaxMin algorithm is to maximize the minimum distance
+between any pair of distinct elements in the selected subset of a dataset,
+the MaxSum algorithm aims to maximize the sum of distances between all
+pairs of elements in the selected subset. When presented with a dataset of
+samples, the initial point is chosen as the dataset’s medoid center. Next,
+the second point is chosen to be that which is furthest from this initial
+point. Subsequently, all following points are selected via the following
+logic:</p>
+<ol class="arabic simple">
+<li><p>Determine the sum of distances from every point to the already-selected ones.</p></li>
+<li><p>Select the point which has the maximum sum of distances among those calculated
+in the previous step.</p></li>
+</ol>
+<p>[1] Borodin, Allan, Hyun Chul Lee, and Yuli Ye, Max-sum diversification, monotone
+submodular functions and dynamic updates, Proceedings of the 31st ACM SIGMOD-SIGACT-SIGAI
+symposium on Principles of Database Systems. 2012.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="DiverseSelector.dissimilarity.MaxSum.select_from_cluster">
-<span class="sig-name descname"><span class="pre">select_from_cluster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_selected</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#DiverseSelector.dissimilarity.MaxSum.select_from_cluster" title="Permalink to this definition">¶</a></dt>
-<dd><p>Algorithm MaxSum for selecting points from cluster.</p>
+<span class="sig-name descname"><span class="pre">select_from_cluster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#DiverseSelector.dissimilarity.MaxSum.select_from_cluster" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return selected samples from a cluster based on MaxSum algorithm.</p>
 <dl class="simple">
-<dt>arr: np.ndarray</dt><dd><p>Distance matrix for points that needs to be selected if func_distance is None.
-Otherwise, treated as coordinates array.</p>
+<dt>X: ndarray of shape (n_samples, n_features) or (n_samples, n_samples)</dt><dd><p>Feature matrix of <cite>n_samples</cite> samples in <cite>n_features</cite> dimensional feature space.
+If fun_distance is <cite>None</cite>, this X is treated as a square pairwise distance matrix.</p>
 </dd>
-<dt>num_selected: int</dt><dd><p>Number of molecules that need to be selected</p>
+<dt>size: int</dt><dd><p>Number of sample points to select (i.e. size of the subset).</p>
 </dd>
-<dt>cluster_ids: np.ndarray</dt><dd><p>Indices of molecules that form a cluster</p>
+<dt>labels: np.ndarray</dt><dd><p>Indices of samples that form a cluster.</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt>selected: list</dt><dd><p>List of ids of selected molecules</p>
+<dt>selected<span class="classifier">list</span></dt><dd><p>List of indices of selected samples.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -303,43 +316,45 @@ Otherwise, treated as coordinates array.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="DiverseSelector.dissimilarity.OptiSim">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">DiverseSelector.dissimilarity.</span></span><span class="sig-name descname"><span class="pre">OptiSim</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">42</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#DiverseSelector.dissimilarity.OptiSim" title="Permalink to this definition">¶</a></dt>
-<dd><p>Selecting compounds using OptiSim algorithm.</p>
-<p>Initial point is chosen as medoid center. Points are randomly chosen and added to a subsample
-if outside of radius r from all previously selected points, and discarded otherwise. Once k
-number of points are added to the subsample, the point with the greatest minimum distance to
-previously selected points is selected and the subsample is cleared and the process repeats.</p>
-<p>Adapted from  <a class="reference external" href="https://doi.org/10.1021/ci970282v">https://doi.org/10.1021/ci970282v</a></p>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">DiverseSelector.dissimilarity.</span></span><span class="sig-name descname"><span class="pre">OptiSim</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">42</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#DiverseSelector.dissimilarity.OptiSim" title="Permalink to this definition">¶</a></dt>
+<dd><p>Selecting samples using OptiSim algorithm.</p>
+<p>The OptiSim algorithm selects samples from a dataset by first choosing the medoid center as the
+initial point. Next, points are randomly chosen and added to a subsample if they exist
+outside of radius r from all previously selected points (otherwise, they are discarded). Once k
+number of points have been added to the subsample, the point with the greatest minimum distance
+to the previously selected points is chosen. Then, the subsample is cleared and the process is
+repeated.</p>
+<p>[1] J. Chem. Inf. Comput. Sci. 1997, 37, 6, 1181–1188. <a class="reference external" href="https://doi.org/10.1021/ci970282v">https://doi.org/10.1021/ci970282v</a></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="DiverseSelector.dissimilarity.OptiSim.algorithm">
-<span class="sig-name descname"><span class="pre">algorithm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uplimit</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#DiverseSelector.dissimilarity.OptiSim.algorithm" title="Permalink to this definition">¶</a></dt>
-<dd><p>Optisim algorithm logic.</p>
+<span class="sig-name descname"><span class="pre">algorithm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_size</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#DiverseSelector.dissimilarity.OptiSim.algorithm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return selected samples based on OptiSim algorithm.</p>
 <dl class="simple">
-<dt>arr: np.ndarray</dt><dd><p>Coordinate array of points.</p>
+<dt>X<span class="classifier">np.ndarray</span></dt><dd><p>Coordinate array of samples.</p>
 </dd>
-<dt>uplimit: int</dt><dd><p>Maximum number of points to select.</p>
+<dt>max_size<span class="classifier">int</span></dt><dd><p>Maximum number of samples to select.</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt>selected: list</dt><dd><p>List of ids of selected molecules</p>
+<dt>selected<span class="classifier">list</span></dt><dd><p>List of indices of selected samples.</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="DiverseSelector.dissimilarity.OptiSim.select_from_cluster">
-<span class="sig-name descname"><span class="pre">select_from_cluster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_selected</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#DiverseSelector.dissimilarity.OptiSim.select_from_cluster" title="Permalink to this definition">¶</a></dt>
-<dd><p>Algorithm that uses optisim for selecting points from cluster.</p>
+<span class="sig-name descname"><span class="pre">select_from_cluster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#DiverseSelector.dissimilarity.OptiSim.select_from_cluster" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return selected samples from a cluster based on OptiSim algorithm.</p>
 <dl class="simple">
-<dt>arr: np.ndarray</dt><dd><p>Coordinate array of points</p>
+<dt>X<span class="classifier">np.ndarray</span></dt><dd><p>Coordinate array of samples.</p>
 </dd>
-<dt>num_selected: int</dt><dd><p>Number of molecules that need to be selected.</p>
+<dt>size<span class="classifier">int</span></dt><dd><p>Number of samples to be selected.</p>
 </dd>
-<dt>cluster_ids: np.ndarray</dt><dd><p>Indices of molecules that form a cluster</p>
+<dt>labels: np.ndarray</dt><dd><p>Indices of samples that form a cluster.</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt>selected: list</dt><dd><p>List of ids of selected molecules</p>
+<dt>selected<span class="classifier">list</span></dt><dd><p>List of indices of selected samples.</p>
 </dd>
 </dl>
 </dd></dl>

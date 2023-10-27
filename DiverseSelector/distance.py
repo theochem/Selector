@@ -20,16 +20,15 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-
 """Similarity Module."""
 
-
 import numpy as np
+
 from itertools import combinations_with_replacement
 from scipy.spatial import distance_matrix
 
 
-__all__ = ["pairwise_similarity_bit", "tanimoto", "modified_tanimoto", "nearest_average_tanimoto"]
+__all__ = ["pairwise_similarity_bit", "tanimoto", "modified_tanimoto"]
 
 
 def pairwise_similarity_bit(X: np.array, metric: str) -> np.ndarray:

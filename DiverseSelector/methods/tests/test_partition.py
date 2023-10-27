@@ -230,7 +230,6 @@ def test_raises_grid_partitioning():
     )  # Test number selected should be int
     assert_raises(TypeError, selector.select_from_cluster, grid, 5, [5.0])
 
-
 def test_medoid():
     """Testing Medoid class."""
     coords, _, _ = generate_synthetic_data(
