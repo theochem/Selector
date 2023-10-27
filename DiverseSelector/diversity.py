@@ -382,8 +382,8 @@ def hypersphere_overlap_of_subset(x: np.ndarray, x_subset: np.array) -> float:
     Agrafiotis, D. K.. (1997) Stochastic Algorithms for Maximizing Molecular Diversity.
     Journal of Chemical Information and Computer Sciences 37, 841-851.
     """
-    d = len(x[0])
-    k = len(x[:, 0])
+    d = len(x_subset[0])
+    k = len(x_subset[:, 0])
     # Find the maximum and minimum over each feature across all molecules.
     max_x = np.max(x, axis=0)
     min_x = np.min(x, axis=0)
@@ -391,7 +391,7 @@ def hypersphere_overlap_of_subset(x: np.ndarray, x_subset: np.array) -> float:
     if np.any(np.abs(max_x - min_x) < 1e-30):
         raise ValueError("One of the features is redundant and causes normalization to fail.")
 
-    x_norm = (x - min_x) / (max_x - min_x)
+    x_norm = (x_subset - min_x) / (max_x - min_x)
 
     # r_o = hypersphere radius
     r_o = d * np.sqrt(1 / k)
