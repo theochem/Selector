@@ -24,7 +24,7 @@
 """Test distance.py Module."""
 
 
-from DiverseSelector.distance import (
+from selector.distance import (
     pairwise_similarity_bit,
     tanimoto,
     modified_tanimoto,

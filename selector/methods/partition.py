@@ -28,9 +28,9 @@ import math
 import bitarray
 import scipy.spatial
 
-from DiverseSelector.methods.base import SelectionBase
-from DiverseSelector.diversity import compute_diversity, hypersphere_overlap_of_subset
-from DiverseSelector.methods.utils import optimize_radius
+from selector.methods.base import SelectionBase
+from selector.diversity import compute_diversity, hypersphere_overlap_of_subset
+from selector.methods.utils import optimize_radius
 import numpy as np
 from scipy import spatial
 

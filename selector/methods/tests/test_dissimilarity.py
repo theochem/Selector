@@ -23,11 +23,11 @@
 """Test Dissimilarity-Based Selection Methods."""
 
 
-from DiverseSelector.methods.dissimilarity import MaxMin, MaxSum, OptiSim
+from selector.methods.dissimilarity import MaxMin, MaxSum, OptiSim
 import numpy as np
 from numpy.testing import assert_equal
 from sklearn.metrics import pairwise_distances
-from DiverseSelector.methods.tests.common import generate_synthetic_data
+from selector.methods.tests.common import generate_synthetic_data
 import pytest
 
 

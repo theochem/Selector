@@ -21,9 +21,9 @@
 #
 # --
 
-"""The main DiverseSelector Package."""
+"""Selector Package."""
 
-from DiverseSelector.methods import *
+from selector.methods import *
 
 
 # Handle versioneer

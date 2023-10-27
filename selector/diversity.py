@@ -27,7 +27,7 @@ import warnings
 from typing import List
 
 import numpy as np
-from DiverseSelector.distance import tanimoto
+from selector.distance import tanimoto
 
 
 __all__ = [

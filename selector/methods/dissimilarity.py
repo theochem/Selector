@@ -24,8 +24,8 @@
 import numpy as np
 from scipy import spatial
 
-from DiverseSelector.methods.base import SelectionBase
-from DiverseSelector.methods.utils import optimize_radius
+from selector.methods.base import SelectionBase
+from selector.methods.utils import optimize_radius
 
 
 __all__ = [
