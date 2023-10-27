@@ -25,7 +25,6 @@
 import numpy as np
 
 from itertools import combinations_with_replacement
-from scipy.spatial import distance_matrix
 
 
 __all__ = ["pairwise_similarity_bit", "tanimoto", "modified_tanimoto"]
