@@ -6,6 +6,7 @@ on:
     branches:
       - main
   pull_request:
+    types: [opened, synchronize, reopened, closed]
     branches:
       - main
     # If your git repository has the Jupyter Book within some-subfolder next to
@@ -19,34 +20,41 @@ on:
 jobs:
   deploy-book:
     runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      # https://github.com/JamesIves/github-pages-deploy-action/issues/1110
+      contents: write
+
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    # Install dependencies
-    - name: Set up Python 3.9
-      uses: actions/setup-python@v4
-      with:
-        python-version: 3.9
-        
-  
-    - name: Install dependencies
-      run: |
-        pip install -r book/content/requirements.txt
-    # Install DiverseSelector
-    - name: Install package
-      run: |
-        pip install -e .
+      # Install dependencies
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
 
-    # Build the book
-    - name: Build the book
-      run: |
-        jupyter-book build ./book/content
-        
-    # Push the book's HTML to github-pages
-    - name: GitHub Pages action
-      uses: peaceiris/actions-gh-pages@v3
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./book/content/_build/html
-        publish_branch: gh-pages
-        cname: selector.qcdevs.org
+      - name: Install dependencies
+        run: |
+          pip install -r book/content/requirements.txt
+      # Install DiverseSelector
+      - name: Install package
+        run: |
+          pip install -e .
+
+      # Build the book
+      - name: Build the book
+        run: |
+          jupyter-book build ./book/content
+
+      # Push the book's HTML to github-pages
+      # inspired by https://github.com/orgs/community/discussions/26724
+      # only push to gh-pages if the main branch has been updated
+      - name: GitHub Pages Action
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./book/content/_build/html
+          publish_branch: gh-pages
+          cname: selector.qcdevs.org
