@@ -374,57 +374,8 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section id="module-DiverseSelector.base">
-<span id="base-class"></span><h1>Base class<a class="headerlink" href="#module-DiverseSelector.base" title="Permalink to this heading">#</a></h1>
-<p>Base class for diversity based subset selection.</p>
-<dl class="py class">
-<dt class="sig sig-object py" id="DiverseSelector.base.SelectionBase">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">DiverseSelector.base.</span></span><span class="sig-name descname"><span class="pre">SelectionBase</span></span><a class="headerlink" href="#DiverseSelector.base.SelectionBase" title="Permalink to this definition">#</a></dt>
-<dd><p>Base class for selecting subset of sample points.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="DiverseSelector.base.SelectionBase.select">
-<span class="sig-name descname"><span class="pre">select</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#DiverseSelector.base.SelectionBase.select" title="Permalink to this definition">#</a></dt>
-<dd><p>Return indices representing subset of sample points.</p>
-<dl class="simple">
-<dt>X: ndarray of shape (n_samples, n_features) or (n_samples, n_samples)</dt><dd><p>Feature matrix of <cite>n_samples</cite> samples in <cite>n_features</cite> dimensional feature space.
-If fun_distance is <cite>None</cite>, this X is treated as a square pairwise distance matrix.</p>
-</dd>
-<dt>size: int</dt><dd><p>Number of sample points to select (i.e. size of the subset).</p>
-</dd>
-<dt>labels: np.ndarray, optional</dt><dd><p>Array of integers or strings representing the labels of the clusters that
-each sample belongs to. If <cite>None</cite>, the samples are treated as one cluster.
-If labels are provided, selection is made from each cluster.</p>
-</dd>
-</dl>
-<dl class="simple">
-<dt>selected: list</dt><dd><p>Indices of the selected sample points.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="DiverseSelector.base.SelectionBase.select_from_cluster">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">select_from_cluster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#DiverseSelector.base.SelectionBase.select_from_cluster" title="Permalink to this definition">#</a></dt>
-<dd><p>Return indices representing subset of sample points from one cluster.</p>
-<dl class="simple">
-<dt>X: ndarray of shape (n_samples, n_features) or (n_samples, n_samples)</dt><dd><p>Feature matrix of <cite>n_samples</cite> samples in <cite>n_features</cite> dimensional feature space.
-If fun_distance is <cite>None</cite>, this X is treated as a square pairwise distance matrix.</p>
-</dd>
-<dt>size: int</dt><dd><p>Number of sample points to select (i.e. size of the subset).</p>
-</dd>
-<dt>labels: np.ndarray, optional</dt><dd><p>Array of integers or strings representing the labels of the clusters that
-each sample belongs to. If <cite>None</cite>, the samples are treated as one cluster.
-If labels are provided, selection is made from each cluster.</p>
-</dd>
-</dl>
-<dl class="simple">
-<dt>selected: list</dt><dd><p>Indices of the selected sample points.</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
+  <section id="base-class">
+<h1>Base class<a class="headerlink" href="#base-class" title="Permalink to this heading">#</a></h1>
 </section>
 
     <script type="text/x-thebe-config">
