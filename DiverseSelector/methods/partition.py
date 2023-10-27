@@ -307,6 +307,12 @@ class GridPartitioning(SelectionBase):
         bins_edge = np.interp(
             x=np.linspace(0, n_samples, nbins_axis + 1), xp=np.arange(n_samples), fp=np.sort(X)
         )
+        # Note: alternatively, one can use x=np.linspace(0, n_samples - 1, nbins_axis + 1) so
+        # that the ending index corresponds to the index of the last sample point. This would not
+        # be an issue, because the numpy interpolate function np.interp has two attributes called
+        # right/left, so if the value x is outside the interpolating domain, then it returns the
+        # closest data point fp[-1]/fp[0], respectively. This causes the partition into bins to
+        # always include the endpoints.
 
         # To assign samples into bins, sample features are subtracted from the bins_edge, and
         # the index of the bins_edge where the difference switches from negative to positive is
