@@ -64,7 +64,7 @@ setup(
     ]
     + pytest_runner,
     # Additional entries you may want simply uncomment the lines you want and fill in the data
-    url="https://github.com/theochem/DiverseSelector",  # Website
+    url="https://github.com/theochem/selector",  # Website
     install_requires=[
         "numpy>=1.21.2",
         "scipy==1.11.1",
