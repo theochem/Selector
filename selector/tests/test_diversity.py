@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # The Selector library provides a set of tools for selecting a
 # subset of the dataset and computing diversity.
 #
@@ -23,20 +22,20 @@
 
 """Test Diversity Module."""
 
-import pytest
 import numpy as np
+import pytest
 from numpy.testing import assert_almost_equal, assert_equal, assert_raises, assert_warns
+
 from selector.diversity import (
     compute_diversity,
-    gini_coefficient,
     explicit_diversity_index,
-    logdet,
-    shannon_entropy,
+    gini_coefficient,
     hypersphere_overlap_of_subset,
-    wdud,
+    logdet,
     nearest_average_tanimoto,
+    shannon_entropy,
+    wdud,
 )
-
 
 # each row is a feature and each column is a molecule
 sample1 = np.array([[4, 2, 6], [4, 9, 6], [2, 5, 0], [2, 0, 9], [5, 3, 0]])

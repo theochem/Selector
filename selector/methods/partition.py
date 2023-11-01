@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # The Selector library provides a set of tools for selecting a
 # subset of the dataset and computing diversity.
 #
@@ -29,9 +28,8 @@ import bitarray
 import numpy as np
 import scipy
 
-from selector.methods.base import SelectionBase
 from selector.diversity import compute_diversity
-
+from selector.methods.base import SelectionBase
 
 __all__ = [
     "GridPartition",

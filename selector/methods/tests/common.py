@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # The Selector library provides a set of tools for selecting a
 # subset of the dataset and computing diversity.
 #
@@ -22,12 +21,11 @@
 # --
 """Common functions for test module."""
 
-import numpy as np
-
-from sklearn.datasets import make_blobs
-from sklearn.metrics import pairwise_distances
 from typing import Any, Tuple, Union
 
+import numpy as np
+from sklearn.datasets import make_blobs
+from sklearn.metrics import pairwise_distances
 
 __all__ = [
     "generate_synthetic_data",
