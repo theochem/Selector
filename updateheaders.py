@@ -22,9 +22,9 @@
 # --
 
 
-from glob import glob
-from fnmatch import fnmatch
 import os
+from fnmatch import fnmatch
+from glob import glob
 
 
 def strip_header(lines, closing):
@@ -45,49 +45,49 @@ def strip_header(lines, closing):
 
 def fix_python(fn, lines, header_lines):
     # check if a shebang is present
-    do_shebang = lines[0].startswith('#!')
+    do_shebang = lines[0].startswith("#!")
     # remove the current header
-    strip_header(lines, '# --\n')
+    strip_header(lines, "# --\n")
     # add a pylint line for test files:
     # if os.path.basename(fn).startswith('test_'):
     #     if not lines[1].startswith('#pylint: skip-file'):
     #         lines.insert(1, '#pylint: skip-file\n')
     # add new header (insert in reverse order)
     for hline in header_lines[::-1]:
-        lines.insert(0, ('# ' + hline).strip() + '\n')
+        lines.insert(0, ("# " + hline).strip() + "\n")
     # add a source code encoding line
-    lines.insert(0, '# -*- coding: utf-8 -*-\n')
+    lines.insert(0, "# -*- coding: utf-8 -*-\n")
     if do_shebang:
-        lines.insert(0, '#!/usr/bin/env python\n')
+        lines.insert(0, "#!/usr/bin/env python\n")
 
 
 def fix_c(fn, lines, header_lines):
     # check for an exception line
     for line in lines:
-        if 'no_update_headers' in line:
+        if "no_update_headers" in line:
             return
     # remove the current header
-    strip_header(lines, '//--\n')
+    strip_header(lines, "//--\n")
     # add new header (insert must be in reverse order)
     for hline in header_lines[::-1]:
-        lines.insert(0, ('// ' + hline).strip() + '\n')
+        lines.insert(0, ("// " + hline).strip() + "\n")
 
 
 def fix_rst(fn, lines, header_lines):
     # check for an exception line
     for line in lines:
-        if 'no_update_headers' in line:
+        if "no_update_headers" in line:
             return
     # remove the current header
-    strip_header(lines, '    : --\n')
+    strip_header(lines, "    : --\n")
     # add an empty line after header if needed
     if len(lines[1].strip()) > 0:
-        lines.insert(1, '\n')
+        lines.insert(1, "\n")
     # add new header (insert must be in reverse order)
     for hline in header_lines[::-1]:
-        lines.insert(0, ('    : ' + hline).rstrip() + '\n')
+        lines.insert(0, ("    : " + hline).rstrip() + "\n")
     # add comment instruction
-    lines.insert(0, '..\n')
+    lines.insert(0, "..\n")
 
 
 def iter_subdirs(root):
@@ -96,39 +96,38 @@ def iter_subdirs(root):
 
 
 def main():
-    source_dirs = ['.', 'doc', 'scripts', 'tools'] + \
-                  list(iter_subdirs('procrustes'))
+    source_dirs = [".", "doc", "scripts", "tools"] + list(iter_subdirs("procrustes"))
 
     fixers = [
-        ('*.py', fix_python),
-        ('*.pxd', fix_python),
-        ('*.pyx', fix_python),
-        ('*.txt', fix_python),
-        ('*.c', fix_c),
-        ('*.cpp', fix_c),
-        ('*.h', fix_c),
-        ('*.rst', fix_rst),
+        ("*.py", fix_python),
+        ("*.pxd", fix_python),
+        ("*.pyx", fix_python),
+        ("*.txt", fix_python),
+        ("*.c", fix_c),
+        ("*.cpp", fix_c),
+        ("*.h", fix_c),
+        ("*.rst", fix_rst),
     ]
 
-    f = open('HEADER')
+    f = open("HEADER")
     header_lines = f.readlines()
     f.close()
 
     for sdir in source_dirs:
-        print('Scanning:', sdir)
-        for fn in glob(sdir + '/*.*'):
+        print("Scanning:", sdir)
+        for fn in glob(sdir + "/*.*"):
             if not os.path.isfile(fn):
                 continue
             for pattern, fixer in fixers:
                 if fnmatch(fn, pattern):
-                    print(' Fixing:', fn)
+                    print(" Fixing:", fn)
                     with open(fn) as f:
                         lines = f.readlines()
                     fixer(fn, lines, header_lines)
-                    with open(fn, 'w') as f:
+                    with open(fn, "w") as f:
                         f.writelines(lines)
                     break
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
