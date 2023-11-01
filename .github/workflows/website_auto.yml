@@ -37,7 +37,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r book/content/requirements.txt
-      # Install DiverseSelector
+      # Install selector
       - name: Install package
         run: |
           pip install -e .

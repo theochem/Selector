@@ -93,7 +93,7 @@ repos:
         args: [
                "-r",
                "-c .bandit.yml",
-               "DiverseSelector"
+               "selector"
               ]
 
 -   repo: https://github.com/asottile/pyupgrade
