@@ -22,44 +22,11 @@
 """Common functions for test module."""
 
 import numpy as np
-from rdkit import Chem
 
 try:
     from importlib_resources import path
 except ImportError:
     from importlib.resources import path
-
-__all__ = [
-    "load_testing_mols",
-]
-
-
-def load_testing_mols(mol_type: str = "2d") -> list:
-    """Load testing molecules.
-
-    Parameters
-    ----------
-    mol_type : str, optional
-        The type of molecules, "2d" or "3d". Default="2d".
-
-    Returns
-    -------
-    mols : list
-        The list of RDKit molecules.
-    """
-    if mol_type == "2d":
-        mols = [
-            Chem.MolFromSmiles(smiles)
-            for smiles in ["OC(=O)[C@@H](N)Cc1[nH]cnc1", "OC(=O)C(=O)C", "CC(=O)OC1=CC=CC=C1C(=O)O"]
-        ]
-    elif mol_type == "3d":
-        with path("selector.test.data", "drug_mols.sdf") as sdf_file:
-            suppl = Chem.SDMolSupplier(str(sdf_file), removeHs=False)
-            mols = [mol for mol in suppl]
-    else:
-        raise ValueError("mol_type must be either '2d' or '3d'.")
-
-    return mols
 
 
 def bit_cosine(a, b):
