@@ -335,7 +335,15 @@ exclude = [
 # Configuration for pytest
 # https://docs.pytest.org/en/latest/reference/customize.html#pyproject-toml
 [tool.pytest.ini_options]
-testpaths = "tests"  # directory containing your tests
+addopts = [
+    # Allow test files to have the same name in different directories.
+    "--import-mode=importlib",
+]
+# directory containing the tests
+testpaths = [
+    "selector/tests",
+    "selector/methods/tests",
+]
 norecursedirs = [
     ".vscode",
     "__pycache__"
