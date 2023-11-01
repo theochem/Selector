@@ -99,11 +99,6 @@ repos:
     -   id: pyupgrade
         args: [--py37-plus]
 
--   repo: https://github.com/hhatto/autopep8
-    rev: v2.0.4
-    hooks:
-    -   id: autopep8
-
 # todo: add this for type checking in the future
 # -   repo: https://github.com/pre-commit/mirrors-mypy
 #     rev: v1.5.1
