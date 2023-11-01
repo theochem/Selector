@@ -1,4 +1,4 @@
 Utilities
 =============
-.. automodule:: DiverseSelector.utils
+.. automodule:: selector.utils
     :members:

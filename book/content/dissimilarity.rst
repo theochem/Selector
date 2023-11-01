@@ -1,4 +1,4 @@
 Dissimilarity based methods
 =============
-.. automodule:: DiverseSelector.dissimilarity
+.. automodule:: selector.dissimilarity
     :members:
