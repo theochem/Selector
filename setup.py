@@ -25,7 +25,6 @@
 import sys
 
 from setuptools import setup
-import versioneer
 
 short_description = "Molecule selection with maximum diversity".split("\n")[0]
 
@@ -47,8 +46,7 @@ setup(
     description=short_description,
     long_description=long_description,
     long_description_content_type="text/markdown",
-    version=versioneer.get_version(),
-    cmdclass=versioneer.get_cmdclass(),
+    version="0.0.1",
     license="GNU (Version 3)",
     package_dir={"selector": "selector"},
     packages=["selector", "selector.methods", "selector.tests", "selector.methods.tests"],
@@ -66,7 +64,7 @@ setup(
     ]
     + pytest_runner,
     # Additional entries you may want simply uncomment the lines you want and fill in the data
-    url="https://github.com/theochem/DiverseSelector",  # Website
+    url="https://github.com/theochem/selector",  # Website
     install_requires=[
         "numpy>=1.21.2",
         "scipy==1.11.1",

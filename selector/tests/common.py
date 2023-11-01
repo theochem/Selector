@@ -54,7 +54,7 @@ def load_testing_mols(mol_type: str = "2d") -> list:
             for smiles in ["OC(=O)[C@@H](N)Cc1[nH]cnc1", "OC(=O)C(=O)C", "CC(=O)OC1=CC=CC=C1C(=O)O"]
         ]
     elif mol_type == "3d":
-        with path("DiverseSelector.test.data", "drug_mols.sdf") as sdf_file:
+        with path("selector.test.data", "drug_mols.sdf") as sdf_file:
             suppl = Chem.SDMolSupplier(str(sdf_file), removeHs=False)
             mols = [mol for mol in suppl]
     else:

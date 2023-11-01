@@ -1,7 +1,7 @@
 # How to contribute
 
 We welcome contributions from external contributors, and this document
-describes how to merge code changes into this DiverseSelector.
+describes how to merge code changes into this selector.
 
 ## Getting Started
 
@@ -19,7 +19,7 @@ describes how to merge code changes into this DiverseSelector.
   [branch](https://help.github.com/articles/creating-and-deleting-branches-within-your-repository/)
   with the branch name relating to the feature you are going to add.
 * When you are ready for others to examine and comment on your new feature,
-  navigate to your fork of DiverseSelector on GitHub and open a
+  navigate to your fork of selector on GitHub and open a
 * [pull request](https://help.github.com/articles/using-pull-requests/) (PR). Note that
   after you launch a PR from one of your fork's branches, all
   subsequent commits to that branch will be added to the open pull request
@@ -29,7 +29,7 @@ describes how to merge code changes into this DiverseSelector.
 * If you're providing a new feature, you must add test cases and documentation.
 * When the code is ready to go, make sure you run the test suite using pytest.
 * When you're ready to be considered for merging, check the "Ready to go"
-  box on the PR page to let the DiverseSelector devs know that the changes are complete.
+  box on the PR page to let the selector devs know that the changes are complete.
   The code will not be merged until this box is checked, the continuous
   integration returns checkmarks,
   and multiple core developers give "Approved" reviews.
@@ -37,7 +37,7 @@ describes how to merge code changes into this DiverseSelector.
 # Python Virtual Environment for Package Development
 
 Here is a list of version information for different packages that we used for
-[DiverseSelector](https://github.com/theochem/DiverseSelector),
+[selector](https://github.com/theochem/selector),
 
 ```bash
 python==3.7.11
