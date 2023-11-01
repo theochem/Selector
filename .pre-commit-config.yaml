@@ -90,11 +90,8 @@ repos:
               ^docs/
               ^doc/
           )
-        args: [
-               "-r",
-               "-c .bandit.yml",
-               "selector"
-              ]
+        args: ["-c", "pyproject.toml"]
+        additional_dependencies: ["bandit[toml]"]
 
 -   repo: https://github.com/asottile/pyupgrade
     rev: v3.15.0
