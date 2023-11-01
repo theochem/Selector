@@ -59,7 +59,7 @@ jobs:
 
     - name: Run tests
       shell: bash
-      run: |
+      run: >
         python -m pytest -c pyproject.toml --cov-config=.coveragerc --cov-report=xml --color=yes
         selector
 
