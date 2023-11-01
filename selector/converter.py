@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # The Selector library provides a set of tools for selecting a
 # subset of the dataset and computing diversity.
 #
@@ -22,10 +21,9 @@
 # --
 """Module for converting similarity measures to distance/dissimilarity measures."""
 
-import numpy as np
-
 from typing import Union
 
+import numpy as np
 
 __all__ = [
     "sim_to_dist",

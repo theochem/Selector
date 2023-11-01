@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # The Selector library provides a set of tools for selecting a
 # subset of the dataset and computing diversity.
 #
@@ -22,10 +21,10 @@
 # --
 """Base class for diversity based subset selection."""
 
-import numpy as np
 import warnings
-
 from abc import ABC, abstractmethod
+
+import numpy as np
 
 __all__ = ["SelectionBase"]
 
