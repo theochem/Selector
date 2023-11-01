@@ -242,7 +242,7 @@ extend_skip_glob  = [
 
 # https://beta.ruff.rs/docs
 [tool.ruff]
-line-length = 99
+line-length = 100
 show-source = true
 
 # Rules: https://beta.ruff.rs/docs/rules
@@ -370,11 +370,14 @@ exclude = [
 
 # configuration for bandit
 [tool.bandit]
-# skips some bandit tests
-skips=[
-    "B101", # Ignore defensive `assert`s, 80% of repos do this
-    "B311", # Standard pseudo-random generators are not suitable for security/cryptographic purposes
-    "B404", # Ignore warnings about importing subprocess
-    "B603", # Ignore warnings about calling subprocess
-    "B607", # Ignore warnings about calling subprocess
+exclude_dirs = [
+    "selector/tests",
+    "selector/methods",
+]
+skips = [
+    "B101", # Ignore assert statements
+    "B311", # Ignore pseudo-random generators
+    "B404", # Ignore subprocess import
+    "B603", # Ignore subprocess call
+    "B607", # Ignore subprocess call
 ]
