@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # The selector library provides a set of tools to select molecule
 # subset with maximum molecular diversity.
 #
