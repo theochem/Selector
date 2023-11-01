@@ -1,18 +1,18 @@
 ﻿..
     : -*- coding: utf-8 -*-
-    : The DiverseSelector library provides a set of tools to select molecule
+    : The selector library provides a set of tools to select molecule
     : subset with maximum molecular diversity.
     :
     : Copyright (C) 2022 The QC-Devs Community
     :
-    : This file is part of DiverseSelector.
+    : This file is part of selector.
     :
-    : DiverseSelector is free software; you can redistribute it and/or
+    : selector is free software; you can redistribute it and/or
     : modify it under the terms of the GNU General Public License
     : as published by the Free Software Foundation; either version 3
     : of the License, or (at your option) any later version.
     :
-    : DiverseSelector is distributed in the hope that it will be useful,
+    : selector is distributed in the hope that it will be useful,
     : but WITHOUT ANY WARRANTY; without even the implied warranty of
     : MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     : GNU General Public License for more details.
@@ -25,10 +25,10 @@
 .. _distance:
 
 
-:mod:`DiverseSelector.distance`
+:mod:`selector.distance`
 ===============================
 
-.. automodule:: DiverseSelector.distance
+.. automodule:: selector.distance
    :members:
    :undoc-members:
    :special-members:
