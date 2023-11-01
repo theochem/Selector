@@ -1,10 +1,10 @@
 # Force absolute comparison for cardboardlint
 absolute: true
 project:
-  name: DiverseSelector
+  name: selector
   # requirements: [[numpydoc, numpydoc], [sphinx-autoapi, sphinx-autoapi], [sphinxcontrib-bibtex, sphinxcontrib-bibtex]]
   packages:
-    - dist_name: DiverseSelector
+    - dist_name: selector
       tools:
         - write-py-version
         # - cardboardlint-static
