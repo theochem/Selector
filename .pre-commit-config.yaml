@@ -42,15 +42,16 @@ repos:
     # sorts entries in requirements.txt
     -   id: requirements-txt-fixer
 
-# https://github.com/asottile/setup-cfg-fmt
--   repo: https://github.com/asottile/setup-cfg-fmt
-    rev: v2.5.0
-    hooks:
-    -   id: setup-cfg-fmt
+# we are not using this for now as we decided to use pyproject.toml instead
+## https://github.com/asottile/setup-cfg-fmt
+#-   repo: https://github.com/asottile/setup-cfg-fmt
+#    rev: v2.5.0
+#    hooks:
+#    -   id: setup-cfg-fmt
 
 # -   repo: https://github.com/psf/black-pre-commit-mirror
 -   repo: https://github.com/psf/black
-    rev: 23.10.0
+    rev: 23.10.1
     hooks:
     -    id: black
          args: [
@@ -90,8 +91,10 @@ repos:
               ^docs/
               ^doc/
           )
-        args: ["-c", "pyproject.toml"]
-        additional_dependencies: ["bandit[toml]"]
+        args: [
+               "-c", "pyproject.toml"
+              ]
+        additional_dependencies: [ "bandit[toml]" ]
 
 -   repo: https://github.com/asottile/pyupgrade
     rev: v3.15.0
