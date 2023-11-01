@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # The Selector library provides a set of tools for selecting a
 # subset of the dataset and computing diversity.
 #
@@ -33,7 +32,7 @@ needs_pytest = {"pytest", "test", "ptr"}.intersection(sys.argv)
 pytest_runner = ["pytest-runner"] if needs_pytest else []
 
 try:
-    with open("README.md", "r") as handle:
+    with open("README.md") as handle:
         long_description = handle.read()
 except ValueError:
     long_description = short_description
@@ -64,7 +63,7 @@ setup(
     ]
     + pytest_runner,
     # Additional entries you may want simply uncomment the lines you want and fill in the data
-    url="https://github.com/theochem/selector",  # Website
+    url="https://github.com/theochem/Selector",  # Website
     install_requires=[
         "numpy>=1.21.2",
         "scipy==1.11.1",
