@@ -26,5 +26,4 @@
 Getting Started
 ===============
 
-This page details how to get started with DiverseSelector.
-
+This page details how to get started with selector.

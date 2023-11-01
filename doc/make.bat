@@ -9,7 +9,7 @@ if "%SPHINXBUILD%" == "" (
 )
 set SOURCEDIR=.
 set BUILDDIR=_build
-set SPHINXPROJ=DiverseSelector
+set SPHINXPROJ=selector
 
 if "%1" == "" goto help
 
