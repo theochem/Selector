@@ -153,3 +153,9 @@ tags
 
 # jupyter notebook checkpoints
 .ipynb_checkpoints
+
+# codecov files
+*.gcno
+*.gcda
+*.gcov
+test_calculator
