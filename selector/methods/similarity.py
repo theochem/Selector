@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # The Selector library provides a set of tools for selecting a
 # subset of the dataset and computing diversity.
 #
@@ -36,13 +35,13 @@ The ideas behind the similarity-based selection methods are described in the fol
 """
 
 import math
-from math import log
 import random
+from math import log
 from typing import List, Optional, Union
 
-from selector.methods.base import SelectionBase
 import numpy as np
 
+from selector.methods.base import SelectionBase
 
 __all__ = ["NSimilarity", "SimilarityIndex"]
 

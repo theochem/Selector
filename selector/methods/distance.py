@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # The Selector library provides a set of tools for selecting a
 # subset of the dataset and computing diversity.
 #
@@ -28,7 +27,6 @@ import scipy
 
 from selector.methods.base import SelectionBase
 from selector.methods.utils import optimize_radius
-
 
 __all__ = [
     "MaxMin",

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # The Selector library provides a set of tools for selecting a
 # subset of the dataset and computing diversity.
 #
@@ -22,10 +21,9 @@
 # --
 """Similarity Module."""
 
-import numpy as np
-
 from itertools import combinations_with_replacement
 
+import numpy as np
 
 __all__ = ["pairwise_similarity_bit", "tanimoto", "modified_tanimoto"]
 

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # The Selector library provides a set of tools for selecting a
 # subset of the dataset and computing diversity.
 #
@@ -23,12 +22,13 @@
 """Test selector/methods/distance.py."""
 
 
-from selector.methods.distance import MaxMin, MaxSum, OptiSim, DISE
 import numpy as np
+import pytest
 from numpy.testing import assert_equal, assert_raises
 from sklearn.metrics import pairwise_distances
+
+from selector.methods.distance import DISE, MaxMin, MaxSum, OptiSim
 from selector.methods.tests.common import generate_synthetic_data
-import pytest
 
 
 def test_maxmin():
