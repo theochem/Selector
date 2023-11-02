@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # selector
 
 [![This project supports Python 3.7+](https://img.shields.io/badge/Python-3.7+-blue.svg)](https://python.org/downloads)
@@ -16,17 +15,11 @@ The selector library provides methods for selecting a diverse subset of a (molec
 [![codecov](https://codecov.io/gh/theochem/Selector/graph/badge.svg?token=0UJixrJfNJ)](https://codecov.io/gh/theochem/Selector)
 
 The `selector` library provides methods for selecting a diverse subset of a (molecular) dataset.
->>>>>>> 7eabcbd (Update contents of README.md for package renaming)
-
 
 Citation
 --------
 
-<<<<<<< HEAD
-Please use the following citation in any publication using selector library:
-=======
 Please use the following citation in any publication using the `selector` library:
->>>>>>> 7eabcbd (Update contents of README.md for package renaming)
 
 ```md
 @article{
@@ -37,11 +30,7 @@ Please use the following citation in any publication using the `selector` librar
 Installation
 ------------
 
-<<<<<<< HEAD
-To install selector using the conda package management system, install
-=======
 To install `selector` using the conda package management system, install
->>>>>>> 7eabcbd (Update contents of README.md for package renaming)
 [miniconda](https://conda.io/miniconda.html) or [anaconda](https://www.anaconda.com/download)
 first, and then:
 
