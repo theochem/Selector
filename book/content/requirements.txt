@@ -1,3 +1,4 @@
+docutils<0.18
 ghp-import
 jupyter-book
 matplotlib
