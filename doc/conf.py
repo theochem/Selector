@@ -39,7 +39,7 @@
 import os
 import sys
 
-from selector._version import get_versions
+import selector
 
 sys.path.insert(0, os.path.abspath("../"))
 # sys.path.append(os.path.abspath('sphinxext'))
@@ -131,7 +131,7 @@ numfig = True
 
 # General information about the project.
 project = "selector"
-copyright = "2022, The QC-Devs Community"
+copyright = "2022-2023, The QC-Devs Community"
 author = "The QC-Devs Community"
 
 # The version info for the project you're documenting, acts as replacement for
@@ -139,7 +139,8 @@ author = "The QC-Devs Community"
 # built documents.
 #
 # The short X.Y version.
-version = get_versions()["version"]
+version = selector.__version__
+
 # The full version, including alpha/beta/rc tags.
 release = "0.0.1a"
 
@@ -239,6 +240,7 @@ texinfo_documents = [
         "selector",
         "selector Documentation",
         author,
+        # TODO: fix this
         "selector",
         "One line description of project.",
         "Miscellaneous",

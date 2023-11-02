@@ -1,6 +1,6 @@
 # Codecov configuration to make it a bit less noisy
 codecov:
-  token: 39967d37-3c8d-4b80-8999-4cf51d7da7f2
+  token: ${{ secrets.CODECOV_TOKEN }}
   notify:
     require_ci_to_pass: yes
 
@@ -32,6 +32,7 @@ coverage:
     - "test_*.rb" # wildcards accepted
     - .*/data/.*
     - .*/versioneer.py
+    - .*/*/__init__.py
     # - "**/*.pyc"         # glob accepted
 
 comment:
