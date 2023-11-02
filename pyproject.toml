@@ -1,29 +1,24 @@
-# [build-system]
-# build-backend = "setuptools.build_meta"
-# requires = ["setuptools>=61.0", "wheel>=0.37.1"]
-# This example pyproject.toml is for a basic pip+setuptools setup.
-# If you use a project management tool (like Poetry), then
-# those tools will have slightly different configurations or additions.
-
-# I highly recommend using a project management tool for your project.
-# Project management is a highly opinionated subject.
-# There are a lot of good, robust tools in this space now (as of 2023)
-# Two that I've used and recommend are Poetry and PDM.
-# Poetry is more mature, PDM is recent, both work well.
-# - Poetry: https://python-poetry.org/
-# - PDM: https://pdm.fming.dev/latest/
-
-# https://gist.githubusercontent.com/GhostofGoes/75051c4aeb215bc3cf48c10f5454b399/raw/499661609846ab52b8fc7e6acf0562275ca22517/pyproject.toml
-# Resources
+# The Selector library provides a set of tools for selecting a
+# subset of the dataset and computing diversity.
 #
-# - https://packaging.python.org/en/latest/tutorials/packaging-projects/
-# - https://betterprogramming.pub/a-pyproject-toml-developers-cheat-sheet-5782801fb3ed
+# Copyright (C) 2023 The QC-Devs Community
 #
-# Examples of pyproject.toml files from open-source projects:
-# - https://github.com/carlosperate/awesome-pyproject
-# - https://github.com/SpikeInterface/spikeinterface/blob/master/pyproject.toml
-# - https://github.com/codespell-project/codespell/blob/master/pyproject.toml
-# - https://github.com/hynek/structlog/blob/main/pyproject.toml
+# This file is part of Selector.
+#
+# Selector is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 3
+# of the License, or (at your option) any later version.
+#
+# Selector is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, see <http://www.gnu.org/licenses/>
+#
+# --
 
 
 [project]
