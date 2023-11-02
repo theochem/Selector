@@ -338,6 +338,12 @@ exclude = [
 addopts = [
     # Allow test files to have the same name in different directories.
     "--import-mode=importlib",
+    "--cache-clear",
+    "--showlocals",
+    "-v",
+    "-r a",
+    "--cov-report=term-missing",
+    "--cov=selector",
 ]
 # directory containing the tests
 testpaths = [
@@ -346,7 +352,8 @@ testpaths = [
 ]
 norecursedirs = [
     ".vscode",
-    "__pycache__"
+    "__pycache__",
+    "build",
 ]
 # Warnings that should be ignored
 filterwarnings = [
