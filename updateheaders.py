@@ -1,7 +1,7 @@
 # The selector library provides a set of tools to select molecule
 # subset with maximum molecular diversity.
 #
-# Copyright (C) 2022 The QC-Devs Community
+# Copyright (C) 2023 The QC-Devs Community
 #
 # This file is part of selector.
 #
