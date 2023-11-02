@@ -1,4 +1,4 @@
 Base class
-=============
-.. automodule:: selector.base
+==========
+.. automodule:: selector.methods.base
     :members:

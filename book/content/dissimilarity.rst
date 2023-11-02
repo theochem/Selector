@@ -1,4 +1,4 @@
-Dissimilarity based methods
-=============
-.. automodule:: selector.dissimilarity
+Distance based methods
+======================
+.. automodule:: selector.distance
     :members:
