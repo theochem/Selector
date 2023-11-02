@@ -28,7 +28,7 @@ version = "0.0.1"
 description = "Molecule selection with maximum diversity."
 readme = "README.md"
 #requires-python = ">=3.9,<4.0"
-requires-python = ">=3.9,<4.0"
+requires-python = ">=3.9"
 # "LICENSE" is name of the license file, which must be in root of project folder
 license = {file = "LICENSE"}
 authors = [
