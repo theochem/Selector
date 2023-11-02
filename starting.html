@@ -233,7 +233,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="https://colab.research.google.com/github/theochem/DiverseSelector/blob/main/book/content/starting.ipynb" target="_blank"
+      <li><a href="https://colab.research.google.com/github/theochem/Selector/blob/main/book/content/starting.ipynb" target="_blank"
    class="btn btn-sm dropdown-item"
    title="Launch onColab"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -282,7 +282,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="https://github.com/theochem/DiverseSelector" target="_blank"
+      <li><a href="https://github.com/theochem/Selector" target="_blank"
    class="btn btn-sm btn-source-repository-button dropdown-item"
    title="Source repository"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -299,7 +299,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="https://github.com/theochem/DiverseSelector/issues/new?title=Issue%20on%20page%20%2Fstarting.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/theochem/Selector/issues/new?title=Issue%20on%20page%20%2Fstarting.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -459,8 +459,8 @@ document.write(`
 <h2>Generating Synthetic Data<a class="headerlink" href="#generating-synthetic-data" title="Permalink to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># install the DiverseSelector module</span>
-<span class="o">!</span>pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com/theochem/DiverseSelector
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># install the selector module</span>
+<span class="o">!</span>pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com/theochem/Selector
 <span class="o">!</span>pip<span class="w"> </span>install<span class="w"> </span>rdkit
 </pre></div>
 </div>
@@ -468,7 +468,7 @@ document.write(`
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">DiverseSelector</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">selector</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
@@ -598,8 +598,8 @@ document.write(`
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># MaxMin method</span>
-<span class="kn">from</span> <span class="nn">DiverseSelector.methods.partition</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">DiverseSelector.methods.dissimilarity</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">selector.methods.partition</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">selector.methods.dissimilarity</span> <span class="kn">import</span> <span class="o">*</span>
 
 <span class="c1"># diverse subset selection from randomly generated data points</span>
 <span class="n">selector</span> <span class="o">=</span> <span class="n">MaxMin</span><span class="p">()</span>
@@ -866,7 +866,7 @@ document.write(`
     {
         requestKernel: true,
         binderOptions: {
-            repo: "theochem/DiverseSelector",
+            repo: "theochem/Selector",
             ref: "main",
         },
         codeMirrorConfig: {

@@ -233,7 +233,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="https://colab.research.google.com/github/theochem/DiverseSelector/blob/main/book/content/installation.ipynb" target="_blank"
+      <li><a href="https://colab.research.google.com/github/theochem/Selector/blob/main/book/content/installation.ipynb" target="_blank"
    class="btn btn-sm dropdown-item"
    title="Launch onColab"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -282,7 +282,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="https://github.com/theochem/DiverseSelector" target="_blank"
+      <li><a href="https://github.com/theochem/Selector" target="_blank"
    class="btn btn-sm btn-source-repository-button dropdown-item"
    title="Source repository"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -299,7 +299,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="https://github.com/theochem/DiverseSelector/issues/new?title=Issue%20on%20page%20%2Finstallation.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/theochem/Selector/issues/new?title=Issue%20on%20page%20%2Finstallation.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -446,7 +446,7 @@ document.write(`
 </b>
 <p>We are preparing a 1.0 release. Until then, these instructions for installing a stable release will not work yet. If you enjoy living on the edge, try the development release as explained in the “Latest Git Revision” section below.</p>
 </div>
-<p>The following dependencies are required to run DiverseSelector properly,</p>
+<p>The following dependencies are required to run selector properly,</p>
 <ul class="simple">
 <li><p>Python &gt;= 3.6: <a class="reference external" href="http://www.python.org/">http://www.python.org/</a></p></li>
 <li><p>NumPy &gt;= 1.21.5: <a class="reference external" href="http://www.numpy.org/">http://www.numpy.org/</a></p></li>
@@ -459,7 +459,7 @@ document.write(`
 <section id="installation-with-anaconda-or-miniconda">
 <h2>Installation with Anaconda or Miniconda:<a class="headerlink" href="#installation-with-anaconda-or-miniconda" title="Permalink to this heading">#</a></h2>
 <ol class="arabic simple">
-<li><p>To install DiverseSelector using the conda package management system, install <a class="reference external" href="https://conda.io/miniconda.html">miniconda</a> or <a class="reference external" href="https://www.anaconda.com/download">anaconda</a> first, and then:</p></li>
+<li><p>To install selector using the conda package management system, install <a class="reference external" href="https://conda.io/miniconda.html">miniconda</a> or <a class="reference external" href="https://www.anaconda.com/download">anaconda</a> first, and then:</p></li>
 </ol>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Activate your main conda environment if it is not loaded in your .bashrc.</span>
 <span class="c1"># E.g. run the following if you have miniconda installed in e.g. ~/miniconda3</span>
@@ -524,19 +524,19 @@ Python modules.</p>
 </section>
 <section id="latest-git-revision">
 <h2>Latest git revision<a class="headerlink" href="#latest-git-revision" title="Permalink to this heading">#</a></h2>
-<p>This section shows how one can install the latest revision of <code class="docutils literal notranslate"><span class="pre">DiverseSelector</span></code> from the git repository. This kind of installation comes with some risks (sudden API changes, bugs, …) and so be prepared to accept them when using the following installation instructions.</p>
+<p>This section shows how one can install the latest revision of <code class="docutils literal notranslate"><span class="pre">selector</span></code> from the git repository. This kind of installation comes with some risks (sudden API changes, bugs, …) and so be prepared to accept them when using the following installation instructions.</p>
 <p>There are two installation methods:</p>
 <ol class="arabic simple">
 <li><p><strong>Quick and dirty.</strong> Of this method, there are four variants, depending on the correctness of your <code class="docutils literal notranslate"><span class="pre">PATH</span></code> variable and the presence of a virtual or conda environment. These different scenarios are explained in more detail in the previous section.</p></li>
 </ol>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># with env, correct PATH</span>
-<span class="n">pip</span> <span class="n">install</span> <span class="n">git</span><span class="o">+</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">theochem</span><span class="o">/</span><span class="n">DiverseSelector</span><span class="o">.</span><span class="n">git</span>
+<span class="n">pip</span> <span class="n">install</span> <span class="n">git</span><span class="o">+</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">theochem</span><span class="o">/</span><span class="n">Selector</span><span class="o">.</span><span class="n">git</span>
 <span class="c1"># with env, broken PATH</span>
-<span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">git</span><span class="o">+</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">theochem</span><span class="o">/</span><span class="n">DiverseSelector</span><span class="o">.</span><span class="n">git</span>
+<span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">git</span><span class="o">+</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">theochem</span><span class="o">/</span><span class="n">Selector</span><span class="o">.</span><span class="n">git</span>
 <span class="c1"># without env, correct PATH</span>
-<span class="n">pip</span> <span class="n">install</span> <span class="n">git</span><span class="o">+</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">theochem</span><span class="o">/</span><span class="n">DiverseSelector</span><span class="o">.</span><span class="n">git</span> <span class="o">--</span><span class="n">user</span>
+<span class="n">pip</span> <span class="n">install</span> <span class="n">git</span><span class="o">+</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">theochem</span><span class="o">/</span><span class="n">Selector</span><span class="o">.</span><span class="n">git</span> <span class="o">--</span><span class="n">user</span>
 <span class="c1"># without env, broken PATH</span>
-<span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">git</span><span class="o">+</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">theochem</span><span class="o">/</span><span class="n">DiverseSelector</span><span class="o">.</span><span class="n">git</span> <span class="o">--</span><span class="n">user</span>
+<span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">git</span><span class="o">+</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">theochem</span><span class="o">/</span><span class="n">Selector</span><span class="o">.</span><span class="n">git</span> <span class="o">--</span><span class="n">user</span>
 </pre></div>
 </div>
 <ol class="arabic simple" start="2">
@@ -545,9 +545,9 @@ Python modules.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># A) Clone git repo with https OR ssh:</span>
 <span class="c1"># The second one only works if you have ssh set up for Github</span>
 <span class="c1">#  A1) https</span>
-<span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">theochem</span><span class="o">/</span><span class="n">DiverseSelector</span><span class="o">.</span><span class="n">git</span>
+<span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">theochem</span><span class="o">/</span><span class="n">Selector</span><span class="o">.</span><span class="n">git</span>
 <span class="c1">#  A2) ssh</span>
-<span class="n">git</span> <span class="n">clone</span> <span class="n">git</span><span class="nd">@github</span><span class="o">.</span><span class="n">com</span><span class="p">:</span><span class="n">theochem</span><span class="o">/</span><span class="n">DiverseSelector</span><span class="o">.</span><span class="n">git</span>
+<span class="n">git</span> <span class="n">clone</span> <span class="n">git</span><span class="nd">@github</span><span class="o">.</span><span class="n">com</span><span class="p">:</span><span class="n">theochem</span><span class="o">/</span><span class="n">Selector</span><span class="o">.</span><span class="n">git</span>
 <span class="c1"># B) Optionally write the version string</span>
 <span class="n">pip</span> <span class="n">install</span> <span class="n">roberto</span>  <span class="c1"># or any of the three other ways of running pip, see above.</span>
 <span class="n">rob</span> <span class="n">write</span><span class="o">-</span><span class="n">version</span>
@@ -574,7 +574,7 @@ Python modules.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install pytest in your conda env.</span>
 <span class="n">conda</span> <span class="n">install</span> <span class="n">pytest</span> <span class="n">pytest</span><span class="o">-</span><span class="n">xdist</span>
 <span class="c1"># Then run the tests.</span>
-<span class="n">pytest</span> <span class="o">--</span><span class="n">pyargs</span> <span class="n">diverseselector</span> <span class="o">-</span><span class="n">n</span> <span class="n">auto</span>
+<span class="n">pytest</span> <span class="o">--</span><span class="n">pyargs</span> <span class="n">selector</span> <span class="o">-</span><span class="n">n</span> <span class="n">auto</span>
 </pre></div>
 </div>
 <p>With Pip:</p>
@@ -582,13 +582,13 @@ Python modules.</p>
 <span class="n">pip</span> <span class="n">install</span> <span class="n">pytest</span> <span class="n">pytest</span><span class="o">-</span><span class="n">xdist</span>
 <span class="c1"># .. and refresh the virtual environment.</span>
 <span class="c1"># This is a venv quirk. Without it, pytest may not find IOData.</span>
-<span class="n">deactivate</span> <span class="o">&amp;&amp;</span> <span class="n">source</span> <span class="o">~/</span><span class="n">diverseselector</span><span class="o">/</span><span class="n">activate</span>
+<span class="n">deactivate</span> <span class="o">&amp;&amp;</span> <span class="n">source</span> <span class="o">~/</span><span class="n">selector</span><span class="o">/</span><span class="n">activate</span>
 
 <span class="c1"># Alternatively, install pytest in your home directory.</span>
 <span class="n">pip</span> <span class="n">install</span> <span class="n">pytest</span> <span class="n">pytest</span><span class="o">-</span><span class="n">xdist</span> <span class="o">--</span><span class="n">user</span>
 
 <span class="c1"># Finally, run the tests.</span>
-<span class="n">pytest</span> <span class="o">--</span><span class="n">pyargs</span> <span class="n">diverseselector</span> <span class="o">-</span><span class="n">n</span> <span class="n">auto</span>
+<span class="n">pytest</span> <span class="o">--</span><span class="n">pyargs</span> <span class="n">selector</span> <span class="o">-</span><span class="n">n</span> <span class="n">auto</span>
 </pre></div>
 </div>
 </section>
@@ -598,7 +598,7 @@ Python modules.</p>
     {
         requestKernel: true,
         binderOptions: {
-            repo: "theochem/DiverseSelector",
+            repo: "theochem/Selector",
             ref: "main",
         },
         codeMirrorConfig: {
