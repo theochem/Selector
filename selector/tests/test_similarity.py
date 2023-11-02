@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # The Selector library provides a set of tools for selecting a
 # subset of the dataset and computing diversity.
 #
@@ -26,11 +25,12 @@ import ast
 import csv
 
 import numpy as np
-from numpy.testing import assert_almost_equal, assert_equal, assert_raises
 import pkg_resources
 import pytest
-from selector.similarity import pairwise_similarity_bit, tanimoto, modified_tanimoto
+from numpy.testing import assert_almost_equal, assert_equal, assert_raises
+
 from selector.methods.similarity import NSimilarity, SimilarityIndex
+from selector.similarity import modified_tanimoto, pairwise_similarity_bit, tanimoto
 
 
 def test_pairwise_similarity_bit_raises():
@@ -1284,7 +1284,7 @@ def _get_selections_ref_dict():
     """
 
     file_path = get_data_file_path("ref_similarity_data.csv")
-    with open(file_path, mode="r", encoding="utf-8") as file:
+    with open(file_path, encoding="utf-8") as file:
         reader = csv.reader(file, delimiter=";")
         next(reader)  # skip header
         # initialize the dictionary

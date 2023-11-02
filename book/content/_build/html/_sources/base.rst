@@ -1,4 +1,4 @@
 Base class
 =============
-.. automodule:: DiverseSelector.base
+.. automodule:: selector.base
     :members:

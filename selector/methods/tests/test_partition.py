@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # The Selector library provides a set of tools for selecting a
 # subset of the dataset and computing diversity.
 #
@@ -23,13 +22,10 @@
 """Test Partition-Based Selection Methods."""
 
 import numpy as np
-from numpy.testing import assert_equal, assert_raises
 import pytest
+from numpy.testing import assert_equal, assert_raises
 
-from selector.methods.partition import (
-    GridPartition,
-    Medoid,
-)
+from selector.methods.partition import GridPartition, Medoid
 from selector.methods.tests.common import generate_synthetic_data
 
 

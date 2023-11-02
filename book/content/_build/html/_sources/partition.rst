@@ -1,5 +1,5 @@
 Partition based methods
 =============
 
-.. automodule:: DiverseSelector.partition
+.. automodule:: selector.partition
     :members:

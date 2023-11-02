@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # The Selector library provides a set of tools for selecting a
 # subset of the dataset and computing diversity.
 #
@@ -22,10 +21,10 @@
 # --
 """Test Converter Module."""
 
-import selector.converter as cv
 import numpy as np
 from numpy.testing import assert_almost_equal, assert_equal, assert_raises
 
+import selector.converter as cv
 
 # Tests for variations on input `x` for sim_to_dist()
 

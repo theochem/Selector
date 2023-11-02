@@ -1,11 +1,11 @@
 <!-- #region -->
 # Welcome to QC-Selector's Documentation!
 
-[DiverseSelector](https://github.com/theochem/DiverseSelector) is a free, open-source, and cross-platform Python library designed to help you effortlessly identify the most diverse subset of molecules from your dataset. Please use the following citation in any publication using DiverseSelector library:
+[selector](https://github.com/theochem/Selector) is a free, open-source, and cross-platform Python library designed to help you effortlessly identify the most diverse subset of molecules from your dataset. Please use the following citation in any publication using selector library:
 
 **"QC-Selector: A Generic Python Package for Subset Selection"**, Fanwang Meng, Alireza Tehrani, Valerii Chuiko, Abigail Broscius, Abdul, Hassan, Maximilian van Zyl, Marco Martínez González, Yang, Ramón Alain Miranda-Quintana, Paul W. Ayers, and Farnaz Heidar-Zadeh"
 
-The DiverseSelector source code is hosted on [GitHub](https://github.com/theochem/DiverseSelector) and is released under the [GNU General Public License v3.0](https://github.com/theochem/DiverseSelector/blob/main/LICENSE). We welcome any contributions to the DiverseSelector library in accordance with our Code of Conduct; please see our [Contributing Guidelines](https://qcdevs.org/guidelines/QCDevsCodeOfConduct/). Please report any issues you encounter while using DiverseSelector library on [GitHub Issues](https://github.com/theochem/DiverseSelector/issues). For further information and inquiries please contact us at qcdevs@gmail.com.
+The selector source code is hosted on [GitHub](https://github.com/theochem/Selector) and is released under the [GNU General Public License v3.0](https://github.com/theochem/Selector/blob/main/LICENSE). We welcome any contributions to the selector library in accordance with our Code of Conduct; please see our [Contributing Guidelines](https://qcdevs.org/guidelines/QCDevsCodeOfConduct/). Please report any issues you encounter while using selector library on [GitHub Issues](https://github.com/theochem/Selector/issues). For further information and inquiries please contact us at qcdevs@gmail.com.
 
 
 ## Why QC-Selector?
