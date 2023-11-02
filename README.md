@@ -4,6 +4,7 @@
 [![GPLv3 License](https://img.shields.io/badge/License-GPL%20v3-yellow.svg)](https://opensource.org/licenses/)
 [![GitHub Actions CI Tox Status](https://github.com/theochem/selector/actions/workflows/ci_tox.yml/badge.svg?branch=main)](https://github.com/theochem/selector/actions/workflows/ci_tox.yml)
 [![codecov](https://codecov.io/gh/theochem/selector/branch/main/graph/badge.svg?token=0UJixrJfNJ)](https://codecov.io/gh/theochem/selector)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Ftheochem%2FSelector.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Ftheochem%2FSelector?ref=badge_shield)
 
 The selector library provides methods for selecting a diverse subset of a (molecular) dataset.
 =======
@@ -53,3 +54,7 @@ To install `selector` with `pip`, you may want to create a
 ```
 
 See https://selector.qcdevs.org for full details.
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Ftheochem%2FSelector.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Ftheochem%2FSelector?ref=badge_large)
