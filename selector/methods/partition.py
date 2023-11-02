@@ -40,7 +40,7 @@ __all__ = [
 class GridPartition(SelectionBase):
     r"""Select subset of sample points using the grid partitioning algorithms.
 
-    Given the number of bins along each axis, samples are partitioned using various methods:
+    Given the number of bins along each axis, samples are partitioned using various methods [1]_:
 
     - The `equisized_independent` partitions the feature space into bins of equal size along
       each dimension.
