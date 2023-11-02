@@ -28,24 +28,33 @@
 
 [project]
 # https://packaging.python.org/en/latest/specifications/declaring-project-metadata/
-name = "acme"
+name = "selector"
 version = "0.0.1"
-description = "ACME tool"
+description = "Molecule selection with maximum diversity."
 readme = "README.md"
+#requires-python = ">=3.9,<4.0"
 requires-python = ">=3.9,<4.0"
 # "LICENSE" is name of the license file, which must be in root of project folder
 license = {file = "LICENSE"}
 authors = [
-    {name = "Joe Example", email = "example@example.com"},
+    {name = "QC-Devs Community", email = "qcdevs@gmail.com"},
 ]
-keywords = ["keyword", "are", "cool"]
+keywords = [
+    "subset selection",
+    "variable selection",
+    "chemical diversity",
+    "compound selection",
+    "maximum diversity",
+    "chemical library design",
+    "compound acquisition",
+]
 
 # https://pypi.org/classifiers/
 # Add PyPI classifiers here
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Environment :: Console",
-    "License :: OSI Approved :: MIT License",
+    "License :: OSI Approved :: GNU (Version 3)",
     "Natural Language :: English",
     "Operating System :: MacOS",
     "Operating System :: Microsoft :: Windows",
@@ -56,19 +65,25 @@ classifiers = [
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: Implementation :: CPython",
 ]
 
 # Required dependencies for install/usage of your package or application
 # If you don't have any dependencies, leave this section empty
 # Format for dependency strings: https://peps.python.org/pep-0508/
 dependencies = [
-    # ... put stuff here ...
+    "bitarray~=2.5.1",
+    "importlib-resources>=5.6.0",
+    "numpy>=1.21.2",
+    "pandas>=1.3.5",
+    "pytest>=6.2.5",
+    "scikit-learn>=1.0.1",
+    "scipy==1.11.1",
+    "setuptools>=58.0.4",
 ]
 
 [project.scripts]
 # Command line interface entrypoint scripts
-acme = "acme.__main__:main"
+# selector = "selector.__main__:main"
 
 [project.urls]
 # Use PyPI-standard names here
@@ -78,68 +93,43 @@ acme = "acme.__main__:main"
 # Issue Tracker
 # Source
 # Discord server
-"Homepage" = "<url>"
-"Documentation" = "<url>"
+homepage = "https://github.com/theochem/Selector"
+documentation = "https://selector.qcdevs.org/"
+repository = "https://github.com/theochem/Selector"
 
 # Development dependencies
 # pip install -e .[lint,test,exe]
 # pip install -e .[dev]
 [project.optional-dependencies]
 lint = [
-    # checks for spelling mistakes
-    "codespell>=2.2.4",
-
     # ruff linter checks for issues and potential bugs
     "ruff",
-
     # checks for unused code
-    "vulture",
-
-    # required for codespell to parse pyproject.toml
-    "tomli",
-
-    # validation of pyproject.toml
-    "validate-pyproject[all]",
-
+    # "vulture",
+    # # required for codespell to parse pyproject.toml
+    # "tomli",
+    # # validation of pyproject.toml
+    # "validate-pyproject[all]",
     # automatic sorting of imports
     "isort",
-
-    # automatic code formatting to follow a consistent style
-    "black",
+    # # automatic code formatting to follow a consistent style
+    # "black",
 ]
 
 test = [
     # Handles most of the testing work, including execution
     # Docs: https://docs.pytest.org/en/stable/contents.html
-    "pytest",
-
+    "pytest==7.4.0",
+    # required by pytest
+    "hypothesis",
     # "Coverage" is how much of the code is actually run (it's "coverage")
     # Generates coverage reports from test suite runs
-    "pytest-cov",
+    "pytest-cov>=3.0.0",
+
     "tomli",
-
-    # pytest wrapper around the "mock" library
-    "pytest-mock",
-
-    # Randomizes the order of test execution
-    "pytest-randomly",
-
-    # Required for comparing device data exports and a few other complex structures
-    # Docs: https://zepworks.com/deepdiff/current/
-    "deepdiff",
-
-    # Test parallelization, as well as remote execution (which we may do someday)
-    "pytest-xdist[psutil]",
-
-    # Detailed pytest results saved to a JSON file
-    "pytest-json-report",
-
+    "scikit-learn>=1.0.1",
     # Better parsing of doctests
     "xdoctest",
-
-    # Mocking of HTTP responses for the "requests" module
-    "requests-mock",
-
     # Colors for doctest output
     "Pygments",
 ]
@@ -155,71 +145,66 @@ exe = [
 
 dev = [
     # https://hynek.me/articles/python-recursive-optional-dependencies/
-    "acme[lint,test,exe]",
+    "selector[lint,test,exe]",
 
-    # Useful for building quick scripts for testing purposes
-    # https://github.com/google/python-fire
-    "fire",
+    # # Code quality tools
+    # "mypy",
 
-    # Code quality tools
-    "mypy",
+    # # Improved exception traceback output
+    # # https://github.com/qix-/better-exceptions
+    # "better_exceptions",
 
-    # Improved exception traceback output
-    # https://github.com/qix-/better-exceptions
-    "better_exceptions",
-
-    # Analyzing dependencies
-    # install graphviz to generate graphs
-    "graphviz",
-    "pipdeptree",
+    # # Analyzing dependencies
+    # # install graphviz to generate graphs
+    # "graphviz",
+    # "pipdeptree",
 ]
 
 
 [tool.setuptools]
 # https://setuptools.pypa.io/en/latest/userguide/pyproject_config.html
-platforms = ["Linux", "Windows"]
+platforms = ["Linux", "Windows", "MacOS"]
 include-package-data = true
-zip-safe = true  # This just means it's safe to zip up the bdist
+# This just means it's safe to zip up the bdist
+zip-safe = true
 
 # Non-code data that should be included in the package source code
 # https://setuptools.pypa.io/en/latest/userguide/datafiles.html
 [tool.setuptools.package-data]
-acme = ["*.xml"]
+selector = ["*.xml"]
 
 # Python modules and packages that are included in the
 # distribution package (and therefore become importable)
 [tool.setuptools.packages.find]
-exclude = ["tests", "tests.*", "examples"]
-
+exclude = ["tests", "tests_*", "examples"]
 
 
 # PDM example
-[tool.pdm.scripts]
-isort = "isort acme"
-black = "black acme"
-format = {composite = ["isort", "black"]}
-check_isort = "isort --check acme tests"
-check_black = "black --check acme tests"
-vulture = "vulture --min-confidence 100 acme tests"
-ruff = "ruff check acme tests"
-fix = "ruff check --fix acme tests"
-codespell = "codespell --toml ./pyproject.toml"
-lint = {composite = ["vulture", "codespell", "ruff", "check_isort", "check_black"]}
+#[tool.pdm.scripts]
+#isort = "isort selector"
+#black = "black selector"
+#format = {composite = ["isort", "black"]}
+#check_isort = "isort --check selector tests"
+#check_black = "black --check selector tests"
+#vulture = "vulture --min-confidence 100 selector tests"
+#ruff = "ruff check selector tests"
+#fix = "ruff check --fix selector tests"
+#codespell = "codespell --toml ./pyproject.toml"
+#lint = {composite = ["vulture", "codespell", "ruff", "check_isort", "check_black"]}
 
 
-
-[tool.codespell]
-# codespell supports pyproject.toml since version 2.2.2
-# NOTE: the "tomli" package must be installed for this to work
-# https://github.com/codespell-project/codespell#using-a-config-file
-# NOTE: ignore words for codespell must be lowercase
-check-filenames = ""
-ignore-words-list = "word,another,something"
-skip = "htmlcov,.doctrees,*.pyc,*.class,*.ico,*.out,*.PNG,*.inv,*.png,*.jpg,*.dot"
+#[tool.codespell]
+## codespell supports pyproject.toml since version 2.2.2
+## NOTE: the "tomli" package must be installed for this to work
+## https://github.com/codespell-project/codespell#using-a-config-file
+## NOTE: ignore words for codespell must be lowercase
+#check-filenames = ""
+#ignore-words-list = "word,another,something"
+#skip = "htmlcov,.doctrees,*.pyc,*.class,*.ico,*.out,*.PNG,*.inv,*.png,*.jpg,*.dot"
 
 
 [tool.black]
-line-length = 88
+line-length = 100
 # If you need to exclude directories from being reformatted by black
 # force-exclude = '''
 # (
@@ -232,12 +217,12 @@ line-length = 88
 
 [tool.isort]
 profile = "black"
-known_first_party = ["acme"]
+known_first_party = ["selector"]
 # If you need to exclude files from having their imports sorted
-extend_skip_glob  = [
-    "acme/somefile.py",
-    "acme/somedir/*",
-]
+#extend_skip_glob  = [
+#    "selector/somefile.py",
+#    "selector/somedir/*",
+#]
 
 
 # https://beta.ruff.rs/docs
@@ -288,6 +273,20 @@ select = [
 extend-exclude = [
     "*.pyc",
     "__pycache__",
+    "*.egg-info",
+    ".eggs",
+    # check point files of jupyter notebooks
+    "*.ipynb_checkpoints",
+    ".tox",
+    ".git",
+    "build",
+    "dist",
+    "docs",
+    "examples",
+    "htmlcov",
+    "notebooks",
+    ".cache",
+    "_version.py",
 ]
 
 # Linting error codes to ignore
@@ -313,8 +312,8 @@ ignore = [
 # Linting error codes to ignore on a per-file basis
 [tool.ruff.per-file-ignores]
 "__init__.py" = ["F401", "E501"]
-"acme/somefile.py" = ["E402", "E501"]
-"acme/somedir/*" = ["E501"]
+"selector/somefile.py" = ["E402", "E501"]
+"selector/somedir/*" = ["E501"]
 
 
 # Configuration for mypy
@@ -323,11 +322,11 @@ ignore = [
 python_version = "3.9"
 follow_imports = "skip"
 ignore_missing_imports = true
-files = "acme"  # directory mypy should analyze
+files = "selector"  # directory mypy should analyze
 # Directories to exclude from mypy's analysis
 exclude = [
-    "acme/somedir",
-    "acme/somefile\\.py",
+    "selector/somedir",
+    "selector/somefile\\.py",
     "dirname",
 ]
 
@@ -369,8 +368,8 @@ markers = [
 [tool.coverage.run]
 # files or directories to exclude from coverage calculations
 omit = [
-    'acme/somedir/*',
-    'acme/somefile.py',
+    'selector/somedir/*',
+    'selector/somefile.py',
 ]
 
 
