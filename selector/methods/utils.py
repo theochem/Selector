@@ -107,7 +107,7 @@ def optimize_radius(obj, X, size, cluster_ids=None):
         n_iter += 1
 
     # cannot find radius that produces desired number of selected points
-    if n_iter >= obj.n_iter:
+    if n_iter >= obj.n_iter and len(selected) != size:
         warnings.warn(
             f"Optimal radius finder failed to converge, selected {len(selected)} points instead "
             f"of requested {size}."
