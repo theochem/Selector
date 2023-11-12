@@ -58,8 +58,15 @@ class SelectionBase(ABC):
                 f"Size of subset {size} cannot be larger than number of samples {len(X)}."
             )
 
+        # if labels are not provided, indices selected from one cluster is returned
         if labels is None:
             return self.select_from_cluster(X, size)
+
+        # check labels are consistent with number of samples
+        if len(labels) != len(X):
+            raise ValueError(
+                f"Number of labels {len(labels)} does not match number of samples {len(X)}."
+            )
 
         # compute the number of samples (i.e. population or pop) in each cluster
         unique_labels = np.unique(labels)
