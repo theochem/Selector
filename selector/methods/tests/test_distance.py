@@ -171,7 +171,7 @@ def test_optisim():
     assert_equal(selected_ids, [0, 8, 55, 37, 41, 13, 12, 42, 6, 30, 57, 76])
 
     # tester to check if OptiSim gives same results as MaxMin for k=>infinity
-    selector = OptiSim(start_id=85, k=999999)
+    selector = OptiSim(ref_index=85, k=999999)
     selected_ids_optisim = selector.select(coords, size=12)
     selector = MaxMin()
     selected_ids_maxmin = selector.select(arr_dist, size=12)

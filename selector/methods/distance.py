@@ -231,42 +231,48 @@ class OptiSim(SelectionBase):
     [1] J. Chem. Inf. Comput. Sci. 1997, 37, 6, 1181–1188. https://doi.org/10.1021/ci970282v
     """
 
-    def __init__(self, r0=None, k=10, tol=0.01, eps=0, p=2, start_id=0, random_seed=42, n_iter=10):
+    def __init__(self, r0=None, ref_index=0, k=10, tol=0.01, n_iter=10, eps=0, p=2, random_seed=42):
         """Initialize class.
 
         Parameters
         ----------
-        r0 : float
-            Initial guess of radius for OptiSim algorithm. No points within r distance to an already
-            selected point can be selected.
-        k : int
+        r0 : float, optional
+            Initial guess of radius for OptiSim algorithm. No points within this distance of an
+            already selected point can be selected. If `None`, the maximum range of features and
+            the size of subset are used to calculate the initial radius. This radius is optimized
+            to result in the desired number of samples selected, if possible.
+        ref_index : int, optional
+            Index for the sample to start selection from; this index is the first sample selected.
+        k : int, optional
             Amount of points to add to subsample before selecting one of the points with the
             greatest minimum distance to the previously selected points.
         tol : float, optional
             Percentage error of number of samples actually selected from number of samples
             requested.
-        eps : float, optional
-            Approximate nearest neighbor search for eliminating close points. Branches of the tree
-            are not explored if their nearest points are further than r / (1 + eps), and branches
-            are added in bulk if their furthest points are nearer than r * (1 + eps).
-        p : float, optional
-            Which Minkowski p-norm to use. Should be in the range [1, inf]. A finite large p may
-            cause a ValueError if overflow can occur.
-        start_id : int, optional
-            Index for the first point to be selected.
-        random_seed : int, optional
-            Seed for random selection of points be evaluated.
         n_iter : int, optional
             Number of iterations to execute when optimizing the size of exclusion radius.
+        p : float, optional
+            This is `p` argument of scipy.spatial.KDTree.query_ball_point method denoting
+            which Minkowski p-norm to use. Should be in the range [1, inf]. A finite large p may
+            cause a ValueError if overflow can occur.
+        eps : nonnegative float, optional
+            This is `eps` argument of scipy.spatial.KDTree.query_ball_point method denoting
+            approximate nearest neighbor search for eliminating close points. Branches of the tree
+            are not explored if their nearest points are further than r / (1 + eps), and branches
+            are added in bulk if their furthest points are nearer than r * (1 + eps).
+        random_seed : int, optional
+            Seed for random selection of points be evaluated.
         """
         self.r = r0
+        if ref_index is not None and ref_index < 0:
+            raise ValueError(f"ref_index must be a non-negative integer, got {ref_index}.")
+        self.ref_index = int(ref_index)
+        self.n_iter = n_iter
         self.k = k
         self.tol = tol
         self.eps = eps
         self.p = p
-        self.start_id = start_id
         self.random_seed = random_seed
-        self.n_iter = n_iter
 
     def algorithm(self, X, max_size) -> list:
         """Return selected sample indices based on OptiSim algorithm.
@@ -283,7 +289,7 @@ class OptiSim(SelectionBase):
         selected : list
             List of indices of selected sample indices.
         """
-        selected = [self.start_id]
+        selected = [self.ref_index]
         count = 1
 
         # establish a kd-tree for nearest-neighbor lookup
@@ -291,12 +297,13 @@ class OptiSim(SelectionBase):
         # use a random number generator that will be used to randomly select points
         rng = np.random.default_rng(seed=self.random_seed)
 
-        len_X = len(X)
+        n_samples = len(X)
         # bv will serve as a mask to discard points within radius r of previously selected points
-        bv = np.zeros(len_X)
-        candidates = list(range(len_X))
+        bv = np.zeros(n_samples)
+        candidates = list(range(n_samples))
         # determine which points are within radius r of initial point
-        elim = tree.query_ball_point(X[self.start_id], self.r, eps=self.eps, p=self.p, workers=-1)
+        # note: workers=-1 uses all available processors/CPUs
+        elim = tree.query_ball_point(X[self.ref_index], self.r, eps=self.eps, p=self.p, workers=-1)
         # exclude points within radius r of initial point from list of candidates using bv mask
         for idx in elim:
             bv[idx] = 1
@@ -313,6 +320,7 @@ class OptiSim(SelectionBase):
             # create a new kd-tree for nearest neighbor lookup with candidates
             newtree = scipy.spatial.KDTree(X[selected])
             # query the kd-tree for nearest neighbors to selected samples
+            # note: workers=-1 uses all available processors/CPUs
             search, _ = newtree.query(X[sublist], eps=self.eps, p=self.p, workers=-1)
             # identify the nearest neighbor with the largest distance from previously selected samples
             search_idx = np.argmax(search)
@@ -349,6 +357,10 @@ class OptiSim(SelectionBase):
         selected : list
             List of indices of selected samples.
         """
+        if self.ref_index is not None and self.ref_index >= len(X):
+            raise ValueError(
+                f"ref_index is not less than the number of samples; {self.ref_index} >= {len(X)}."
+            )
         # pass subset of X to optimize_radius if cluster_ids is not None
         if labels is not None:
             X = X[labels]
@@ -380,7 +392,7 @@ class DISE(SelectionBase):
     43(1), 317–323. https://doi.org/10.1021/ci025554v
     """
 
-    def __init__(self, r0=None, ref_index=0, p=2.0, eps=0.0, tol=0.05, n_iter=10):
+    def __init__(self, r0=None, ref_index=0, tol=0.05, n_iter=10, p=2.0, eps=0.0):
         """Initialize class.
 
         Parameters
@@ -390,25 +402,28 @@ class DISE(SelectionBase):
         ref_index: int, optional
             Index of the reference sample to start the selection algorithm from.
             This sample is not included in the selected subset.
-        p: float, optional
-            Which Minkowski p-norm to use. The values of `p` should be within [1, inf].
-            A finite large p may cause a ValueError if overflow can occur.
-        eps: float, optional
-            Approximate nearest neighbor search used in `KDTree.query_ball_tree`.
-            Branches of the tree are not explored if their nearest points are further than
-            r/(1+eps), and branches are added in bulk if their furthest points are nearer than
-            r * (1+eps). eps has to be non-negative.
         tol: float, optional
             Percentage error of number of samples actually selected from number of samples requested.
         n_iter: int, optional
             Number of iterations for optimizing the radius of exclusion sphere.
+        p: float, optional
+            This is `p` argument of scipy.spatial.KDTree.query_ball_point method denoting
+            which Minkowski p-norm to use. The values of `p` should be within [1, inf].
+            A finite large p may cause a ValueError if overflow can occur.
+        eps: nonnegative float, optional
+            This is `eps` argument of scipy.spatial.KDTree.query_ball_point method denoting
+            approximate nearest neighbor search for eliminating close points. Branches of the tree
+            are not explored if their nearest points are further than r / (1 + eps), and branches
+            are added in bulk if their furthest points are nearer than r * (1 + eps).
         """
         self.r = r0
+        if ref_index is not None and (ref_index < 0 or ref_index % 2 != 0):
+            raise ValueError(f"ref_index must be a non-negative integer, got {ref_index}.")
         self.ref_index = ref_index
-        self.p = p
-        self.eps = eps
         self.tol = tol
         self.n_iter = n_iter
+        self.p = p
+        self.eps = eps
 
     def algorithm(self, X, max_size):
         """Return selected samples based on directed sphere exclusion algorithm.
@@ -474,6 +489,10 @@ class DISE(SelectionBase):
         selected: list
             List of indices of selected samples.
         """
+        if self.ref_index is not None and self.ref_index >= len(X):
+            raise ValueError(
+                f"ref_index is not less than the number of samples; {self.ref_index} >= {len(X)}."
+            )
         if X.shape[0] < size:
             raise RuntimeError(
                 f"Number of samples is less than the requested sample size: {X.shape[0]} < {size}."
