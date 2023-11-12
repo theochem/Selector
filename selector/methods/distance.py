@@ -422,7 +422,7 @@ class DISE(SelectionBase):
         """
         self.r0 = r0
         self.r = r0
-        if ref_index is not None and (ref_index < 0 or ref_index % 2 != 0):
+        if ref_index is not None and ref_index < 0:
             raise ValueError(f"ref_index must be a non-negative integer, got {ref_index}.")
         self.ref_index = ref_index
         self.tol = tol
@@ -507,5 +507,5 @@ class DISE(SelectionBase):
                 f"Number of samples is less than the requested sample size: {X.shape[0]} < {size}."
             )
         # reset radius to initial value (this is important when sampling multiple clusters)
-        # self.r = self.r0
+        self.r = self.r0
         return optimize_radius(self, X, size, labels)
