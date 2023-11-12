@@ -37,7 +37,7 @@ __all__ = [
 
 
 class MaxMin(SelectionBase):
-    """Selecting samples using MaxMin algorithm.
+    """Select samples using MaxMin algorithm.
 
     MaxMin is possibly the most widely used method for dissimilarity-based
     compound selection. When presented with a dataset of samples, the
@@ -50,6 +50,9 @@ class MaxMin(SelectionBase):
     2. Select the point which has the maximum distance among those calculated
        in the previous step.
 
+    In the current implementation, this method requires or computes the full pairwise-distance
+    matrix, so it is not recommended for large datasets.
+
     References
     ----------
     [1] Ashton, Mark, et al., Identification of diverse database subsets using
@@ -57,16 +60,18 @@ class MaxMin(SelectionBase):
     Structure‐Activity Relationships 21.6 (2002): 598-604.
     """
 
-    def __init__(self, func_distance=None):
+    def __init__(self, fun_dist=None):
         """
         Initializing class.
 
         Parameters
         ----------
-        func_distance : callable
+        fun_distance : callable
             Function for calculating the pairwise distance between sample points.
+            `fun_dist(X) -> X_dist` takes a 2D feature array of shape (n_samples, n_features)
+            and returns a 2D distance array of shape (n_samples, n_samples).
         """
-        self.func_distance = func_distance
+        self.fun_dist = fun_dist
 
     def select_from_cluster(self, X, size, labels=None):
         """Return selected samples from a cluster based on MaxMin algorithm.
@@ -74,8 +79,9 @@ class MaxMin(SelectionBase):
         Parameters
         ----------
         X: ndarray of shape (n_samples, n_features) or (n_samples, n_samples)
-            Feature matrix of `n_samples` samples in `n_features` dimensional feature space.
-            If fun_distance is `None`, this X is treated as a square pairwise distance matrix.
+            Feature matrix of `n_samples` samples in `n_features` dimensional feature space,
+            or the pairwise distance matrix between `n_samples` samples.
+            If `fun_dist` is `None`, the `X` is assumed to be a square pairwise distance matrix.
         size: int
             Number of sample points to select (i.e. size of the subset).
         labels: np.ndarray
@@ -86,12 +92,15 @@ class MaxMin(SelectionBase):
         selected : list
             List of indices of selected samples.
         """
-        if self.func_distance is not None:
-            # calculate pairwise distance between instances of provided array
-            X_dist = self.func_distance(X)
-        else:
-            # assume provided array already describes pairwise distances between samples
-            X_dist = X
+        # calculate pairwise distance between points
+        X_dist = X
+        if self.fun_dist is not None:
+            X_dist = self.fun_dist(X)
+        # check X_dist is a square symmetric matrix
+        if X_dist.shape[0] != X_dist.shape[1]:
+            raise ValueError(f"The pairwise distance matrix must be square, got {X_dist.shape}.")
+        if np.max(abs(X_dist - X_dist.T)) > 1e-8:
+            raise ValueError("The pairwise distance matrix must be symmetric.")
 
         if labels is not None:
             # extract pairwise distances from full pairwise distance matrix to obtain a new matrix
@@ -113,7 +122,7 @@ class MaxMin(SelectionBase):
 
 
 class MaxSum(SelectionBase):
-    """Selecting samples using MaxSum algorithm.
+    """Select samples using MaxSum algorithm.
 
     Whereas the goal of the MaxMin algorithm is to maximize the minimum distance
     between any pair of distinct elements in the selected subset of a dataset,
@@ -135,16 +144,18 @@ class MaxSum(SelectionBase):
     symposium on Principles of Database Systems. 2012.
     """
 
-    def __init__(self, func_distance=None):
+    def __init__(self, fun_dist=None):
         """
         Initializing class.
 
         Parameters
         ----------
-        func_distance : callable
+        fun_dist : callable
             Function for calculating the pairwise distance between sample points.
+            `fun_dist(X) -> X_dist` takes a 2D feature array of shape (n_samples, n_features)
+            and returns a 2D distance array of shape (n_samples, n_samples).
         """
-        self.func_distance = func_distance
+        self.fun_dist = fun_dist
 
     def select_from_cluster(self, X, size, labels=None):
         """Return selected samples from a cluster based on MaxSum algorithm.
@@ -152,8 +163,9 @@ class MaxSum(SelectionBase):
         Parameters
         ----------
         X: ndarray of shape (n_samples, n_features) or (n_samples, n_samples)
-            Feature matrix of `n_samples` samples in `n_features` dimensional feature space.
-            If fun_distance is `None`, this X is treated as a square pairwise distance matrix.
+            Feature matrix of `n_samples` samples in `n_features` dimensional feature space,
+            or the pairwise distance matrix between `n_samples` samples.
+            If `fun_dist` is `None`, the `X` is assumed to be a square pairwise distance matrix.
         size: int
             Number of sample points to select (i.e. size of the subset).
         labels: np.ndarray
@@ -169,12 +181,15 @@ class MaxSum(SelectionBase):
                 f"Given size is greater than the number of sample points, {size} > {len(X)} "
             )
 
-        if self.func_distance is not None:
-            # calculate pairwise distance between instances of provided array
-            X_dist = self.func_distance(X)
-        else:
-            # assume provided array already describes pairwise distances between samples
-            X_dist = X
+        # calculate pairwise distance between points
+        X_dist = X
+        if self.fun_dist is not None:
+            X_dist = self.fun_dist(X)
+        # check X_dist is a square symmetric matrix
+        if X_dist.shape[0] != X_dist.shape[1]:
+            raise ValueError(f"The pairwise distance matrix must be square, got {X_dist.shape}.")
+        if np.max(abs(X_dist - X_dist.T)) > 1e-8:
+            raise ValueError("The pairwise distance matrix must be symmetric.")
 
         if labels is not None:
             # extract pairwise distances from full pairwise distance matrix to obtain a new matrix
@@ -254,19 +269,19 @@ class OptiSim(SelectionBase):
         self.n_iter = n_iter
 
     def algorithm(self, X, max_size) -> list:
-        """Return selected samples based on OptiSim algorithm.
+        """Return selected sample indices based on OptiSim algorithm.
 
         Parameters
         ----------
-        X : np.ndarray
-            Coordinate array of samples.
+        X: ndarray of shape (n_samples, n_features)
+            Feature matrix of `n_samples` samples in `n_features` dimensional feature space.
         max_size : int
             Maximum number of samples to select.
 
         Returns
         -------
         selected : list
-            List of indices of selected samples.
+            List of indices of selected sample indices.
         """
         selected = [self.start_id]
         count = 1
@@ -322,8 +337,8 @@ class OptiSim(SelectionBase):
 
         Parameters
         ----------
-        X : np.ndarray
-            Coordinate array of samples.
+        X: ndarray of shape (n_samples, n_features)
+            Feature matrix of `n_samples` samples in `n_features` dimensional feature space.
         size : int
             Number of samples to be selected.
         labels: np.ndarray
