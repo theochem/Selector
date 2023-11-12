@@ -110,21 +110,22 @@ def compute_diversity(
         raise ValueError(f"Diversity type {div_type} not supported.")
 
 
-def logdet(x: np.ndarray) -> float:
-    r"""Computes the log determinant function.
+def logdet(X: np.ndarray) -> float:
+    r"""Compute the log determinant function.
 
-    Input is an :math:`S\times n` feature matrix with
-    :math:`S` molecules and :math:`n` features.
+    Given a  :math:`n_s \times n_f` feature matrix :math:`X`, where :math:`n_s` is the number of
+    samples and :math:`n_f` is the number of features, the log determinant function is defined as:
 
     .. math:
-        F_{logdet}\left(S\right) = \log{\det{\left(X[S]X[S]^T + I_{|S|} \right)}}
+        F_\text{logdet} = \log{\left(\det{\left(\mathbf{X}\mathbf{X}^T + \mathbf{I}\right)}\right)}
 
-    Higher values mean more diversity.
+    where the :math:`I` is the :math:`n_s \times n_s` identity matrix.
+    Higher values of :math:`F_\text{logdet}` mean more diversity.
 
     Parameters
     ----------
-    x : ndarray(S, n)
-        Subset feature matrix.
+    X: ndarray of shape (n_samples, n_features)
+        Feature matrix of `n_samples` samples in `n_features` dimensional feature space,
 
     Returns
     -------
@@ -138,13 +139,13 @@ def logdet(x: np.ndarray) -> float:
     submodular functions of descriptors learned with graph neural networks.
     Scientific Reports 12.
     """
-    mid = np.dot(x, np.transpose(x))
-    f_logdet = np.log10(np.linalg.det(mid + np.identity(len(x))))
+    mid = np.dot(X, np.transpose(X))
+    f_logdet = np.log10(np.linalg.det(mid + np.identity(len(X))))
     return f_logdet
 
 
 def shannon_entropy(x: np.ndarray, normalize=True, truncation=False) -> float:
-    r"""Computes the shannon entropy of a binary matrix.
+    r"""Compute the shannon entropy of a binary matrix.
 
     Higher values mean more diversity.
 
@@ -234,14 +235,15 @@ def shannon_entropy(x: np.ndarray, normalize=True, truncation=False) -> float:
 
 # todo: add tests for edi
 def explicit_diversity_index(
-    x: np.ndarray,
+    X: np.ndarray,
     cs: int,
 ) -> float:
-    """Computes the explicit diversity index.
+    """Compute the explicit diversity index.
+
     Parameters
     ----------
-    x : ndarray
-        Feature matrix.
+    X: ndarray of shape (n_samples, n_features)
+        Feature matrix of `n_samples` samples in `n_features` dimensional feature space.
     cs : int
         Number of common substructures in the compound set.
 
@@ -249,6 +251,7 @@ def explicit_diversity_index(
     -------
     edi_scaled : float
         Explicit diversity index.
+
     Notes
     -----
     This method hasn't been tested.
@@ -260,16 +263,16 @@ def explicit_diversity_index(
     A Novel Measure for Assessing the Diversity of Compound Databases.
     Journal of Chemical Information and Modeling 46, 1898-1904.
     """
-    nc = len(x)
-    sdi = (1 - nearest_average_tanimoto(x)) / (0.8047 - (0.065 * (np.log(nc))))
+    nc = len(X)
+    sdi = (1 - nearest_average_tanimoto(X)) / (0.8047 - (0.065 * (np.log(nc))))
     cr = -1 * np.log10(nc / (cs**2))
     edi = (sdi + cr) * 0.7071067811865476
     edi_scaled = ((np.tanh(edi / 3) + 1) / 2) * 100
     return edi_scaled
 
 
-def wdud(x: np.ndarray) -> float:
-    r"""Computes the Wasserstein Distance to Uniform Distribution(WDUD).
+def wdud(X: np.ndarray) -> float:
+    r"""Compute the Wasserstein Distance to Uniform Distribution(WDUD).
 
     The equation for the Wasserstein Distance for a single feature to uniform distribution is
     .. math::
@@ -280,12 +283,13 @@ def wdud(x: np.ndarray) -> float:
     distribution of the values of the feature in :math:`x`, where :math:`y` is the ith feature. This
     integral is calculated iteratively between :math:y_i and :math:y_{i+1}, using trapezoidal method.
 
-    Lower values mean more diversity.
+    Lower values of the WDUD mean more diversity because the features of the selected set are
+    more evenly distributed over the range of feature values.
 
     Parameters
     ----------
-    x : ndarray(N, K)
-        Feature array of N molecules and K features.
+    X: ndarray of shape (n_samples, n_features)
+        Feature matrix of `n_samples` samples in `n_features` dimensional feature space.
 
     Returns
     -------
@@ -294,28 +298,24 @@ def wdud(x: np.ndarray) -> float:
 
     Notes
     -----
-    Lower values of the WDUD mean more diversity because the features of the selected set are
-     more evenly distributed over the range of feature values.
-
     Nakamura, T., Sakaue, S., Fujii, K., Harabuchi, Y., Maeda, S., and Iwata, S.. (2022)
     Selecting molecules with diverse structures and properties by maximizing
     submodular functions of descriptors learned with graph neural networks.
     Scientific Reports 12.
     """
-    if x.ndim != 2:
-        raise ValueError(f"The number of dimensions {x.ndim} should be two.")
+    if X.ndim != 2:
+        raise ValueError(f"The number of dimensions {X.ndim} should be two.")
     # min_max normalization:
-    num_features = len(x[0])
-    num_mols = len(x[:, 0])
+    n_samples, n_features = X.shape
     # Find the maximum and minimum over each feature across all molecules.
-    max_x = np.max(x, axis=0)
-    min_x = np.min(x, axis=0)
+    max_x = np.max(X, axis=0)
+    min_x = np.min(X, axis=0)
     # Normalization of each feature to [0, 1]
     if np.any(np.abs(max_x - min_x) < 1e-30):
-        raise ValueError("One of the features is redundant and causes normalization to fail.")
-    x_norm = (x - min_x) / (max_x - min_x)
+        raise ValueError("One of the features is constant and causes normalization to fail.")
+    x_norm = (X - min_x) / (max_x - min_x)
     ans = []  # store the Wasserstein distance for each feature
-    for i in range(0, num_features):
+    for i in range(0, n_features):
         wdu = 0.0
         y = np.sort(x_norm[:, i])
         # Round to the sixth decimal place and count number of unique elements
@@ -331,7 +331,7 @@ def wdud(x: np.ndarray) -> float:
             grid = np.linspace(yi1, yi, num=1000, endpoint=True)
             # Evaluate the integrand  |x - \sum_{x <= y_{i + 1}} 1/k|
             p += counts[j - 1]
-            integrand = np.abs(grid - p / num_mols)
+            integrand = np.abs(grid - p / n_samples)
             # Integrate using np.trapz
             wdu += np.trapz(y=integrand, x=grid)
         ans.append(wdu)
@@ -339,7 +339,7 @@ def wdud(x: np.ndarray) -> float:
 
 
 def hypersphere_overlap_of_subset(x: np.ndarray, x_subset: np.array) -> float:
-    r"""Computes the overlap of subset with hyper-spheres around each point
+    r"""Compute the overlap of subset with hyper-spheres around each point
 
     The edge penalty is also included, which disregards areas
     outside of the boundary of the full feature space/library.
