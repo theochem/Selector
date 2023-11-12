@@ -263,6 +263,7 @@ class OptiSim(SelectionBase):
         random_seed : int, optional
             Seed for random selection of points be evaluated.
         """
+        self.r0 = r0
         self.r = r0
         if ref_index is not None and ref_index < 0:
             raise ValueError(f"ref_index must be a non-negative integer, got {ref_index}.")
@@ -364,6 +365,8 @@ class OptiSim(SelectionBase):
         # pass subset of X to optimize_radius if labels is not None
         if labels is not None:
             X = X[labels]
+        # reset radius to initial value (this is important when sampling multiple clusters)
+        self.r = self.r0
         return optimize_radius(self, X, size, labels)
 
 
@@ -403,7 +406,8 @@ class DISE(SelectionBase):
             Index of the reference sample to start the selection algorithm from.
             This sample is not included in the selected subset.
         tol: float, optional
-            Percentage error of number of samples actually selected from number of samples requested.
+            Percentage tolerance of sample size error. Given a subset size, the selected size
+            will be within size * (1 - tol) and size * (1 + tol).
         n_iter: int, optional
             Number of iterations for optimizing the radius of exclusion sphere.
         p: float, optional
@@ -416,6 +420,7 @@ class DISE(SelectionBase):
             are not explored if their nearest points are further than r / (1 + eps), and branches
             are added in bulk if their furthest points are nearer than r * (1 + eps).
         """
+        self.r0 = r0
         self.r = r0
         if ref_index is not None and (ref_index < 0 or ref_index % 2 != 0):
             raise ValueError(f"ref_index must be a non-negative integer, got {ref_index}.")
@@ -501,4 +506,6 @@ class DISE(SelectionBase):
             raise RuntimeError(
                 f"Number of samples is less than the requested sample size: {X.shape[0]} < {size}."
             )
+        # reset radius to initial value (this is important when sampling multiple clusters)
+        # self.r = self.r0
         return optimize_radius(self, X, size, labels)
