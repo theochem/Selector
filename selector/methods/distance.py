@@ -472,7 +472,7 @@ class DISE(SelectionBase):
 
         return selected
 
-    def select_from_cluster(self, X, size, cluster_ids=None):
+    def select_from_cluster(self, X, size, labels=None):
         """Return selected samples from a cluster based on directed sphere exclusion algorithm
 
         Parameters
@@ -481,7 +481,7 @@ class DISE(SelectionBase):
            Feature matrix of `n_samples` samples in `n_features` dimensional space.
         size: int
             Number of samples to be selected.
-        cluster_ids: np.ndarray
+        labels: np.ndarray, optional
             Indices of samples that form a cluster.
 
         Returns
@@ -497,4 +497,4 @@ class DISE(SelectionBase):
             raise RuntimeError(
                 f"Number of samples is less than the requested sample size: {X.shape[0]} < {size}."
             )
-        return optimize_radius(self, X, size, cluster_ids)
+        return optimize_radius(self, X, size, labels)
