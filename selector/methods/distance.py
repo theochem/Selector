@@ -361,7 +361,7 @@ class OptiSim(SelectionBase):
             raise ValueError(
                 f"ref_index is not less than the number of samples; {self.ref_index} >= {len(X)}."
             )
-        # pass subset of X to optimize_radius if cluster_ids is not None
+        # pass subset of X to optimize_radius if labels is not None
         if labels is not None:
             X = X[labels]
         return optimize_radius(self, X, size, labels)
@@ -493,6 +493,10 @@ class DISE(SelectionBase):
             raise ValueError(
                 f"ref_index is not less than the number of samples; {self.ref_index} >= {len(X)}."
             )
+        # pass subset of X to optimize_radius if labels is not None
+        if labels is not None:
+            X = X[labels]
+
         if X.shape[0] < size:
             raise RuntimeError(
                 f"Number of samples is less than the requested sample size: {X.shape[0]} < {size}."
