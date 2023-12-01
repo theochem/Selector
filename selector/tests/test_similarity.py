@@ -29,7 +29,7 @@ import pkg_resources
 import pytest
 from numpy.testing import assert_almost_equal, assert_equal, assert_raises
 
-from selector.methods.similarity import NSimilarity
+from selector.methods.sim import NSimilarity
 from selector.similarity import (
     SimilarityIndex,
     modified_tanimoto,
