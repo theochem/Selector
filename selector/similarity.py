@@ -65,6 +65,47 @@ def pairwise_similarity_bit(X: np.array, metric: str) -> np.ndarray:
         s[i, j] = s[j, i] = available_methods[metric](X[i], X[j])
     return s
 
+def indicators(x, y):
+    """Calculating base descriptors
+    a : number of common on bits
+    d : number of common off bits
+    dis = b + c : 1-0 mismatches
+    p : len of fingerprint
+    Check Table S1 in the SI of https://link.springer.com/article/10.1186/s13321-021-00505-3#Sec21
+    """
+    p = len(x)
+    a = np.dot(x, y)
+    d = np.dot(1 - x, 1 - y)
+    dis = p - a - d
+    return a, d, dis, p
+
+# Indices
+# BUB: Baroni-Urbani-Buser, Fai: Faith, Ja: Jaccard
+# JT: Jaccard-Tanimoto, RT: Rogers-Tanimoto, RR: Russel-Rao
+# SM: Sokal-Michener, SSn: Sokal-Sneath n
+
+x = np.array([1, 0, 1, 0, 1])
+y = np.array([1, 1, 1, 0, 0])
+
+a, d, dis, p = indicators(x, y)
+
+bub = (a * d)**0.5 + a)/((a * d)**0.5 + a + dis)
+
+fai = (a + 0.5 * d)/p
+
+ja = (3 * a)/(3 * a + dis)
+
+jt = a/(a + dis)
+
+rt = (a + d)/(p + dis)
+
+rr = a/p
+
+sm =(a + d)/p
+
+ss1 = a/(a + 2 * dis)
+
+ss2 = (2 * (a + d))/(p + (a + d))
 
 def tanimoto(a: np.array, b: np.array) -> float:
     r"""Compute Tanimoto coefficient or index (a.k.a. Jaccard similarity coefficient).
