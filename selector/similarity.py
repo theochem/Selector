@@ -22,6 +22,7 @@
 """Similarity Module."""
 
 import math
+import warnings
 from itertools import combinations_with_replacement
 from math import log
 from typing import Optional, Union
@@ -159,7 +160,7 @@ class SimilarityIndex:
         # check if the w_factor is valid
         if w_factor != "fraction":
             if w_factor.split("_")[0] != "power" or not w_factor.split("_")[-1].isdigit():
-                print(
+                warnings.warn(
                     f'Invalid weight factor "{w_factor}" given. Using default value '
                     '"similarity = dissimilarity = 1".'
                 )
