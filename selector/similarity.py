@@ -37,7 +37,8 @@ def pairwise_similarity_bit(X: np.array, metric: str) -> np.ndarray:
         Feature matrix of `n_samples` samples in `n_features` dimensional space.
     metric : str
         The metric used when calculating similarity coefficients between samples in a feature array.
-        Method for calculating similarity coefficient. Options: `"tanimoto"`, `"modified_tanimoto"`.
+        Method for calculating similarity coefficient. Options: `"tanimoto"`, `"modified_tanimoto"`,
+        `"bub"`, `"fai"`, `"ja"`, `"jt"`, `"rt"`, `"rr"`, `"sm"`, `"ss1"`, `"ss2"`.
 
     Returns
     -------
@@ -50,7 +51,18 @@ def pairwise_similarity_bit(X: np.array, metric: str) -> np.ndarray:
         "tanimoto": tanimoto,
         "modified_tanimoto": modified_tanimoto,
     }
-    if metric not in available_methods:
+    supported_metrics = list(available_methods.keys()) + [
+        "bub",
+        "fai",
+        "ja",
+        "jt",
+        "rt",
+        "rr",
+        "sm",
+        "ss1",
+        "ss2",
+    ]
+    if metric not in supported_metrics:
         raise ValueError(
             f"Argument metric={metric} is not recognized! Choose from {available_methods.keys()}"
         )
@@ -58,54 +70,83 @@ def pairwise_similarity_bit(X: np.array, metric: str) -> np.ndarray:
         raise ValueError(f"Argument features should be a 2D array, got {X.ndim}")
 
     # make pairwise m-by-m similarity matrix
-    n_samples = len(X)
+    n_samples = X.shape[0]
+    n_bits = X.shape[1]
     s = np.zeros((n_samples, n_samples))
     # compute similarity between all pairs of points (including the diagonal elements)
     for i, j in combinations_with_replacement(range(n_samples), 2):
-        s[i, j] = s[j, i] = available_methods[metric](X[i], X[j])
+        x = X[i]
+        y = X[j]
+        if metric in available_methods.keys():
+            s[i, j] = s[j, i] = available_methods[metric](x, y)
+        else:
+            # a: number of common on bits
+            a = np.dot(x, y)
+            # d: number of common off bits
+            d = np.dot(1 - x, 1 - y)
+            # dis = b + c : 1-0 mismatches
+            dis = n_bits - a - d
+            s[i, j] = s[j, i] = sim_indices(metric=metric, n_bits=n_bits, a=a, d=d, dis=dis)
+
     return s
 
-def indicators(x, y):
-    """Calculating base descriptors
-    a : number of common on bits
-    d : number of common off bits
-    dis = b + c : 1-0 mismatches
-    p : len of fingerprint
-    Check Table S1 in the SI of https://link.springer.com/article/10.1186/s13321-021-00505-3#Sec21
+
+def sim_indices(metric, n_bits, a, d, dis):
+    """Compute similarity indices.
+
+    Parameters
+    ----------
+    metric : str
+        The metric used when calculating similarity coefficients,
+        options: bub, fai, ja, jt, rt, rr, sm, ss1, ss2.
+    n_bits : int
+        Number of bits in the fingerprint.
+    a : int
+        Number of common on bits.
+    d : int
+        Number of common off bits.
+    dis : int
+        Number of 1-0 mismatches.
+
+    Returns
+    -------
+    sim : float
+        Similarity index between two fingerprints.
+
+    Notes
+    -----
+    The definitions were taken from the following paper [1]_
+
+    .. [1] Miranda-Quintana, Ramón Alain, et al. Extended similarity indices: the benefits of
+    comparing more than two objects simultaneously. Part 1: Theory and characteristics.
+    Journal of Cheminformatics 13.1 (2021): 32.
+
     """
-    p = len(x)
-    a = np.dot(x, y)
-    d = np.dot(1 - x, 1 - y)
-    dis = p - a - d
-    return a, d, dis, p
+    sim_func_dict = {
+        # BUB: Baroni-Urbani-Buser
+        "bub": ((a * d) ** 0.5 + a) / ((a * d) ** 0.5 + a + dis),
+        # Fai: Faith
+        "fai": (a + 0.5 * d) / n_bits,
+        # Ja: Jaccard
+        "ja": (3 * a) / (3 * a + dis),
+        # JT: Jaccard-Tanimoto
+        "jt": a / (a + dis),
+        # RT: Rogers-Tanimoto
+        "rt": (a + d) / (n_bits + dis),
+        # RR: Russel-Rao
+        "rr": a / n_bits,
+        # SM: Sokal-Michener
+        "sm": (a + d) / n_bits,
+        # SS1: Sokal-Sneath 1
+        "ss1": a / (a + 2 * dis),
+        # SS2: Sokal-Sneath 2
+        "ss2": (2 * (a + d)) / (n_bits + (a + d)),
+    }
 
-# Indices
-# BUB: Baroni-Urbani-Buser, Fai: Faith, Ja: Jaccard
-# JT: Jaccard-Tanimoto, RT: Rogers-Tanimoto, RR: Russel-Rao
-# SM: Sokal-Michener, SSn: Sokal-Sneath n
+    sim = sim_func_dict[metric]
 
-x = np.array([1, 0, 1, 0, 1])
-y = np.array([1, 1, 1, 0, 0])
+    return sim
 
-a, d, dis, p = indicators(x, y)
-
-bub = (a * d)**0.5 + a)/((a * d)**0.5 + a + dis)
-
-fai = (a + 0.5 * d)/p
-
-ja = (3 * a)/(3 * a + dis)
-
-jt = a/(a + dis)
-
-rt = (a + d)/(p + dis)
-
-rr = a/p
-
-sm =(a + d)/p
-
-ss1 = a/(a + 2 * dis)
-
-ss2 = (2 * (a + d))/(p + (a + d))
 
 def tanimoto(a: np.array, b: np.array) -> float:
     r"""Compute Tanimoto coefficient or index (a.k.a. Jaccard similarity coefficient).
