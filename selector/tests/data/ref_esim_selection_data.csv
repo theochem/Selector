@@ -1,4 +1,4 @@
-c_threshold,w_factor,sample_size,start_idx,n_ary,result
+c_threshold;w_factor;sample_size;start_idx;n_ary;result
 None;fraction;10;medoid;AC;[96,33,0,49,1,66,3,35,8,37]
 None;fraction;10;outlier;AC;[4,42,8,17,5,19,10,22,13,49]
 None;fraction;10;[1,2,3];AC;[1,2,3,16,0,64,6,85,4,12]
