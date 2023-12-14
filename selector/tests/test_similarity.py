@@ -694,7 +694,7 @@ def test_SimilarityIndex_call(c_threshold, w_factor, n_ary):
 # The cases where the similarity of the samples is zero are not considered because these will be
 # inconsistent with the reference values for the selection of the new indexes, and the calculation
 # of the medoid and the outlier.
-def _get_test_parameters():
+def _get_esim_test_parameters():
     """Returns the parameters for the tests.
 
     Returns the parameters for the tests. The parameters are stored in a list of tuples. Each tuple
@@ -730,11 +730,11 @@ def _get_test_parameters():
     return test_parameters
 
 
-parameters = _get_test_parameters()
+parameters = _get_esim_test_parameters()
 
 
-def _get_ref_medoid_dict():
-    """Returns a dictionary with the reference values for the medoid.
+def _get_ref_medoid_esim_dict():
+    """Returns dictionary with reference medoid index for binary data using esim method.
 
     The proper results for the tests are known in advance and are stored in a dictionary.
 
@@ -879,8 +879,8 @@ def _get_ref_medoid_dict():
 
 
 @pytest.mark.parametrize("c_threshold, w_factor, n_ary", parameters)
-def test_calculate_medoid(c_threshold, w_factor, n_ary):
-    """Test the function to calculate the medoid for binary data.
+def test_calculate_medoid_esim(c_threshold, w_factor, n_ary):
+    """Test the function to calculate the medoid for binary data using esim method.
 
     Test the function to calculate the medoid for binary data using the reference values and several
     combinations of parameters. The reference values are obtained using the function
@@ -899,7 +899,7 @@ def test_calculate_medoid(c_threshold, w_factor, n_ary):
     # get the reference binary data
     data = _get_binary_data()
     # get the reference value for the medoid
-    ref_medoid_dict = _get_ref_medoid_dict()
+    ref_medoid_dict = _get_ref_medoid_esim_dict()
 
     # small hack to avoid using the None value as a key in the dictionary
     c_threshold_key = c_threshold
@@ -919,12 +919,12 @@ def test_calculate_medoid(c_threshold, w_factor, n_ary):
 
 
 # results from the reference code
-def _get_ref_outlier_dict():
-    """Returns a dictionary with the reference values for the outlier.
+def _get_ref_outlier_esim_dict():
+    """Returns dictionary with reference outlier index for binary data using esim method.
 
     The proper results for the tests are known in advance and are stored in a dictionary.
 
-    The dictionary has the following structure:
+        The dictionary has the following structure:
         {w_factor: {c_threshold: {n_ary: value}}} where:
             w_factor: the weight factor for the similarity index
             c_threshold: the threshold value for the similarity index
@@ -1065,8 +1065,8 @@ def _get_ref_outlier_dict():
 
 
 @pytest.mark.parametrize("c_threshold, w_factor, n_ary", parameters)
-def test_calculate_outlier(c_threshold, w_factor, n_ary):
-    """Test the function to calculate the outlier for binary data.
+def test_calculate_outlier_esim(c_threshold, w_factor, n_ary):
+    """Test the function to calculate the outlier for binary data using the esim method.
 
     Test the function to calculate the outlier for binary data using the reference values and
     several combinations of parameters. The reference values are obtained using the function
@@ -1085,7 +1085,7 @@ def test_calculate_outlier(c_threshold, w_factor, n_ary):
     # get the reference binary data
     data = _get_binary_data()
     # get the reference value for the outlier
-    ref_outlier_dict = _get_ref_outlier_dict()
+    ref_outlier_dict = _get_ref_outlier_esim_dict()
 
     # small hack to avoid using the None value as a key in the dictionary
     c_threshold_key = c_threshold
@@ -1105,13 +1105,11 @@ def test_calculate_outlier(c_threshold, w_factor, n_ary):
 
 
 # --------------------------------------------------------------------------------------------- #
-# Section of the test for the NSimilarity class
+# Section of the test for the NSimilarity class using binary data and esim method.
 # --------------------------------------------------------------------------------------------- #
-
-
-def _get_ref_new_index():
+def _get_ref_new_index_esim():
     """
-    Returns reference data for testing the function to calculate the new index.
+    Returns reference data for testing the function to calculate the new index with the esim method.
 
     Returns the tuple (selected_points, new_indexes_dict) where selected_points is a list of
     selected samples given to the function (get_new_index) and new_indexes_dict is  a dictionary
@@ -1222,7 +1220,7 @@ def _get_ref_new_index():
 
 
 @pytest.mark.parametrize("c_threshold, w_factor, n_ary", parameters)
-def test_get_new_index(c_threshold, w_factor, n_ary):
+def test_get_new_index_esim(c_threshold, w_factor, n_ary):
     """Test the function get a new sample from the binary data.
 
     Test the function to get a new sample from the binary data using the reference values and
@@ -1242,7 +1240,7 @@ def test_get_new_index(c_threshold, w_factor, n_ary):
     # get the reference binary data
     data = _get_binary_data()
     # get the reference value for the outlier
-    selected_samples, ref_new_index_dict = _get_ref_new_index()
+    selected_samples, ref_new_index_dict = _get_ref_new_index_esim()
 
     # columnwise sum of the selected samples
     selected_condensed_data = np.sum(np.take(data, selected_samples, axis=0), axis=0)
@@ -1287,11 +1285,10 @@ start_values = ["medoid", "outlier", [1, 2, 3]]
 # sample size values to test
 sample_size_values = [10, 20, 30]
 
+
 # --------------------------------------------------------------------------------------------- #
 # Get reference data for testing the selection of the diverse subset
 # --------------------------------------------------------------------------------------------- #
-
-
 def get_data_file_path(file_name):
     """Get the absolute path of the data file inside the package.
 
@@ -1309,7 +1306,8 @@ def get_data_file_path(file_name):
     return data_file_path
 
 
-def _get_selections_ref_dict():
+# get reference selected data for esim method
+def _get_selections_esim_ref_dict():
     """Returns a dictionary with the reference values for the selection of samples.
 
     The proper results for the tests are known in advance and are stored in a csv file.
@@ -1323,7 +1321,7 @@ def _get_selections_ref_dict():
             start: the method to use to select the first(s) sample(s)
     """
 
-    file_path = get_data_file_path("ref_similarity_data.csv")
+    file_path = get_data_file_path("ref_esim_selection_data.csv")
     with open(file_path, encoding="utf-8") as file:
         reader = csv.reader(file, delimiter=";")
         next(reader)  # skip header
@@ -1346,13 +1344,11 @@ def _get_selections_ref_dict():
     return data_dict
 
 
-print(_get_selections_ref_dict())
-
-
+# test selected data for esim method (inv_order=1) and binary data against reference data
 @pytest.mark.parametrize("c_threshold, w_factor, n_ary", parameters)
 @pytest.mark.parametrize("sample_size", sample_size_values)
 @pytest.mark.parametrize("start", start_values)
-def test_NSimilarity_select(c_threshold, w_factor, sample_size, n_ary, start):
+def test_NSimilarity_esim_select(c_threshold, w_factor, sample_size, n_ary, start):
     """
     Test the diversity selection methods based on similarity indexes for binary data.
 
@@ -1374,7 +1370,7 @@ def test_NSimilarity_select(c_threshold, w_factor, sample_size, n_ary, start):
     # get the binary data
     data = _get_binary_data()
     # get the reference selected data
-    reference_selected_data = _get_selections_ref_dict()
+    reference_selected_data = _get_selections_esim_ref_dict()
 
     # create instance of the class SimilarityIndex to test the similarity indexes for binary data
     selector = NSimilarity(

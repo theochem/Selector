@@ -119,6 +119,7 @@ class NSimilarity(SelectionBase):
                 'power_n' : similarity = n**-(n_objects - d[k])
                             dissimilarity = n**-(d[k] - n_objects % 2)
                 other values : similarity = dissimilarity = 1
+            Only used for the 'esim' method. Default is 'fraction'.
         c_threshold: {None, 'dissimilar', int}
             Coincidence threshold used for calculating the similarity counters. A column of the
             elements is considered to be a coincidence among the elements if the number of elements
@@ -126,6 +127,7 @@ class NSimilarity(SelectionBase):
                 None : Default, c_threshold = n_objects % 2
                 'dissimilar' : c_threshold = ceil(n_objects / 2)
                 int : Integer number < n_objects
+            Only used for the 'esim' method. Default is None.
         preprocess_data: bool
             Every data element must be between 0 and 1 for the similarity indexes to work. If
             preprocess_data is True, the data is scaled between 0 and 1 using a strategy that is
@@ -482,6 +484,7 @@ class SimilarityIndex:
                 - None : Default, c_threshold = n_objects % 2
                 - 'dissimilar' : c_threshold = ceil(n_objects / 2)
                 - int : Integer number < n_objects
+            It is only used for the 'esim' method. Default is None.
 
         w_factor : {"fraction", "power_n"}, optional
             The type of weight function to be used.
@@ -493,6 +496,7 @@ class SimilarityIndex:
                 similarity = dissimilarity = 1
             Default is 'fraction'.
                 other values : similarity = dissimilarity = 1
+            It is only used for the 'esim' method. Default is 'fraction'.
         """
         # check if the method is valid
         if method not in ["isim", "esim"]:
