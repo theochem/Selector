@@ -29,8 +29,11 @@ time and return a value between 0 and 1, where 0 means that all the molecules in
 completely different and 1 means that the molecules are identical.
 
 The ideas behind the similarity-based selection methods are described in the following papers:
+    (esim)
     https://jcheminf.biomedcentral.com/articles/10.1186/s13321-021-00505-3
     https://jcheminf.biomedcentral.com/articles/10.1186/s13321-021-00504-4
+    (isim)
+    TODO: Add paper
 
 """
 
@@ -38,6 +41,7 @@ import math
 import random
 from math import log
 from typing import List, Optional, Union
+import warnings
 
 import numpy as np
 
@@ -62,13 +66,13 @@ class NSimilarity(SelectionBase):
     Notes
     -----
     The ideas behind the similarity-based selection methods are described in the following papers:
-        
+
     """
 
     def __init__(
         self,
         method: str = "isim",
-        order: int = 1,
+        inv_order: int = 1,
         similarity_index: str = "RR",
         w_factor: str = "fraction",
         c_threshold: Union[None, str, int] = None,
@@ -84,20 +88,14 @@ class NSimilarity(SelectionBase):
                     The instant similarity index calculates the average similarity of a set of
                     objects without the need to calculate the similarity of all the possible pairs.
                     This method is easier to use than the ``esim`` (extended similarity index) as it
-                    does not require the use of weight factors or coincidence thresholds. The ideas
-                    supporting this method are described in the following papers:
-                    - TODO: Add paper
+                    does not require the use of weight factors or coincidence thresholds.
                 - "esim": Extended Similarity
                     The extended similarity index calculates the similarity of a set of objects
                     without the need to calculate the similarity of all the possible pairs. This
-                    method requires the use of weight factors and coincidence thresholds. The ideas
-                    supporting this method are described in the following papers:
-                    https://jcheminf.biomedcentral.com/articles/10.1186/s13321-021-00505-3
-                    https://jcheminf.biomedcentral.com/articles/10.1186/s13321-021-00504-4
-                    https://link.springer.com/article/10.1007/s10822-022-00444-7
-        order: int
-            Integer indicating the 1/order power used to approximate the average of the
-            similarity values elevated to 1/order.
+                    method requires the use of weight factors and coincidence thresholds.
+        inv_order: int
+            Integer indicating the 1/inv_order power used to approximate the average of the
+            similarity values elevated to 1/inv_order.
         similarity_index: str
             Key with the abbreviation of the similarity index that will be used to perform the
             selection.
@@ -137,9 +135,7 @@ class NSimilarity(SelectionBase):
         """
         # check if the method is valid
         if method not in ["isim", "esim"]:
-            raise ValueError(
-                f'Method "{method}" is not available please select "isim" or "esim".'
-            )
+            raise ValueError(f'Method "{method}" is not available please select "isim" or "esim".')
         # check if the similarity index is valid
         if similarity_index not in _similarity_index_dict:
             raise ValueError(
@@ -148,7 +144,7 @@ class NSimilarity(SelectionBase):
             )
         # for the esim method, check if the w_factor is valid
         if method == "esim":
-        # check if the w_factor and c_threshold are valid
+            # check if the w_factor and c_threshold are valid
             if w_factor != "fraction":
                 if w_factor.split("_")[0] != "power" or not w_factor.split("_")[-1].isdigit():
                     print(
@@ -165,7 +161,7 @@ class NSimilarity(SelectionBase):
                     )
 
         self.method = method
-        self.order = order
+        self.inv_order = inv_order
         self.similarity_index = similarity_index
         self.w_factor = w_factor
         self.c_threshold = c_threshold
@@ -257,6 +253,8 @@ class NSimilarity(SelectionBase):
         # create an instance of the SimilarityIndex class. It is used to calculate the similarity
         # index of the sets of selected objects.
         similarity_index = SimilarityIndex(
+            method=self.method,
+            inv_order=self.inv_order,
             similarity_index=self.similarity_index,
             c_threshold=self.c_threshold,
             w_factor=self.w_factor,
@@ -343,6 +341,8 @@ class NSimilarity(SelectionBase):
         # create an instance of the SimilarityIndex class. It is used to calculate the medoid and
         # the outlier of the data.
         similarity_index = SimilarityIndex(
+            method=self.method,
+            inv_order=self.inv_order,
             similarity_index=self.similarity_index,
             c_threshold=self.c_threshold,
             w_factor=self.w_factor,
@@ -430,6 +430,8 @@ class SimilarityIndex:
 
     def __init__(
         self,
+        method: str = "isim",
+        inv_order: int = 1,
         similarity_index: str = "RR",
         c_threshold: Union[None, str, int] = None,
         w_factor: str = "fraction",
@@ -438,6 +440,23 @@ class SimilarityIndex:
 
         Parameters
         ----------
+        method : {"isim", "esim"}, optional
+            Method used for calculating the similarity indexes. The methods are:
+                - "isim": Instant Similarity
+                    The instant similarity index calculates the average similarity of a set of
+                    objects without the need to calculate the similarity of all the possible pairs.
+                    This method is easier to use than the ``esim`` (extended similarity index) as it
+                    does not require the use of weight factors or coincidence thresholds.
+                - "esim": Extended Similarity
+                    The extended similarity index calculates the similarity of a set of objects
+                    without the need to calculate the similarity of all the possible pairs. This
+                    method requires the use of weight factors and coincidence thresholds.
+            Default is "isim".
+
+        k : int, optional
+            Integer indicating the 1/k power used to approximate the average of the
+            similarity values elevated to 1/k. Default is 1.
+
         similarity_index : str, optional
             The key with the abbreviation of the similarity index to be used for calculations.
             Possible values are:
@@ -475,28 +494,34 @@ class SimilarityIndex:
             Default is 'fraction'.
                 other values : similarity = dissimilarity = 1
         """
+        # check if the method is valid
+        if method not in ["isim", "esim"]:
+            raise ValueError(f'Method "{method}" is not available please select "isim" or "esim".')
         # check if the similarity index is valid
         if similarity_index not in _similarity_index_dict:
             raise ValueError(
                 f'Similarity index "{similarity_index}" is not available. '
                 f"See the documentation for the available similarity indexes."
             )
-        # check if the c_threshold is valid
-        if c_threshold not in ["dissimilar", None]:
-            if not isinstance(c_threshold, int):
-                raise ValueError(
-                    f'Invalid c_threshold. It must be an integer or "dissimilar" or None. '
-                    f"Given c_threshold = {c_threshold}"
-                )
-        # check if the w_factor is valid
-        if w_factor != "fraction":
-            if w_factor.split("_")[0] != "power" or not w_factor.split("_")[-1].isdigit():
-                print(
-                    f'Invalid weight factor "{w_factor}" given. Using default value '
-                    '"similarity = dissimilarity = 1".'
-                )
-                w_factor = False
-
+        # for the esim method, check if the w_factor and c_threshold are valid
+        if method == "esim":
+            # check if the c_threshold is valid
+            if c_threshold not in ["dissimilar", None]:
+                if not isinstance(c_threshold, int):
+                    raise ValueError(
+                        f'Invalid c_threshold. It must be an integer or "dissimilar" or None. '
+                        f"Given c_threshold = {c_threshold}"
+                    )
+            # check if the w_factor is valid
+            if w_factor != "fraction":
+                if w_factor.split("_")[0] != "power" or not w_factor.split("_")[-1].isdigit():
+                    print(
+                        f'Invalid weight factor "{w_factor}" given. Using default value '
+                        '"similarity = dissimilarity = 1".'
+                    )
+                    w_factor = False
+        self.method = method
+        self.inv_order = inv_order
         self.similarity_index = similarity_index
         self.w_factor = w_factor
         self.c_threshold = c_threshold
@@ -537,59 +562,96 @@ class SimilarityIndex:
                 )
         else:
             c_total = np.sum(arr, axis=0)
-            n_objects = len(arr)
-
-        # Assign c_threshold
-        if self.c_threshold is None:
-            tmp_c_threshold = n_objects % 2
-        elif self.c_threshold == "dissimilar":
-            tmp_c_threshold = math.ceil(n_objects / 2)
-        elif isinstance(self.c_threshold, int):
-            if self.c_threshold >= n_objects:
-                raise ValueError(
-                    "c_threshold cannot be equal or greater than n_objects. \n"
-                    f"c_threshold = {self.c_threshold}  n_objects = {n_objects}"
+            len_arr = len(arr)
+            if n_objects and n_objects != len_arr:
+                warnings.warn(
+                    f"Warning, specified number of objects {n_objects} is different from the number"
+                    " of objects in data {len_arr}\n"
+                    "Doing calculations with",
+                    n_objects,
+                    "objects.",
                 )
-            tmp_c_threshold = self.c_threshold
-        else:
-            raise ValueError(
-                "c_threshold must be None, 'dissimilar' or an integer. \n"
-                f"Given c_threshold = {self.c_threshold}"
-            )
+            n_objects = len_arr
 
-        # Calculate a, d, b + c
-        # Calculate the positions (columns) of common on bits (common 1s) between the objects
-        a_indices = 2 * c_total - n_objects > tmp_c_threshold
-        # Calculate the positions (columns) common off bits (common 0s) between the objects
-        d_indices = n_objects - 2 * c_total > tmp_c_threshold
-        # Calculate the positions (columns) of dissimilar bits between the objects (b + c)
-        # the dissimilar bits are the bits that are not common between the objects
-        dis_indices = np.abs(2 * c_total - n_objects) <= tmp_c_threshold
+        # if method is isim, calculate the counters using the instant similarity index
+        if self.method == "isim":
+            # calculate number of instances with common on bits (common 1s) for each column
+            a_array = c_total * (c_total - 1) / 2
+            # calculate number of instances with common off bits (common 0s) for each column
+            off_coincidences = n_objects - c_total
+            d_array = off_coincidences * (off_coincidences - 1) / 2
+            # calculate number of instances with dissimilar bits for each column
+            dis_array = off_coincidences * c_total
 
-        # Calculate the number of columns with common on bits (common 1s) between the objects
-        a = np.sum(a_indices)
-        # Calculate the number of columns with common off bits (common 0s) between the objects
-        d = np.sum(d_indices)
-        # Calculate the number of columns with dissimilar bits between the objects (b + c)
-        total_dis = np.sum(dis_indices)
+            # calculate total a, d, b + c counters
+            a = np.sum(np.power(a_array, 1.0 / self.inv_order))
+            d = np.sum(np.power(d_array, 1.0 / self.inv_order))
+            total_dis = np.sum(np.power(dis_array, 1 / self.inv_order))
 
-        # calculate the weights for each column indexed as with common on bits (common 1s)
-        a_w_array = self._f_s(2 * c_total[a_indices] - n_objects, n_objects)
-        # calculate the weights for each column indexed as with common off bits (common 0s)
-        d_w_array = self._f_s(abs(2 * c_total[d_indices] - n_objects), n_objects)
-        # calculate the weights for each column indexed as with dissimilar bits
-        total_w_dis_array = self._f_d(abs(2 * c_total[dis_indices] - n_objects), n_objects)
+            # calculate total similarity, and total similarity + dissimilarity
+            total_sim = a + d
+            p = total_sim + total_dis
 
-        # calculate the total weight for each type of counter
-        w_a = np.sum(a_w_array)
-        w_d = np.sum(d_w_array)
-        total_w_dis = np.sum(total_w_dis_array)
+            # in the isim method, the counters are not weighted, so the weighted counters are equal
+            # to the non-weighted counters
+            w_a = a
+            w_d = d
+            total_w_sim = total_sim
+            total_w_dis = total_dis
+            w_p = p
 
-        # calculate the counters needed to calculate the similarity indexes
-        total_sim = a + d
-        total_w_sim = w_a + w_d
-        p = total_sim + total_dis
-        w_p = total_w_sim + total_w_dis
+        elif self.method == "esim":
+            # Assign c_threshold
+            if self.c_threshold is None:
+                tmp_c_threshold = n_objects % 2
+            elif self.c_threshold == "dissimilar":
+                tmp_c_threshold = math.ceil(n_objects / 2)
+            elif isinstance(self.c_threshold, int):
+                if self.c_threshold >= n_objects:
+                    raise ValueError(
+                        "c_threshold cannot be equal or greater than n_objects. \n"
+                        f"c_threshold = {self.c_threshold}  n_objects = {n_objects}"
+                    )
+                tmp_c_threshold = self.c_threshold
+            else:
+                raise ValueError(
+                    "c_threshold must be None, 'dissimilar' or an integer. \n"
+                    f"Given c_threshold = {self.c_threshold}"
+                )
+
+            # Calculate a, d, b + c
+            # Calculate the positions (columns) of common on bits (common 1s) between the objects
+            a_indices = 2 * c_total - n_objects > tmp_c_threshold
+            # Calculate the positions (columns) common off bits (common 0s) between the objects
+            d_indices = n_objects - 2 * c_total > tmp_c_threshold
+            # Calculate the positions (columns) of dissimilar bits between the objects (b + c)
+            # the dissimilar bits are the bits that are not common between the objects
+            dis_indices = np.abs(2 * c_total - n_objects) <= tmp_c_threshold
+
+            # Calculate the number of columns with common on bits (common 1s) between the objects
+            a = np.sum(np.power(a_indices, 1.0 / self.inv_order))
+            # Calculate the number of columns with common off bits (common 0s) between the objects
+            d = np.sum(np.power(d_indices, 1.0 / self.inv_order))
+            # Calculate the number of columns with dissimilar bits between the objects (b + c)
+            total_dis = np.sum(np.power(dis_indices, 1.0 / self.inv_order))
+
+            # calculate the weights for each column indexed as with common on bits (common 1s)
+            a_w_array = self._f_s(2 * c_total[a_indices] - n_objects, n_objects)
+            # calculate the weights for each column indexed as with common off bits (common 0s)
+            d_w_array = self._f_s(abs(2 * c_total[d_indices] - n_objects), n_objects)
+            # calculate the weights for each column indexed as with dissimilar bits
+            total_w_dis_array = self._f_d(abs(2 * c_total[dis_indices] - n_objects), n_objects)
+
+            # calculate the total weight for each type of counter
+            w_a = np.sum(np.power(a_w_array, 1.0 / self.inv_order))
+            w_d = np.sum(np.power(d_w_array, 1.0 / self.inv_order))
+            total_w_dis = np.sum(np.power(total_w_dis_array, 1.0 / self.inv_order))
+
+            # calculate the counters needed to calculate the similarity indexes
+            total_sim = a + d
+            total_w_sim = w_a + w_d
+            p = total_sim + total_dis
+            w_p = total_w_sim + total_w_dis
 
         counters = {
             "a": a,
