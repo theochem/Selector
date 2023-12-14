@@ -1220,13 +1220,25 @@ def test_calculate_outlier_esim(c_threshold, w_factor, n_ary):
 # Section of the tests for selection of indexes functions using binary data and isim method.
 # --------------------------------------------------------------------------------------------- #
 # test medoid selection
-@pytest.mark.parametrize("sim_idx",["AC", "BUB", "CT1", "CT2", "CT3", "CT4", "Fai", "Gle", "Ja", "Ja0", "JT", "RT", "RR", "SM", "SS1", "SS2"])
+si_idcs = ["AC", "BUB", "CT1", "CT2", "CT3", "CT4", "Fai", "Gle", "Ja", "Ja0", "JT", "RT", "RR", "SM", "SS1", "SS2"]
+
+@pytest.mark.parametrize("sim_idx",si_idcs)
 def test_calculate_medoid_isim(sim_idx):
     data=_get_binary_data()
     isim_dict=_get_ref_isim_dict()
     ref_medoid=isim_dict[sim_idx]['medoid']
     sim_idx = SimilarityIndex(method="isim", similarity_index=sim_idx)
     medoid = sim_idx.calculate_medoid(arr=data)
+    assert_equal(medoid, ref_medoid)
+
+# test outlier selection
+@pytest.mark.parametrize("sim_idx",si_idcs)
+def test_calculate_outlier_isim(sim_idx):
+    data=_get_binary_data()
+    isim_dict=_get_ref_isim_dict()
+    ref_medoid=isim_dict[sim_idx]['outlier']
+    sim_idx = SimilarityIndex(method="isim", similarity_index=sim_idx)
+    medoid = sim_idx.calculate_outlier(arr=data)
     assert_equal(medoid, ref_medoid)
 
 
