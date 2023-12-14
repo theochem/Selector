@@ -1216,6 +1216,19 @@ def test_calculate_outlier_esim(c_threshold, w_factor, n_ary):
     # check that the calculated outlier is equal to the reference outlier
     assert_equal(outlier, ref_outlier)
 
+# --------------------------------------------------------------------------------------------- #
+# Section of the tests for selection of indexes functions using binary data and isim method.
+# --------------------------------------------------------------------------------------------- #
+# test medoid selection
+@pytest.mark.parametrize("sim_idx",["AC", "BUB", "CT1", "CT2", "CT3", "CT4", "Fai", "Gle", "Ja", "Ja0", "JT", "RT", "RR", "SM", "SS1", "SS2"])
+def test_calculate_medoid_isim(sim_idx):
+    data=_get_binary_data()
+    isim_dict=_get_ref_isim_dict()
+    ref_medoid=isim_dict[sim_idx]['medoid']
+    sim_idx = SimilarityIndex(method="isim", similarity_index=sim_idx)
+    medoid = sim_idx.calculate_medoid(arr=data)
+    assert_equal(medoid, ref_medoid)
+
 
 # --------------------------------------------------------------------------------------------- #
 # Section of the test for the NSimilarity class using binary data and esim method.
@@ -1513,3 +1526,5 @@ def test_NSimilarity_esim_select(c_threshold, w_factor, sample_size, n_ary, star
 
     # check if the selected data is equal to the reference data
     assert all(x in ref_list for x in selected_data)
+
+
