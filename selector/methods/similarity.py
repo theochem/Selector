@@ -62,13 +62,13 @@ class NSimilarity(SelectionBase):
     Notes
     -----
     The ideas behind the similarity-based selection methods are described in the following papers:
-        https://jcheminf.biomedcentral.com/articles/10.1186/s13321-021-00505-3
-        https://jcheminf.biomedcentral.com/articles/10.1186/s13321-021-00504-4
-        https://link.springer.com/article/10.1007/s10822-022-00444-7
+        
     """
 
     def __init__(
         self,
+        method: str = "isim",
+        order: int = 1,
         similarity_index: str = "RR",
         w_factor: str = "fraction",
         c_threshold: Union[None, str, int] = None,
@@ -78,6 +78,26 @@ class NSimilarity(SelectionBase):
 
         Parameters
         ----------
+        method: {"isim", "esim"}
+            Method used for calculating the similarity indices. The methods are:
+                - "isim": Instant Similarity
+                    The instant similarity index calculates the average similarity of a set of
+                    objects without the need to calculate the similarity of all the possible pairs.
+                    This method is easier to use than the ``esim`` (extended similarity index) as it
+                    does not require the use of weight factors or coincidence thresholds. The ideas
+                    supporting this method are described in the following papers:
+                    - TODO: Add paper
+                - "esim": Extended Similarity
+                    The extended similarity index calculates the similarity of a set of objects
+                    without the need to calculate the similarity of all the possible pairs. This
+                    method requires the use of weight factors and coincidence thresholds. The ideas
+                    supporting this method are described in the following papers:
+                    https://jcheminf.biomedcentral.com/articles/10.1186/s13321-021-00505-3
+                    https://jcheminf.biomedcentral.com/articles/10.1186/s13321-021-00504-4
+                    https://link.springer.com/article/10.1007/s10822-022-00444-7
+        order: int
+            Integer indicating the 1/order power used to approximate the average of the
+            similarity values elevated to 1/order.
         similarity_index: str
             Key with the abbreviation of the similarity index that will be used to perform the
             selection.
@@ -109,34 +129,43 @@ class NSimilarity(SelectionBase):
                 'dissimilar' : c_threshold = ceil(n_objects / 2)
                 int : Integer number < n_objects
         preprocess_data: bool
-            Every data element must be betwen 0 and 1 for the similarity indexes to work. If
+            Every data element must be between 0 and 1 for the similarity indexes to work. If
             preprocess_data is True, the data is scaled between 0 and 1 using a strategy that is
             compatible with the similarity indexes. If preprocess_data is False, the data is not
             scaled and it is assumed that the data is already between 0 and 1.
 
         """
+        # check if the method is valid
+        if method not in ["isim", "esim"]:
+            raise ValueError(
+                f'Method "{method}" is not available please select "isim" or "esim".'
+            )
         # check if the similarity index is valid
         if similarity_index not in _similarity_index_dict:
             raise ValueError(
                 f'Similarity index "{similarity_index}" is not available. '
                 f"See the documentation for the available similarity indexes."
             )
-        # check if the w_factor is valid
-        if w_factor != "fraction":
-            if w_factor.split("_")[0] != "power" or not w_factor.split("_")[-1].isdigit():
-                print(
-                    f'Invalid weight factor "{w_factor}" given. Using default value '
-                    '"similarity = dissimilarity = 1".'
-                )
-                w_factor = False
-        # check if the c_threshold is valid
-        if c_threshold not in ["dissimilar", None]:
-            if not isinstance(c_threshold, int):
-                raise ValueError(
-                    f'Invalid c_threshold. It must be an integer or "dissimilar" or None. '
-                    f"Given c_threshold = {c_threshold}"
-                )
+        # for the esim method, check if the w_factor is valid
+        if method == "esim":
+        # check if the w_factor and c_threshold are valid
+            if w_factor != "fraction":
+                if w_factor.split("_")[0] != "power" or not w_factor.split("_")[-1].isdigit():
+                    print(
+                        f'Invalid weight factor "{w_factor}" given. Using default value '
+                        '"similarity = dissimilarity = 1".'
+                    )
+                    w_factor = False
+            # check if the c_threshold is valid
+            if c_threshold not in ["dissimilar", None]:
+                if not isinstance(c_threshold, int):
+                    raise ValueError(
+                        f'Invalid c_threshold. It must be an integer or "dissimilar" or None. '
+                        f"Given c_threshold = {c_threshold}"
+                    )
 
+        self.method = method
+        self.order = order
         self.similarity_index = similarity_index
         self.w_factor = w_factor
         self.c_threshold = c_threshold
