@@ -821,10 +821,20 @@ class SimilarityIndex:
         # For each sample in the set, calculate the columnwise sum of the data without the sample
         comp_sums = c_total - arr
 
+        # The medoid is calculated using an instance of the SimilarityIndex class with the same
+        # parameters as the current class, but with the inv_order = 1
+        si = SimilarityIndex(
+            method=self.method,
+            inv_order=1,
+            similarity_index=self.similarity_index,
+            c_threshold=self.c_threshold,
+            w_factor=self.w_factor,
+        )
+
         # for each sample calculate the similarity index of the complete set without the sample
         for idx, obj in enumerate(comp_sums):
             # calculate the similarity index of the set of objects without the current object
-            sim_index = self(obj, n_objects=n_objects - 1)
+            sim_index = si(obj, n_objects=n_objects - 1)
             # if the similarity is lower than the previous minimum similarity, update the minimum
             # similarity and the index
             if sim_index < min_sim:
@@ -880,10 +890,20 @@ class SimilarityIndex:
         # For each sample in the set, calculate the columnwise sum of the data without the sample
         comp_sums = c_total - arr
 
+        # The outlier is calculated using an instance of the SimilarityIndex class with the same
+        # parameters as the current class, but with the inv_order = 1
+        si = SimilarityIndex(
+            method=self.method,
+            inv_order=1,
+            similarity_index=self.similarity_index,
+            c_threshold=self.c_threshold,
+            w_factor=self.w_factor,
+        )
+
         # for each sample calculate the similarity index of the complete set without the sample
         for idx, obj in enumerate(comp_sums):
             # calculate the similarity index of the set of objects without the current object
-            sim_index = self(arr=obj, n_objects=n_objects - 1)
+            sim_index = si(arr=obj, n_objects=n_objects - 1)
             # if the similarity is bigger than the previous minimum similarity, update the minimum
             # similarity and the index
             if sim_index > max_sim:
