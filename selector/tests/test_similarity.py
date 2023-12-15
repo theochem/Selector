@@ -581,6 +581,7 @@ def _get_ref_similarity_esim_dict():
 
     return ref_similarity_binary
 
+
 def _get_ref_isim_dict():
     """Returns a dictionary with the reference values necessary for testing the isim method.
 
@@ -597,103 +598,170 @@ def _get_ref_isim_dict():
                 medoid: the index of the medoid sample
                 kval2si: a dictionary with the k value as key and the similarity index as value
     """
-    isim_dict={'AC': {'outlier': 49,
-        'medoid': 96,
-        'kval2si': {1: 0.49917475122243926,
-        2: 0.5538883964836272,
-        5: 0.5866150284585204,
-        10: 0.5974286117693461}},
-        'BUB': {'outlier': 85,
-        'medoid': 10,
-        'kval2si': {1: 0.49397989672931264,
-        2: 0.5819613020487422,
-        5: 0.6335183244648649,
-        10: 0.6502407823406905}},
-        'CT1': {'outlier': 49,
-        'medoid': 96,
-        'kval2si': {1: 0.9367065121244419,
-        2: 0.9261583241959612,
-        5: 0.9107923779571723,
-        10: 0.902405671341302}},
-        'CT2': {'outlier': 49,
-        'medoid': 96,
-        'kval2si': {1: 0.06282178200501828,
-        2: 0.12056333324739296,
-        5: 0.19665579893673796,
-        10: 0.23722036836219337}},
-        'CT3': {'outlier': 85,
-        'medoid': 10,
-        'kval2si': {1: 0.870243523865252,
-        2: 0.82843367496858,
-        5: 0.77434619420322,
-        10: 0.7461466827474635}},
-        'CT4': {'outlier': 85,
-        'medoid': 10,
-        'kval2si': {1: 0.8945856132657759,
-        2: 0.8706848775823933,
-        5: 0.8375702929632953,
-        10: 0.8197597232141359}},
-        'Fai': {'outlier': 85,
-        'medoid': 10,
-        'kval2si': {1: 0.36944444444444446,
-        2: 0.4354778372150966,
-        5: 0.47461264224551747,
-        10: 0.4873954166765502}},
-        'Gle': {'outlier': 85,
-        'medoid': 10,
-        'kval2si': {1: 0.48934163365402755,
-        2: 0.579696056605444,
-        5: 0.6326571892686095,
-        10: 0.6498200476852635}},
-        'Ja': {'outlier': 85,
-        'medoid': 10,
-        'kval2si': {1: 0.5897241588360109,
-        2: 0.6741446014011255,
-        5: 0.7209338061721255,
-        10: 0.735695295519683}},
-        'Ja0': {'outlier': 49,
-        'medoid': 96,
-        'kval2si': {1: 0.7490265158538847,
-        2: 0.8082737370566611,
-        5: 0.8388469288245588,
-        10: 0.8482013298830383}},
-        'JT': {'outlier': 85,
-        'medoid': 10,
-        'kval2si': {1: 0.3239260739260739,
-        2: 0.4081492974102138,
-        5: 0.4626909830536219,
-        10: 0.48128402926677866}},
-        'RT': {'outlier': 49,
-        'medoid': 96,
-        'kval2si': {1: 0.3321820648822006,
-        2: 0.41267273273100585,
-        5: 0.4645381672067039,
-        10: 0.48220837765022756}},
-        'RR': {'outlier': 85,
-        'medoid': 10,
-        'kval2si': {1: 0.2401851851851852,
-        2: 0.2867117470582547,
-        5: 0.3148435010613659,
-        10: 0.3241287740619748}},
-        'SM': {'outlier': 49,
-        'medoid': 96,
-        'kval2si': {1: 0.4987037037037037,
-        2: 0.5842439273719385,
-        5: 0.6343817834296691,
-        10: 0.6506620592911254}},
-        'SS1': {'outlier': 85,
-        'medoid': 10,
-        'kval2si': {1: 0.19326478915213827,
-        2: 0.25639923187909175,
-        5: 0.3009746107992553,
-        10: 0.3169019346220607}},
-        'SS2': {'outlier': 49,
-        'medoid': 96,
-        'kval2si': {1: 0.6655134066477203,
-        2: 0.7375681450029299,
-        5: 0.7762957099270287,
-        10: 0.7883649540846069}}}
+    isim_dict = {
+        "AC": {
+            "outlier": 49,
+            "medoid": 96,
+            "kval2si": {
+                1: 0.49917475122243926,
+                2: 0.5538883964836272,
+                5: 0.5866150284585204,
+                10: 0.5974286117693461,
+            },
+        },
+        "BUB": {
+            "outlier": 85,
+            "medoid": 10,
+            "kval2si": {
+                1: 0.49397989672931264,
+                2: 0.5819613020487422,
+                5: 0.6335183244648649,
+                10: 0.6502407823406905,
+            },
+        },
+        "CT1": {
+            "outlier": 49,
+            "medoid": 96,
+            "kval2si": {
+                1: 0.9367065121244419,
+                2: 0.9261583241959612,
+                5: 0.9107923779571723,
+                10: 0.902405671341302,
+            },
+        },
+        "CT2": {
+            "outlier": 49,
+            "medoid": 96,
+            "kval2si": {
+                1: 0.06282178200501828,
+                2: 0.12056333324739296,
+                5: 0.19665579893673796,
+                10: 0.23722036836219337,
+            },
+        },
+        "CT3": {
+            "outlier": 85,
+            "medoid": 10,
+            "kval2si": {
+                1: 0.870243523865252,
+                2: 0.82843367496858,
+                5: 0.77434619420322,
+                10: 0.7461466827474635,
+            },
+        },
+        "CT4": {
+            "outlier": 85,
+            "medoid": 10,
+            "kval2si": {
+                1: 0.8945856132657759,
+                2: 0.8706848775823933,
+                5: 0.8375702929632953,
+                10: 0.8197597232141359,
+            },
+        },
+        "Fai": {
+            "outlier": 85,
+            "medoid": 10,
+            "kval2si": {
+                1: 0.36944444444444446,
+                2: 0.4354778372150966,
+                5: 0.47461264224551747,
+                10: 0.4873954166765502,
+            },
+        },
+        "Gle": {
+            "outlier": 85,
+            "medoid": 10,
+            "kval2si": {
+                1: 0.48934163365402755,
+                2: 0.579696056605444,
+                5: 0.6326571892686095,
+                10: 0.6498200476852635,
+            },
+        },
+        "Ja": {
+            "outlier": 85,
+            "medoid": 10,
+            "kval2si": {
+                1: 0.5897241588360109,
+                2: 0.6741446014011255,
+                5: 0.7209338061721255,
+                10: 0.735695295519683,
+            },
+        },
+        "Ja0": {
+            "outlier": 49,
+            "medoid": 96,
+            "kval2si": {
+                1: 0.7490265158538847,
+                2: 0.8082737370566611,
+                5: 0.8388469288245588,
+                10: 0.8482013298830383,
+            },
+        },
+        "JT": {
+            "outlier": 85,
+            "medoid": 10,
+            "kval2si": {
+                1: 0.3239260739260739,
+                2: 0.4081492974102138,
+                5: 0.4626909830536219,
+                10: 0.48128402926677866,
+            },
+        },
+        "RT": {
+            "outlier": 49,
+            "medoid": 96,
+            "kval2si": {
+                1: 0.3321820648822006,
+                2: 0.41267273273100585,
+                5: 0.4645381672067039,
+                10: 0.48220837765022756,
+            },
+        },
+        "RR": {
+            "outlier": 85,
+            "medoid": 10,
+            "kval2si": {
+                1: 0.2401851851851852,
+                2: 0.2867117470582547,
+                5: 0.3148435010613659,
+                10: 0.3241287740619748,
+            },
+        },
+        "SM": {
+            "outlier": 49,
+            "medoid": 96,
+            "kval2si": {
+                1: 0.4987037037037037,
+                2: 0.5842439273719385,
+                5: 0.6343817834296691,
+                10: 0.6506620592911254,
+            },
+        },
+        "SS1": {
+            "outlier": 85,
+            "medoid": 10,
+            "kval2si": {
+                1: 0.19326478915213827,
+                2: 0.25639923187909175,
+                5: 0.3009746107992553,
+                10: 0.3169019346220607,
+            },
+        },
+        "SS2": {
+            "outlier": 49,
+            "medoid": 96,
+            "kval2si": {
+                1: 0.6655134066477203,
+                2: 0.7375681450029299,
+                5: 0.7762957099270287,
+                10: 0.7883649540846069,
+            },
+        },
+    }
     return isim_dict
+
 
 def _get_absolute_decimal_places_for_comparison(num1, num2, rtol=1e-4):
     """Calculate the absolute number of decimal places needed for comparison of two numbers.
@@ -1216,27 +1284,47 @@ def test_calculate_outlier_esim(c_threshold, w_factor, n_ary):
     # check that the calculated outlier is equal to the reference outlier
     assert_equal(outlier, ref_outlier)
 
+
 # --------------------------------------------------------------------------------------------- #
 # Section of the tests for selection of indexes functions using binary data and isim method.
 # --------------------------------------------------------------------------------------------- #
 # test medoid selection
-si_idcs = ["AC", "BUB", "CT1", "CT2", "CT3", "CT4", "Fai", "Gle", "Ja", "Ja0", "JT", "RT", "RR", "SM", "SS1", "SS2"]
+si_idcs = [
+    "AC",
+    "BUB",
+    "CT1",
+    "CT2",
+    "CT3",
+    "CT4",
+    "Fai",
+    "Gle",
+    "Ja",
+    "Ja0",
+    "JT",
+    "RT",
+    "RR",
+    "SM",
+    "SS1",
+    "SS2",
+]
 
-@pytest.mark.parametrize("sim_idx",si_idcs)
+
+@pytest.mark.parametrize("sim_idx", si_idcs)
 def test_calculate_medoid_isim(sim_idx):
-    data=_get_binary_data()
-    isim_dict=_get_ref_isim_dict()
-    ref_medoid=isim_dict[sim_idx]['medoid']
+    data = _get_binary_data()
+    isim_dict = _get_ref_isim_dict()
+    ref_medoid = isim_dict[sim_idx]["medoid"]
     sim_idx = SimilarityIndex(method="isim", similarity_index=sim_idx)
     medoid = sim_idx.calculate_medoid(arr=data)
     assert_equal(medoid, ref_medoid)
 
+
 # test outlier selection
-@pytest.mark.parametrize("sim_idx",si_idcs)
+@pytest.mark.parametrize("sim_idx", si_idcs)
 def test_calculate_outlier_isim(sim_idx):
-    data=_get_binary_data()
-    isim_dict=_get_ref_isim_dict()
-    ref_medoid=isim_dict[sim_idx]['outlier']
+    data = _get_binary_data()
+    isim_dict = _get_ref_isim_dict()
+    ref_medoid = isim_dict[sim_idx]["outlier"]
     sim_idx = SimilarityIndex(method="isim", similarity_index=sim_idx)
     medoid = sim_idx.calculate_outlier(arr=data)
     assert_equal(medoid, ref_medoid)
@@ -1538,5 +1626,3 @@ def test_NSimilarity_esim_select(c_threshold, w_factor, sample_size, n_ary, star
 
     # check if the selected data is equal to the reference data
     assert all(x in ref_list for x in selected_data)
-
-
