@@ -419,11 +419,13 @@ class SimilarityIndex:
     -------
     calculate_medoid(arr, c_total=None):
         Calculate the medoid of a set of real-valued vectors or binary objects. The similarity_index
-        is used as the distance.
+        is used as the distance. The similarity_index used for calculating the medoid always has
+        p-norm = 1.
 
     calculate_outlier(arr, c_total=None):
         Calculate the outlier of a set of real-valued vectors or binary objects. The
-        similarity_index is used as the distance.
+        similarity_index is used as the distance. The similarity_index used for calculating the
+        outlier always has p-norm = 1.
 
     __call__(arr=None, n_objects=None):
         Calculate the similarity index of a set of vectors.
@@ -455,9 +457,10 @@ class SimilarityIndex:
                     method requires the use of weight factors and coincidence thresholds.
             Default is "isim".
 
-        k : int, optional
-            Integer indicating the 1/k power used to approximate the average of the
-            similarity values elevated to 1/k. Default is 1.
+        inv_order : int, optional
+            Integer indicating the 1/inv_order power used to approximate the average of the
+            similarity values elevated to 1/inv_order. This is not used for calculating the
+            medoid or the outlier. Default is 1.
 
         similarity_index : str, optional
             The key with the abbreviation of the similarity index to be used for calculations.
