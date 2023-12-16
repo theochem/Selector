@@ -51,6 +51,8 @@ sample5 = np.array([[0, 2, 4, 0], [1, 2, 4, 0], [2, 2, 4, 0]])
 
 sample6 = np.array([[1, 0, 1, 0], [0, 1, 1, 0], [1, 0, 1, 0], [0, 0, 1, 0]])
 
+sample7 = np.array([[1, 0, 1, 0] for _ in range(4)])
+
 
 def test_compute_diversity_specified():
     """Test compute diversity with a specified div_type."""
@@ -231,7 +233,7 @@ def test_hypersphere_overlap_of_subset_with_only_corners_and_center():
 
 def test_hypersphere_normalization_error():
     """Test the hypersphere overlap method raises error when normalization fails."""
-    assert_raises(ValueError, hypersphere_overlap_of_subset, sample5, sample5)
+    assert_raises(ValueError, hypersphere_overlap_of_subset, sample7, sample7)
 
 
 def test_hypersphere_radius_warning():
