@@ -29,8 +29,13 @@ import pkg_resources
 import pytest
 from numpy.testing import assert_almost_equal, assert_equal, assert_raises
 
-from selector.methods.similarity import NSimilarity, SimilarityIndex
-from selector.similarity import modified_tanimoto, pairwise_similarity_bit, tanimoto
+from selector.methods.sim import NSimilarity
+from selector.similarity import (
+    SimilarityIndex,
+    modified_tanimoto,
+    pairwise_similarity_bit,
+    tanimoto,
+)
 
 
 def test_pairwise_similarity_bit_raises():
@@ -123,6 +128,9 @@ def test_SimilarityIndex_init_raises():
     # check raised error wrong c_threshold - invalid type (not int)
     with pytest.raises(ValueError):
         SimilarityIndex(c_threshold=1.1)
+    # check the warning for the w_factor
+    with pytest.warns(UserWarning):
+        SimilarityIndex(w_factor="ttt")
 
 
 def test_SimilarityIndex_calculate_counters_raises():
@@ -221,19 +229,6 @@ def test_SimilarityIndex_calculate_outlier_raises():
         sim_idx.calculate_outlier(
             arr=np.array([[1, 2, 3], [4, 5, 6], [6, 7, 8]]), c_total=np.array([1, 2, 3, 4])
         )
-
-
-def test_NSimilarity_init_raises():
-    """Test the NSimilarity class for raised errors (initialization)."""
-    # check raised error wrong similarity index name
-    with pytest.raises(ValueError):
-        NSimilarity(similarity_index="ttt")
-    # check raised error wrong c_threshold - invalid string value
-    with pytest.raises(ValueError):
-        NSimilarity(c_threshold="ttt")
-    # check raised error wrong c_threshold - invalid type (not int)
-    with pytest.raises(ValueError):
-        NSimilarity(c_threshold=1.1)
 
 
 def test_NSimilarity_get_new_index_raises():
