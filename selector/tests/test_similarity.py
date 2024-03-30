@@ -30,7 +30,7 @@ import pytest
 from numpy.testing import assert_almost_equal, assert_equal, assert_raises
 
 from selector.methods.similarity import NSimilarity, SimilarityIndex
-from selector.similarity import modified_tanimoto, pairwise_similarity_bit, tanimoto
+from selector.similarity import modified_tanimoto, pairwise_similarity_bit, tanimoto, scaled_similarity_matrix
 
 
 def test_pairwise_similarity_bit_raises():
@@ -108,10 +108,36 @@ def test_modified_tanimoto_matrix():
     """Testing the modified tanimoto function with predefined feature matrix."""
     x = np.array([[1, 0, 1], [0, 1, 1]])
     s = pairwise_similarity_bit(x, "modified_tanimoto")
-    expceted = np.array([[1, (4 / 27)], [(4 / 27), 1]])
-    assert_equal(s, expceted)
+    expected = np.array([[1, (4 / 27)], [(4 / 27), 1]])
+    assert_equal(s, expected)
 
 
+def test_scaled_similarity_matrix():
+    """Testing scaled similarity matrix function with a predefined similarity matrix."""
+    X = np.array([[1, 0.8, 0.65], [0.8, 1, 0.47], [0.65, 0.47, 1]])
+    s = scaled_similarity_matrix(X)
+    expected = np.array([[1, 0.8, 0.65], [0.8, 1, 0.47], [0.65, 0.47, 1]])
+    assert_equal(s, expected)
+
+
+def test_scaled_similarity_matrix_dimension_error():
+    """Test scaled similarity matrix raises error when input has incorrect dimension."""
+    X = np.array([[1, 0.8, 0.65], [0.8, 1, 0.47]])
+    assert_raises(ValueError, scaled_similarity_matrix, X)
+    
+    
+def test_scaled_similarity_matrix_diagonal_zero_error():
+    """Test scaled similarity matrix raises error when diagonal element is zero."""
+    X = np.array([[1, 0.8, 0.65], [0.8, 0, 0.47], [0.65, 0.47, 1]])
+    assert_raises(ValueError, scaled_similarity_matrix, X)
+
+
+def test_scaled_similarity_matrix_element_negative_error():
+    """Test scaled similarity matrix raises error when any element is negative."""
+    X = np.array([[1, 0.8, 0.65], [-0.8, 1, 0.47], [0.65, 0.47, 1]])
+    assert_raises(ValueError, scaled_similarity_matrix, X)
+    
+    
 def test_SimilarityIndex_init_raises():
     """Test the SimilarityIndex class for raised errors (initialization)."""
     # check raised error wrong similarity index name
