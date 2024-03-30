@@ -25,7 +25,7 @@ from itertools import combinations_with_replacement
 
 import numpy as np
 
-__all__ = ["pairwise_similarity_bit", "tanimoto", "modified_tanimoto"]
+__all__ = ["pairwise_similarity_bit", "tanimoto", "modified_tanimoto", "scaled_similarity_matrix"]
 
 
 def pairwise_similarity_bit(X: np.array, metric: str) -> np.ndarray:
