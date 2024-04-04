@@ -30,7 +30,12 @@ import pytest
 from numpy.testing import assert_almost_equal, assert_equal, assert_raises
 
 from selector.methods.similarity import NSimilarity, SimilarityIndex
-from selector.similarity import modified_tanimoto, pairwise_similarity_bit, tanimoto, scaled_similarity_matrix
+from selector.similarity import (
+    modified_tanimoto,
+    pairwise_similarity_bit,
+    scaled_similarity_matrix,
+    tanimoto,
+)
 
 
 def test_pairwise_similarity_bit_raises():
