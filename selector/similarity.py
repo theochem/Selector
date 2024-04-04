@@ -204,14 +204,13 @@ def scaled_similarity_matrix(X: np.array) -> np.ndarray:
     s : ndarray of shape (n_samples, n_samples)
         A scaled symmetric similarity matrix.
     """
-
     if X.ndim != 2:
         raise ValueError(f"Argument similarity matrix should be a 2D array, got {X.ndim}")
     if X.shape[0] != X.shape[1]:
         raise ValueError(f"Argument similarity matrix should be a square matrix (having same number of rows and columns), got {X.shape[0]} and {X.shape[1]}")
     if not (np.all(X >= 0) and np.all(np.diag(X)>0)):
         raise ValueError("All elements of similarity matrix should be greater than zero and diagonals should be non-zero")
-    
+
     # scaling does not happen if the matrix is binary similarity matrix with all diagonal elements as 1
     if np.all(np.diag(X)==1):
         logging.info("No scaling is taking effect")
