@@ -25,6 +25,9 @@ from itertools import combinations_with_replacement
 
 import numpy as np
 
+import logging
+logging.basicConfig(level=logging.INFO)
+
 __all__ = ["pairwise_similarity_bit", "tanimoto", "modified_tanimoto", "scaled_similarity_matrix"]
 
 
@@ -209,13 +212,18 @@ def scaled_similarity_matrix(X: np.array) -> np.ndarray:
     if not (np.all(X >= 0) and np.all(np.diag(X)>0)):
         raise ValueError("All elements of similarity matrix should be greater than zero and diagonals should be non-zero")
     
-    # make a scaled similarity matrix
-    n_samples = len(X)
-    s = np.zeros((n_samples, n_samples))
-    # calculate the square root of the diagonal elements
-    sqrt_diag = np.sqrt(np.diag(X))
-    # calculate the product of the square roots of the diagonal elements
-    product_sqrt_diag = np.outer(sqrt_diag, sqrt_diag)
-    # divide each element of the matrix by the product of the square roots of diagonal elements
-    s = X / product_sqrt_diag
-    return s
+    # scaling does not happen if the matrix is binary similarity matrix with all diagonal elements as 1
+    if np.all(np.diag(X)==1):
+        logging.info("No scaling is taking effect")
+        return X
+    else:
+        # make a scaled similarity matrix
+        n_samples = len(X)
+        s = np.zeros((n_samples, n_samples))
+        # calculate the square root of the diagonal elements
+        sqrt_diag = np.sqrt(np.diag(X))
+        # calculate the product of the square roots of the diagonal elements
+        product_sqrt_diag = np.outer(sqrt_diag, sqrt_diag)
+        # divide each element of the matrix by the product of the square roots of diagonal elements
+        s = X / product_sqrt_diag
+        return s
