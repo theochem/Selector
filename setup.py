@@ -25,7 +25,7 @@ import sys
 
 from setuptools import setup
 
-short_description = "Molecule selection with maximum diversity".split("\n")[0]
+short_description = "Subset selection with maximized diversity".split("\n")[0]
 
 # from https://github.com/pytest-dev/pytest-runner#conditional-requirement
 needs_pytest = {"pytest", "test", "ptr"}.intersection(sys.argv)
