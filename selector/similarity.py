@@ -25,7 +25,12 @@ from itertools import combinations_with_replacement
 
 import numpy as np
 
-__all__ = ["pairwise_similarity_bit", "tanimoto", "modified_tanimoto", "scaled_similarity_matrix"]
+__all__ = [
+    "pairwise_similarity_bit",
+    "tanimoto",
+    "modified_tanimoto",
+    "scaled_similarity_matrix",
+]
 
 
 def pairwise_similarity_bit(X: np.array, metric: str) -> np.ndarray:
@@ -201,6 +206,7 @@ def scaled_similarity_matrix(X: np.array) -> np.ndarray:
     s : ndarray of shape (n_samples, n_samples)
         A scaled symmetric similarity matrix.
     """
+
     if X.ndim != 2:
         raise ValueError(f"Argument similarity matrix should be a 2D array, got {X.ndim}")
     if X.shape[0] != X.shape[1]:
