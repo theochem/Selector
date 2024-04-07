@@ -49,6 +49,7 @@ def pairwise_similarity_bit(X: np.array, metric: str) -> np.ndarray:
     s : ndarray of shape (n_samples, n_samples)
         A symmetric similarity matrix between each pair of samples in the feature matrix.
         The diagonal elements are directly computed instead of assuming that they are 1.
+
     """
 
     available_methods = {
@@ -99,6 +100,7 @@ def tanimoto(a: np.array, b: np.array) -> float:
     Bajusz, D., Rácz, A., and Héberger, K.. (2015)
     Why is Tanimoto index an appropriate choice for fingerprint-based similarity calculations?.
     Journal of Cheminformatics 7.
+
     """
     if a.ndim != 1 or b.ndim != 1:
         raise ValueError(f"Arguments a and b should be 1D arrays, got {a.ndim} and {b.ndim}")
@@ -152,6 +154,7 @@ def modified_tanimoto(a: np.array, b: np.array) -> float:
     A Modification of the Jaccard-Tanimoto Similarity Index for
     Diverse Selection of Chemical Compounds Using Binary Strings.
     Technometrics 44, 110-119.
+
     """
     if a.ndim != 1:
         raise ValueError(f"Argument `a` should have dimension 1 rather than {a.ndim}.")
@@ -205,14 +208,16 @@ def scaled_similarity_matrix(X: np.array) -> np.ndarray:
     -------
     s : ndarray of shape (n_samples, n_samples)
         A scaled symmetric similarity matrix.
-    """
 
+    """
     if X.ndim != 2:
         raise ValueError(f"Argument similarity matrix should be a 2D array, got {X.ndim}")
+
     if X.shape[0] != X.shape[1]:
         raise ValueError(
             f"Argument similarity matrix should be a square matrix (having same number of rows and columns), got {X.shape[0]} and {X.shape[1]}"
         )
+
     if not (np.all(X >= 0) and np.all(np.diag(X) > 0)):
         raise ValueError(
             "All elements of similarity matrix should be greater than zero and diagonals should be non-zero"
