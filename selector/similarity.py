@@ -25,7 +25,12 @@ from itertools import combinations_with_replacement
 
 import numpy as np
 
-__all__ = ["pairwise_similarity_bit", "tanimoto", "modified_tanimoto"]
+__all__ = [
+    "pairwise_similarity_bit",
+    "tanimoto",
+    "modified_tanimoto",
+    "scaled_similarity_matrix",
+]
 
 
 def pairwise_similarity_bit(X: np.array, metric: str) -> np.ndarray:
@@ -183,3 +188,48 @@ def modified_tanimoto(a: np.array, b: np.array) -> float:
     #       x = (2-p)/3 so that E(mt) = 1/3, no matter the value of p
     mt = (((2 - p) / 3) * t_1) + (((1 + p) / 3) * t_0)
     return mt
+
+
+def scaled_similarity_matrix(X: np.array) -> np.ndarray:
+    """Compute the scaled similarity matrix.
+
+    ..math::
+    X(i,j)=\frac{X(i,j)}{\\sqrt{X(i,i)X(j,j)}}
+
+    Parameters
+    ----------
+    X : ndarray of shape (n_samples, n_samples)
+        Similarity matrix of `n_samples`.
+
+    Returns
+    -------
+    s : ndarray of shape (n_samples, n_samples)
+        A scaled symmetric similarity matrix.
+    """
+
+    if X.ndim != 2:
+        raise ValueError(f"Argument similarity matrix should be a 2D array, got {X.ndim}")
+    if X.shape[0] != X.shape[1]:
+        raise ValueError(
+            f"Argument similarity matrix should be a square matrix (having same number of rows and columns), got {X.shape[0]} and {X.shape[1]}"
+        )
+    if not (np.all(X >= 0) and np.all(np.diag(X) > 0)):
+        raise ValueError(
+            "All elements of similarity matrix should be greater than zero and diagonals should be non-zero"
+        )
+
+    # scaling does not happen if the matrix is binary similarity matrix with all diagonal elements as 1
+    if np.all(np.diag(X) == 1):
+        print("No scaling is taking effect")
+        return X
+    else:
+        # make a scaled similarity matrix
+        n_samples = len(X)
+        s = np.zeros((n_samples, n_samples))
+        # calculate the square root of the diagonal elements
+        sqrt_diag = np.sqrt(np.diag(X))
+        # calculate the product of the square roots of the diagonal elements
+        product_sqrt_diag = np.outer(sqrt_diag, sqrt_diag)
+        # divide each element of the matrix by the product of the square roots of diagonal elements
+        s = X / product_sqrt_diag
+        return s
