@@ -23,7 +23,7 @@
 
 [project]
 # https://packaging.python.org/en/latest/specifications/declaring-project-metadata/
-name = "selector"
+name = "qc-selector"
 version = "0.0.1"
 description = "Molecule selection with maximum diversity."
 readme = "README.md"

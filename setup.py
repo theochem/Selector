@@ -38,7 +38,7 @@ except ValueError:
     long_description = short_description
 
 package_metadata = dict(
-    name="selector",
+    name="qc-selector",
     author="QC-Devs Community",
     author_email="qcdevs@gmail.com",
     description=short_description,
