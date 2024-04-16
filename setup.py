@@ -89,7 +89,7 @@ wheel_name_format = "{name}-{version}-{py_version}-none-any.whl"
 distname = wheel_name_format.format(
     name=package_metadata["name"],
     version=package_metadata["version"],
-    py_version="py" + "".join(map(str, sys.version_info[:2]))
+    py_version="py" + "".join(map(str, sys.version_info[:2])),
 )
 
 package_metadata["distname"] = distname
