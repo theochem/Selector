@@ -46,7 +46,7 @@ st.sidebar.markdown(
 )
 
 # File uploader for feature matrix or distance matrix (required)
-matrix_file = st.file_uploader("Upload a feature matrix or distance matrix", type=["csv", "xlsx", "npz", "npy"], key="matrix_file")
+matrix_file = st.file_uploader("Upload a feature matrix or distance matrix (required)", type=["csv", "xlsx", "npz", "npy"], key="matrix_file")
 
 # Clear selected indices if a new matrix file is uploaded
 if matrix_file is None:
@@ -54,16 +54,24 @@ if matrix_file is None:
 
 # Load data from matrix file
 if matrix_file is not None:
-    if matrix_file.name.endswith(".csv"):
-        matrix = pd.read_csv(matrix_file).values
-    elif matrix_file.name.endswith(".xlsx"):
-        matrix = pd.read_excel(matrix_file).values
+    header_option = None
+    if matrix_file.name.endswith(".csv") or matrix_file.name.endswith(".xlsx"):
+        header_option = st.checkbox("Does the file have a header?", key = "header_option")
+        st.warning("⚠️ Warning: This will affect the final output if not specified correctly.")
+
+    if matrix_file.name.endswith(".csv") or matrix_file.name.endswith(".xlsx"):
+        if header_option:
+            matrix = pd.read_csv(matrix_file).values
+        else:
+            matrix = pd.read_csv(matrix_file, header = None).values
+        st.write("Matrix shape:", matrix.shape)
+        st.write(matrix)
+
     elif matrix_file.name.endswith(".npz"):
         matrix = np.load(matrix_file)["arr_0"]
     elif matrix_file.name.endswith(".npy"):
         matrix = np.load(matrix_file)
 
-    st.write("Matrix uploaded successfully!")
 
     # Input for number of points to select (required)
     num_points = st.number_input("Number of points to select", min_value=1, step=1, key="num_points")
@@ -72,12 +80,19 @@ if matrix_file is not None:
     label_file = st.file_uploader("Upload a cluster label list (optional)", type=["csv", "xlsx"], key="label_file")
     labels = None
     if label_file is not None:
-        if label_file.name.endswith(".csv"):
-            labels = pd.read_csv(label_file).values.flatten()
-        elif label_file.name.endswith(".xlsx"):
-            labels = pd.read_excel(label_file).values.flatten()
+        label_header_option = None
+        if label_file.name.endswith(".csv") or label_file.name.endswith(".xlsx"):
+            label_header_option = st.checkbox("Does the file have a header?", key = "label_header_option")
+            st.warning("⚠️ Warning: This will affect the final output if not specified correctly.")
 
-        st.write("Cluster labels uploaded successfully!")
+        if label_file.name.endswith(".csv") or label_file.name.endswith(".xlsx"):
+            if label_header_option:
+                labels = pd.read_csv(label_file).values.flatten()
+            else:
+                labels = pd.read_csv(label_file, header = None).values.flatten()
+            st.write("Cluster labels shape:", labels.shape)
+            st.write(labels)
+
 
     if st.button("Run MaxMin Algorithm"):
         # Check if the input matrix is a feature matrix or a distance matrix
