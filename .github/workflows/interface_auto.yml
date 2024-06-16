@@ -1,0 +1,65 @@
+name: Deployment on DockerHub and Hugging Face
+
+# Trigger the workflow on push events to the 'deployment' branch
+on:
+  push:
+    branches:
+      - deployment
+
+jobs:
+  build-and-deploy:
+    # Run the job on the latest Ubuntu runner
+    runs-on: ubuntu-latest
+
+    steps:
+    # Step 1: Check out the latest code from the repository
+    - name: Checkout code
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+        lfs: true
+
+    # Step 2: Set up Git LFS
+    - name: Set up Git LFS
+      run: |
+        git lfs install
+        git lfs pull
+
+    # Step 3: Set up Python environment with version 3.9
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.9
+
+    # Step 4: Install the required dependencies
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+        pip install -r requirements_dev.txt
+
+    # Step 5: Build the Docker image to Docker Hub
+    - name: Build Docker image
+      run: |
+        docker build . -t jackyzzz076/selector-deployment:latest
+
+    # Step 6: Push the Docker image to Docker Hub
+    - name: Push Docker image
+      run: |
+        docker login -u jackyzzz076 -p ${{ secrets.DOCKERHUB_TOKEN }}
+        docker push jackyzzz076/selector-deployment:latest
+
+    # Step 7: Replace the README.md file for Hugging Face
+    - name: Replace README for Hugging Face
+      run: |
+        mv README_hf.md README.md
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "qcdevs@gmail.com"
+        git add README.md
+        git commit -m "Replace README.md with README_hf.md for Hugging Face"
+
+    # Step 8: Push the app to Hugging Face
+    - name: Push to Hugging Face
+      env:
+        HF_TOKEN: ${{ secrets.HF_TOKEN }}
+      run: |
+        git push https://JackyZzZzZ:$HF_TOKEN@huggingface.co/spaces/JackyZzZzZ/selector deployment:main --force
