@@ -20,8 +20,10 @@ st.set_page_config(
 )
 
 st.title("Brute Strength - MaxMin")
+
 st.sidebar.header("Brute Strength - MaxMin")
-st.sidebar.markdown(
+
+st.sidebar.info(
     """
     MaxMin is possibly the most widely used method for dissimilarity-based
     compound selection. When presented with a dataset of samples, the
@@ -36,14 +38,15 @@ st.sidebar.markdown(
 
     In the current implementation, this method requires or computes the full pairwise-distance
     matrix, so it is not recommended for large datasets.
-
-    References
-    ----------
-    [1] Ashton, Mark, et al., Identification of diverse database subsets using
-    property‐based and fragment‐based molecular descriptions, Quantitative
-    Structure‐Activity Relationships 21.6 (2002): 598-604.
     """
 )
+
+st.sidebar.title("References")
+
+st.sidebar.info("[1] Ashton, Mark, et al., Identification of diverse database subsets using "
+                "property‐based and fragment‐based molecular descriptions, "
+                "Quantitative Structure‐Activity Relationships 21.6 (2002): 598-604.")
+
 
 # File uploader for feature matrix or distance matrix (required)
 matrix_file = st.file_uploader("Upload a feature matrix or distance matrix (required)", type=["csv", "xlsx", "npz", "npy"], key="matrix_file")
