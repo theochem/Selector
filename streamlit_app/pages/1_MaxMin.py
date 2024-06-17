@@ -61,16 +61,26 @@ if matrix_file is not None:
 
     if matrix_file.name.endswith(".csv") or matrix_file.name.endswith(".xlsx"):
         if header_option:
+            # Load the matrix with header
             matrix = pd.read_csv(matrix_file).values
         else:
+            # Load the matrix without header
             matrix = pd.read_csv(matrix_file, header = None).values
         st.write("Matrix shape:", matrix.shape)
         st.write(matrix)
 
     elif matrix_file.name.endswith(".npz"):
-        matrix = np.load(matrix_file)["arr_0"]
+        matrix_data = np.load(matrix_file)
+        # Select the array in the .npz file
+        array_names = matrix_data.files
+        selected_array = st.selectbox("Select the array to use", array_names)
+        matrix = matrix_data[selected_array]
+        st.write("Matrix shape:", matrix.shape)
+        st.write(matrix)
     elif matrix_file.name.endswith(".npy"):
         matrix = np.load(matrix_file)
+        st.write("Matrix shape:", matrix.shape)
+        st.write(matrix)
 
 
     # Input for number of points to select (required)
