@@ -20,11 +20,10 @@ st.write("# Welcome to QC-Selector! 👋")
 
 st.sidebar.success("Select an algorithm to get started.")
 
+st.info("👈 Select an algorithm from the sidebar to see some examples of what QC-Selector can do!")
+
 st.markdown(
     """
-    **👈 Select an algorithm from the sidebar** to see some examples
-    of what QC-Selector can do!
-
     [selector](https://github.com/theochem/Selector) is a free, open-source, and cross-platform
     Python library designed to help you effortlessly identify the most diverse subset of molecules
     from your dataset. 
@@ -57,4 +56,22 @@ st.markdown(
 
     4. Export: Explore the diverse subset and export the results for further analysis and integration into your projects.
 """
+)
+
+st.sidebar.title("About QC-Devs")
+
+st.sidebar.info("QC-Devs develops various free, open-source, and cross-platform libraries for scientific computing, especially theoretical and computational chemistry. Our goal is to make programming accessible to chemists and promote precepts of sustainable software development. For further information and inquiries please contact us at qcdevs@gmail.com.")
+
+# Add icons to the sidebar
+st.sidebar.markdown(
+    """
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <div style="text-align: center;">
+        <a href="https://qcdevs.org/" target="_blank"><i class="fa fa-home" style="font-size:24px"></i> WEBSITE</a><br>
+        <a href="mailto:qcdevs@gmail.com"><i class="fa fa-envelope" style="font-size:24px"></i> EMAIL</a><br>
+        <a href="https://github.com/theochem" target="_blank"><i class="fa fa-github" style="font-size:24px"></i> GITHUB</a><br>
+        © 2024 QC-Devs. All rights reserved.
+    </div>
+    """,
+    unsafe_allow_html=True
 )
