@@ -1,10 +1,10 @@
 name: Deployment on DockerHub and Hugging Face
 
-# Trigger the workflow on push events to the 'deployment' branch
+# Trigger the workflow on push events to the 'uncleaned-branch' branch
 on:
   push:
     branches:
-      - deployment
+      - uncleaned-branch
 
 jobs:
   build-and-deploy:
@@ -25,30 +25,37 @@ jobs:
         git lfs install
         git lfs pull
 
-    # Step 3: Set up Python environment with version 3.9
+    # Step 3: Remove binary files from git history
+    - name: Remove binary files from git history
+      run: |
+        git filter-branch --force --index-filter \
+          "git rm --cached --ignore-unmatch DiverseSelector/test/test2/BBB_SECFP6_1024.xlsx DiverseSelector/test/test2/BBB_SECFP6_2048.xlsx" \
+          --prune-empty --tag-name-filter cat -- --all
+
+    # Step 4: Set up Python environment with version 3.9
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
         python-version: 3.9
 
-    # Step 4: Install the required dependencies
+    # Step 5: Install the required dependencies
     - name: Install dependencies
       run: |
         pip install -r requirements.txt
         pip install -r requirements_dev.txt
 
-    # Step 5: Build the Docker image to Docker Hub
+    # Step 6: Build the Docker image to Docker Hub
     - name: Build Docker image
       run: |
         docker build . -t jackyzzz076/selector-deployment:latest
 
-    # Step 6: Push the Docker image to Docker Hub
+    # Step 7: Push the Docker image to Docker Hub
     - name: Push Docker image
       run: |
         docker login -u jackyzzz076 -p ${{ secrets.DOCKERHUB_TOKEN }}
         docker push jackyzzz076/selector-deployment:latest
 
-    # Step 7: Replace the README.md file for Hugging Face
+    # Step 8: Replace the README.md file for Hugging Face
     - name: Replace README for Hugging Face
       run: |
         mv README_hf.md README.md
@@ -57,9 +64,9 @@ jobs:
         git add README.md
         git commit -m "Replace README.md with README_hf.md for Hugging Face"
 
-    # Step 8: Push the app to Hugging Face
+    # Step 9: Push the app to Hugging Face
     - name: Push to Hugging Face
       env:
         HF_TOKEN: ${{ secrets.HF_TOKEN }}
       run: |
-        git push https://JackyZzZzZ:$HF_TOKEN@huggingface.co/spaces/JackyZzZzZ/selector deployment:main --force
+        git push https://JackyZzZzZ:$HF_TOKEN@huggingface.co/spaces/JackyZzZzZ/selector uncleaned-branch:main --force
