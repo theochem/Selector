@@ -54,33 +54,37 @@ if matrix_file is None:
 
 # Load data from matrix file
 if matrix_file is not None:
-    header_option = None
-    if matrix_file.name.endswith(".csv") or matrix_file.name.endswith(".xlsx"):
-        header_option = st.checkbox("Does the file have a header?", key = "header_option")
-        st.warning("⚠️ Warning: This will affect the final output if not specified correctly.")
+    try:
+        header_option = None
+        if matrix_file.name.endswith(".csv") or matrix_file.name.endswith(".xlsx"):
+            header_option = st.checkbox("Does the file have a header?", key = "header_option")
+            st.warning("⚠️ Warning: This will affect the final output if not specified correctly.")
 
-    if matrix_file.name.endswith(".csv") or matrix_file.name.endswith(".xlsx"):
-        if header_option:
-            # Load the matrix with header
-            matrix = pd.read_csv(matrix_file).values
-        else:
-            # Load the matrix without header
-            matrix = pd.read_csv(matrix_file, header = None).values
-        st.write("Matrix shape:", matrix.shape)
-        st.write(matrix)
+        if matrix_file.name.endswith(".csv") or matrix_file.name.endswith(".xlsx"):
+            if header_option:
+                # Load the matrix with header
+                matrix = pd.read_csv(matrix_file).values
+            else:
+                # Load the matrix without header
+                matrix = pd.read_csv(matrix_file, header = None).values
+            st.write("Matrix shape:", matrix.shape)
+            st.write(matrix)
 
-    elif matrix_file.name.endswith(".npz"):
-        matrix_data = np.load(matrix_file)
-        # Select the array in the .npz file
-        array_names = matrix_data.files
-        selected_array = st.selectbox("Select the array to use", array_names)
-        matrix = matrix_data[selected_array]
-        st.write("Matrix shape:", matrix.shape)
-        st.write(matrix)
-    elif matrix_file.name.endswith(".npy"):
-        matrix = np.load(matrix_file)
-        st.write("Matrix shape:", matrix.shape)
-        st.write(matrix)
+        elif matrix_file.name.endswith(".npz"):
+            matrix_data = np.load(matrix_file)
+            # Select the array in the .npz file
+            array_names = matrix_data.files
+            selected_array = st.selectbox("Select the array to use", array_names)
+            matrix = matrix_data[selected_array]
+            st.write("Matrix shape:", matrix.shape)
+            st.write(matrix)
+        elif matrix_file.name.endswith(".npy"):
+            matrix = np.load(matrix_file)
+            st.write("Matrix shape:", matrix.shape)
+            st.write(matrix)
+    except Exception as e:
+        st.error(f'An error occurred while loading matrix file: {e}')
+        matrix = None
 
 
     # Input for number of points to select (required)
@@ -90,36 +94,47 @@ if matrix_file is not None:
     label_file = st.file_uploader("Upload a cluster label list (optional)", type=["csv", "xlsx"], key="label_file")
     labels = None
     if label_file is not None:
-        label_header_option = None
-        if label_file.name.endswith(".csv") or label_file.name.endswith(".xlsx"):
-            label_header_option = st.checkbox("Does the file have a header?", key = "label_header_option")
-            st.warning("⚠️ Warning: This will affect the final output if not specified correctly.")
+        try:
+            label_header_option = None
+            if label_file.name.endswith(".csv") or label_file.name.endswith(".xlsx"):
+                label_header_option = st.checkbox("Does the file have a header?",
+                                                  key = "label_header_option")
+                st.warning(
+                    "⚠️ Warning: This will affect the final output if not specified correctly.")
 
-        if label_file.name.endswith(".csv") or label_file.name.endswith(".xlsx"):
-            if label_header_option:
-                labels = pd.read_csv(label_file).values.flatten()
-            else:
-                labels = pd.read_csv(label_file, header = None).values.flatten()
-            st.write("Cluster labels shape:", labels.shape)
-            st.write(labels)
+            if label_file.name.endswith(".csv") or label_file.name.endswith(".xlsx"):
+                if label_header_option:
+                    labels = pd.read_csv(label_file).values.flatten()
+                else:
+                    labels = pd.read_csv(label_file, header = None).values.flatten()
+                st.write("Cluster labels shape:", labels.shape)
+                st.write(labels)
+        except Exception as e:
+            st.error(f'An error occurred while loading cluster label file: {e}')
+            labels = None
 
 
     if st.button("Run MaxMin Algorithm"):
-        # Check if the input matrix is a feature matrix or a distance matrix
-        if matrix.shape[0] == matrix.shape[1]:
-            # Distance matrix
-            selector = MaxMin()
-            selected_ids = selector.select(matrix, size=num_points, labels=labels)
-        else:
-            # Feature matrix
-            selector = MaxMin(lambda x: pairwise_distances(x, metric="euclidean"))
-            selected_ids = selector.select(matrix, size=num_points, labels=labels)
+        try:
+            # Check if the input matrix is a feature matrix or a distance matrix
+            if matrix.shape[0] == matrix.shape[1]:
+                # Distance matrix
+                selector = MaxMin()
+                selected_ids = selector.select(matrix, size = num_points, labels = labels)
+            else:
+                # Feature matrix
+                selector = MaxMin(lambda x: pairwise_distances(x, metric = "euclidean"))
+                selected_ids = selector.select(matrix, size = num_points, labels = labels)
 
-        # Convert selected indices to a list of integers
-        selected_ids = [int(i) for i in selected_ids]
+            # Convert selected indices to a list of integers
+            selected_ids = [int(i) for i in selected_ids]
 
-        # Save selected indices to session state
-        st.session_state['selected_ids'] = selected_ids
+            # Save selected indices to session state
+            st.session_state['selected_ids'] = selected_ids
+        except ValueError as ve:
+            st.error(f"An error occurred while running the MaxMin algorithm: {ve}")
+        except Exception as e:
+            st.error(f"An error occurred while running the MaxMin algorithm: {e}")
 
 # Check if the selected indices are stored in the session state
 if 'selected_ids' in st.session_state and matrix_file is not None:
