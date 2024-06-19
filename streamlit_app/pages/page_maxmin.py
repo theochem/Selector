@@ -76,14 +76,13 @@ matrix_file = st.file_uploader("Upload a feature matrix or distance matrix (requ
 # Clear selected indices if a new matrix file is uploaded
 if matrix_file is None:
     st.session_state.pop("selected_ids", None)
-
 # Load data from matrix file
-if matrix_file is not None:
+else:
     try:
         header_option = None
         if matrix_file.name.endswith(".csv") or matrix_file.name.endswith(".xlsx"):
             header_option = st.checkbox("Does the file have a header?", key = "header_option")
-            st.warning("⚠️ Warning: This will affect the final output if not specified correctly.")
+            st.warning("Warning: This will affect the final output if not specified correctly.")
 
         if matrix_file.name.endswith(".csv") or matrix_file.name.endswith(".xlsx"):
             if header_option:
