@@ -117,7 +117,7 @@ else:
     # Input for cluster label list (optional)
     label_file = st.file_uploader("Upload a cluster label list (optional)", type=["csv", "xlsx"], key="label_file")
     labels = None
-    if label_file is not None:
+    if label_file:
         try:
             label_header_option = None
             if label_file.name.endswith(".csv") or label_file.name.endswith(".xlsx"):
@@ -177,7 +177,7 @@ if 'selected_ids' in st.session_state and matrix_file is not None:
             file_name = 'selected_indices.csv',
             mime = 'text/csv',
         )
-    elif export_format == "JSON":
+    else:
         json_data = json.dumps({"Selected Indices": selected_ids})
         st.download_button(
             label = "Download as JSON",
