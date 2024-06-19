@@ -51,7 +51,7 @@ st.markdown(
     from your dataset. 
     Please use the following citation in any publication using selector library:
 
-    **“QC-Selector: A Generic Python Package for Subset Selection”**, Fanwang Meng, Alireza Tehrani, 
+    **“Selector: A Generic Python Package for Subset Selection”**, Fanwang Meng, Alireza Tehrani, 
     Valerii Chuiko, Abigail Broscius, Abdul, Hassan, Maximilian van Zyl, Marco Martínez González, 
     Yang, Ramón Alain Miranda-Quintana, Paul W. Ayers, and Farnaz Heidar-Zadeh”
 
