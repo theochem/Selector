@@ -1,10 +1,15 @@
 name: Deployment on DockerHub and Hugging Face
 
-# Trigger the workflow on push events to the 'uncleaned-branch' branch
+# Trigger the workflow on push and pull request events to the 'main' or 'master' branch
 on:
   push:
     branches:
-      - uncleaned-branch
+      - "master"
+      - "main"
+  pull_request:
+    branches:
+      - "master"
+      - "main"
 
 jobs:
   build-and-deploy:
