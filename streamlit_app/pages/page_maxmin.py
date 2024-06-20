@@ -124,7 +124,7 @@ else:
                 label_header_option = st.checkbox("Does the file have a header?",
                                                   key = "label_header_option")
                 st.warning(
-                    "⚠️ Warning: This will affect the final output if not specified correctly.")
+                    "Warning: This will affect the final output if not specified correctly.")
 
             if label_file.name.endswith(".csv") or label_file.name.endswith(".xlsx"):
                 if label_header_option:
