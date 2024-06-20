@@ -37,7 +37,7 @@ jobs:
           "git rm --cached --ignore-unmatch DiverseSelector/test/test2/BBB_SECFP6_1024.xlsx DiverseSelector/test/test2/BBB_SECFP6_2048.xlsx" \
           --prune-empty --tag-name-filter cat -- --all
 
-    # Step 4: Set up Python environment with version 3.9
+    # Step 4: Set up Python environment with version 3.11
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
