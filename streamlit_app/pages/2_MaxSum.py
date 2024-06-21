@@ -1,3 +1,25 @@
+# The Selector library provides a set of tools for selecting a
+# subset of the dataset and computing diversity.
+#
+# Copyright (C) 2023 The QC-Devs Community
+#
+# This file is part of Selector.
+#
+# Selector is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 3
+# of the License, or (at your option) any later version.
+#
+# Selector is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, see <http://www.gnu.org/licenses/>
+#
+# --
+
 import streamlit as st
 import numpy as np
 import pandas as pd
@@ -54,12 +76,12 @@ if matrix_file is None:
     st.session_state.pop("selected_ids", None)
 
 # Load data from matrix file
-if matrix_file is not None:
+else:
     try:
         header_option = None
         if matrix_file.name.endswith(".csv") or matrix_file.name.endswith(".xlsx"):
             header_option = st.checkbox("Does the file have a header?", key = "header_option")
-            st.warning("⚠️ Warning: This will affect the final output if not specified correctly.")
+            st.warning("Warning: This will affect the final output if not specified correctly.")
 
         if matrix_file.name.endswith(".csv") or matrix_file.name.endswith(".xlsx"):
             if header_option:
@@ -101,7 +123,7 @@ if matrix_file is not None:
                 label_header_option = st.checkbox("Does the file have a header?",
                                                   key = "label_header_option")
                 st.warning(
-                    "⚠️ Warning: This will affect the final output if not specified correctly.")
+                    "Warning: This will affect the final output if not specified correctly.")
 
             if label_file.name.endswith(".csv") or label_file.name.endswith(".xlsx"):
                 if label_header_option:
@@ -155,7 +177,7 @@ if 'selected_ids' in st.session_state and matrix_file is not None:
             file_name = 'selected_indices.csv',
             mime = 'text/csv',
         )
-    elif export_format == "JSON":
+    else:
         json_data = json.dumps({"Selected Indices": selected_ids})
         st.download_button(
             label = "Download as JSON",
