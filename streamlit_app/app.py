@@ -32,17 +32,17 @@ assets_dir = os.path.join(current_dir, "assets")
 
 # Set page configuration
 st.set_page_config(
-    page_title = "QC-Selector",
+    page_title = "Selector",
     page_icon = os.path.join(assets_dir, "QC-Devs.png"),
 )
 
 st.image(os.path.join(assets_dir, "selector_logo.png"))
 
-st.write("# Welcome to QC-Selector! 👋")
+st.write("# Welcome to Selector! 👋")
 
 st.sidebar.success("Select an algorithm to get started.")
 
-st.info("👈 Select an algorithm from the sidebar to see some examples of what QC-Selector can do!")
+st.info("👈 Select an algorithm from the sidebar to see some examples of what Selector can do!")
 
 st.markdown(
     """
