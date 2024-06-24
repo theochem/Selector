@@ -131,3 +131,10 @@ def export_results(selected_ids):
             file_name='selected_indices.json',
             mime='application/json',
         )
+
+# Function to clear selected indices from session state
+def clear_results():
+    if 'selected_ids' in st.session_state:
+        del st.session_state['selected_ids']
+    if 'selector' in st.session_state:
+        del st.session_state['selector']
