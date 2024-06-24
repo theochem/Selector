@@ -95,14 +95,12 @@ def load_labels(label_file):
         st.error(f'An error occurred while loading cluster label file: {e}')
         return None
 
-def run_algorithm(algorithm, matrix, num_points, labels):
+def run_algorithm(selector, matrix, num_points, labels):
     try:
-        if matrix.shape[0] == matrix.shape[1]:
-            selector = algorithm()
-            selected_ids = selector.select(matrix, size=num_points, labels=labels)
+        if labels is not None:
+            selected_ids = selector.select(matrix, size = num_points, labels = labels)
         else:
-            selector = algorithm(lambda x: pairwise_distances(x, metric="euclidean"))
-            selected_ids = selector.select(matrix, size=num_points, labels=labels)
+            selected_ids = selector.select(matrix, size = num_points)
 
         selected_ids = [int(i) for i in selected_ids]
         st.session_state['selected_ids'] = selected_ids
