@@ -24,6 +24,7 @@ import streamlit as st
 import os
 import sys
 
+from sklearn.metrics import pairwise_distances
 from selector.methods.distance import MaxMin
 
 # Add the streamlit_app directory to the Python path
