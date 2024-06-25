@@ -36,6 +36,11 @@ sys.path.append(parent_dir)
 
 from utils import *
 
+# Set page configuration
+st.set_page_config(
+    page_title = "MaxSum",
+    page_icon = os.path.join(parent_dir, "assets" , "QC-Devs.png"),
+)
 
 st.title("Brute Strength - MaxSum")
 

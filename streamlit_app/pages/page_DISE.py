@@ -33,6 +33,12 @@ sys.path.append(parent_dir)
 
 from utils import *
 
+# Set page configuration
+st.set_page_config(
+    page_title = "DISE",
+    page_icon = os.path.join(parent_dir, "assets" , "QC-Devs.png"),
+)
+
 st.title("Directed Sphere Exclusion (DISE)")
 
 
