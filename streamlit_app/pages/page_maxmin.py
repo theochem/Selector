@@ -61,7 +61,7 @@ display_sidebar_info("Brute Strength - MaxMin", description, references)
 
 # File uploader for feature matrix or distance matrix (required)
 matrix_file = st.file_uploader("Upload a feature matrix or distance matrix (required)",
-                               type=["csv", "xlsx", "npz", "npy"], key="matrix_file")
+                               type=["csv", "xlsx", "npz", "npy"], key="matrix_file", on_change=clear_results)
 
 # Clear selected indices if a new matrix file is uploaded
 if matrix_file is None:
@@ -70,14 +70,14 @@ if matrix_file is None:
 else:
     matrix = load_matrix(matrix_file)
     num_points = st.number_input("Number of points to select", min_value = 1, step = 1,
-                                 key = "num_points")
+                                 key = "num_points", on_change=clear_results)
     label_file = st.file_uploader("Upload a cluster label list (optional)", type = ["csv", "xlsx"],
-                                  key = "label_file")
+                                  key = "label_file", on_change=clear_results)
     labels = load_labels(label_file) if label_file else None
 
     distance_metric = st.selectbox("Select distance metric (optional)",
                                    [None, "euclidean", "manhattan", "cosine"],
-                                   key = "distance_metric")
+                                   key = "distance_metric", on_change=clear_results)
 
     if distance_metric:
         fun_dist = lambda x: pairwise_distances(x, metric = distance_metric)
@@ -91,6 +91,9 @@ else:
         else:
             selector = MaxMin()
             selected_ids = run_algorithm(selector, matrix, num_points, labels)
+
+        st.session_state['selector'] = selector
+        st.session_state['selected_ids'] = selected_ids
 
 
 # Check if the selected indices are stored in the session state

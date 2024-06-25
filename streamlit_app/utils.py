@@ -48,7 +48,8 @@ def load_matrix(matrix_file):
     try:
         header_option = None
         if matrix_file.name.endswith(".csv") or matrix_file.name.endswith(".xlsx"):
-            header_option = st.checkbox("Does the file have a header?", key="header_option")
+            header_option = st.checkbox("Does the file have a header?", key="header_option",
+                                        on_change = clear_results())
             st.warning("Warning: This will affect the final output if not specified correctly.")
 
         if matrix_file.name.endswith(".csv") or matrix_file.name.endswith(".xlsx"):
@@ -80,7 +81,8 @@ def load_labels(label_file):
     try:
         label_header_option = None
         if label_file.name.endswith(".csv") or label_file.name.endswith(".xlsx"):
-            label_header_option = st.checkbox("Does the file have a header?", key="label_header_option")
+            label_header_option = st.checkbox("Does the file have a header?", key="label_header_option",
+                                              on_change = clear_results())
             st.warning("Warning: This will affect the final output if not specified correctly.")
 
         if label_file.name.endswith(".csv") or label_file.name.endswith(".xlsx"):
