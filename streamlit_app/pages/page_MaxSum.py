@@ -24,12 +24,15 @@ import streamlit as st
 import os
 import sys
 
+from sklearn.metrics import pairwise_distances
+
 from selector.methods.distance import MaxSum
 
 # Add the streamlit_app directory to the Python path
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.join(current_dir, "..")
 sys.path.append(parent_dir)
+
 
 from utils import display_sidebar_info, load_matrix, load_labels, run_algorithm, export_results
 
@@ -75,8 +78,22 @@ else:
                                   key = "label_file")
     labels = load_labels(label_file) if label_file else None
 
+    distance_metric = st.selectbox("Select distance metric (optional)",
+                                   [None, "euclidean", "manhattan", "cosine"],
+                                   key = "distance_metric")
+
+    if distance_metric:
+        fun_dist = lambda x: pairwise_distances(x, metric = distance_metric)
+    else:
+        fun_dist = None
+
     if st.button("Run MaxSum Algorithm"):
-        selected_ids = run_algorithm(MaxSum, matrix, num_points, labels)
+        if fun_dist:
+            selector = MaxSum(fun_dist)
+            selected_ids = run_algorithm(selector, matrix, num_points, labels)
+        else:
+            selector = MaxSum()
+            selected_ids = run_algorithm(selector, matrix, num_points, labels)
 
 
 # Check if the selected indices are stored in the session state
