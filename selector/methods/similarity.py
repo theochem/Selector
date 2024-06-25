@@ -1,7 +1,7 @@
 # The Selector library provides a set of tools for selecting a
 # subset of the dataset and computing diversity.
 #
-# Copyright (C) 2023 The QC-Devs Community
+# Copyright (C) 2022-2024 The QC-Devs Community
 #
 # This file is part of Selector.
 #
@@ -47,7 +47,10 @@ import numpy as np
 
 from selector.methods.base import SelectionBase
 
-__all__ = ["NSimilarity", "SimilarityIndex"]
+__all__ = [
+    "NSimilarity",
+    "SimilarityIndex",
+]
 
 
 class NSimilarity(SelectionBase):
@@ -231,6 +234,7 @@ class NSimilarity(SelectionBase):
         -------
         selected: int
             Index of the new selected sample.
+
         """
         # check if the data was previously scaled
         if np.max(arr) > 1 or np.min(arr) < 0:
@@ -305,6 +309,7 @@ class NSimilarity(SelectionBase):
         -------
         selected: list
             Indices of the selected sample points.
+
         """
         # check for valid start value and raise an error if it is not
         if start not in ["medoid", "random", "outlier"]:
