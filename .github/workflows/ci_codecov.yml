@@ -64,8 +64,9 @@ jobs:
 
     - name: CodeCov
       uses: codecov/codecov-action@v4
+      env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       with:
-        token: ${{ secrets.CODECOV_TOKEN }}
         fail_ci_if_error: true
         file: ./coverage.xml
         flags: unittests
