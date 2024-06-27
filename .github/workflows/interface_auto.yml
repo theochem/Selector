@@ -73,4 +73,4 @@ jobs:
       env:
         HF_TOKEN: ${{ secrets.HF_TOKEN }}
       run: |
-        git push https://JackyZzZzZ:$HF_TOKEN@huggingface.co/spaces/JackyZzZzZ/selector uncleaned-branch:main --force
+        git push https://QCDevs:$HF_TOKEN@huggingface.co/spaces/QCDevs/selector main:main --force
