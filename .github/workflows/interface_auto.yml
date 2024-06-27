@@ -48,16 +48,16 @@ jobs:
       run: |
         pip install -r requirements.txt
 
-    # Step 6: Build the Docker image to Docker Hub
-    - name: Build Docker image
-      run: |
-        docker build . -t jackyzzz076/selector-deployment:latest
-
-    # Step 7: Push the Docker image to Docker Hub
-    - name: Push Docker image
-      run: |
-        docker login -u jackyzzz076 -p ${{ secrets.DOCKERHUB_TOKEN }}
-        docker push jackyzzz076/selector-deployment:latest
+#    # Step 6: Build the Docker image to Docker Hub
+#    - name: Build Docker image
+#      run: |
+#        docker build . -t jackyzzz076/selector-deployment:latest
+#
+#    # Step 7: Push the Docker image to Docker Hub
+#    - name: Push Docker image
+#      run: |
+#        docker login -u jackyzzz076 -p ${{ secrets.DOCKERHUB_TOKEN }}
+#        docker push jackyzzz076/selector-deployment:latest
 
     # Step 8: Replace the README.md file for Hugging Face
     - name: Replace README for Hugging Face
