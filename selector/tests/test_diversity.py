@@ -223,7 +223,7 @@ def test_wdud_warning_normalization():
         + "Now removing them."
     )
     with pytest.warns() as record:
-        wdud(sample8)
+        wdud(sample6)
 
     # check that only one warning was raised
     assert len(record) == 1
