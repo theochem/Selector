@@ -281,7 +281,7 @@ def wdud(X: np.ndarray) -> float:
     where the feature is normalized to [0, 1], :math:`U(x)=x` is the cumulative distribution
     of the uniform distribution on [0, 1], and :math:`V(x) = \sum_{y <= x}1 / N` is the discrete
     distribution of the values of the feature in :math:`x`, where :math:`y` is the ith feature. This
-    integral is calculated iteratively between :math:y_i and :math:y_{i+1}, using trapezoidal method.
+    integral is calculated iteratively between :math:`y_i` and :math:`y_{i+1}`, using trapezoidal method.
 
     Lower values of the WDUD mean more diversity because the features of the selected set are
     more evenly distributed over the range of feature values.
@@ -302,18 +302,27 @@ def wdud(X: np.ndarray) -> float:
     Selecting molecules with diverse structures and properties by maximizing
     submodular functions of descriptors learned with graph neural networks.
     Scientific Reports 12.
+
     """
     if X.ndim != 2:
         raise ValueError(f"The number of dimensions {X.ndim} should be two.")
-    # min_max normalization:
-    n_samples, n_features = X.shape
-    # Find the maximum and minimum over each feature across all molecules.
-    max_x = np.max(X, axis=0)
-    min_x = np.min(X, axis=0)
+
+    # find the range of each feature
+    col_diff = np.ptp(X, axis=0)
     # Normalization of each feature to [0, 1]
-    if np.any(np.abs(max_x - min_x) < 1e-30):
-        raise ValueError("One of the features is constant and causes normalization to fail.")
-    x_norm = (X - min_x) / (max_x - min_x)
+    if np.any(np.abs(col_diff) < 1e-30):
+        # warning if some feature columns are constant
+        warnings.warn(
+            "Some of the features are constant which will cause the normalization to fail. "
+            "Now removing them."
+        )
+        # remove the constant feature columns
+        mask = np.ptp(X, axis=0) > 1e-30
+        X = X[:, mask]
+    x_norm = (X - np.min(X, axis=0)) / np.ptp(X, axis=0)
+
+    # min_max normalization:
+    n_samples, n_features = x_norm.shape
     ans = []  # store the Wasserstein distance for each feature
     for i in range(0, n_features):
         wdu = 0.0
