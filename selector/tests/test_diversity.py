@@ -21,6 +21,7 @@
 # --
 
 """Test Diversity Module."""
+import warnings
 
 import numpy as np
 import pytest
@@ -52,6 +53,8 @@ sample5 = np.array([[0, 2, 4, 0], [1, 2, 4, 0], [2, 2, 4, 0]])
 sample6 = np.array([[1, 0, 1, 0], [0, 1, 1, 0], [1, 0, 1, 0], [0, 0, 1, 0]])
 
 sample7 = np.array([[1, 0, 1, 0] for _ in range(4)])
+
+sample8 = np.array([[1, 2, 3], [1, 2, 3], [1, 2, 3]])
 
 
 def test_compute_diversity_specified():
@@ -210,7 +213,22 @@ def test_wdud_dimension_error():
 
 def test_wdud_normalization_error():
     """Test wdud method raises error when normalization fails."""
-    assert_raises(ValueError, wdud, sample5)
+    assert_raises(ValueError, wdud, sample8)
+
+
+def test_wdud_warning_normalization():
+    """Test wdud method gives warning when normalization fails."""
+    warning_message = (
+        "Some of the features are constant which will cause the normalization to fail. "
+        + "Now removing them."
+    )
+    with pytest.warns() as record:
+        wdud(sample8)
+
+    # check that only one warning was raised
+    assert len(record) == 1
+    # check that the message matches
+    assert record[0].message.args[0] == warning_message
 
 
 def test_hypersphere_overlap_of_subset_with_only_corners_and_center():
