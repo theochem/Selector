@@ -316,9 +316,14 @@ def wdud(X: np.ndarray) -> float:
             "Some of the features are constant which will cause the normalization to fail. "
             "Now removing them."
         )
-        # remove the constant feature columns
-        mask = np.ptp(X, axis=0) > 1e-30
-        X = X[:, mask]
+        if np.all(col_diff < 1.0e-30):
+            raise ValueError(
+                "Unfortunately, all the features are constants and wudud cannot be calculated."
+            )
+        else:
+            # remove the constant feature columns
+            mask = np.ptp(X, axis=0) > 1e-30
+            X = X[:, mask]
     x_norm = (X - np.min(X, axis=0)) / np.ptp(X, axis=0)
 
     # min_max normalization:
