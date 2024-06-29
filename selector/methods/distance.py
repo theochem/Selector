@@ -451,16 +451,20 @@ class DISE(SelectionBase):
         """
 
         # calculate distance of all samples from reference sample; distance is a (n_samples,) array
+        # this includes the distance of reference sample from itself, which is 0
         distances = scipy.spatial.minkowski_distance(X[self.ref_index], X, p=self.p)
         # get sorted index of samples based on their distance from reference (closest to farthest)
+        # the first index will be the ref_index which has distance of zero
         index_sorted = np.argsort(distances)
+        assert index_sorted[0] == self.ref_index
         # construct KDTree for quick nearest-neighbor lookup
         kdtree = scipy.spatial.KDTree(X)
 
         # construct bitarray to track selected samples (1 means exclude)
         bv = bitarray.bitarray(list(np.zeros(len(X), dtype=int)))
-        bv[self.ref_index] = 1
 
+        # the neighbours of the ref_index are going to be excluded in the first iteration
+        # and ref_index is going to be added to the selected list
         selected = []
         for idx in index_sorted:
             # select sample if it is not already excluded from consideration
