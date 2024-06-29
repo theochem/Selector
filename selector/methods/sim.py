@@ -176,12 +176,12 @@ class NSimilarity(SelectionBase):
         self.si = SimilarityIndex(
             method=self.method,
             inv_order=self.inv_order,
-            similarity_index=self.similarity_index,
+            sim_index=self.similarity_index,
             c_threshold=self.c_threshold,
             w_factor=self.w_factor,
         )
 
-    def _scale_data(self, arr: np.ndarray):
+    def _scale_data(self, X: np.ndarray):
         r"""Scales the data between so it can be used with the similarity indexes.
 
         First each data point is normalized to be between 0 and 1.
@@ -199,13 +199,13 @@ class NSimilarity(SelectionBase):
 
         Parameters
         ----------
-        arr: np.ndarray
+        X: np.ndarray
             Array of features (columns) for each sample (rows).
         """
-        min_value = np.min(arr)
-        max_value = np.max(arr)
+        min_value = np.min(X)
+        max_value = np.max(X)
         # normalize the data to be between 0 and 1 for working with the similarity indexes
-        normalized_data = (arr - min_value) / (max_value - min_value)
+        normalized_data = (X - min_value) / (max_value - min_value)
         # calculate the average of the columns
         col_average = np.average(normalized_data, axis=0)
 
@@ -217,19 +217,19 @@ class NSimilarity(SelectionBase):
 
     def _get_new_index(
         self,
-        arr: np.ndarray,
+        X: np.ndarray,
         selected_condensed: np.ndarray,
         num_selected: int,
         select_from: np.ndarray,
     ) -> int:
-        r"""Select a new diverse molecule from the data.
+        r"""Select a new diverse sample from the data.
 
-        The function selects a new molecule such that the similarity of the new set of selected
-        molecules is minimized.
+        The function selects a new sample such that the similarity of the new set of selected
+        samples is minimized.
 
         Parameters
         ----------
-        arr: np.ndarray
+        X: np.ndarray
             Array of features (columns) for each sample (rows).
         selected_condensed: np.ndarray
             Columnwise sum of all the samples selected so far.
@@ -246,7 +246,7 @@ class NSimilarity(SelectionBase):
 
         """
         # check if the data was previously scaled
-        if np.max(arr) > 1 or np.min(arr) < 0:
+        if np.max(X) > 1 or np.min(X) < 0:
             raise ValueError(
                 "The data was not scaled between 0 and 1. "
                 "Use the _scale_data function to scale the data."
@@ -263,15 +263,15 @@ class NSimilarity(SelectionBase):
         min_value = 1.01
 
         # placeholder index, initiating variable with a number outside the possible index values
-        index = arr.shape[0] + 1
+        index = X.shape[0] + 1
 
         # for all indices that have not been selected
         for sample_idx in select_from:
             # column sum
-            c_total = selected_condensed + arr[sample_idx]
+            c_total = selected_condensed + X[sample_idx]
 
             # calculating similarity
-            sim_index = self.si(c_total, n_objects=n_total)
+            sim_index = self.si(c_total, nsamples=n_total)
 
             # if the sim of the set is less than the similarity of the previous diverse set,
             # update min_value and index
@@ -281,63 +281,63 @@ class NSimilarity(SelectionBase):
 
         return index
 
-    def calculate_medoid(self, arr: np.ndarray, c_total=None) -> int:
+    def calculate_medoid(self, X: np.ndarray, c_total=None) -> int:
         """Calculate the medoid of a set of real-valued vectors or binary objects.
 
         Parameters
         ----------
-        arr: np.array
+        X: np.array
             np.array of all the real-valued vectors or binary objects.
         c_total:
             np.array with the columnwise sums of the data, not necessary to provide.
         """
         # Check if the data is a np.ndarray of a list
-        if not isinstance(arr, np.ndarray):
+        if not isinstance(X, np.ndarray):
             raise TypeError("Input data is not a np.ndarray, please input the right data type")
         # Check if the data is one dimensional
-        if arr.ndim != 2:
+        if X.ndim != 2:
             raise ValueError(
                 "Data must be a two dimensional np.ndarray for calculating the medoid."
             )
         # Check if the data has at least 3 rows
-        if arr.shape[0] < 3:
+        if X.shape[0] < 3:
             raise ValueError("Input data must have at least 3 rows to calculate the medoid.")
 
         # check if c_total is provided and if not, calculate it
         if c_total is None:
-            c_total = np.sum(arr, axis=0)
+            c_total = np.sum(X, axis=0)
         # if c_total is provided, check if it has the same number of columns as the data
-        elif c_total is not None and len(arr[0]) != len(c_total):
+        elif c_total is not None and len(X[0]) != len(c_total):
             raise ValueError("Dimensions of objects and columnwise sum differ")
 
         # get the total number of objects
-        n_objects = arr.shape[0]
+        nsamples = X.shape[0]
 
         # Initialize the selected index with a number outside the possible index values
-        index = n_objects + 1
+        index = nsamples + 1
 
         # minimum similarity value that is guaranteed to be higher than all the comparisons, this
         # value should be a warranty that a exist a sample with similarity lower than min_sim. The
         # max possible similarity value for set of samples is 1.00.
         min_sim = 1.01
 
-        # For each sample in the set, calculate the columnwise sum of the data without the sample
-        comp_sums = c_total - arr
+        # For each sample in the set, calculate the column-wise sum of the data without the sample
+        comp_sums = c_total - X
 
         # The medoid is calculated using an instance of the SimilarityIndex class with the same
         # parameters as the current class, but with the inv_order = 1
         si = SimilarityIndex(
             method=self.method,
             inv_order=1,
-            similarity_index=self.similarity_index,
+            sim_index=self.similarity_index,
             c_threshold=self.c_threshold,
             w_factor=self.w_factor,
         )
 
         # for each sample calculate the similarity index of the complete set without the sample
-        for idx, obj in enumerate(comp_sums):
+        for idx, row in enumerate(comp_sums):
             # calculate the similarity index of the set of objects without the current object
-            sim_index = si(obj, n_objects=n_objects - 1)
+            sim_index = si(row, nsamples=nsamples - 1)
             # if the similarity is lower than the previous minimum similarity, update the minimum
             # similarity and the index
             if sim_index < min_sim:
@@ -346,7 +346,7 @@ class NSimilarity(SelectionBase):
         # returned (the medoid)
         return index
 
-    def calculate_outlier(self, arr: np.ndarray = None, c_total=None) -> int:
+    def calculate_outlier(self, X: np.ndarray = None, c_total=None) -> int:
         r"""Calculate the outlier of a set of real-valued vectors or binary objects.
 
         Calculates the outlier of a set of real-valued vectors or binary objects. Using the
@@ -354,34 +354,34 @@ class NSimilarity(SelectionBase):
 
         Parameters
         ----------
-        arr: np.array
+        X: np.array
             np.array of all the real-valued vectors or binary objects.
-        c_total:
-            np.array with the columnwise sums of the data, not necessary to provide.
+        c_total: np.array, optional
+            np.array with the column-wise sums of the data.
         """
         # Check if the data is a np.ndarray of a list
-        if not isinstance(arr, np.ndarray):
+        if not isinstance(X, np.ndarray):
             raise TypeError("Input data is not a np.ndarray, please input the right data type")
         # Check if the data is one dimensional
-        if arr.ndim != 2:
+        if X.ndim != 2:
             raise ValueError(
                 "Data must be a two dimensional np.ndarray for calculating the outlier."
             )
         # Check if the data has at least 3 rows
-        if arr.shape[0] < 3:
+        if X.shape[0] < 3:
             raise ValueError("Input data must have at least 3 rows to calculate the outlier.")
 
         # check if c_total is provided and if not, calculate it
         if c_total is None:
-            c_total = np.sum(arr, axis=0)
+            c_total = np.sum(X, axis=0)
         # if c_total is provided, check if it has the same number of columns as the data
-        elif c_total is not None and len(arr[0]) != len(c_total):
+        elif c_total is not None and len(X[0]) != len(c_total):
             raise ValueError("Dimensions of objects and columnwise sum differ")
 
-        n_objects = arr.shape[0]
+        nsamples = X.shape[0]
 
         # Initialize the selected index with a number outside the possible index values
-        index = n_objects + 1
+        index = nsamples + 1
 
         # maximum similarity value that is guaranteed to be lower than all the comparisons, this
         # value should be a warranty that a exist a sample with similarity lower than min_sim. The
@@ -389,7 +389,7 @@ class NSimilarity(SelectionBase):
         max_sim = -0.01
 
         # For each sample in the set, calculate the columnwise sum of the data without the sample
-        comp_sums = c_total - arr
+        comp_sums = c_total - X
 
         # The outlier is calculated using an instance of the SimilarityIndex class with the same
         # parameters as the current class, but with the inv_order = 1
@@ -397,33 +397,31 @@ class NSimilarity(SelectionBase):
         # for each sample calculate the similarity index of the complete set without the sample
         for idx, obj in enumerate(comp_sums):
             # calculate the similarity index of the set of objects without the current object
-            sim_index = self.si(arr=obj, n_objects=n_objects - 1)
+            sim_index = self.si(X=obj, nsamples=nsamples - 1)
             # if the similarity is bigger than the previous minimum similarity, update the minimum
             # similarity and the index
             if sim_index > max_sim:
                 max_sim, index = sim_index, idx
-            else:
-                pass
         # the index of the object that decreases more the similarity of the set when added is
         # returned (the outlier)
         return index
 
     def select_from_cluster(
         self,
-        arr: np.ndarray,
+        X: np.ndarray,
         size: int,
-        cluster_ids: Optional[np.ndarray] = None,
+        labels: Optional[np.ndarray] = None,
         start: Union[str, List[int]] = "medoid",
     ) -> List[int]:
         r"""Algorithm of nary similarity selection for selecting points from cluster.
 
         Parameters
         ----------
-        arr: np.ndarray
+        X: np.ndarray
             Array of features (columns) for each sample (rows).
         size: int
             Number of sample points to select (i.e. size of the subset).
-        cluster_ids: np.ndarray, optional
+        labels: np.ndarray, optional
             Array of integers or strings representing the points ids of the data that belong to the
             current cluster. If `None`, all the samples in the data are treated as one cluster.
         start: str or list
@@ -444,28 +442,28 @@ class NSimilarity(SelectionBase):
                     "Select a correct starting point: medoid, random, outlier or a list of indices."
                 )
         # check if cluster_ids are provided
-        if cluster_ids is not None:
+        if labels is not None:
             # extract the data corresponding to the cluster_ids
-            arr = np.take(arr, cluster_ids, axis=0)
+            X = np.take(X, labels, axis=0)
 
         # total number of objects in the current cluster
-        samples = arr.shape[0]
+        nsamples = X.shape[0]
         # ids of the data points in the current cluster (0, 1, 2, ..., samples-1)
-        data_ids = np.array(range(samples))
+        data_ids = np.array(range(nsamples))
 
         # check if the number of selected objects is less than the total number of objects
-        if size > samples:
+        if size > nsamples:
             raise ValueError(
-                f"Number of samples is less than the requested sample size: {samples} < {size}."
+                f"Number of samples is less than the requested sample size: {nsamples} < {size}."
             )
 
         # The data is marked to be preprocessed scale the data between 0 and 1 using a strategy
         # that is compatible with the similarity indexes
         if self.preprocess_data:
-            arr = self._scale_data(arr)
+            X = self._scale_data(X)
         else:
             # check if the data is between 0 and 1 and raise an error if it is not
-            if np.max(arr) > 1 or np.min(arr) < 0:
+            if np.max(X) > 1 or np.min(X) < 0:
                 raise ValueError(
                     "The data was not scaled between 0 and 1. "
                     "Use the _scale_data function to scale the data."
@@ -474,28 +472,28 @@ class NSimilarity(SelectionBase):
         # select the index (of the working data) corresponding to the medoid of the data using the
         # similarity index
         if start == "medoid":
-            seed = self.calculate_medoid(arr)
+            seed = self.calculate_medoid(X)
             selected = [seed]
         # select the index (of the working data)  corresponding to a random data point
         elif start == "random":
-            seed = random.randint(0, samples - 1)
+            seed = random.randint(0, nsamples - 1)
             selected = [seed]
         # select the index (of the working data) corresponding to the outlier of the data using the
         # similarity index
         elif start == "outlier":
-            seed = self.calculate_outlier(arr)
+            seed = self.calculate_outlier(X)
             selected = [seed]
         # if a list of cluster_ids is provided, select the data_ids corresponding indices
         elif isinstance(start, list):
-            if cluster_ids is not None:
+            if labels is not None:
                 # check if all starting indices are in this cluster
-                if not all(label in cluster_ids for label in start):
+                if not all(label in labels for label in start):
                     raise ValueError(
                         "Some of the provided initial indexes are not in the cluster data."
                     )
                 # select the indices of the data_ids that correspond to the provided starting points
                 # provided from cluster_ids
-                selected = [i for i, j in enumerate(cluster_ids) if j in start]
+                selected = [i for i, j in enumerate(labels) if j in start]
             else:
                 # check if all starting indices are in the data
                 if not all(label in data_ids for label in start):
@@ -506,7 +504,7 @@ class NSimilarity(SelectionBase):
         num_selected = len(selected)
 
         # get selected samples form the working data array
-        selected_objects = np.take(arr, selected, axis=0)
+        selected_objects = np.take(X, selected, axis=0)
         # Calculate the columnwise sum of the selected samples
         selected_condensed = np.sum(selected_objects, axis=0)
 
@@ -517,10 +515,10 @@ class NSimilarity(SelectionBase):
 
             # Select new index. The new object is selected such that from all possible objects the
             # similarity of the set of (selected_objects + new_object) is a minimum.
-            new_index = self._get_new_index(arr, selected_condensed, num_selected, select_from)
+            new_index = self._get_new_index(X, selected_condensed, num_selected, select_from)
 
             # updating column sum vector
-            selected_condensed += arr[new_index]
+            selected_condensed += X[new_index]
 
             # updating selected indices
             selected.append(new_index)
@@ -535,29 +533,13 @@ class SimilarityIndex:
     This class provides methods for calculating the similarity index of a set of vectors represented
     as a matrix. Each vector is a row in the matrix, and each column represents a feature of the
     vector. The features in the vectors must be binary or real numbers between 0 and 1.
-
-    Methods
-    -------
-    calculate_medoid(arr, c_total=None):
-        Calculate the medoid of a set of real-valued vectors or binary objects. The similarity_index
-        is used as the distance. The similarity_index used for calculating the medoid always has
-        p-norm = 1.
-
-    calculate_outlier(arr, c_total=None):
-        Calculate the outlier of a set of real-valued vectors or binary objects. The
-        similarity_index is used as the distance. The similarity_index used for calculating the
-        outlier always has p-norm = 1.
-
-    __call__(arr=None, n_objects=None):
-        Calculate the similarity index of a set of vectors.
-
     """
 
     def __init__(
         self,
         method: str = "isim",
         inv_order: int = 1,
-        similarity_index: str = "RR",
+        sim_index: str = "RR",
         c_threshold: Union[None, str, int] = None,
         w_factor: str = "fraction",
     ):
@@ -583,7 +565,7 @@ class SimilarityIndex:
             similarity values elevated to 1/inv_order. This is not used for calculating the
             medoid or the outlier. Default is 1.
 
-        similarity_index : str, optional
+        sim_index : str, optional
             The key with the abbreviation of the similarity index to be used for calculations.
             Possible values are:
                 - 'AC': Austin-Colwell
@@ -608,7 +590,7 @@ class SimilarityIndex:
                 - None : Default, c_threshold = n_objects % 2
                 - 'dissimilar' : c_threshold = ceil(n_objects / 2)
                 - int : Integer number < n_objects
-            It is only used for the 'esim' method. Default is None.
+            It is only used for the 'esim' method.
 
         w_factor : {"fraction", "power_n"}, optional
             The type of weight function to be used.
@@ -625,10 +607,11 @@ class SimilarityIndex:
         # check if the method is valid
         if method not in ["isim", "esim"]:
             raise ValueError(f'Method "{method}" is not available please select "isim" or "esim".')
+
         # check if the similarity index is valid
-        if similarity_index not in _similarity_index_dict:
+        if sim_index not in _similarity_index_dict:
             raise ValueError(
-                f'Similarity index "{similarity_index}" is not available. '
+                f'Similarity index "{sim_index}" is not available. '
                 f"See the documentation for the available similarity indexes."
             )
         # for the esim method, check if the w_factor and c_threshold are valid
@@ -650,21 +633,21 @@ class SimilarityIndex:
                     w_factor = False
         self.method = method
         self.inv_order = inv_order
-        self.similarity_index = similarity_index
+        self.similarity_index = sim_index
         self.w_factor = w_factor
         self.c_threshold = c_threshold
 
-    def _calculate_counters(self, arr: np.ndarray, n_objects: Optional[int] = None) -> dict:
+    def _calculate_counters(self, X: np.ndarray, nsamples: Optional[int] = None) -> dict:
         """Calculate 1-similarity, 0-similarity, and dissimilarity counters.
 
         Arguments
         ---------
-        arr : np.ndarray
+        X : np.ndarray
             Array of arrays, each sub-array contains the binary or real valued vector. The values
             must be between 0 and 1. If the number of rows ==1, the data is treated as the
             columnwise sum of the objects. If the number of rows > 1, the data is treated as the
             objects.
-        n_objects: int
+        nsamples: int
             Number of objects, only necessary if the columnwise sum of the objects is provided
             instead of the data (num rows== 1). If the data is provided, the number of objects is
             calculated as the length of the data.
@@ -675,38 +658,32 @@ class SimilarityIndex:
             Dictionary with the weighted and non-weighted counters.
         """
         # Check if the data is a np.ndarray of a list
-        if not isinstance(arr, np.ndarray):
-            raise TypeError(
-                "Input data is not a np.ndarray, to secure the right results please "
-                "input the right data type"
-            )
+        if not isinstance(X, np.ndarray):
+            raise TypeError("Argument X is not a np.ndarray, please input the right data type!")
         # Check if data is a columnwise sum or the objects
-        if arr.ndim == 1:
-            c_total = arr
+        if X.ndim == 1:
+            c_total = X
             # If data is a columnwise sum, check if n_objects is provided
-            if n_objects is None:
-                raise ValueError(
-                    "Input data is the columnwise sum, please specify number of objects"
-                )
+            if nsamples is None:
+                raise ValueError("Argument X is the columnwise sum, please specify nsamples")
         else:
-            c_total = np.sum(arr, axis=0)
-            len_arr = len(arr)
-            if n_objects and n_objects != len_arr:
+            c_total = np.sum(X, axis=0)
+            if nsamples is not None and nsamples != len(X):
                 warnings.warn(
-                    f"Warning, specified number of objects {n_objects} is different from the number"
+                    f"Warning, specified number of objects {nsamples} is different from the number"
                     " of objects in data {len_arr}\n"
                     "Doing calculations with",
-                    n_objects,
+                    nsamples,
                     "objects.",
                 )
-            n_objects = len_arr
+            nsamples = len(X)
 
         # if method is isim, calculate the counters using the instant similarity index
         if self.method == "isim":
             # calculate number of instances with common on bits (common 1s) for each column
             a_array = c_total * (c_total - 1) / 2
             # calculate number of instances with common off bits (common 0s) for each column
-            off_coincidences = n_objects - c_total
+            off_coincidences = nsamples - c_total
             d_array = off_coincidences * (off_coincidences - 1) / 2
             # calculate number of instances with dissimilar bits for each column
             dis_array = off_coincidences * c_total
@@ -731,14 +708,14 @@ class SimilarityIndex:
         elif self.method == "esim":
             # Assign c_threshold
             if self.c_threshold is None:
-                tmp_c_threshold = n_objects % 2
+                tmp_c_threshold = nsamples % 2
             elif self.c_threshold == "dissimilar":
-                tmp_c_threshold = math.ceil(n_objects / 2)
+                tmp_c_threshold = math.ceil(nsamples / 2)
             elif isinstance(self.c_threshold, int):
-                if self.c_threshold >= n_objects:
+                if self.c_threshold >= nsamples:
                     raise ValueError(
-                        "c_threshold cannot be equal or greater than n_objects. \n"
-                        f"c_threshold = {self.c_threshold}  n_objects = {n_objects}"
+                        "c_threshold cannot be equal or greater than nsamples. \n"
+                        f"c_threshold = {self.c_threshold}  nsamples = {nsamples}"
                     )
                 tmp_c_threshold = self.c_threshold
             else:
@@ -749,12 +726,12 @@ class SimilarityIndex:
 
             # Calculate a, d, b + c
             # Calculate the positions (columns) of common on bits (common 1s) between the objects
-            a_indices = 2 * c_total - n_objects > tmp_c_threshold
+            a_indices = 2 * c_total - nsamples > tmp_c_threshold
             # Calculate the positions (columns) common off bits (common 0s) between the objects
-            d_indices = n_objects - 2 * c_total > tmp_c_threshold
+            d_indices = nsamples - 2 * c_total > tmp_c_threshold
             # Calculate the positions (columns) of dissimilar bits between the objects (b + c)
             # the dissimilar bits are the bits that are not common between the objects
-            dis_indices = np.abs(2 * c_total - n_objects) <= tmp_c_threshold
+            dis_indices = np.abs(2 * c_total - nsamples) <= tmp_c_threshold
 
             # Calculate the number of columns with common on bits (common 1s) between the objects
             a = np.sum(np.power(a_indices, 1.0 / self.inv_order))
@@ -764,11 +741,11 @@ class SimilarityIndex:
             total_dis = np.sum(np.power(dis_indices, 1.0 / self.inv_order))
 
             # calculate the weights for each column indexed as with common on bits (common 1s)
-            a_w_array = self._f_s(2 * c_total[a_indices] - n_objects, n_objects)
+            a_w_array = self._f_s(2 * c_total[a_indices] - nsamples, nsamples)
             # calculate the weights for each column indexed as with common off bits (common 0s)
-            d_w_array = self._f_s(abs(2 * c_total[d_indices] - n_objects), n_objects)
+            d_w_array = self._f_s(abs(2 * c_total[d_indices] - nsamples), nsamples)
             # calculate the weights for each column indexed as with dissimilar bits
-            total_w_dis_array = self._f_d(abs(2 * c_total[dis_indices] - n_objects), n_objects)
+            total_w_dis_array = self._f_d(abs(2 * c_total[dis_indices] - nsamples), nsamples)
 
             # calculate the total weight for each type of counter
             w_a = np.sum(np.power(a_w_array, 1.0 / self.inv_order))
@@ -824,8 +801,7 @@ class SimilarityIndex:
                     f"w_factor must be 'fraction' or 'power_n'. \n Given w_factor = {self.w_factor}"
                 )
         # default case, the similarity counters are not weighted
-        else:
-            return 1
+        return 1
 
     def _f_d(self, d, n) -> float:
         """Calculate the dissimilarity weight factor for a given number of similar objects in a set.
@@ -856,20 +832,19 @@ class SimilarityIndex:
                     f"w_factor must be 'fraction' or 'power_n'. \n Given w_factor = {self.w_factor}"
                 )
         # default case, the dissimilarity counters are not weighted
-        else:
-            return 1
+        return 1
 
-    def __call__(self, arr: np.ndarray, n_objects: int = None) -> float:
+    def __call__(self, X: np.ndarray, nsamples: int = None) -> float:
         """Calculate the similarity index of a set of vectors.
 
         Parameters
         ----------
-        arr : np.ndarray
+        X : np.ndarray
             Array of arrays, each sub-array contains the binary or real valued vector. The values
             must be between 0 and 1. If the number of rows ==1, the data is treated as the
             columnwise sum of the objects. If the number of rows > 1, the data is treated as the
             objects.
-        n_objects: int
+        nsamples: int
             Number of objects in the data. Is only necessary if the data is a columnwise sum of
             the objects. If the data is not the columnwise sum of the objects, the number of objects
             is calculated as the length of the data.
@@ -879,24 +854,30 @@ class SimilarityIndex:
             Similarity index of the set of vectors.
         """
         # check if arr is a np.ndarray
-        if not isinstance(arr, np.ndarray):
+        if not isinstance(X, np.ndarray):
             raise TypeError("Input data is not a np.ndarray, please input the right data type")
 
         # if the data is a columnwise sum of the objects check that n_objects is provided
-        if arr.ndim == 1:
-            c_total = arr
-            if not n_objects:
-                raise ValueError(
-                    "Input data is the columnwise sum, please specify number of objects"
-                )
+        if X.ndim == 1:
+            c_total = X
+            if not nsamples:
+                raise ValueError("Input data is the columnwise sum, please specify nsamples")
         # if the data is not a columnwise sum of the objects, calculate the columnwise sum and the
         # number of objects
         else:
-            c_total = np.sum(arr, axis=0)
-            n_objects = arr.shape[0]
+            c_total = np.sum(X, axis=0)
+            if nsamples is not None and nsamples != len(X):
+                warnings.warn(
+                    f"Warning, specified number of objects {nsamples} is different from the number"
+                    " of objects in data {len_arr}\n"
+                    "Doing calculations with",
+                    nsamples,
+                    "objects.",
+                )
+            nsamples = X.shape[0]
 
         # calculate the counters needed to calculate the similarity indexes
-        counters = self._calculate_counters(arr=c_total, n_objects=n_objects)
+        counters = self._calculate_counters(X=c_total, nsamples=nsamples)
         # calculate the similarity index
         similarity_index = _similarity_index_dict[self.similarity_index](counters)
 
