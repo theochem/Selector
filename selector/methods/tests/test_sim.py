@@ -198,7 +198,7 @@ def test_SimilarityIndex_call_raises():
 
 def test_SimilarityIndex_calculate_medoid_raises():
     """Test the SimilarityIndex class for raised errors (calculate_medoid)."""
-    sim_idx = SimilarityIndex()
+    sim_idx = NSimilarity()
 
     # check raised error wrong data type
     with pytest.raises(TypeError):
@@ -213,12 +213,12 @@ def test_SimilarityIndex_calculate_medoid_raises():
         sim_idx.calculate_medoid(arr=np.array([[1, 2, 3], [4, 5, 6]]))
 
     # check raised error - c_threshold bigger than n_objects
-    sim_idx = SimilarityIndex(method="esim", c_threshold=4)
+    sim_idx = NSimilarity(method="esim", c_threshold=4)
     with pytest.raises(ValueError):
         sim_idx.calculate_medoid(arr=np.array([[1, 2, 3], [4, 5, 6], [6, 7, 8]]))
 
     # check raised error - c_total and data have different number of columns
-    sim_idx = SimilarityIndex()
+    sim_idx = NSimilarity()
     with pytest.raises(ValueError):
         sim_idx.calculate_medoid(
             arr=np.array([[1, 2, 3], [4, 5, 6], [6, 7, 8]]), c_total=np.array([1, 2, 3, 4])
@@ -227,7 +227,7 @@ def test_SimilarityIndex_calculate_medoid_raises():
 
 def test_SimilarityIndex_calculate_outlier_raises():
     """Test the SimilarityIndex class for raised errors (calculate_outlier)."""
-    sim_idx = SimilarityIndex()
+    sim_idx = NSimilarity()
 
     # check raised error wrong data type
     with pytest.raises(TypeError):
@@ -242,12 +242,12 @@ def test_SimilarityIndex_calculate_outlier_raises():
         sim_idx.calculate_outlier(arr=np.array([[1, 2, 3], [4, 5, 6]]))
 
     # check raised error - c_threshold bigger than n_objects
-    sim_idx = SimilarityIndex(method="esim", c_threshold=4)
+    sim_idx = NSimilarity(method="esim", c_threshold=4)
     with pytest.raises(ValueError):
         sim_idx.calculate_outlier(arr=np.array([[1, 2, 3], [4, 5, 6], [6, 7, 8]]))
 
     # check raised error - c_total and data have different number of columns
-    sim_idx = SimilarityIndex()
+    sim_idx = NSimilarity()
     with pytest.raises(ValueError):
         sim_idx.calculate_outlier(
             arr=np.array([[1, 2, 3], [4, 5, 6], [6, 7, 8]]), c_total=np.array([1, 2, 3, 4])
@@ -1090,7 +1090,7 @@ def test_calculate_medoid_esim(c_threshold, w_factor, n_ary):
     ref_medoid = ref_medoid_dict[c_threshold_key][w_factor][n_ary]
 
     # calculate the medoid for the binary data
-    sim_idx = SimilarityIndex(
+    sim_idx = NSimilarity(
         method="esim", similarity_index=n_ary, c_threshold=c_threshold, w_factor=w_factor
     )
     medoid = sim_idx.calculate_medoid(arr=data)
@@ -1276,7 +1276,7 @@ def test_calculate_outlier_esim(c_threshold, w_factor, n_ary):
     ref_outlier = ref_outlier_dict[c_threshold_key][w_factor][n_ary]
 
     # calculate the outlier for the binary data
-    sim_idx = SimilarityIndex(
+    sim_idx = NSimilarity(
         method="esim", similarity_index=n_ary, c_threshold=c_threshold, w_factor=w_factor
     )
     outlier = sim_idx.calculate_outlier(arr=data)
@@ -1314,7 +1314,7 @@ def test_calculate_medoid_isim(sim_idx):
     data = _get_binary_data()
     isim_dict = _get_ref_isim_dict()
     ref_medoid = isim_dict[sim_idx]["medoid"]
-    sim_idx = SimilarityIndex(method="isim", similarity_index=sim_idx)
+    sim_idx = NSimilarity(method="isim", similarity_index=sim_idx)
     medoid = sim_idx.calculate_medoid(arr=data)
     assert_equal(medoid, ref_medoid)
 
@@ -1325,7 +1325,7 @@ def test_calculate_outlier_isim(sim_idx):
     data = _get_binary_data()
     isim_dict = _get_ref_isim_dict()
     ref_medoid = isim_dict[sim_idx]["outlier"]
-    sim_idx = SimilarityIndex(method="isim", similarity_index=sim_idx)
+    sim_idx = NSimilarity(method="isim", similarity_index=sim_idx)
     medoid = sim_idx.calculate_outlier(arr=data)
     assert_equal(medoid, ref_medoid)
 

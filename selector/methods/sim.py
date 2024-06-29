@@ -171,6 +171,15 @@ class NSimilarity(SelectionBase):
         self.w_factor = w_factor
         self.c_threshold = c_threshold
         self.preprocess_data = preprocess_data
+        # create an instance of the SimilarityIndex class. It is used to calculate the similarity
+        # index of the sets of selected objects.
+        self.si = SimilarityIndex(
+            method=self.method,
+            inv_order=self.inv_order,
+            similarity_index=self.similarity_index,
+            c_threshold=self.c_threshold,
+            w_factor=self.w_factor,
+        )
 
     def _scale_data(self, arr: np.ndarray):
         r"""Scales the data between so it can be used with the similarity indexes.
@@ -256,23 +265,13 @@ class NSimilarity(SelectionBase):
         # placeholder index, initiating variable with a number outside the possible index values
         index = arr.shape[0] + 1
 
-        # create an instance of the SimilarityIndex class. It is used to calculate the similarity
-        # index of the sets of selected objects.
-        similarity_index = SimilarityIndex(
-            method=self.method,
-            inv_order=self.inv_order,
-            similarity_index=self.similarity_index,
-            c_threshold=self.c_threshold,
-            w_factor=self.w_factor,
-        )
-
         # for all indices that have not been selected
         for sample_idx in select_from:
             # column sum
             c_total = selected_condensed + arr[sample_idx]
 
             # calculating similarity
-            sim_index = similarity_index(c_total, n_objects=n_total)
+            sim_index = self.si(c_total, n_objects=n_total)
 
             # if the sim of the set is less than the similarity of the previous diverse set,
             # update min_value and index
@@ -280,6 +279,133 @@ class NSimilarity(SelectionBase):
                 index = sample_idx
                 min_value = sim_index
 
+        return index
+
+    def calculate_medoid(self, arr: np.ndarray, c_total=None) -> int:
+        """Calculate the medoid of a set of real-valued vectors or binary objects.
+
+        Parameters
+        ----------
+        arr: np.array
+            np.array of all the real-valued vectors or binary objects.
+        c_total:
+            np.array with the columnwise sums of the data, not necessary to provide.
+        """
+        # Check if the data is a np.ndarray of a list
+        if not isinstance(arr, np.ndarray):
+            raise TypeError("Input data is not a np.ndarray, please input the right data type")
+        # Check if the data is one dimensional
+        if arr.ndim != 2:
+            raise ValueError(
+                "Data must be a two dimensional np.ndarray for calculating the medoid."
+            )
+        # Check if the data has at least 3 rows
+        if arr.shape[0] < 3:
+            raise ValueError("Input data must have at least 3 rows to calculate the medoid.")
+
+        # check if c_total is provided and if not, calculate it
+        if c_total is None:
+            c_total = np.sum(arr, axis=0)
+        # if c_total is provided, check if it has the same number of columns as the data
+        elif c_total is not None and len(arr[0]) != len(c_total):
+            raise ValueError("Dimensions of objects and columnwise sum differ")
+
+        # get the total number of objects
+        n_objects = arr.shape[0]
+
+        # Initialize the selected index with a number outside the possible index values
+        index = n_objects + 1
+
+        # minimum similarity value that is guaranteed to be higher than all the comparisons, this
+        # value should be a warranty that a exist a sample with similarity lower than min_sim. The
+        # max possible similarity value for set of samples is 1.00.
+        min_sim = 1.01
+
+        # For each sample in the set, calculate the columnwise sum of the data without the sample
+        comp_sums = c_total - arr
+
+        # The medoid is calculated using an instance of the SimilarityIndex class with the same
+        # parameters as the current class, but with the inv_order = 1
+        si = SimilarityIndex(
+            method=self.method,
+            inv_order=1,
+            similarity_index=self.similarity_index,
+            c_threshold=self.c_threshold,
+            w_factor=self.w_factor,
+        )
+
+        # for each sample calculate the similarity index of the complete set without the sample
+        for idx, obj in enumerate(comp_sums):
+            # calculate the similarity index of the set of objects without the current object
+            sim_index = si(obj, n_objects=n_objects - 1)
+            # if the similarity is lower than the previous minimum similarity, update the minimum
+            # similarity and the index
+            if sim_index < min_sim:
+                min_sim, index = sim_index, idx
+        # the index of the object that increases more the similarity of the set when added is
+        # returned (the medoid)
+        return index
+
+    def calculate_outlier(self, arr: np.ndarray = None, c_total=None) -> int:
+        r"""Calculate the outlier of a set of real-valued vectors or binary objects.
+
+        Calculates the outlier of a set of real-valued vectors or binary objects. Using the
+        similarity index provided in the class initialization.
+
+        Parameters
+        ----------
+        arr: np.array
+            np.array of all the real-valued vectors or binary objects.
+        c_total:
+            np.array with the columnwise sums of the data, not necessary to provide.
+        """
+        # Check if the data is a np.ndarray of a list
+        if not isinstance(arr, np.ndarray):
+            raise TypeError("Input data is not a np.ndarray, please input the right data type")
+        # Check if the data is one dimensional
+        if arr.ndim != 2:
+            raise ValueError(
+                "Data must be a two dimensional np.ndarray for calculating the outlier."
+            )
+        # Check if the data has at least 3 rows
+        if arr.shape[0] < 3:
+            raise ValueError("Input data must have at least 3 rows to calculate the outlier.")
+
+        # check if c_total is provided and if not, calculate it
+        if c_total is None:
+            c_total = np.sum(arr, axis=0)
+        # if c_total is provided, check if it has the same number of columns as the data
+        elif c_total is not None and len(arr[0]) != len(c_total):
+            raise ValueError("Dimensions of objects and columnwise sum differ")
+
+        n_objects = arr.shape[0]
+
+        # Initialize the selected index with a number outside the possible index values
+        index = n_objects + 1
+
+        # maximum similarity value that is guaranteed to be lower than all the comparisons, this
+        # value should be a warranty that a exist a sample with similarity lower than min_sim. The
+        # min possible similarity value for set of samples is 0.00.
+        max_sim = -0.01
+
+        # For each sample in the set, calculate the columnwise sum of the data without the sample
+        comp_sums = c_total - arr
+
+        # The outlier is calculated using an instance of the SimilarityIndex class with the same
+        # parameters as the current class, but with the inv_order = 1
+
+        # for each sample calculate the similarity index of the complete set without the sample
+        for idx, obj in enumerate(comp_sums):
+            # calculate the similarity index of the set of objects without the current object
+            sim_index = self.si(arr=obj, n_objects=n_objects - 1)
+            # if the similarity is bigger than the previous minimum similarity, update the minimum
+            # similarity and the index
+            if sim_index > max_sim:
+                max_sim, index = sim_index, idx
+            else:
+                pass
+        # the index of the object that decreases more the similarity of the set when added is
+        # returned (the outlier)
         return index
 
     def select_from_cluster(
@@ -345,20 +471,10 @@ class NSimilarity(SelectionBase):
                     "Use the _scale_data function to scale the data."
                 )
 
-        # create an instance of the SimilarityIndex class. It is used to calculate the medoid and
-        # the outlier of the data.
-        similarity_index = SimilarityIndex(
-            method=self.method,
-            inv_order=self.inv_order,
-            similarity_index=self.similarity_index,
-            c_threshold=self.c_threshold,
-            w_factor=self.w_factor,
-        )
-
         # select the index (of the working data) corresponding to the medoid of the data using the
         # similarity index
         if start == "medoid":
-            seed = similarity_index.calculate_medoid(arr)
+            seed = self.calculate_medoid(arr)
             selected = [seed]
         # select the index (of the working data)  corresponding to a random data point
         elif start == "random":
@@ -367,7 +483,7 @@ class NSimilarity(SelectionBase):
         # select the index (of the working data) corresponding to the outlier of the data using the
         # similarity index
         elif start == "outlier":
-            seed = similarity_index.calculate_outlier(arr)
+            seed = self.calculate_outlier(arr)
             selected = [seed]
         # if a list of cluster_ids is provided, select the data_ids corresponding indices
         elif isinstance(start, list):
@@ -785,142 +901,6 @@ class SimilarityIndex:
         similarity_index = _similarity_index_dict[self.similarity_index](counters)
 
         return similarity_index
-
-    def calculate_medoid(self, arr: np.ndarray, c_total=None) -> int:
-        """Calculate the medoid of a set of real-valued vectors or binary objects.
-
-        Parameters
-        ----------
-        arr: np.array
-            np.array of all the real-valued vectors or binary objects.
-        c_total:
-            np.array with the columnwise sums of the data, not necessary to provide.
-        """
-        # Check if the data is a np.ndarray of a list
-        if not isinstance(arr, np.ndarray):
-            raise TypeError("Input data is not a np.ndarray, please input the right data type")
-        # Check if the data is one dimensional
-        if arr.ndim != 2:
-            raise ValueError(
-                "Data must be a two dimensional np.ndarray for calculating the medoid."
-            )
-        # Check if the data has at least 3 rows
-        if arr.shape[0] < 3:
-            raise ValueError("Input data must have at least 3 rows to calculate the medoid.")
-
-        # check if c_total is provided and if not, calculate it
-        if c_total is None:
-            c_total = np.sum(arr, axis=0)
-        # if c_total is provided, check if it has the same number of columns as the data
-        elif c_total is not None and len(arr[0]) != len(c_total):
-            raise ValueError("Dimensions of objects and columnwise sum differ")
-
-        # get the total number of objects
-        n_objects = arr.shape[0]
-
-        # Initialize the selected index with a number outside the possible index values
-        index = n_objects + 1
-
-        # minimum similarity value that is guaranteed to be higher than all the comparisons, this
-        # value should be a warranty that a exist a sample with similarity lower than min_sim. The
-        # max possible similarity value for set of samples is 1.00.
-        min_sim = 1.01
-
-        # For each sample in the set, calculate the columnwise sum of the data without the sample
-        comp_sums = c_total - arr
-
-        # The medoid is calculated using an instance of the SimilarityIndex class with the same
-        # parameters as the current class, but with the inv_order = 1
-        si = SimilarityIndex(
-            method=self.method,
-            inv_order=1,
-            similarity_index=self.similarity_index,
-            c_threshold=self.c_threshold,
-            w_factor=self.w_factor,
-        )
-
-        # for each sample calculate the similarity index of the complete set without the sample
-        for idx, obj in enumerate(comp_sums):
-            # calculate the similarity index of the set of objects without the current object
-            sim_index = si(obj, n_objects=n_objects - 1)
-            # if the similarity is lower than the previous minimum similarity, update the minimum
-            # similarity and the index
-            if sim_index < min_sim:
-                min_sim, index = sim_index, idx
-            else:
-                pass
-        # the index of the object that increases more the similarity of the set when added is
-        # returned (the medoid)
-        return index
-
-    def calculate_outlier(self, arr: np.ndarray = None, c_total=None) -> int:
-        r"""Calculate the outlier of a set of real-valued vectors or binary objects.
-
-        Calculates the outlier of a set of real-valued vectors or binary objects. Using the
-        similarity index provided in the class initialization.
-
-        Parameters
-        ----------
-        arr: np.array
-            np.array of all the real-valued vectors or binary objects.
-        c_total:
-            np.array with the columnwise sums of the data, not necessary to provide.
-        """
-        # Check if the data is a np.ndarray of a list
-        if not isinstance(arr, np.ndarray):
-            raise TypeError("Input data is not a np.ndarray, please input the right data type")
-        # Check if the data is one dimensional
-        if arr.ndim != 2:
-            raise ValueError(
-                "Data must be a two dimensional np.ndarray for calculating the outlier."
-            )
-        # Check if the data has at least 3 rows
-        if arr.shape[0] < 3:
-            raise ValueError("Input data must have at least 3 rows to calculate the outlier.")
-
-        # check if c_total is provided and if not, calculate it
-        if c_total is None:
-            c_total = np.sum(arr, axis=0)
-        # if c_total is provided, check if it has the same number of columns as the data
-        elif c_total is not None and len(arr[0]) != len(c_total):
-            raise ValueError("Dimensions of objects and columnwise sum differ")
-
-        n_objects = arr.shape[0]
-
-        # Initialize the selected index with a number outside the possible index values
-        index = n_objects + 1
-
-        # maximum similarity value that is guaranteed to be lower than all the comparisons, this
-        # value should be a warranty that a exist a sample with similarity lower than min_sim. The
-        # min possible similarity value for set of samples is 0.00.
-        max_sim = -0.01
-
-        # For each sample in the set, calculate the columnwise sum of the data without the sample
-        comp_sums = c_total - arr
-
-        # The outlier is calculated using an instance of the SimilarityIndex class with the same
-        # parameters as the current class, but with the inv_order = 1
-        si = SimilarityIndex(
-            method=self.method,
-            inv_order=1,
-            similarity_index=self.similarity_index,
-            c_threshold=self.c_threshold,
-            w_factor=self.w_factor,
-        )
-
-        # for each sample calculate the similarity index of the complete set without the sample
-        for idx, obj in enumerate(comp_sums):
-            # calculate the similarity index of the set of objects without the current object
-            sim_index = si(arr=obj, n_objects=n_objects - 1)
-            # if the similarity is bigger than the previous minimum similarity, update the minimum
-            # similarity and the index
-            if sim_index > max_sim:
-                max_sim, index = sim_index, idx
-            else:
-                pass
-        # the index of the object that decreases more the similarity of the set when added is
-        # returned (the outlier)
-        return index
 
 
 # Utility functions section
