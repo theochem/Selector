@@ -147,7 +147,7 @@ def test_SimilarityIndex_init_raises():
     """Test the SimilarityIndex class for raised errors (initialization)."""
     # check raised error wrong similarity index name
     with pytest.raises(ValueError):
-        SimilarityIndex(method="esim", similarity_index="ttt")
+        SimilarityIndex(method="esim", sim_index="ttt")
     # check raised error wrong c_threshold - invalid string value
     with pytest.raises(ValueError):
         SimilarityIndex(method="esim", c_threshold="ttt")
@@ -161,28 +161,28 @@ def test_SimilarityIndex_calculate_counters_raises():
 
     # check raised error wrong data type
     with pytest.raises(TypeError):
-        sim_idx._calculate_counters(arr=[1, 2, 3])
+        sim_idx._calculate_counters(X=[1, 2, 3])
 
     # check raised error - no n_objects with data of length 1
     with pytest.raises(ValueError):
-        sim_idx._calculate_counters(arr=np.array([1, 2, 3]))
+        sim_idx._calculate_counters(X=np.array([1, 2, 3]))
 
     # check raised error - c_threshold bigger than n_objects
     sim_idx = SimilarityIndex(method="esim", c_threshold=3)
     with pytest.raises(ValueError):
-        sim_idx._calculate_counters(arr=np.array([[1, 2, 3], [4, 5, 6]]))
+        sim_idx._calculate_counters(X=np.array([[1, 2, 3], [4, 5, 6]]))
 
     # check raised error - invalid c_threshold string value
     sim_idx = SimilarityIndex(method="esim")
     sim_idx.c_threshold = "ttt"
     with pytest.raises(ValueError):
-        sim_idx._calculate_counters(arr=np.array([[1, 2, 3], [4, 5, 6]]))
+        sim_idx._calculate_counters(X=np.array([[1, 2, 3], [4, 5, 6]]))
 
     # check raised error - invalid weight factor string value
     sim_idx = SimilarityIndex(method="esim")
     sim_idx.w_factor = "ttt"
     with pytest.raises(ValueError):
-        sim_idx._calculate_counters(arr=np.array([[1, 2, 3], [4, 5, 6]]))
+        sim_idx._calculate_counters(X=np.array([[1, 2, 3], [4, 5, 6]]))
 
 
 def test_SimilarityIndex_call_raises():
@@ -190,67 +190,67 @@ def test_SimilarityIndex_call_raises():
     sim_idx = SimilarityIndex()
     # check raised error wrong data type
     with pytest.raises(TypeError):
-        sim_idx(arr=[1, 2, 3])
+        sim_idx(X=[1, 2, 3])
     # check raised error - no n_objects with data of length 1
     with pytest.raises(ValueError):
-        sim_idx(arr=np.array([1, 2, 3]))
+        sim_idx(X=np.array([1, 2, 3]))
 
 
 def test_SimilarityIndex_calculate_medoid_raises():
     """Test the SimilarityIndex class for raised errors (calculate_medoid)."""
-    sim_idx = SimilarityIndex()
+    sim_idx = NSimilarity()
 
     # check raised error wrong data type
     with pytest.raises(TypeError):
-        sim_idx.calculate_medoid(arr=[1, 2, 3])
+        sim_idx.calculate_medoid(X=[1, 2, 3])
 
     # check raised error - no medoid with one dimensional data
     with pytest.raises(ValueError):
-        sim_idx.calculate_medoid(arr=np.array([1, 2, 3]))
+        sim_idx.calculate_medoid(X=np.array([1, 2, 3]))
 
     # check raised error - no medoid with less than three samples
     with pytest.raises(ValueError):
-        sim_idx.calculate_medoid(arr=np.array([[1, 2, 3], [4, 5, 6]]))
+        sim_idx.calculate_medoid(X=np.array([[1, 2, 3], [4, 5, 6]]))
 
     # check raised error - c_threshold bigger than n_objects
-    sim_idx = SimilarityIndex(method="esim", c_threshold=4)
+    sim_idx = NSimilarity(method="esim", c_threshold=4)
     with pytest.raises(ValueError):
-        sim_idx.calculate_medoid(arr=np.array([[1, 2, 3], [4, 5, 6], [6, 7, 8]]))
+        sim_idx.calculate_medoid(X=np.array([[1, 2, 3], [4, 5, 6], [6, 7, 8]]))
 
     # check raised error - c_total and data have different number of columns
-    sim_idx = SimilarityIndex()
+    sim_idx = NSimilarity()
     with pytest.raises(ValueError):
         sim_idx.calculate_medoid(
-            arr=np.array([[1, 2, 3], [4, 5, 6], [6, 7, 8]]), c_total=np.array([1, 2, 3, 4])
+            X=np.array([[1, 2, 3], [4, 5, 6], [6, 7, 8]]), c_total=np.array([1, 2, 3, 4])
         )
 
 
 def test_SimilarityIndex_calculate_outlier_raises():
     """Test the SimilarityIndex class for raised errors (calculate_outlier)."""
-    sim_idx = SimilarityIndex()
+    sim_idx = NSimilarity()
 
     # check raised error wrong data type
     with pytest.raises(TypeError):
-        sim_idx.calculate_outlier(arr=[1, 2, 3])
+        sim_idx.calculate_outlier(X=[1, 2, 3])
 
     # check raised error - no medoid with one dimensional data
     with pytest.raises(ValueError):
-        sim_idx.calculate_outlier(arr=np.array([1, 2, 3]))
+        sim_idx.calculate_outlier(X=np.array([1, 2, 3]))
 
     # check raised error - no medoid with less than three samples
     with pytest.raises(ValueError):
-        sim_idx.calculate_outlier(arr=np.array([[1, 2, 3], [4, 5, 6]]))
+        sim_idx.calculate_outlier(X=np.array([[1, 2, 3], [4, 5, 6]]))
 
     # check raised error - c_threshold bigger than n_objects
-    sim_idx = SimilarityIndex(method="esim", c_threshold=4)
+    sim_idx = NSimilarity(method="esim", c_threshold=4)
     with pytest.raises(ValueError):
-        sim_idx.calculate_outlier(arr=np.array([[1, 2, 3], [4, 5, 6], [6, 7, 8]]))
+        sim_idx.calculate_outlier(X=np.array([[1, 2, 3], [4, 5, 6], [6, 7, 8]]))
 
     # check raised error - c_total and data have different number of columns
-    sim_idx = SimilarityIndex()
+    sim_idx = NSimilarity()
     with pytest.raises(ValueError):
         sim_idx.calculate_outlier(
-            arr=np.array([[1, 2, 3], [4, 5, 6], [6, 7, 8]]), c_total=np.array([1, 2, 3, 4])
+            X=np.array([[1, 2, 3], [4, 5, 6], [6, 7, 8]]), c_total=np.array([1, 2, 3, 4])
         )
 
 
@@ -272,7 +272,7 @@ def test_NSimilarity_get_new_index_raises():
     # check that data is not scaled between 0 and 1
     with pytest.raises(ValueError):
         NSimilarity()._get_new_index(
-            arr=np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]]),
+            X=np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]]),
             num_selected=1,
             selected_condensed=np.array([1, 2, 3]),
             select_from=np.array([1, 2, 3]),
@@ -285,32 +285,28 @@ def test_NSimilarity_select_from_cluster_raises():
     cluster_ids = np.array([0, 1, 2])
     with pytest.raises(ValueError):
         # select more samples than the number of samples in the cluster
-        NSimilarity().select_from_cluster(arr=data_array, size=5)
+        NSimilarity().select_from_cluster(X=data_array, size=5)
     with pytest.raises(ValueError):
         # start from sample index that is not in the cluster
-        NSimilarity().select_from_cluster(arr=data_array, size=2, start=[4])
+        NSimilarity().select_from_cluster(X=data_array, size=2, start=[4])
     with pytest.raises(ValueError):
         # start from sample index that is not in the cluster
-        NSimilarity().select_from_cluster(arr=data_array, size=2, start=[4])
+        NSimilarity().select_from_cluster(X=data_array, size=2, start=[4])
     with pytest.raises(ValueError):
         # start from invalid string value of start
-        NSimilarity().select_from_cluster(arr=data_array, size=2, start="ttt")
+        NSimilarity().select_from_cluster(X=data_array, size=2, start="ttt")
     with pytest.raises(ValueError):
         # start from invalid type of start
-        NSimilarity().select_from_cluster(arr=data_array, size=2, start=[1.2])
+        NSimilarity().select_from_cluster(X=data_array, size=2, start=[1.2])
     with pytest.raises(ValueError):
         # try to data not scaled between 0 and 1
-        NSimilarity(preprocess_data=False).select_from_cluster(arr=data_array, size=2)
+        NSimilarity(preprocess_data=False).select_from_cluster(X=data_array, size=2)
     with pytest.raises(ValueError):
         # try to use starting index that is not in the cluster
-        NSimilarity().select_from_cluster(
-            arr=data_array, size=2, start=[4], cluster_ids=cluster_ids
-        )
+        NSimilarity().select_from_cluster(X=data_array, size=2, start=[4], labels=cluster_ids)
     with pytest.raises(ValueError):
         # try to use invalid starting index
-        NSimilarity().select_from_cluster(
-            arr=data_array, size=2, start=4.2, cluster_ids=cluster_ids
-        )
+        NSimilarity().select_from_cluster(X=data_array, size=2, start=4.2, labels=cluster_ids)
 
 
 # --------------------------------------------------------------------------------------------- #
@@ -838,7 +834,7 @@ def test_SimilarityIndex_esim_call(c_threshold, w_factor, n_ary):
 
     # create instance of the class SimilarityIndex to test the similarity indexes for binary data
     sim_idx = SimilarityIndex(
-        method="esim", similarity_index=n_ary, c_threshold=c_threshold, w_factor=w_factor
+        method="esim", sim_index=n_ary, c_threshold=c_threshold, w_factor=w_factor
     )
 
     # calculate the similarity index for the binary data
@@ -1090,10 +1086,10 @@ def test_calculate_medoid_esim(c_threshold, w_factor, n_ary):
     ref_medoid = ref_medoid_dict[c_threshold_key][w_factor][n_ary]
 
     # calculate the medoid for the binary data
-    sim_idx = SimilarityIndex(
+    sim_idx = NSimilarity(
         method="esim", similarity_index=n_ary, c_threshold=c_threshold, w_factor=w_factor
     )
-    medoid = sim_idx.calculate_medoid(arr=data)
+    medoid = sim_idx.calculate_medoid(X=data)
 
     # check that the calculated medoid is equal to the reference medoid
     assert_equal(medoid, ref_medoid)
@@ -1276,10 +1272,10 @@ def test_calculate_outlier_esim(c_threshold, w_factor, n_ary):
     ref_outlier = ref_outlier_dict[c_threshold_key][w_factor][n_ary]
 
     # calculate the outlier for the binary data
-    sim_idx = SimilarityIndex(
+    sim_idx = NSimilarity(
         method="esim", similarity_index=n_ary, c_threshold=c_threshold, w_factor=w_factor
     )
-    outlier = sim_idx.calculate_outlier(arr=data)
+    outlier = sim_idx.calculate_outlier(X=data)
 
     # check that the calculated outlier is equal to the reference outlier
     assert_equal(outlier, ref_outlier)
@@ -1314,8 +1310,8 @@ def test_calculate_medoid_isim(sim_idx):
     data = _get_binary_data()
     isim_dict = _get_ref_isim_dict()
     ref_medoid = isim_dict[sim_idx]["medoid"]
-    sim_idx = SimilarityIndex(method="isim", similarity_index=sim_idx)
-    medoid = sim_idx.calculate_medoid(arr=data)
+    sim_idx = NSimilarity(method="isim", similarity_index=sim_idx)
+    medoid = sim_idx.calculate_medoid(X=data)
     assert_equal(medoid, ref_medoid)
 
 
@@ -1325,8 +1321,8 @@ def test_calculate_outlier_isim(sim_idx):
     data = _get_binary_data()
     isim_dict = _get_ref_isim_dict()
     ref_medoid = isim_dict[sim_idx]["outlier"]
-    sim_idx = SimilarityIndex(method="isim", similarity_index=sim_idx)
-    medoid = sim_idx.calculate_outlier(arr=data)
+    sim_idx = NSimilarity(method="isim", similarity_index=sim_idx)
+    medoid = sim_idx.calculate_outlier(X=data)
     assert_equal(medoid, ref_medoid)
 
 
@@ -1488,7 +1484,7 @@ def test_get_new_index_esim(c_threshold, w_factor, n_ary):
     )
 
     new_index = nsi._get_new_index(
-        arr=data,
+        X=data,
         selected_condensed=selected_condensed_data,
         select_from=select_from_n,
         num_selected=n,
