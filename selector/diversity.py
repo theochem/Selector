@@ -318,7 +318,7 @@ def wdud(X: np.ndarray) -> float:
         )
         if np.all(col_diff < 1.0e-30):
             raise ValueError(
-                "Unfortunately, all the features are constants and wudud cannot be calculated."
+                "Unfortunately, all the features are constants and wdud cannot be calculated."
             )
         else:
             # remove the constant feature columns
