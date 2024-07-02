@@ -11,6 +11,10 @@ on:
       - "master"
       - "main"
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
 jobs:
   build-and-deploy:
     # Run the job on the latest Ubuntu runner
