@@ -74,4 +74,4 @@ jobs:
         HF_TOKEN: ${{ secrets.HF_TOKEN }}
       run: |
         git remote add upstream https://QCDevs:$HF_TOKEN@huggingface.co/spaces/QCDevs/selector
-        git push upstream --force
+        git push upstream HEAD:main --force
