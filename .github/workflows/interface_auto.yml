@@ -73,4 +73,5 @@ jobs:
       env:
         HF_TOKEN: ${{ secrets.HF_TOKEN }}
       run: |
-        git push https://QCDevs:$HF_TOKEN@huggingface.co/spaces/QCDevs/selector HEAD:main --force
+        git remote set-url upstream https://QCDevs:$HF_TOKEN@huggingface.co/spaces/QCDevs/selector
+        git push upstream --force
