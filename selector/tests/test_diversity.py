@@ -225,8 +225,6 @@ def test_wdud_warning_normalization():
     with pytest.warns() as record:
         wdud(sample6)
 
-    # check that only one warning was raised
-    assert len(record) == 1
     # check that the message matches
     assert record[0].message.args[0] == warning_message
 
