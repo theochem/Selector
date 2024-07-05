@@ -65,7 +65,9 @@ jobs:
     - name: CodeCov
       uses: codecov/codecov-action@v4
       with:
-        # token: ${{ secrets.CODECOV_TOKEN }}
+        token: ${{ secrets.CODECOV_TOKEN }}
+        # Temp fix for https://github.com/codecov/codecov-action/issues/1487
+        version: v0.6.0
         fail_ci_if_error: true
         file: ./coverage.xml
         flags: unittests
