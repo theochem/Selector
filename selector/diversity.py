@@ -134,13 +134,19 @@ def logdet(X: np.ndarray) -> float:
 
     Notes
     -----
-    Nakamura, T., Sakaue, S., Fujii, K., Harabuchi, Y., Maeda, S., and Iwata, S.. (2022)
-    Selecting molecules with diverse structures and properties by maximizing
-    submodular functions of descriptors learned with graph neural networks.
-    Scientific Reports 12.
+    The log-determinant function is based on the formula in [1]_. Please note that we used the
+    natural logrithim to avoid the numerical stability issues,
+    https://github.com/theochem/Selector/issues/229.
+
+    .. [1] Nakamura, T., Sakaue, S., Fujii, K., Harabuchi, Y., Maeda, S., and Iwata, S..,
+       Selecting molecules with diverse structures and properties by maximizing
+       submodular functions of descriptors learned with graph neural networks.
+       Scientific Reports 12, 2022.
+
     """
-    mid = np.dot(X, np.transpose(X))
-    f_logdet = np.log10(np.linalg.det(mid + np.identity(len(X))))
+    mid = np.dot(X, np.transpose(X)) + np.identity(X.shape[0])
+    logdet_mid = np.linalg.slogdet(mid)
+    f_logdet = logdet_mid.sign * logdet_mid.logabsdet
     return f_logdet
 
 

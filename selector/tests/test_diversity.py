@@ -108,14 +108,14 @@ def test_compute_diversity_invalid():
 def test_logdet():
     """Test the log determinant function with predefined subset matrix."""
     sel = logdet(sample3)
-    expected = np.log10(131)
+    expected = np.log(131)
     assert_almost_equal(sel, expected)
 
 
 def test_logdet_non_square_matrix():
     """Test the log determinant function with a rectangular matrix."""
     sel = logdet(sample4)
-    expected = np.log10(8)
+    expected = np.log(8)
     assert_almost_equal(sel, expected)
 
 
