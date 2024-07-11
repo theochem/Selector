@@ -56,8 +56,10 @@ jobs:
 
     # Step 7: Push the Docker image to Docker Hub
     - name: Push Docker image
+      env:
+        DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
       run: |
-        docker login -u qcdevs -p ${{ secrets.DOCKERHUB_TOKEN }}
+        echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u qcdevs --password-stdin
         docker push qcdevs/selector:latest
 
     # Step 8: Replace the README.md file for Hugging Face
