@@ -6,6 +6,7 @@ on:
     branches:
       - "master"
       - "main"
+      - "test"
   pull_request:
     branches:
       - "master"
