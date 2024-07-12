@@ -30,14 +30,12 @@ jobs:
       run: |
         git lfs install
         git lfs pull
-
     # Step 3: Remove binary files from git history
     - name: Remove binary files from git history
       run: |
         git filter-branch --force --index-filter \
           "git rm --cached --ignore-unmatch DiverseSelector/test/test2/BBB_SECFP6_1024.xlsx DiverseSelector/test/test2/BBB_SECFP6_2048.xlsx" \
           --prune-empty --tag-name-filter cat -- --all
-
     # Step 4: Set up Python environment with version 3.11
     - name: Set up Python
       uses: actions/setup-python@v5
@@ -48,20 +46,15 @@ jobs:
     - name: Install dependencies
       run: |
         pip install -r requirements.txt
-
     # Step 6: Build the Docker image to Docker Hub
     - name: Build Docker image
       run: |
         docker build . -t qcdevs/selector:latest
-
     # Step 7: Push the Docker image to Docker Hub
     - name: Push Docker image
-      env:
-        DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
       run: |
-        echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u qcdevs --password-stdin
+        docker login -u qcdevs -p ${{ secrets.DOCKERHUB_TOKEN }}
         docker push qcdevs/selector:latest
-
     # Step 8: Replace the README.md file for Hugging Face
     - name: Replace README for Hugging Face
       run: |
@@ -70,10 +63,9 @@ jobs:
         git config --global user.email "qcdevs@gmail.com"
         git add README.md
         git commit -m "Replace README.md with README_hf.md for Hugging Face"
-
     # Step 9: Push the app to Hugging Face
     - name: Push to Hugging Face
       env:
-        APP: ${{ secrets.APP }}
+        APP: ${{ secrets.HF_TOKEN }}
       run: |
-        git push https://QCDevs:$APP@huggingface.co/spaces/QCDevs/selector HEAD:main --force
+        git push https://QCDevs:$HF_TOKEN@huggingface.co/spaces/QCDevs/selector HEAD:main --force
