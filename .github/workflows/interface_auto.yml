@@ -52,8 +52,10 @@ jobs:
         docker build . -t qcdevs/selector:latest
     # Step 7: Push the Docker image to Docker Hub
     - name: Push Docker image
+      env:
+        DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
       run: |
-        docker login -u qcdevs -p ${{ secrets.DOCKERHUB_TOKEN }}
+        docker login -u qcdevs -p $DOCKERHUB_TOKEN
         docker push qcdevs/selector:latest
     # Step 8: Replace the README.md file for Hugging Face
     - name: Replace README for Hugging Face
@@ -66,6 +68,6 @@ jobs:
     # Step 9: Push the app to Hugging Face
     - name: Push to Hugging Face
       env:
-        APP: ${{ secrets.HF_TOKEN }}
+        HF_TOKEN: ${{ secrets.HF_TOKEN }}
       run: |
         git push https://QCDevs:$HF_TOKEN@huggingface.co/spaces/QCDevs/selector HEAD:main --force
