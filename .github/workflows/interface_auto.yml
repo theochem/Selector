@@ -2,11 +2,11 @@ name: Deployment on DockerHub and Hugging Face
 
 # Trigger the workflow on push and pull request events to the 'main' or 'master' branch
 on:
-#  push:
-#    branches:
-#      - "master"
-#      - "main"
-#      - "test"
+  push:
+    branches:
+      - "master"
+      - "main"
+      - "test"
   pull_request:
     branches:
       - "master"
