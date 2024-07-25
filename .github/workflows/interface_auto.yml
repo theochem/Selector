@@ -16,7 +16,6 @@ jobs:
   build-and-deploy:
     # Run the job on the latest Ubuntu runner
     runs-on: ubuntu-latest
-    environment: Production
 
     steps:
     # Step 1: Check out the latest code from the repository
