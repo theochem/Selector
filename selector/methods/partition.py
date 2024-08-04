@@ -518,6 +518,11 @@ class Medoid(SelectionBase):
         _, elim_candidates = tree.query(
             point, k=self.ratio, distance_upper_bound=np.sqrt(threshold), workers=-1
         )
+        # elim_candidates can be integer or array of integers
+        # https://github.com/scipy/scipy/blob/a2a287d1f7c81154256ba742b4b8bb108a612166/scipy/spatial/_kdtree.py#L476
+        if isinstance(elim_candidates, np.intp):
+            elim_candidates = [elim_candidates]
+
         if num_eliminate < 0:
             elim_candidates = elim_candidates[:num_eliminate]
         for index in elim_candidates:
