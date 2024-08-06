@@ -6,10 +6,12 @@ on:
     branches:
       - "master"
       - "main"
+      - "webapp"
   pull_request:
     branches:
       - "master"
       - "main"
+      - "webapp"
 
 jobs:
   build-and-deploy:
