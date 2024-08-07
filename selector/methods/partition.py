@@ -473,7 +473,12 @@ class Medoid(SelectionBase):
             if len(points) == 0:
                 return None
             middle = len(points) // 2
-            indices, points = zip(*sorted(enumerate(points), key=lambda x: x[1][depth % k]))
+
+            # sort the points and indices
+            # indices, points = zip(*sorted(enumerate(points), key=lambda x: x[1][depth % k]))
+            indices = np.argsort(np.array(points)[:, depth % k], kind="stable")
+            points = np.array(points)[indices]
+
             if old_indices is not None:
                 indices = [old_indices[i] for i in indices]
             return self.BT(
