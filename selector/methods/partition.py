@@ -443,6 +443,18 @@ class Medoid(SelectionBase):
             Index for the sample to start selection from; this index is the first sample selected.
         scaling: float
             Percent of average maximum distance to use when eliminating the closest points.
+
+        Notes
+        -----
+        The `Mediod` implementation is based on the KDTree algorithm and therefore can give
+        different results for cases with duplicated points or the same features for differenr
+        objects in the original feature space. This is dicussed in
+        https://github.com/theochem/Selector/issues/238.
+        This is because the same features lead to the same distances in the tree, and this is a
+        known issue of sorting the points and indices in the KDTree algorithm, as discussed
+        in https://github.com/scipy/scipy/issues/19029. Therefore, precautions should be taken if
+        duplicated points are present in the dataset.
+
         """
 
         self.starting_idx = ref_index
