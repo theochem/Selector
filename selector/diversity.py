@@ -86,7 +86,8 @@ def compute_diversity(
     if div_type in func_dict:
         return func_dict[div_type](feature_subset)
 
-    elif div_type == "hypersphere overlap of subset":
+    # hypersphere overlap of subset
+    elif div_type == "hypersphere_overlap":
         if features is None:
             raise ValueError(
                 "Please input a feature matrix of the entire "

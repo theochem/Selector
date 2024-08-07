@@ -70,7 +70,7 @@ def test_compute_diversity_hyperspheres():
     centers_pts = np.array([[0.5, 0.5]] * (100 - 4))
     pts = np.vstack((corner_pts, centers_pts))
 
-    comp_div = compute_diversity(pts, div_type="hypersphere overlap of subset", features=pts)
+    comp_div = compute_diversity(pts, div_type="hypersphere_overlap", features=pts)
     # Expected = overlap + edge penalty
     expected = (100.0 * 96 * 95 * 0.5) + 2.0
     assert_almost_equal(comp_div, expected)
@@ -78,7 +78,7 @@ def test_compute_diversity_hyperspheres():
 
 def test_compute_diversity_hypersphere_error():
     """Test compute diversity with hypersphere metric and no molecule library given."""
-    assert_raises(ValueError, compute_diversity, sample5, "hypersphere overlap of subset")
+    assert_raises(ValueError, compute_diversity, sample5, "hypersphere_overlap")
 
 
 def test_compute_diversity_edi():
