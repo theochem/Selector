@@ -57,7 +57,7 @@ def compute_diversity(
     div_type : str, optional
         Method of calculation diversity for a given molecule set, which
         includes "entropy", "logdet", "shannon entropy", "wdud",
-        "gini coefficient" "hypersphere overlap of subset", and
+        "gini coefficient" "hypersphere_overlap", and
         "explicit diversity index".
         The default is "entropy".
     normalize : bool, optional
