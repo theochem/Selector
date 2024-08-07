@@ -300,7 +300,7 @@ class GridPartition(SelectionBase):
         X,
         bins,
         num_selected,
-        diversity_type="hypersphere overlap of subset",
+        diversity_type="hypersphere_overlap",
         cs=None,
     ):
         r"""
