@@ -31,12 +31,17 @@ jobs:
       run: |
         git lfs install
         git lfs pull
-    # Step 3: Remove binary files from git history
+#    # Step 3: Remove binary files from git history
+#    - name: Remove binary files from git history
+#      run: |
+#        git filter-branch --force --index-filter \
+#          "git rm --cached --ignore-unmatch DiverseSelector/test/test2/BBB_SECFP6_1024.xlsx DiverseSelector/test/test2/BBB_SECFP6_2048.xlsx" \
+#          --prune-empty --tag-name-filter cat -- --all
+      # Step 3: Remove binary files from git history
     - name: Remove binary files from git history
       run: |
-        git filter-branch --force --index-filter \
-          "git rm --cached --ignore-unmatch DiverseSelector/test/test2/BBB_SECFP6_1024.xlsx DiverseSelector/test/test2/BBB_SECFP6_2048.xlsx" \
-          --prune-empty --tag-name-filter cat -- --all
+        pip install git-filter-repo
+        git filter-repo --path DiverseSelector/test/test2/BBB_SECFP6_1024.xlsx --path DiverseSelector/test/test2/BBB_SECFP6_2048.xlsx --invert-paths
     # Step 4: Set up Python environment with version 3.11
     - name: Set up Python
       uses: actions/setup-python@v5
