@@ -175,3 +175,9 @@ def test_medoid():
     selected_ids = collector.select(coords, size=12)
     # make sure all the selected indices are the same with expectation
     assert_equal(selected_ids, [0, 95, 57, 41, 25, 9, 8, 6, 66, 1, 42, 82])
+
+    # test the case where KD-Tree query return is an integer
+    features = np.array([[1.5, 2.8], [2.3, 3.8], [1.5, 2.8], [4.0, 5.9]])
+    selector = Medoid()
+    selected_ids = selector.select(features, size=2)
+    assert_equal(selected_ids, [0, 3])
