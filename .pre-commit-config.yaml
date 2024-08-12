@@ -1,0 +1,130 @@
+# pre-commit is a tool to perform a predefined set of tasks manually and/or
+# automatically before git commits are made.
+#
+# Config reference: https://pre-commit.com/#pre-commit-configyaml---top-level
+#
+# Common tasks
+#
+# - Run on all files:   pre-commit run --all-files
+# - Register git hooks: pre-commit install --install-hooks
+#
+
+# https://github.com/jupyterhub/jupyterhub/blob/main/.pre-commit-config.yaml
+# https://github.com/pre-commit/pre-commit/blob/main/.pre-commit-config.yaml
+# https://github.com/psf/black/blob/main/.pre-commit-config.yaml
+# https://docs.releng.linuxfoundation.org/en/latest/best-practices.html
+
+ci:
+  # https://pre-commit.ci/
+  # pre-commit.ci will open PRs updating our hooks once a month
+  # 'weekly', 'monthly', 'quarterly'
+  autoupdate_schedule: quarterly
+  autofix_prs: false
+  autofix_commit_msg: "[pre-commit.ci] Auto fixes from pre-commit.com hooks."
+  submodules: false
+
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+    # https://pre-commit.com/hooks.html
+    # -   id: fix-encoding-pragma
+    -   id: sort-simple-yaml
+    -   id: trailing-whitespace
+    -   id: end-of-file-fixer
+    -   id: check-yaml
+    -   id: check-toml
+    #  replaces or checks mixed line ending
+    -   id: mixed-line-ending
+    -   id: debug-statements
+    # -   id: name-tests-test
+    -   id: trailing-whitespace
+    # sorts entries in requirements.txt
+    -   id: requirements-txt-fixer
+
+# we are not using this for now as we decided to use pyproject.toml instead
+## https://github.com/asottile/setup-cfg-fmt
+#-   repo: https://github.com/asottile/setup-cfg-fmt
+#    rev: v2.5.0
+#    hooks:
+#    -   id: setup-cfg-fmt
+
+# -   repo: https://github.com/psf/black-pre-commit-mirror
+-   repo: https://github.com/psf/black
+    rev: 24.3.0
+    hooks:
+    -    id: black
+         args: [
+           --line-length=100,
+           ]
+
+-   repo: https://github.com/pycqa/isort
+    rev: 5.13.2
+    hooks:
+    -   id: isort
+
+# todo:  disable flake8 for now, but will need to add it back in the future
+# -   repo: https://github.com/pycqa/flake8
+#     rev: 6.1.0
+#     hooks:
+#       - id: flake8
+#         args: ["--max-line-length=100"]
+#         additional_dependencies:
+#           - flake8-bugbear
+#           - flake8-comprehensions
+#           - flake8-simplify
+#           - flake8-docstrings
+#           - flake8-import-order>=0.9
+#           - flake8-colors
+#         exclude: ^src/blib2to3/
+
+-   repo: https://github.com/pycqa/bandit
+    rev: 1.7.8
+    hooks:
+      - id: bandit
+        # exclude some directories
+        exclude: |
+          (?x)(
+              ^test/|
+              ^book/
+              ^devtools/
+              ^docs/
+              ^doc/
+          )
+        args: [
+               "-c", "pyproject.toml"
+              ]
+        additional_dependencies: [ "bandit[toml]" ]
+
+-   repo: https://github.com/asottile/pyupgrade
+    rev: v3.15.2
+    hooks:
+    -   id: pyupgrade
+        args: [--py37-plus]
+
+# todo: add this for type checking in the future
+# -   repo: https://github.com/pre-commit/mirrors-mypy
+#     rev: v1.5.1
+#     hooks:
+#       - id: mypy
+#         exclude: ^docs/conf.py
+#         args: ["--config-file", "pyproject.toml"]
+#         additional_dependencies:
+#           - types-PyYAML
+#           - tomli >= 0.2.6, < 2.0.0
+#           - click >= 8.1.0, != 8.1.4, != 8.1.5
+#           - packaging >= 22.0
+#           - platformdirs >= 2.1.0
+#           - pytest
+#           - hypothesis
+#           - aiohttp >= 3.7.4
+#           - types-commonmark
+#           - urllib3
+#           - hypothesmith
+
+# -   repo: https://github.com/pre-commit/mirrors-mypy
+#     rev: v1.6.0
+#     hooks:
+#     -   id: mypy
+#         additional_dependencies: [types-all]
+#         exclude: ^testing/resources/
