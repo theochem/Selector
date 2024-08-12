@@ -6,3 +6,4 @@ pytest>=7.4.0
 scikit-learn>=1.0.1
 scipy>=1.11.1
 setuptools>=58.0.4
+streamlit>=1.37.0
