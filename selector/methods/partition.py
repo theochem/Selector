@@ -62,31 +62,31 @@ class GridPartition(SelectionBase):
     """
 
     def __init__(
-        self, numb_bins_axis: int, grid_method: str = "equisized_independent", random_seed: int = 42
+        self, nbins_axis: int, bin_method: str = "equisized_independent", random_seed: int = 42
     ):
         """Initialize class.
 
         Parameters
         ----------
-        numb_bins_axis: int
+        nbins_axis: int
             Number of bins to partition each axis into. The total number of resulting bins is
             `numb_bins_axis` raised to the power of the dimensionality of the feature space.
-        grid_method: str, optional
+        bin_method: str, optional
             Method used to partition the sample points into bins. Options include:
             "equisized_independent", "equisized_dependent", "equifrequent_independent" and
             "equifrequent_dependent".
         random_seed: int, optional
             Seed for random selection of sample points from each bin.
         """
-        if not isinstance(numb_bins_axis, int):
-            raise TypeError(f"Number of bins should be integer, got {type(numb_bins_axis)}.")
+        if not isinstance(nbins_axis, int):
+            raise TypeError(f"Number of bins should be integer, got {type(nbins_axis)}.")
         if not isinstance(random_seed, int):
             raise TypeError(f"The random seed should be integer, got {type(random_seed)}.")
-        if not isinstance(grid_method, str):
-            raise TypeError(f"The grid_method should be a string, got {type(grid_method)}.")
+        if not isinstance(bin_method, str):
+            raise TypeError(f"The grid_method should be a string, got {type(bin_method)}.")
         self.random_seed = random_seed
-        self.numb_bins_axis = numb_bins_axis
-        self.grid_method = grid_method
+        self.nbins_axis = nbins_axis
+        self.bin_method = bin_method
 
     @staticmethod
     def partition_points_to_bins_equisized(X, nbins_axis):
@@ -94,7 +94,7 @@ class GridPartition(SelectionBase):
         Find all bins ids that has points in them and assign each point to each of those bins.
 
         For each `n_features` dimensions, get the minimum and maximum of feature to and use
-        `num_bins_axis` to compute length of the bin. Then assign sample points to bins along
+        `nbins_axis` to compute length of the bin. Then assign sample points to bins along
         each axis/dimension of feature space.
 
         Parameters
@@ -209,19 +209,19 @@ class GridPartition(SelectionBase):
         # sample) and the values are the list of sample indices in that bin.
         bins = {}
 
-        if self.grid_method == "equisized_independent":
+        if self.bin_method == "equisized_independent":
             # partition each dimension/feature independently into `num_bins_axis` bins
             unique_bin_index, inverse_index = self.partition_points_to_bins_equisized(
-                X, self.numb_bins_axis
+                X, self.nbins_axis
             )
             # populate bins dictionary
             for i, key in enumerate(unique_bin_index):
                 bins[tuple(key)] = list(np.where(inverse_index == i)[0])
 
-        elif self.grid_method == "equisized_dependent":
+        elif self.bin_method == "equisized_dependent":
             # partition the first dimension (1st feature axis) into `num_bins_axis` bins
             unique_bin_index, inverse_index = self.partition_points_to_bins_equisized(
-                X[:, 0], self.numb_bins_axis
+                X[:, 0], self.nbins_axis
             )
             # populate bins dictionary based on the 1st feature
             for i, key in enumerate(unique_bin_index):
@@ -237,7 +237,7 @@ class GridPartition(SelectionBase):
                 for bin, index_samples in bins.items():
                     # equisized partition of points in bin along i-th feature
                     unique_bin_index, inverse_index = self.partition_points_to_bins_equisized(
-                        X[index_samples, index_feature], self.numb_bins_axis
+                        X[index_samples, index_feature], self.nbins_axis
                     )
                     # update the bins_axis to include the new dimension/feature for the current bin
                     for i, bin_index in enumerate(unique_bin_index):
@@ -248,12 +248,12 @@ class GridPartition(SelectionBase):
                         )
                 bins = bins_axis
 
-        elif self.grid_method == "equifrequent_independent":
+        elif self.bin_method == "equifrequent_independent":
             # partition each dimension of feature space independently into `num_bins_axis` bins
             bins_features = np.zeros(X.shape, dtype=int)
             for index_feature in range(0, X.shape[1]):
                 unique_bin_index, inverse_index = self.partition_points_to_bins_equifrequent(
-                    X[:, index_feature], self.numb_bins_axis
+                    X[:, index_feature], self.nbins_axis
                 )
                 bins_features[:, index_feature] = unique_bin_index[inverse_index]
             unique_bin_index, inverse_index = np.unique(bins_features, return_inverse=True, axis=0)
@@ -262,10 +262,10 @@ class GridPartition(SelectionBase):
             for i, key in enumerate(unique_bin_index):
                 bins[tuple(key)] = list(np.where(inverse_index == i)[0])
 
-        elif self.grid_method == "equifrequent_dependent":
+        elif self.bin_method == "equifrequent_dependent":
             # partition the first dimension (1st feature axis) into `num_bins_axis` bins
             unique_bin_index, inverse_index = self.partition_points_to_bins_equifrequent(
-                X[:, 0], self.numb_bins_axis
+                X[:, 0], self.nbins_axis
             )
             # populate bins dictionary based on the 1st feature
             for i, key in enumerate(unique_bin_index):
@@ -280,7 +280,7 @@ class GridPartition(SelectionBase):
                 for bin, index_samples in bins.items():
                     # equifrequent partition of points in bin along i-th feature
                     unique_bin_index, inverse_index = self.partition_points_to_bins_equifrequent(
-                        X[index_samples, index_feature], self.numb_bins_axis
+                        X[index_samples, index_feature], self.nbins_axis
                     )
                     # update the bins_axis to include the new dimension/feature for the current bin
                     for i, key in enumerate(unique_bin_index):
@@ -291,7 +291,7 @@ class GridPartition(SelectionBase):
                         )
                 bins = bins_axis
         else:
-            raise ValueError(f"{self.grid_method} not a valid grid_method")
+            raise ValueError(f"{self.bin_method} not a valid grid_method")
 
         return bins
 
@@ -413,8 +413,8 @@ class GridPartition(SelectionBase):
 class Medoid(SelectionBase):
     """Selecting points using an algorithm adapted from KDTree.
 
-    Points are initially used to construct a KDTree. Eucleidean distances are used for this
-    algorithm. The first point selected is based on the starting_idx provided and becomes the first
+    Points are initially used to construct a KDTree. Euclidean distances are used for this
+    algorithm. The first point selected is based on the ref_index provided and becomes the first
     query point. An approximation of the furthest point to the query point is found using
     find_furthest_neighbor and is selected. find_nearest_neighbor is then done to eliminate close
     neighbors to the new selected point. Medoid is then calculated from previously selected points
@@ -426,8 +426,8 @@ class Medoid(SelectionBase):
 
     def __init__(
         self,
-        start_id=0,
         func_distance=lambda x, y: scipy.spatial.minkowski_distance(x, y) ** 2,
+        ref_index=0,
         scaling=10,
     ):
         """
@@ -435,15 +435,17 @@ class Medoid(SelectionBase):
 
         Parameters
         ----------
-        start_id: int
-            Index for the first point to be selected.
-        func_distance: callable
-            Function for calculating the pairwise distance between instances of the array.
+        fun_distance : callable
+            Function for calculating the pairwise distance between sample points.
+            `fun_dist(X) -> X_dist` takes a 2D feature array of shape (n_samples, n_features)
+            and returns a 2D distance array of shape (n_samples, n_samples).
+        ref_index : int, optional
+            Index for the sample to start selection from; this index is the first sample selected.
         scaling: float
             Percent of average maximum distance to use when eliminating the closest points.
         """
 
-        self.starting_idx = start_id
+        self.starting_idx = ref_index
         self.func_distance = func_distance
         self.BT = collections.namedtuple("BT", ["value", "index", "left", "right"])
         self.FNRecord = collections.namedtuple("FNRecord", ["point", "index", "distance"])

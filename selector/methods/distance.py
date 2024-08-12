@@ -304,13 +304,16 @@ class OptiSim(SelectionBase):
         candidates = list(range(n_samples))
         # determine which points are within radius r of initial point
         # note: workers=-1 uses all available processors/CPUs
-        elim = tree.query_ball_point(X[self.ref_index], self.r, eps=self.eps, p=self.p, workers=-1)
+        remove = tree.query_ball_point(
+            X[self.ref_index], self.r, eps=self.eps, p=self.p, workers=-1
+        )
         # exclude points within radius r of initial point from list of candidates using bv mask
-        for idx in elim:
+        for idx in remove:
             bv[idx] = 1
         candidates = np.ma.array(candidates, mask=bv)
 
         # while there are still remaining candidates to be selected
+        # compressed returns all the non-masked data as a 1-D array
         while len(candidates.compressed()) > 0:
             # randomly select samples from list of candidates
             try:
@@ -319,13 +322,12 @@ class OptiSim(SelectionBase):
                 sublist = candidates.compressed()
 
             # create a new kd-tree for nearest neighbor lookup with candidates
-            newtree = scipy.spatial.KDTree(X[selected])
+            new_tree = scipy.spatial.KDTree(X[selected])
             # query the kd-tree for nearest neighbors to selected samples
             # note: workers=-1 uses all available processors/CPUs
-            search, _ = newtree.query(X[sublist], eps=self.eps, p=self.p, workers=-1)
+            search, _ = new_tree.query(X[sublist], eps=self.eps, p=self.p, workers=-1)
             # identify the nearest neighbor with the largest distance from previously selected samples
-            search_idx = np.argmax(search)
-            best_idx = sublist[search_idx]
+            best_idx = sublist[np.argmax(search)]
             selected.append(best_idx)
 
             count += 1
@@ -333,9 +335,9 @@ class OptiSim(SelectionBase):
                 # do this if you have reached the maximum number of points selected
                 return selected
 
-            # eliminate all remaining candidates within radius r of the sample that was just selected
-            elim = tree.query_ball_point(X[best_idx], self.r, eps=self.eps, p=self.p, workers=-1)
-            for idx in elim:
+            # eliminate all samples within radius r of the selected sample
+            remove = tree.query_ball_point(X[best_idx], self.r, eps=self.eps, p=self.p, workers=-1)
+            for idx in remove:
                 bv[idx] = 1
             candidates = np.ma.array(candidates, mask=bv)
 
@@ -447,6 +449,7 @@ class DISE(SelectionBase):
         """
 
         # calculate distance of all samples from reference sample; distance is a (n_samples,) array
+        # this includes the distance of reference sample from itself, which is 0
         distances = scipy.spatial.minkowski_distance(X[self.ref_index], X, p=self.p)
         # get sorted index of samples based on their distance from reference (closest to farthest)
         index_sorted = np.argsort(distances)
@@ -457,6 +460,8 @@ class DISE(SelectionBase):
         bv = bitarray.bitarray(list(np.zeros(len(X), dtype=int)))
         bv[self.ref_index] = 1
 
+        # the first item in the sorted list is the reference sample itself,
+        # but currently it is skipped, so the sphere around it are not excluded.
         selected = []
         for idx in index_sorted:
             # select sample if it is not already excluded from consideration
