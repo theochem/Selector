@@ -189,21 +189,21 @@ def test_directed_sphere_same_number_of_pts():
     """Test DirectSphereExclusion with `size` = number of points in dataset."""
     # (0,0) as the reference point
     x = np.array([[0, 0], [0, 1], [0, 2], [0, 3]])
-    selector = DISE(r0=1, tol=0)
-    selected = selector.select(x, size=3)
-    assert_equal(selected, [1, 2, 3])
-    assert_equal(selector.r, 0.5)
+    selector = DISE(r0=1, tol=0, ref_index=0)
+    selected = selector.select(x, size=2)
+    assert_equal(selected, [0, 2])
+    assert_equal(selector.r, 1)
 
 
 def test_directed_sphere_exclusion_select_more_number_of_pts():
     """Test DirectSphereExclusion on points on the line with `size` < number of points in dataset."""
     # (0,0) as the reference point
     x = np.array([[0, 0], [0, 1], [0, 2], [0, 3], [0, 4], [0, 5], [0, 6]])
-    selector = DISE(r0=0.5, tol=0)
+    selector = DISE(r0=0.5, tol=0, ref_index=0)
     selected = selector.select(x, size=3)
-    expected = [1, 3, 5]
+    expected = [0, 3, 6]
     assert_equal(selected, expected)
-    assert_equal(selector.r, 1.0)
+    assert_equal(selector.r, 2.0)
 
 
 def test_directed_sphere_exclusion_on_line_with_():
@@ -224,7 +224,7 @@ def test_directed_sphere_exclusion_on_line_with_():
             [0, 6],
         ]
     )
-    selector = DISE(r0=0.5, tol=0)
+    selector = DISE(r0=0.5, tol=1, ref_index=1)
     selected = selector.select(x, size=3)
     expected = [1, 5, 9]
     assert_equal(selected, expected)
@@ -248,7 +248,7 @@ def test_directed_sphere_on_line_with_larger_radius():
             [0, 5],
         ]
     )
-    selector = DISE(r0=2.0, tol=0)
+    selector = DISE(r0=2.0, tol=0, ref_index=1)
     selected = selector.select(x, size=3)
     expected = [1, 5, 9]
     assert_equal(selected, expected)
