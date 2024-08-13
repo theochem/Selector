@@ -1595,7 +1595,7 @@ def test_NSimilarity_esim_select(c_threshold, w_factor, sample_size, n_ary, star
     reference_selected_data = _get_selections_esim_ref_dict()
 
     # create instance of the class SimilarityIndex to test the similarity indexes for binary data
-    selector = NSimilarity(
+    collector = NSimilarity(
         method="esim",
         similarity_index=n_ary,
         w_factor=w_factor,
@@ -1603,7 +1603,7 @@ def test_NSimilarity_esim_select(c_threshold, w_factor, sample_size, n_ary, star
         preprocess_data=False,
     )
     # select the diverse subset using the similarity index
-    selected_data = selector.select_from_cluster(data, size=sample_size, start=start)
+    selected_data = collector.select_from_cluster(data, size=sample_size, start=start)
 
     # get the reference value for the similarity index
     # transform invalid keys to strings
