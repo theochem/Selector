@@ -1,4 +1,4 @@
-# The `selector` Library
+# The `selector` Webapp
 
 [![This project supports Python 3.7+](https://img.shields.io/badge/Python-3.7+-blue.svg)](https://python.org/downloads)
 [![GPLv3 License](https://img.shields.io/badge/License-GPL%20v3-yellow.svg)](https://opensource.org/licenses/)
@@ -6,6 +6,8 @@
 [![codecov](https://codecov.io/gh/theochem/Selector/graph/badge.svg?token=0UJixrJfNJ)](https://codecov.io/gh/theochem/Selector)
 
 The `selector` library provides methods for selecting a diverse subset of a (molecular) dataset.
+
+🤗 [Selector on HuggingFace](https://huggingface.co/spaces/QCDevs/selector)
 
 Citation
 --------
@@ -48,3 +50,12 @@ To install `selector` with `pip`, you may want to create a
 ```
 
 See https://selector.qcdevs.org for full details.
+
+Running Web Interface Locally
+------------
+
+After installing the package, you can run the interface locally by running the following command:
+
+```bash
+    streamlit run streamlit_app/app.py
+```
