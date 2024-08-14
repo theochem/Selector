@@ -111,21 +111,21 @@ def compute_diversity(
         raise ValueError(f"Diversity type {div_type} not supported.")
 
 
-def logdet(X: np.ndarray) -> float:
+def logdet(x: np.ndarray) -> float:
     r"""Compute the log determinant function.
 
-    Given a  :math:`n_s \times n_f` feature matrix :math:`X`, where :math:`n_s` is the number of
+    Given a  :math:`n_s \times n_f` feature matrix :math:`x`, where :math:`n_s` is the number of
     samples and :math:`n_f` is the number of features, the log determinant function is defined as:
 
     .. math:
-        F_\text{logdet} = \log{\left(\det{\left(\mathbf{X}\mathbf{X}^T + \mathbf{I}\right)}\right)}
+        F_\text{logdet} = \log{\left(\det{\left(\mathbf{x}\mathbf{x}^T + \mathbf{I}\right)}\right)}
 
     where the :math:`I` is the :math:`n_s \times n_s` identity matrix.
     Higher values of :math:`F_\text{logdet}` mean more diversity.
 
     Parameters
     ----------
-    X: ndarray of shape (n_samples, n_features)
+    x: ndarray of shape (n_samples, n_features)
         Feature matrix of `n_samples` samples in `n_features` dimensional feature space,
 
     Returns
@@ -145,7 +145,7 @@ def logdet(X: np.ndarray) -> float:
        Scientific Reports 12, 2022.
 
     """
-    mid = np.dot(X, np.transpose(X)) + np.identity(X.shape[0])
+    mid = np.dot(x, np.transpose(x)) + np.identity(x.shape[0])
     logdet_mid = np.linalg.slogdet(mid)
     f_logdet = logdet_mid.sign * logdet_mid.logabsdet
     return f_logdet
@@ -174,7 +174,7 @@ def shannon_entropy(x: np.ndarray, normalize=True, truncation=False) -> float:
     Notes
     -----
     Suppose we have :math:`m` compounds and each compound has :math:`n` bits binary fingerprints.
-    The binary matrix (feature matrix) is :math:`\mathbf{X} \in m \times n`, where each
+    The binary matrix (feature matrix) is :math:`\mathbf{x} \in m \times n`, where each
     row is a compound and each column contains the :math:`n`-bit binary fingerprint.
     The equation for Shannon entropy is given by [1]_
 
@@ -242,14 +242,14 @@ def shannon_entropy(x: np.ndarray, normalize=True, truncation=False) -> float:
 
 # todo: add tests for edi
 def explicit_diversity_index(
-    X: np.ndarray,
+    x: np.ndarray,
     cs: int,
 ) -> float:
     """Compute the explicit diversity index.
 
     Parameters
     ----------
-    X: ndarray of shape (n_samples, n_features)
+    x: ndarray of shape (n_samples, n_features)
         Feature matrix of `n_samples` samples in `n_features` dimensional feature space.
     cs : int
         Number of common substructures in the compound set.
@@ -270,15 +270,15 @@ def explicit_diversity_index(
     A Novel Measure for Assessing the Diversity of Compound Databases.
     Journal of Chemical Information and Modeling 46, 1898-1904.
     """
-    nc = len(X)
-    sdi = (1 - nearest_average_tanimoto(X)) / (0.8047 - (0.065 * (np.log(nc))))
+    nc = len(x)
+    sdi = (1 - nearest_average_tanimoto(x)) / (0.8047 - (0.065 * (np.log(nc))))
     cr = -1 * np.log10(nc / (cs**2))
     edi = (sdi + cr) * 0.7071067811865476
     edi_scaled = ((np.tanh(edi / 3) + 1) / 2) * 100
     return edi_scaled
 
 
-def wdud(X: np.ndarray) -> float:
+def wdud(x: np.ndarray) -> float:
     r"""Compute the Wasserstein Distance to Uniform Distribution(WDUD).
 
     The equation for the Wasserstein Distance for a single feature to uniform distribution is
@@ -295,7 +295,7 @@ def wdud(X: np.ndarray) -> float:
 
     Parameters
     ----------
-    X: ndarray of shape (n_samples, n_features)
+    x: ndarray of shape (n_samples, n_features)
         Feature matrix of `n_samples` samples in `n_features` dimensional feature space.
 
     Returns
@@ -311,11 +311,11 @@ def wdud(X: np.ndarray) -> float:
     Scientific Reports 12.
 
     """
-    if X.ndim != 2:
-        raise ValueError(f"The number of dimensions {X.ndim} should be two.")
+    if x.ndim != 2:
+        raise ValueError(f"The number of dimensions {x.ndim} should be two.")
 
     # find the range of each feature
-    col_diff = np.ptp(X, axis=0)
+    col_diff = np.ptp(x, axis=0)
     # Normalization of each feature to [0, 1]
     if np.any(np.abs(col_diff) < 1e-30):
         # warning if some feature columns are constant
@@ -329,9 +329,9 @@ def wdud(X: np.ndarray) -> float:
             )
         else:
             # remove the constant feature columns
-            mask = np.ptp(X, axis=0) > 1e-30
-            X = X[:, mask]
-    x_norm = (X - np.min(X, axis=0)) / np.ptp(X, axis=0)
+            mask = np.ptp(x, axis=0) > 1e-30
+            x = x[:, mask]
+    x_norm = (x - np.min(x, axis=0)) / np.ptp(x, axis=0)
 
     # min_max normalization:
     n_samples, n_features = x_norm.shape
