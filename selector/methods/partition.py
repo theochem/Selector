@@ -447,7 +447,7 @@ class Medoid(SelectionBase):
         Notes
         -----
         The `Mediod` implementation is based on the KDTree algorithm and therefore can give
-        different results for cases with duplicated points or the same features for differenr
+        different results for cases with duplicated points or the same features for different
         objects in the original feature space. This is dicussed in
         https://github.com/theochem/Selector/issues/238.
         This is because the same features lead to the same distances in the tree, and this is a
