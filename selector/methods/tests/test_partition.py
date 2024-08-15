@@ -43,7 +43,7 @@ def test_grid_partitioning_independent_on_simple_example(numb_pts, method):
     grid = np.vstack((grid, np.array([1.1, 0.0])))
 
     # Here the number of cells should be equal to the number of points in each dimension
-    # excluding the extra point, so that the answer is unique/known.
+    #  excluding the extra point, so that the answer is unique/known.
     collector = GridPartition(nbins_axis=4, bin_method=f"{method}_independent")
     # Sort the points so that they're comparable to the expected answer.
     selected_ids = np.sort(collector.select(grid, size=len(grid) - 1))
@@ -95,7 +95,7 @@ def test_grid_partitioning_equifrequent_dependent_on_simple_example(numb_pts):
     grid = np.vstack((grid, np.array([1.1, 0.0])))
 
     # Here the number of cells should be equal to the number of points in each dimension
-    # excluding the extra point, so that the answer is unique/known.
+    #  excluding the extra point, so that the answer is unique/known.
     collector = GridPartition(nbins_axis=numb_pts, bin_method="equifrequent_dependent")
     # Sort the points so that they're comparable to the expected answer.
     selected_ids = np.sort(collector.select(grid, size=len(grid) - 1))
@@ -140,10 +140,10 @@ def test_raises_grid_partitioning():
     assert_raises(ValueError, collector.select_from_cluster, grid, 5)
 
     collector = GridPartition(nbins_axis=5)
-    # Test X is numpy array
-    assert_raises(TypeError, collector.select_from_cluster, [5.0], 5)
-    # Test number selected should be int
-    assert_raises(TypeError, collector.select_from_cluster, grid, 5.0)
+    assert_raises(TypeError, collector.select_from_cluster, [5.0], 5)  # Test X is numpy array
+    assert_raises(
+        TypeError, collector.select_from_cluster, grid, 5.0
+    )  # Test number selected should be int
     assert_raises(TypeError, collector.select_from_cluster, grid, 5, [5.0])
 
 
@@ -181,3 +181,4 @@ def test_medoid():
     selector = Medoid()
     selected_ids = selector.select(features, size=2)
     assert_equal(selected_ids, [0, 3])
+

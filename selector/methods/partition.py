@@ -84,7 +84,6 @@ class GridPartition(SelectionBase):
             raise TypeError(f"The random seed should be integer, got {type(random_seed)}.")
         if not isinstance(bin_method, str):
             raise TypeError(f"The bin_method should be a string, got {type(bin_method)}.")
-
         self.random_seed = random_seed
         self.nbins_axis = nbins_axis
         self.bin_method = bin_method
@@ -665,3 +664,4 @@ class Medoid(SelectionBase):
                 )
             count += 1
         return selected
+
