@@ -43,8 +43,7 @@ def test_grid_partitioning_independent_on_simple_example(numb_pts, method):
     grid = np.vstack((grid, np.array([1.1, 0.0])))
 
     # Here the number of cells should be equal to the number of points in each dimension
-    #  excluding the extra point, so that the answer is unique/known.
-
+    # excluding the extra point, so that the answer is unique/known.
     collector = GridPartition(nbins_axis=4, bin_method=f"{method}_independent")
     # Sort the points so that they're comparable to the expected answer.
     selected_ids = np.sort(collector.select(grid, size=len(grid) - 1))
@@ -72,7 +71,6 @@ def test_grid_partitioning_equisized_dependent_on_simple_example():
 
     # The number of bins makes it so that it approximately be a single point in each bin
     collector = GridPartition(nbins_axis=4, bin_method="equisized_dependent")
-
     # Two bins have an extra point in them and so has more diversity than other bins
     #   then the two expected molecules should be in those bins.
     selected_ids = collector.select(grid, size=2, labels=None)
@@ -97,9 +95,8 @@ def test_grid_partitioning_equifrequent_dependent_on_simple_example(numb_pts):
     grid = np.vstack((grid, np.array([1.1, 0.0])))
 
     # Here the number of cells should be equal to the number of points in each dimension
-    #  excluding the extra point, so that the answer is unique/known.
+    # excluding the extra point, so that the answer is unique/known.
     collector = GridPartition(nbins_axis=numb_pts, bin_method="equifrequent_dependent")
-
     # Sort the points so that they're comparable to the expected answer.
     selected_ids = np.sort(collector.select(grid, size=len(grid) - 1))
     expected = np.arange(len(grid) - 1)
@@ -120,7 +117,6 @@ def test_bins_from_both_methods_dependent_same_as_independent_on_uniform_grid(nu
     #  excluding the extra point, so that the answer is unique/known.
     collector_indept = GridPartition(nbins_axis=numb_pts, bin_method=f"{method}_independent")
     collector_depend = GridPartition(nbins_axis=numb_pts, bin_method=f"{method}_dependent")
-
 
     # Get the bins from the method
     bins_indept = collector_indept.get_bins_from_method(grid)
@@ -144,11 +140,10 @@ def test_raises_grid_partitioning():
     assert_raises(ValueError, collector.select_from_cluster, grid, 5)
 
     collector = GridPartition(nbins_axis=5)
-    assert_raises(TypeError, collector.select_from_cluster, [5.0], 5)  # Test X is numpy array
-
-    assert_raises(
-        TypeError, collector.select_from_cluster, grid, 5.0
-    )  # Test number selected should be int
+    # Test X is numpy array
+    assert_raises(TypeError, collector.select_from_cluster, [5.0], 5)
+    # Test number selected should be int
+    assert_raises(TypeError, collector.select_from_cluster, grid, 5.0)
     assert_raises(TypeError, collector.select_from_cluster, grid, 5, [5.0])
 
 
