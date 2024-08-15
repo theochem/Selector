@@ -181,3 +181,4 @@ def test_medoid():
     selector = Medoid()
     selected_ids = selector.select(features, size=2)
     assert_equal(selected_ids, [0, 3])
+
