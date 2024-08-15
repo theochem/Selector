@@ -21,6 +21,7 @@
 # --
 
 """Test Diversity Module."""
+import warnings
 
 import numpy as np
 import pytest
@@ -51,6 +52,10 @@ sample5 = np.array([[0, 2, 4, 0], [1, 2, 4, 0], [2, 2, 4, 0]])
 
 sample6 = np.array([[1, 0, 1, 0], [0, 1, 1, 0], [1, 0, 1, 0], [0, 0, 1, 0]])
 
+sample7 = np.array([[1, 0, 1, 0] for _ in range(4)])
+
+sample8 = np.array([[1, 2, 3], [1, 2, 3], [1, 2, 3]])
+
 
 def test_compute_diversity_specified():
     """Test compute diversity with a specified div_type."""
@@ -65,7 +70,7 @@ def test_compute_diversity_hyperspheres():
     centers_pts = np.array([[0.5, 0.5]] * (100 - 4))
     pts = np.vstack((corner_pts, centers_pts))
 
-    comp_div = compute_diversity(pts, div_type="hypersphere overlap of subset", features=pts)
+    comp_div = compute_diversity(pts, div_type="hypersphere_overlap", features=pts)
     # Expected = overlap + edge penalty
     expected = (100.0 * 96 * 95 * 0.5) + 2.0
     assert_almost_equal(comp_div, expected)
@@ -73,7 +78,7 @@ def test_compute_diversity_hyperspheres():
 
 def test_compute_diversity_hypersphere_error():
     """Test compute diversity with hypersphere metric and no molecule library given."""
-    assert_raises(ValueError, compute_diversity, sample5, "hypersphere overlap of subset")
+    assert_raises(ValueError, compute_diversity, sample5, "hypersphere_overlap")
 
 
 def test_compute_diversity_edi():
@@ -103,14 +108,14 @@ def test_compute_diversity_invalid():
 def test_logdet():
     """Test the log determinant function with predefined subset matrix."""
     sel = logdet(sample3)
-    expected = np.log10(131)
+    expected = np.log(131)
     assert_almost_equal(sel, expected)
 
 
 def test_logdet_non_square_matrix():
     """Test the log determinant function with a rectangular matrix."""
     sel = logdet(sample4)
-    expected = np.log10(8)
+    expected = np.log(8)
     assert_almost_equal(sel, expected)
 
 
@@ -208,7 +213,20 @@ def test_wdud_dimension_error():
 
 def test_wdud_normalization_error():
     """Test wdud method raises error when normalization fails."""
-    assert_raises(ValueError, wdud, sample5)
+    assert_raises(ValueError, wdud, sample8)
+
+
+def test_wdud_warning_normalization():
+    """Test wdud method gives warning when normalization fails."""
+    warning_message = (
+        "Some of the features are constant which will cause the normalization to fail. "
+        + "Now removing them."
+    )
+    with pytest.warns() as record:
+        wdud(sample6)
+
+    # check that the message matches
+    assert record[0].message.args[0] == warning_message
 
 
 def test_hypersphere_overlap_of_subset_with_only_corners_and_center():
@@ -231,7 +249,7 @@ def test_hypersphere_overlap_of_subset_with_only_corners_and_center():
 
 def test_hypersphere_normalization_error():
     """Test the hypersphere overlap method raises error when normalization fails."""
-    assert_raises(ValueError, hypersphere_overlap_of_subset, sample5, sample5)
+    assert_raises(ValueError, hypersphere_overlap_of_subset, sample7, sample7)
 
 
 def test_hypersphere_radius_warning():

@@ -304,11 +304,11 @@ class OptiSim(SelectionBase):
         candidates = list(range(n_samples))
         # determine which points are within radius r of initial point
         # note: workers=-1 uses all available processors/CPUs
-        remove = tree.query_ball_point(
+        index_remove = tree.query_ball_point(
             X[self.ref_index], self.r, eps=self.eps, p=self.p, workers=-1
         )
         # exclude points within radius r of initial point from list of candidates using bv mask
-        for idx in remove:
+        for idx in index_remove:
             bv[idx] = 1
         candidates = np.ma.array(candidates, mask=bv)
 
@@ -336,8 +336,10 @@ class OptiSim(SelectionBase):
                 return selected
 
             # eliminate all samples within radius r of the selected sample
-            remove = tree.query_ball_point(X[best_idx], self.r, eps=self.eps, p=self.p, workers=-1)
-            for idx in remove:
+            index_remove = tree.query_ball_point(
+                X[best_idx], self.r, eps=self.eps, p=self.p, workers=-1
+            )
+            for idx in index_remove:
                 bv[idx] = 1
             candidates = np.ma.array(candidates, mask=bv)
 
@@ -452,16 +454,17 @@ class DISE(SelectionBase):
         # this includes the distance of reference sample from itself, which is 0
         distances = scipy.spatial.minkowski_distance(X[self.ref_index], X, p=self.p)
         # get sorted index of samples based on their distance from reference (closest to farthest)
+        # the first index will be the ref_index which has distance of zero
         index_sorted = np.argsort(distances)
+        assert index_sorted[0] == self.ref_index
         # construct KDTree for quick nearest-neighbor lookup
         kdtree = scipy.spatial.KDTree(X)
 
         # construct bitarray to track selected samples (1 means exclude)
         bv = bitarray.bitarray(list(np.zeros(len(X), dtype=int)))
-        bv[self.ref_index] = 1
 
-        # the first item in the sorted list is the reference sample itself,
-        # but currently it is skipped, so the sphere around it are not excluded.
+        # the neighbours of the ref_index are going to be excluded in the first iteration
+        # and ref_index is going to be added to the selected list
         selected = []
         for idx in index_sorted:
             # select sample if it is not already excluded from consideration

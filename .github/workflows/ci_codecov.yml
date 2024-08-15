@@ -39,7 +39,7 @@ jobs:
         ulimit -a
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
         architecture: x64
@@ -63,9 +63,11 @@ jobs:
         python -m pytest -c pyproject.toml --cov-config=.coveragerc --cov-report=xml --color=yes selector
 
     - name: CodeCov
-      uses: codecov/codecov-action@v3
+      uses: codecov/codecov-action@v4.5.0
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
+        # Temp fix for https://github.com/codecov/codecov-action/issues/1487
+        version: v0.6.0
         fail_ci_if_error: true
         file: ./coverage.xml
         flags: unittests

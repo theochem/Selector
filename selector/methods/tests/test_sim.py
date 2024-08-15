@@ -29,8 +29,13 @@ import pkg_resources
 import pytest
 from numpy.testing import assert_almost_equal, assert_equal, assert_raises
 
-from selector.methods.similarity import NSimilarity, SimilarityIndex
-from selector.similarity import modified_tanimoto, pairwise_similarity_bit, tanimoto
+from selector.methods.sim import NSimilarity, SimilarityIndex
+from selector.similarity import (
+    modified_tanimoto,
+    pairwise_similarity_bit,
+    scaled_similarity_matrix,
+    tanimoto,
+)
 
 
 def test_pairwise_similarity_bit_raises():
@@ -108,50 +113,76 @@ def test_modified_tanimoto_matrix():
     """Testing the modified tanimoto function with predefined feature matrix."""
     x = np.array([[1, 0, 1], [0, 1, 1]])
     s = pairwise_similarity_bit(x, "modified_tanimoto")
-    expceted = np.array([[1, (4 / 27)], [(4 / 27), 1]])
-    assert_equal(s, expceted)
+    expected = np.array([[1, (4 / 27)], [(4 / 27), 1]])
+    assert_equal(s, expected)
+
+
+def test_scaled_similarity_matrix():
+    """Testing scaled similarity matrix function with a predefined similarity matrix."""
+    X = np.array([[4, 2, 3], [0.5, 1, 1.5], [3, 3, 9]])
+    s = scaled_similarity_matrix(X)
+    expected = np.array([[1, 1, 0.5], [0.25, 1, 0.5], [0.5, 1, 1]])
+    assert_equal(s, expected)
+
+
+def test_scaled_similarity_matrix_dimension_error():
+    """Test scaled similarity matrix raises error when input has incorrect dimension."""
+    X = np.array([[1, 0.8, 0.65], [0.8, 1, 0.47]])
+    assert_raises(ValueError, scaled_similarity_matrix, X)
+
+
+def test_scaled_similarity_matrix_diagonal_zero_error():
+    """Test scaled similarity matrix raises error when diagonal element is zero."""
+    X = np.array([[1, 0.8, 0.65], [0.8, 0, 0.47], [0.65, 0.47, 1]])
+    assert_raises(ValueError, scaled_similarity_matrix, X)
+
+
+def test_scaled_similarity_matrix_element_negative_error():
+    """Test scaled similarity matrix raises error when any element is negative."""
+    X = np.array([[1, 0.8, 0.65], [-0.8, 1, 0.47], [0.65, 0.47, 1]])
+    assert_raises(ValueError, scaled_similarity_matrix, X)
 
 
 def test_SimilarityIndex_init_raises():
     """Test the SimilarityIndex class for raised errors (initialization)."""
     # check raised error wrong similarity index name
     with pytest.raises(ValueError):
-        SimilarityIndex(similarity_index="ttt")
+        SimilarityIndex(method="esim", sim_index="ttt")
     # check raised error wrong c_threshold - invalid string value
     with pytest.raises(ValueError):
-        SimilarityIndex(c_threshold="ttt")
+        SimilarityIndex(method="esim", c_threshold="ttt")
     # check raised error wrong c_threshold - invalid type (not int)
     with pytest.raises(ValueError):
-        SimilarityIndex(c_threshold=1.1)
+        SimilarityIndex(method="esim", c_threshold=1.1)
 
 
 def test_SimilarityIndex_calculate_counters_raises():
-    sim_idx = SimilarityIndex()
+    sim_idx = SimilarityIndex(method="esim")
 
     # check raised error wrong data type
     with pytest.raises(TypeError):
-        sim_idx._calculate_counters(arr=[1, 2, 3])
+        sim_idx._calculate_counters(X=[1, 2, 3])
 
     # check raised error - no n_objects with data of length 1
     with pytest.raises(ValueError):
-        sim_idx._calculate_counters(arr=np.array([1, 2, 3]))
+        sim_idx._calculate_counters(X=np.array([1, 2, 3]))
 
     # check raised error - c_threshold bigger than n_objects
-    sim_idx = SimilarityIndex(c_threshold=3)
+    sim_idx = SimilarityIndex(method="esim", c_threshold=3)
     with pytest.raises(ValueError):
-        sim_idx._calculate_counters(arr=np.array([[1, 2, 3], [4, 5, 6]]))
+        sim_idx._calculate_counters(X=np.array([[1, 2, 3], [4, 5, 6]]))
 
     # check raised error - invalid c_threshold string value
-    sim_idx = SimilarityIndex()
+    sim_idx = SimilarityIndex(method="esim")
     sim_idx.c_threshold = "ttt"
     with pytest.raises(ValueError):
-        sim_idx._calculate_counters(arr=np.array([[1, 2, 3], [4, 5, 6]]))
+        sim_idx._calculate_counters(X=np.array([[1, 2, 3], [4, 5, 6]]))
 
     # check raised error - invalid weight factor string value
-    sim_idx = SimilarityIndex()
+    sim_idx = SimilarityIndex(method="esim")
     sim_idx.w_factor = "ttt"
     with pytest.raises(ValueError):
-        sim_idx._calculate_counters(arr=np.array([[1, 2, 3], [4, 5, 6]]))
+        sim_idx._calculate_counters(X=np.array([[1, 2, 3], [4, 5, 6]]))
 
 
 def test_SimilarityIndex_call_raises():
@@ -159,67 +190,67 @@ def test_SimilarityIndex_call_raises():
     sim_idx = SimilarityIndex()
     # check raised error wrong data type
     with pytest.raises(TypeError):
-        sim_idx(arr=[1, 2, 3])
+        sim_idx(X=[1, 2, 3])
     # check raised error - no n_objects with data of length 1
     with pytest.raises(ValueError):
-        sim_idx(arr=np.array([1, 2, 3]))
+        sim_idx(X=np.array([1, 2, 3]))
 
 
 def test_SimilarityIndex_calculate_medoid_raises():
     """Test the SimilarityIndex class for raised errors (calculate_medoid)."""
-    sim_idx = SimilarityIndex()
+    sim_idx = NSimilarity()
 
     # check raised error wrong data type
     with pytest.raises(TypeError):
-        sim_idx.calculate_medoid(arr=[1, 2, 3])
+        sim_idx.calculate_medoid(X=[1, 2, 3])
 
     # check raised error - no medoid with one dimensional data
     with pytest.raises(ValueError):
-        sim_idx.calculate_medoid(arr=np.array([1, 2, 3]))
+        sim_idx.calculate_medoid(X=np.array([1, 2, 3]))
 
     # check raised error - no medoid with less than three samples
     with pytest.raises(ValueError):
-        sim_idx.calculate_medoid(arr=np.array([[1, 2, 3], [4, 5, 6]]))
+        sim_idx.calculate_medoid(X=np.array([[1, 2, 3], [4, 5, 6]]))
 
     # check raised error - c_threshold bigger than n_objects
-    sim_idx = SimilarityIndex(c_threshold=4)
+    sim_idx = NSimilarity(method="esim", c_threshold=4)
     with pytest.raises(ValueError):
-        sim_idx.calculate_medoid(arr=np.array([[1, 2, 3], [4, 5, 6], [6, 7, 8]]))
+        sim_idx.calculate_medoid(X=np.array([[1, 2, 3], [4, 5, 6], [6, 7, 8]]))
 
     # check raised error - c_total and data have different number of columns
-    sim_idx = SimilarityIndex()
+    sim_idx = NSimilarity()
     with pytest.raises(ValueError):
         sim_idx.calculate_medoid(
-            arr=np.array([[1, 2, 3], [4, 5, 6], [6, 7, 8]]), c_total=np.array([1, 2, 3, 4])
+            X=np.array([[1, 2, 3], [4, 5, 6], [6, 7, 8]]), c_total=np.array([1, 2, 3, 4])
         )
 
 
 def test_SimilarityIndex_calculate_outlier_raises():
     """Test the SimilarityIndex class for raised errors (calculate_outlier)."""
-    sim_idx = SimilarityIndex()
+    sim_idx = NSimilarity()
 
     # check raised error wrong data type
     with pytest.raises(TypeError):
-        sim_idx.calculate_outlier(arr=[1, 2, 3])
+        sim_idx.calculate_outlier(X=[1, 2, 3])
 
     # check raised error - no medoid with one dimensional data
     with pytest.raises(ValueError):
-        sim_idx.calculate_outlier(arr=np.array([1, 2, 3]))
+        sim_idx.calculate_outlier(X=np.array([1, 2, 3]))
 
     # check raised error - no medoid with less than three samples
     with pytest.raises(ValueError):
-        sim_idx.calculate_outlier(arr=np.array([[1, 2, 3], [4, 5, 6]]))
+        sim_idx.calculate_outlier(X=np.array([[1, 2, 3], [4, 5, 6]]))
 
     # check raised error - c_threshold bigger than n_objects
-    sim_idx = SimilarityIndex(c_threshold=4)
+    sim_idx = NSimilarity(method="esim", c_threshold=4)
     with pytest.raises(ValueError):
-        sim_idx.calculate_outlier(arr=np.array([[1, 2, 3], [4, 5, 6], [6, 7, 8]]))
+        sim_idx.calculate_outlier(X=np.array([[1, 2, 3], [4, 5, 6], [6, 7, 8]]))
 
     # check raised error - c_total and data have different number of columns
-    sim_idx = SimilarityIndex()
+    sim_idx = NSimilarity()
     with pytest.raises(ValueError):
         sim_idx.calculate_outlier(
-            arr=np.array([[1, 2, 3], [4, 5, 6], [6, 7, 8]]), c_total=np.array([1, 2, 3, 4])
+            X=np.array([[1, 2, 3], [4, 5, 6], [6, 7, 8]]), c_total=np.array([1, 2, 3, 4])
         )
 
 
@@ -230,17 +261,18 @@ def test_NSimilarity_init_raises():
         NSimilarity(similarity_index="ttt")
     # check raised error wrong c_threshold - invalid string value
     with pytest.raises(ValueError):
-        NSimilarity(c_threshold="ttt")
+        NSimilarity(method="esim", c_threshold="ttt")
     # check raised error wrong c_threshold - invalid type (not int)
     with pytest.raises(ValueError):
-        NSimilarity(c_threshold=1.1)
+        NSimilarity(method="esim", c_threshold=1.1)
 
 
 def test_NSimilarity_get_new_index_raises():
     """Test the NSimilarity class for raised errors (get_new_index)."""
+    # check that data is not scaled between 0 and 1
     with pytest.raises(ValueError):
         NSimilarity()._get_new_index(
-            arr=np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]]),
+            X=np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]]),
             num_selected=1,
             selected_condensed=np.array([1, 2, 3]),
             select_from=np.array([1, 2, 3]),
@@ -253,32 +285,28 @@ def test_NSimilarity_select_from_cluster_raises():
     cluster_ids = np.array([0, 1, 2])
     with pytest.raises(ValueError):
         # select more samples than the number of samples in the cluster
-        NSimilarity().select_from_cluster(arr=data_array, size=5)
+        NSimilarity().select_from_cluster(X=data_array, size=5)
     with pytest.raises(ValueError):
         # start from sample index that is not in the cluster
-        NSimilarity().select_from_cluster(arr=data_array, size=2, start=[4])
+        NSimilarity().select_from_cluster(X=data_array, size=2, start=[4])
     with pytest.raises(ValueError):
         # start from sample index that is not in the cluster
-        NSimilarity().select_from_cluster(arr=data_array, size=2, start=[4])
+        NSimilarity().select_from_cluster(X=data_array, size=2, start=[4])
     with pytest.raises(ValueError):
         # start from invalid string value of start
-        NSimilarity().select_from_cluster(arr=data_array, size=2, start="ttt")
+        NSimilarity().select_from_cluster(X=data_array, size=2, start="ttt")
     with pytest.raises(ValueError):
         # start from invalid type of start
-        NSimilarity().select_from_cluster(arr=data_array, size=2, start=[1.2])
+        NSimilarity().select_from_cluster(X=data_array, size=2, start=[1.2])
     with pytest.raises(ValueError):
         # try to data not scaled between 0 and 1
-        NSimilarity(preprocess_data=False).select_from_cluster(arr=data_array, size=2)
+        NSimilarity(preprocess_data=False).select_from_cluster(X=data_array, size=2)
     with pytest.raises(ValueError):
         # try to use starting index that is not in the cluster
-        NSimilarity().select_from_cluster(
-            arr=data_array, size=2, start=[4], cluster_ids=cluster_ids
-        )
+        NSimilarity().select_from_cluster(X=data_array, size=2, start=[4], labels=cluster_ids)
     with pytest.raises(ValueError):
         # try to use invalid starting index
-        NSimilarity().select_from_cluster(
-            arr=data_array, size=2, start=4.2, cluster_ids=cluster_ids
-        )
+        NSimilarity().select_from_cluster(X=data_array, size=2, start=4.2, labels=cluster_ids)
 
 
 # --------------------------------------------------------------------------------------------- #
@@ -291,7 +319,7 @@ def test_NSimilarity_select_from_cluster_raises():
 # --------------------------------------------------------------------------------------------- #
 
 # --------------------------------------------------------------------------------------------- #
-# Section of the test for the SimilarityIndex class
+# Section of the test for the SimilarityIndex class using binary data and esim method.
 # --------------------------------------------------------------------------------------------- #
 
 
@@ -416,7 +444,7 @@ def _get_binary_data():
     return data
 
 
-def _get_ref_similarity_dict():
+def _get_ref_similarity_esim_dict():
     """Returns a dictionary with the reference values for the similarity indexes.
 
     The proper results for the tests are known in advance and are stored in a dictionary.
@@ -550,6 +578,187 @@ def _get_ref_similarity_dict():
     return ref_similarity_binary
 
 
+def _get_ref_isim_dict():
+    """Returns a dictionary with the reference values necessary for testing the isim method.
+
+    The proper results for the tests are known in advance and are stored in a dictionary.
+
+    Returns
+    -------
+    dict
+        A dictionary with the reference values necessary for all the isim method tests. The
+        dictionary has the following structure:
+            {n_ary: { outlier: value, medoid: value, kval2si: {k: value}}} where:
+                n_ary: the similarity index name used
+                outlier: the index of the outlier sample
+                medoid: the index of the medoid sample
+                kval2si: a dictionary with the k value as key and the similarity index as value
+    """
+    isim_dict = {
+        "AC": {
+            "outlier": 49,
+            "medoid": 96,
+            "kval2si": {
+                1: 0.49917475122243926,
+                2: 0.5538883964836272,
+                5: 0.5866150284585204,
+                10: 0.5974286117693461,
+            },
+        },
+        "BUB": {
+            "outlier": 85,
+            "medoid": 10,
+            "kval2si": {
+                1: 0.49397989672931264,
+                2: 0.5819613020487422,
+                5: 0.6335183244648649,
+                10: 0.6502407823406905,
+            },
+        },
+        "CT1": {
+            "outlier": 49,
+            "medoid": 96,
+            "kval2si": {
+                1: 0.9367065121244419,
+                2: 0.9261583241959612,
+                5: 0.9107923779571723,
+                10: 0.902405671341302,
+            },
+        },
+        "CT2": {
+            "outlier": 49,
+            "medoid": 96,
+            "kval2si": {
+                1: 0.06282178200501828,
+                2: 0.12056333324739296,
+                5: 0.19665579893673796,
+                10: 0.23722036836219337,
+            },
+        },
+        "CT3": {
+            "outlier": 85,
+            "medoid": 10,
+            "kval2si": {
+                1: 0.870243523865252,
+                2: 0.82843367496858,
+                5: 0.77434619420322,
+                10: 0.7461466827474635,
+            },
+        },
+        "CT4": {
+            "outlier": 85,
+            "medoid": 10,
+            "kval2si": {
+                1: 0.8945856132657759,
+                2: 0.8706848775823933,
+                5: 0.8375702929632953,
+                10: 0.8197597232141359,
+            },
+        },
+        "Fai": {
+            "outlier": 85,
+            "medoid": 10,
+            "kval2si": {
+                1: 0.36944444444444446,
+                2: 0.4354778372150966,
+                5: 0.47461264224551747,
+                10: 0.4873954166765502,
+            },
+        },
+        "Gle": {
+            "outlier": 85,
+            "medoid": 10,
+            "kval2si": {
+                1: 0.48934163365402755,
+                2: 0.579696056605444,
+                5: 0.6326571892686095,
+                10: 0.6498200476852635,
+            },
+        },
+        "Ja": {
+            "outlier": 85,
+            "medoid": 10,
+            "kval2si": {
+                1: 0.5897241588360109,
+                2: 0.6741446014011255,
+                5: 0.7209338061721255,
+                10: 0.735695295519683,
+            },
+        },
+        "Ja0": {
+            "outlier": 49,
+            "medoid": 96,
+            "kval2si": {
+                1: 0.7490265158538847,
+                2: 0.8082737370566611,
+                5: 0.8388469288245588,
+                10: 0.8482013298830383,
+            },
+        },
+        "JT": {
+            "outlier": 85,
+            "medoid": 10,
+            "kval2si": {
+                1: 0.3239260739260739,
+                2: 0.4081492974102138,
+                5: 0.4626909830536219,
+                10: 0.48128402926677866,
+            },
+        },
+        "RT": {
+            "outlier": 49,
+            "medoid": 96,
+            "kval2si": {
+                1: 0.3321820648822006,
+                2: 0.41267273273100585,
+                5: 0.4645381672067039,
+                10: 0.48220837765022756,
+            },
+        },
+        "RR": {
+            "outlier": 85,
+            "medoid": 10,
+            "kval2si": {
+                1: 0.2401851851851852,
+                2: 0.2867117470582547,
+                5: 0.3148435010613659,
+                10: 0.3241287740619748,
+            },
+        },
+        "SM": {
+            "outlier": 49,
+            "medoid": 96,
+            "kval2si": {
+                1: 0.4987037037037037,
+                2: 0.5842439273719385,
+                5: 0.6343817834296691,
+                10: 0.6506620592911254,
+            },
+        },
+        "SS1": {
+            "outlier": 85,
+            "medoid": 10,
+            "kval2si": {
+                1: 0.19326478915213827,
+                2: 0.25639923187909175,
+                5: 0.3009746107992553,
+                10: 0.3169019346220607,
+            },
+        },
+        "SS2": {
+            "outlier": 49,
+            "medoid": 96,
+            "kval2si": {
+                1: 0.6655134066477203,
+                2: 0.7375681450029299,
+                5: 0.7762957099270287,
+                10: 0.7883649540846069,
+            },
+        },
+    }
+    return isim_dict
+
+
 def _get_absolute_decimal_places_for_comparison(num1, num2, rtol=1e-4):
     """Calculate the absolute number of decimal places needed for comparison of two numbers.
 
@@ -604,7 +813,7 @@ n_ary_values = [
 @pytest.mark.parametrize("c_threshold", c_treshold_values)
 @pytest.mark.parametrize("w_factor", w_factor_values)
 @pytest.mark.parametrize("n_ary", n_ary_values)
-def test_SimilarityIndex_call(c_threshold, w_factor, n_ary):
+def test_SimilarityIndex_esim_call(c_threshold, w_factor, n_ary):
     """Test the similarity index for binary data.
 
     Test the similarity index for binary data using the reference values and several combinations
@@ -621,10 +830,12 @@ def test_SimilarityIndex_call(c_threshold, w_factor, n_ary):
     """
 
     # get the binary data
-    data, ref_similarity_binary = _get_binary_data(), _get_ref_similarity_dict()
+    data, ref_similarity_binary = _get_binary_data(), _get_ref_similarity_esim_dict()
 
     # create instance of the class SimilarityIndex to test the similarity indexes for binary data
-    sim_idx = SimilarityIndex(similarity_index=n_ary, c_threshold=c_threshold, w_factor=w_factor)
+    sim_idx = SimilarityIndex(
+        method="esim", sim_index=n_ary, c_threshold=c_threshold, w_factor=w_factor
+    )
 
     # calculate the similarity index for the binary data
     sim_idx_value = sim_idx(data)
@@ -642,7 +853,7 @@ def test_SimilarityIndex_call(c_threshold, w_factor, n_ary):
 
 
 # --------------------------------------------------------------------------------------------- #
-# Section of the tests for selection of indexes functions
+# Section of the tests for selection of indexes functions using binary data and esim method.
 # --------------------------------------------------------------------------------------------- #
 
 # Many of the combinations of parameters for the tests are too stringent and the similarity of the
@@ -660,7 +871,7 @@ def test_SimilarityIndex_call(c_threshold, w_factor, n_ary):
 # The cases where the similarity of the samples is zero are not considered because these will be
 # inconsistent with the reference values for the selection of the new indexes, and the calculation
 # of the medoid and the outlier.
-def _get_test_parameters():
+def _get_esim_test_parameters():
     """Returns the parameters for the tests.
 
     Returns the parameters for the tests. The parameters are stored in a list of tuples. Each tuple
@@ -690,17 +901,17 @@ def _get_test_parameters():
                 c_key = "None"
             for n in n_ary_values:
                 # ignore the cases where the similarity of the samples less than two percent
-                if not _get_ref_similarity_dict()[w][c_key][n] < 0.02:
+                if not _get_ref_similarity_esim_dict()[w][c_key][n] < 0.02:
                     test_parameters.append((c, w, n))
 
     return test_parameters
 
 
-parameters = _get_test_parameters()
+parameters = _get_esim_test_parameters()
 
 
-def _get_ref_medoid_dict():
-    """Returns a dictionary with the reference values for the medoid.
+def _get_ref_medoid_esim_dict():
+    """Returns dictionary with reference medoid index for binary data using esim method.
 
     The proper results for the tests are known in advance and are stored in a dictionary.
 
@@ -845,8 +1056,8 @@ def _get_ref_medoid_dict():
 
 
 @pytest.mark.parametrize("c_threshold, w_factor, n_ary", parameters)
-def test_calculate_medoid(c_threshold, w_factor, n_ary):
-    """Test the function to calculate the medoid for binary data.
+def test_calculate_medoid_esim(c_threshold, w_factor, n_ary):
+    """Test the function to calculate the medoid for binary data using esim method.
 
     Test the function to calculate the medoid for binary data using the reference values and several
     combinations of parameters. The reference values are obtained using the function
@@ -865,7 +1076,7 @@ def test_calculate_medoid(c_threshold, w_factor, n_ary):
     # get the reference binary data
     data = _get_binary_data()
     # get the reference value for the medoid
-    ref_medoid_dict = _get_ref_medoid_dict()
+    ref_medoid_dict = _get_ref_medoid_esim_dict()
 
     # small hack to avoid using the None value as a key in the dictionary
     c_threshold_key = c_threshold
@@ -875,20 +1086,22 @@ def test_calculate_medoid(c_threshold, w_factor, n_ary):
     ref_medoid = ref_medoid_dict[c_threshold_key][w_factor][n_ary]
 
     # calculate the medoid for the binary data
-    sim_idx = SimilarityIndex(similarity_index=n_ary, c_threshold=c_threshold, w_factor=w_factor)
-    medoid = sim_idx.calculate_medoid(arr=data)
+    sim_idx = NSimilarity(
+        method="esim", similarity_index=n_ary, c_threshold=c_threshold, w_factor=w_factor
+    )
+    medoid = sim_idx.calculate_medoid(X=data)
 
     # check that the calculated medoid is equal to the reference medoid
     assert_equal(medoid, ref_medoid)
 
 
 # results from the reference code
-def _get_ref_outlier_dict():
-    """Returns a dictionary with the reference values for the outlier.
+def _get_ref_outlier_esim_dict():
+    """Returns dictionary with reference outlier index for binary data using esim method.
 
     The proper results for the tests are known in advance and are stored in a dictionary.
 
-    The dictionary has the following structure:
+        The dictionary has the following structure:
         {w_factor: {c_threshold: {n_ary: value}}} where:
             w_factor: the weight factor for the similarity index
             c_threshold: the threshold value for the similarity index
@@ -1029,8 +1242,8 @@ def _get_ref_outlier_dict():
 
 
 @pytest.mark.parametrize("c_threshold, w_factor, n_ary", parameters)
-def test_calculate_outlier(c_threshold, w_factor, n_ary):
-    """Test the function to calculate the outlier for binary data.
+def test_calculate_outlier_esim(c_threshold, w_factor, n_ary):
+    """Test the function to calculate the outlier for binary data using the esim method.
 
     Test the function to calculate the outlier for binary data using the reference values and
     several combinations of parameters. The reference values are obtained using the function
@@ -1049,7 +1262,7 @@ def test_calculate_outlier(c_threshold, w_factor, n_ary):
     # get the reference binary data
     data = _get_binary_data()
     # get the reference value for the outlier
-    ref_outlier_dict = _get_ref_outlier_dict()
+    ref_outlier_dict = _get_ref_outlier_esim_dict()
 
     # small hack to avoid using the None value as a key in the dictionary
     c_threshold_key = c_threshold
@@ -1059,21 +1272,66 @@ def test_calculate_outlier(c_threshold, w_factor, n_ary):
     ref_outlier = ref_outlier_dict[c_threshold_key][w_factor][n_ary]
 
     # calculate the outlier for the binary data
-    sim_idx = SimilarityIndex(similarity_index=n_ary, c_threshold=c_threshold, w_factor=w_factor)
-    outlier = sim_idx.calculate_outlier(arr=data)
+    sim_idx = NSimilarity(
+        method="esim", similarity_index=n_ary, c_threshold=c_threshold, w_factor=w_factor
+    )
+    outlier = sim_idx.calculate_outlier(X=data)
 
     # check that the calculated outlier is equal to the reference outlier
     assert_equal(outlier, ref_outlier)
 
 
 # --------------------------------------------------------------------------------------------- #
-# Section of the test for the NSimilarity class
+# Section of the tests for selection of indexes functions using binary data and isim method.
 # --------------------------------------------------------------------------------------------- #
+# test medoid selection
+si_idcs = [
+    "AC",
+    "BUB",
+    "CT1",
+    "CT2",
+    "CT3",
+    "CT4",
+    "Fai",
+    "Gle",
+    "Ja",
+    "Ja0",
+    "JT",
+    "RT",
+    "RR",
+    "SM",
+    "SS1",
+    "SS2",
+]
 
 
-def _get_ref_new_index():
+@pytest.mark.parametrize("sim_idx", si_idcs)
+def test_calculate_medoid_isim(sim_idx):
+    data = _get_binary_data()
+    isim_dict = _get_ref_isim_dict()
+    ref_medoid = isim_dict[sim_idx]["medoid"]
+    sim_idx = NSimilarity(method="isim", similarity_index=sim_idx)
+    medoid = sim_idx.calculate_medoid(X=data)
+    assert_equal(medoid, ref_medoid)
+
+
+# test outlier selection
+@pytest.mark.parametrize("sim_idx", si_idcs)
+def test_calculate_outlier_isim(sim_idx):
+    data = _get_binary_data()
+    isim_dict = _get_ref_isim_dict()
+    ref_medoid = isim_dict[sim_idx]["outlier"]
+    sim_idx = NSimilarity(method="isim", similarity_index=sim_idx)
+    medoid = sim_idx.calculate_outlier(X=data)
+    assert_equal(medoid, ref_medoid)
+
+
+# --------------------------------------------------------------------------------------------- #
+# Section of the test for the NSimilarity class using binary data and esim method.
+# --------------------------------------------------------------------------------------------- #
+def _get_ref_new_index_esim():
     """
-    Returns reference data for testing the function to calculate the new index.
+    Returns reference data for testing the function to calculate the new index with the esim method.
 
     Returns the tuple (selected_points, new_indexes_dict) where selected_points is a list of
     selected samples given to the function (get_new_index) and new_indexes_dict is  a dictionary
@@ -1184,7 +1442,7 @@ def _get_ref_new_index():
 
 
 @pytest.mark.parametrize("c_threshold, w_factor, n_ary", parameters)
-def test_get_new_index(c_threshold, w_factor, n_ary):
+def test_get_new_index_esim(c_threshold, w_factor, n_ary):
     """Test the function get a new sample from the binary data.
 
     Test the function to get a new sample from the binary data using the reference values and
@@ -1204,7 +1462,7 @@ def test_get_new_index(c_threshold, w_factor, n_ary):
     # get the reference binary data
     data = _get_binary_data()
     # get the reference value for the outlier
-    selected_samples, ref_new_index_dict = _get_ref_new_index()
+    selected_samples, ref_new_index_dict = _get_ref_new_index_esim()
 
     # columnwise sum of the selected samples
     selected_condensed_data = np.sum(np.take(data, selected_samples, axis=0), axis=0)
@@ -1221,10 +1479,12 @@ def test_get_new_index(c_threshold, w_factor, n_ary):
     ref_new_index = ref_new_index_dict[c_threshold_key][w_factor][n_ary]
 
     # calculate the outlier for the binary data
-    nsi = NSimilarity(similarity_index=n_ary, w_factor=w_factor, c_threshold=c_threshold)
+    nsi = NSimilarity(
+        method="esim", similarity_index=n_ary, w_factor=w_factor, c_threshold=c_threshold
+    )
 
     new_index = nsi._get_new_index(
-        arr=data,
+        X=data,
         selected_condensed=selected_condensed_data,
         select_from=select_from_n,
         num_selected=n,
@@ -1247,11 +1507,10 @@ start_values = ["medoid", "outlier", [1, 2, 3]]
 # sample size values to test
 sample_size_values = [10, 20, 30]
 
+
 # --------------------------------------------------------------------------------------------- #
 # Get reference data for testing the selection of the diverse subset
 # --------------------------------------------------------------------------------------------- #
-
-
 def get_data_file_path(file_name):
     """Get the absolute path of the data file inside the package.
 
@@ -1269,7 +1528,8 @@ def get_data_file_path(file_name):
     return data_file_path
 
 
-def _get_selections_ref_dict():
+# get reference selected data for esim method
+def _get_selections_esim_ref_dict():
     """Returns a dictionary with the reference values for the selection of samples.
 
     The proper results for the tests are known in advance and are stored in a csv file.
@@ -1283,7 +1543,7 @@ def _get_selections_ref_dict():
             start: the method to use to select the first(s) sample(s)
     """
 
-    file_path = get_data_file_path("ref_similarity_data.csv")
+    file_path = get_data_file_path("ref_esim_selection_data.csv")
     with open(file_path, encoding="utf-8") as file:
         reader = csv.reader(file, delimiter=";")
         next(reader)  # skip header
@@ -1306,13 +1566,11 @@ def _get_selections_ref_dict():
     return data_dict
 
 
-print(_get_selections_ref_dict())
-
-
+# test selected data for esim method (inv_order=1) and binary data against reference data
 @pytest.mark.parametrize("c_threshold, w_factor, n_ary", parameters)
 @pytest.mark.parametrize("sample_size", sample_size_values)
 @pytest.mark.parametrize("start", start_values)
-def test_NSimilarity_select(c_threshold, w_factor, sample_size, n_ary, start):
+def test_NSimilarity_esim_select(c_threshold, w_factor, sample_size, n_ary, start):
     """
     Test the diversity selection methods based on similarity indexes for binary data.
 
@@ -1334,17 +1592,18 @@ def test_NSimilarity_select(c_threshold, w_factor, sample_size, n_ary, start):
     # get the binary data
     data = _get_binary_data()
     # get the reference selected data
-    reference_selected_data = _get_selections_ref_dict()
+    reference_selected_data = _get_selections_esim_ref_dict()
 
     # create instance of the class SimilarityIndex to test the similarity indexes for binary data
-    selector = NSimilarity(
+    collector = NSimilarity(
+        method="esim",
         similarity_index=n_ary,
         w_factor=w_factor,
         c_threshold=c_threshold,
         preprocess_data=False,
     )
     # select the diverse subset using the similarity index
-    selected_data = selector.select_from_cluster(data, size=sample_size, start=start)
+    selected_data = collector.select_from_cluster(data, size=sample_size, start=start)
 
     # get the reference value for the similarity index
     # transform invalid keys to strings

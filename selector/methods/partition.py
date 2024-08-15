@@ -83,7 +83,8 @@ class GridPartition(SelectionBase):
         if not isinstance(random_seed, int):
             raise TypeError(f"The random seed should be integer, got {type(random_seed)}.")
         if not isinstance(bin_method, str):
-            raise TypeError(f"The grid_method should be a string, got {type(bin_method)}.")
+            raise TypeError(f"The bin_method should be a string, got {type(bin_method)}.")
+
         self.random_seed = random_seed
         self.nbins_axis = nbins_axis
         self.bin_method = bin_method
@@ -291,7 +292,7 @@ class GridPartition(SelectionBase):
                         )
                 bins = bins_axis
         else:
-            raise ValueError(f"{self.bin_method} not a valid grid_method")
+            raise ValueError(f"{self.bin_method} not a valid bin_method")
 
         return bins
 
@@ -300,7 +301,7 @@ class GridPartition(SelectionBase):
         X,
         bins,
         num_selected,
-        diversity_type="hypersphere overlap of subset",
+        diversity_type="hypersphere_overlap",
         cs=None,
     ):
         r"""
@@ -443,6 +444,18 @@ class Medoid(SelectionBase):
             Index for the sample to start selection from; this index is the first sample selected.
         scaling: float
             Percent of average maximum distance to use when eliminating the closest points.
+
+        Notes
+        -----
+        The `Mediod` implementation is based on the KDTree algorithm and therefore can give
+        different results for cases with duplicated points or the same features for different
+        objects in the original feature space. This is dicussed in
+        https://github.com/theochem/Selector/issues/238.
+        This is because the same features lead to the same distances in the tree, and this is a
+        known issue of sorting the points and indices in the KDTree algorithm, as discussed
+        in https://github.com/scipy/scipy/issues/19029. Therefore, precautions should be taken if
+        duplicated points are present in the dataset.
+
         """
 
         self.starting_idx = ref_index
@@ -473,7 +486,12 @@ class Medoid(SelectionBase):
             if len(points) == 0:
                 return None
             middle = len(points) // 2
-            indices, points = zip(*sorted(enumerate(points), key=lambda x: x[1][depth % k]))
+
+            # sort the points and indices
+            # indices, points = zip(*sorted(enumerate(points), key=lambda x: x[1][depth % k]))
+            indices = np.argsort(np.array(points)[:, depth % k], kind="stable")
+            points = np.array(points)[indices]
+
             if old_indices is not None:
                 indices = [old_indices[i] for i in indices]
             return self.BT(
@@ -518,6 +536,11 @@ class Medoid(SelectionBase):
         _, elim_candidates = tree.query(
             point, k=self.ratio, distance_upper_bound=np.sqrt(threshold), workers=-1
         )
+        # elim_candidates can be integer or array of integers
+        # https://github.com/scipy/scipy/blob/a2a287d1f7c81154256ba742b4b8bb108a612166/scipy/spatial/_kdtree.py#L476
+        if isinstance(elim_candidates, np.intp):
+            elim_candidates = [elim_candidates]
+
         if num_eliminate < 0:
             elim_candidates = elim_candidates[:num_eliminate]
         for index in elim_candidates:

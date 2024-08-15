@@ -54,22 +54,22 @@ def test_maxmin():
     )
 
     # use MaxMin algorithm to select points from clustered data
-    selector = MaxMin()
-    selected_ids = selector.select(arr_dist_cluster, size=12, labels=class_labels_cluster)
+    collector = MaxMin()
+    selected_ids = collector.select(arr_dist_cluster, size=12, labels=class_labels_cluster)
     # make sure all the selected indices are the same with expectation
     assert_equal(selected_ids, [41, 34, 94, 85, 51, 50, 66, 78, 21, 64, 29, 83])
 
     # use MaxMin algorithm to select points from non-clustered data
-    selector = MaxMin()
-    selected_ids = selector.select(arr_dist, size=12)
+    collector = MaxMin()
+    selected_ids = collector.select(arr_dist, size=12)
     # make sure all the selected indices are the same with expectation
     assert_equal(selected_ids, [85, 57, 41, 25, 9, 62, 29, 65, 81, 61, 60, 97])
 
     # use MaxMin algorithm, this time instantiating with a distance metric
-    selector = MaxMin(lambda x: pairwise_distances(x, metric="euclidean"))
+    collector = MaxMin(lambda x: pairwise_distances(x, metric="euclidean"))
     simple_coords = np.array([[0, 0], [2, 0], [0, 2], [2, 2], [-10, -10]])
-    # provide coordinates rather than pairwise distance matrix to selector
-    selected_ids = selector.select(simple_coords, size=3)
+    # provide coordinates rather than pairwise distance matrix to collector
+    selected_ids = collector.select(simple_coords, size=3)
     # make sure all the selected indices are the same with expectation
     assert_equal(selected_ids, [0, 4, 3])
 
@@ -84,8 +84,8 @@ def test_maxmin():
     mocked_cluster_coords = np.vstack([cluster_one, cluster_two, cluster_three])
 
     # selecting molecules
-    selector = MaxMin(lambda x: pairwise_distances(x, metric="euclidean"))
-    selected_mocked = selector.select(mocked_cluster_coords, size=15, labels=labels_mocked)
+    collector = MaxMin(lambda x: pairwise_distances(x, metric="euclidean"))
+    selected_mocked = collector.select(mocked_cluster_coords, size=15, labels=labels_mocked)
     assert_equal(selected_mocked, [0, 1, 2, 3, 4, 5, 6, 7, 8, 16, 15, 10, 13, 9, 18])
 
 
@@ -112,26 +112,26 @@ def test_maxsum():
     )
 
     # use MaxSum algorithm to select points from clustered data, instantiating with euclidean distance metric
-    selector = MaxSum(lambda x: pairwise_distances(x, metric="euclidean"))
-    selected_ids = selector.select(coords_cluster, size=12, labels=class_labels_cluster)
+    collector = MaxSum(lambda x: pairwise_distances(x, metric="euclidean"))
+    selected_ids = collector.select(coords_cluster, size=12, labels=class_labels_cluster)
     # make sure all the selected indices are the same with expectation
     assert_equal(selected_ids, [41, 34, 85, 94, 51, 50, 78, 66, 21, 64, 0, 83])
 
     # use MaxSum algorithm to select points from clustered data without instantiating with euclidean distance metric
-    selector = MaxSum()
-    selected_ids = selector.select(coords_cluster_dist, size=12, labels=class_labels_cluster)
+    collector = MaxSum()
+    selected_ids = collector.select(coords_cluster_dist, size=12, labels=class_labels_cluster)
     # make sure all the selected indices are the same with expectation
     assert_equal(selected_ids, [41, 34, 85, 94, 51, 50, 78, 66, 21, 64, 0, 83])
 
     # check that ValueError is raised when number of points requested is greater than number of points in array
     with pytest.raises(ValueError):
-        selected_ids = selector.select_from_cluster(
+        selected_ids = collector.select_from_cluster(
             coords_cluster, size=101, labels=class_labels_cluster
         )
 
     # use MaxSum algorithm to select points from non-clustered data, instantiating with euclidean distance metric
-    selector = MaxSum(lambda x: pairwise_distances(x, metric="euclidean"))
-    selected_ids = selector.select(coords, size=12)
+    collector = MaxSum(lambda x: pairwise_distances(x, metric="euclidean"))
+    selected_ids = collector.select(coords, size=12)
     # make sure all the selected indices are the same with expectation
     assert_equal(selected_ids, [85, 57, 25, 41, 95, 9, 21, 8, 13, 68, 37, 54])
 
@@ -159,54 +159,54 @@ def test_optisim():
     )
 
     # use OptiSim algorithm to select points from clustered data
-    selector = OptiSim()
-    selected_ids = selector.select(coords_cluster, size=12, labels=class_labels_cluster)
+    collector = OptiSim()
+    selected_ids = collector.select(coords_cluster, size=12, labels=class_labels_cluster)
     # make sure all the selected indices are the same with expectation
     # assert_equal(selected_ids, [2, 85, 86, 59, 1, 66, 50, 68, 0, 64, 83, 72])
 
     # use OptiSim algorithm to select points from non-clustered data
-    selector = OptiSim()
-    selected_ids = selector.select(coords, size=12)
+    collector = OptiSim()
+    selected_ids = collector.select(coords, size=12)
     # make sure all the selected indices are the same with expectation
     assert_equal(selected_ids, [0, 8, 55, 37, 41, 13, 12, 42, 6, 30, 57, 76])
 
     # tester to check if OptiSim gives same results as MaxMin for k=>infinity
-    selector = OptiSim(ref_index=85, k=999999)
-    selected_ids_optisim = selector.select(coords, size=12)
-    selector = MaxMin()
-    selected_ids_maxmin = selector.select(arr_dist, size=12)
+    collector = OptiSim(ref_index=85, k=999999)
+    selected_ids_optisim = collector.select(coords, size=12)
+    collector = MaxMin()
+    selected_ids_maxmin = collector.select(arr_dist, size=12)
     assert_equal(selected_ids_optisim, selected_ids_maxmin)
 
 
 def test_directed_sphere_size_error():
     """Test DirectedSphereExclusion error when too many points requested."""
     x = np.array([[1, 9]] * 100)
-    selector = DISE()
-    assert_raises(ValueError, selector.select, x, size=105)
+    collector = DISE()
+    assert_raises(ValueError, collector.select, x, size=105)
 
 
 def test_directed_sphere_same_number_of_pts():
     """Test DirectSphereExclusion with `size` = number of points in dataset."""
     # (0,0) as the reference point
     x = np.array([[0, 0], [0, 1], [0, 2], [0, 3]])
-    selector = DISE(r0=1, tol=0)
-    selected = selector.select(x, size=3)
-    assert_equal(selected, [1, 2, 3])
-    assert_equal(selector.r, 0.5)
+    collector = DISE(r0=1, tol=0, ref_index=0)
+    selected = collector.select(x, size=2)
+    assert_equal(selected, [0, 2])
+    assert_equal(collector.r, 1)
 
 
 def test_directed_sphere_exclusion_select_more_number_of_pts():
     """Test DirectSphereExclusion on points on the line with `size` < number of points in dataset."""
     # (0,0) as the reference point
     x = np.array([[0, 0], [0, 1], [0, 2], [0, 3], [0, 4], [0, 5], [0, 6]])
-    selector = DISE(r0=0.5, tol=0)
-    selected = selector.select(x, size=3)
-    expected = [1, 3, 5]
+    collector = DISE(r0=0.5, tol=0, ref_index=0)
+    selected = collector.select(x, size=3)
+    expected = [0, 3, 6]
     assert_equal(selected, expected)
-    assert_equal(selector.r, 1.0)
+    assert_equal(collector.r, 2.0)
 
 
-def test_directed_sphere_exclusion_on_line_with_():
+def test_directed_sphere_exclusion_on_line_with_smaller_radius():
     """Test Direct Sphere Exclusion on points on line with smaller distribution than the radius."""
     # (0,0) as the reference point
     x = np.array(
@@ -224,11 +224,11 @@ def test_directed_sphere_exclusion_on_line_with_():
             [0, 6],
         ]
     )
-    selector = DISE(r0=0.5, tol=0)
-    selected = selector.select(x, size=3)
+    collector = DISE(r0=0.5, tol=1, ref_index=1)
+    selected = collector.select(x, size=3)
     expected = [1, 5, 9]
     assert_equal(selected, expected)
-    assert_equal(selector.r, 1.0)
+    assert_equal(collector.r, 1.0)
 
 
 def test_directed_sphere_on_line_with_larger_radius():
@@ -248,8 +248,8 @@ def test_directed_sphere_on_line_with_larger_radius():
             [0, 5],
         ]
     )
-    selector = DISE(r0=2.0, tol=0)
-    selected = selector.select(x, size=3)
+    collector = DISE(r0=2.0, tol=0, ref_index=1)
+    selected = collector.select(x, size=3)
     expected = [1, 5, 9]
     assert_equal(selected, expected)
-    assert_equal(selector.r, 1.0)
+    assert_equal(collector.r, 1.0)

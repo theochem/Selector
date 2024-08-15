@@ -57,7 +57,7 @@ def compute_diversity(
     div_type : str, optional
         Method of calculation diversity for a given molecule set, which
         includes "entropy", "logdet", "shannon entropy", "wdud",
-        "gini coefficient" "hypersphere overlap of subset", and
+        "gini coefficient" "hypersphere_overlap", and
         "explicit diversity index".
         The default is "entropy".
     normalize : bool, optional
@@ -86,7 +86,8 @@ def compute_diversity(
     if div_type in func_dict:
         return func_dict[div_type](feature_subset)
 
-    elif div_type == "hypersphere overlap of subset":
+    # hypersphere overlap of subset
+    elif div_type == "hypersphere_overlap":
         if features is None:
             raise ValueError(
                 "Please input a feature matrix of the entire "
@@ -134,13 +135,19 @@ def logdet(X: np.ndarray) -> float:
 
     Notes
     -----
-    Nakamura, T., Sakaue, S., Fujii, K., Harabuchi, Y., Maeda, S., and Iwata, S.. (2022)
-    Selecting molecules with diverse structures and properties by maximizing
-    submodular functions of descriptors learned with graph neural networks.
-    Scientific Reports 12.
+    The log-determinant function is based on the formula in [1]_. Please note that we used the
+    natural logrithim to avoid the numerical stability issues,
+    https://github.com/theochem/Selector/issues/229.
+
+    .. [1] Nakamura, T., Sakaue, S., Fujii, K., Harabuchi, Y., Maeda, S., and Iwata, S..,
+       Selecting molecules with diverse structures and properties by maximizing
+       submodular functions of descriptors learned with graph neural networks.
+       Scientific Reports 12, 2022.
+
     """
-    mid = np.dot(X, np.transpose(X))
-    f_logdet = np.log10(np.linalg.det(mid + np.identity(len(X))))
+    mid = np.dot(X, np.transpose(X)) + np.identity(X.shape[0])
+    logdet_mid = np.linalg.slogdet(mid)
+    f_logdet = logdet_mid.sign * logdet_mid.logabsdet
     return f_logdet
 
 
@@ -281,7 +288,7 @@ def wdud(X: np.ndarray) -> float:
     where the feature is normalized to [0, 1], :math:`U(x)=x` is the cumulative distribution
     of the uniform distribution on [0, 1], and :math:`V(x) = \sum_{y <= x}1 / N` is the discrete
     distribution of the values of the feature in :math:`x`, where :math:`y` is the ith feature. This
-    integral is calculated iteratively between :math:y_i and :math:y_{i+1}, using trapezoidal method.
+    integral is calculated iteratively between :math:`y_i` and :math:`y_{i+1}`, using trapezoidal method.
 
     Lower values of the WDUD mean more diversity because the features of the selected set are
     more evenly distributed over the range of feature values.
@@ -302,18 +309,32 @@ def wdud(X: np.ndarray) -> float:
     Selecting molecules with diverse structures and properties by maximizing
     submodular functions of descriptors learned with graph neural networks.
     Scientific Reports 12.
+
     """
     if X.ndim != 2:
         raise ValueError(f"The number of dimensions {X.ndim} should be two.")
-    # min_max normalization:
-    n_samples, n_features = X.shape
-    # Find the maximum and minimum over each feature across all molecules.
-    max_x = np.max(X, axis=0)
-    min_x = np.min(X, axis=0)
+
+    # find the range of each feature
+    col_diff = np.ptp(X, axis=0)
     # Normalization of each feature to [0, 1]
-    if np.any(np.abs(max_x - min_x) < 1e-30):
-        raise ValueError("One of the features is constant and causes normalization to fail.")
-    x_norm = (X - min_x) / (max_x - min_x)
+    if np.any(np.abs(col_diff) < 1e-30):
+        # warning if some feature columns are constant
+        warnings.warn(
+            "Some of the features are constant which will cause the normalization to fail. "
+            "Now removing them."
+        )
+        if np.all(col_diff < 1.0e-30):
+            raise ValueError(
+                "Unfortunately, all the features are constants and wdud cannot be calculated."
+            )
+        else:
+            # remove the constant feature columns
+            mask = np.ptp(X, axis=0) > 1e-30
+            X = X[:, mask]
+    x_norm = (X - np.min(X, axis=0)) / np.ptp(X, axis=0)
+
+    # min_max normalization:
+    n_samples, n_features = x_norm.shape
     ans = []  # store the Wasserstein distance for each feature
     for i in range(0, n_features):
         wdu = 0.0
@@ -375,15 +396,25 @@ def hypersphere_overlap_of_subset(x: np.ndarray, x_subset: np.array) -> float:
     Agrafiotis, D. K.. (1997) Stochastic Algorithms for Maximizing Molecular Diversity.
     Journal of Chemical Information and Computer Sciences 37, 841-851.
     """
-    d = len(x_subset[0])
-    k = len(x_subset[:, 0])
+
     # Find the maximum and minimum over each feature across all molecules.
     max_x = np.max(x, axis=0)
     min_x = np.min(x, axis=0)
-    # normalization of each feature to [0, 1]
-    if np.any(np.abs(max_x - min_x) < 1e-30):
-        raise ValueError("One of the features is redundant and causes normalization to fail.")
 
+    if np.all(np.abs(max_x - min_x) < 1e-30):
+        raise ValueError("All of the features are redundant which causes normalization to fail.")
+
+    # Remove redundant features
+    non_red_feat = np.abs(max_x - min_x) > 1e-30
+    x = x[:, non_red_feat]
+    x_subset = x_subset[:, non_red_feat]
+    max_x = max_x[non_red_feat]
+    min_x = min_x[non_red_feat]
+
+    d = len(x_subset[0])
+    k = len(x_subset[:, 0])
+
+    # normalization of each feature to [0, 1]
     x_norm = (x_subset - min_x) / (max_x - min_x)
 
     # r_o = hypersphere radius

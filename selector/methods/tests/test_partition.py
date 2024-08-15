@@ -44,9 +44,10 @@ def test_grid_partitioning_independent_on_simple_example(numb_pts, method):
 
     # Here the number of cells should be equal to the number of points in each dimension
     #  excluding the extra point, so that the answer is unique/known.
-    selector = GridPartition(nbins_axis=4, bin_method=f"{method}_independent")
+
+    collector = GridPartition(nbins_axis=4, bin_method=f"{method}_independent")
     # Sort the points so that they're comparable to the expected answer.
-    selected_ids = np.sort(selector.select(grid, size=len(grid) - 1))
+    selected_ids = np.sort(collector.select(grid, size=len(grid) - 1))
     expected = np.arange(len(grid) - 1)
     assert_equal(selected_ids, expected)
 
@@ -70,10 +71,11 @@ def test_grid_partitioning_equisized_dependent_on_simple_example():
     )
 
     # The number of bins makes it so that it approximately be a single point in each bin
-    selector = GridPartition(nbins_axis=4, bin_method="equisized_dependent")
+    collector = GridPartition(nbins_axis=4, bin_method="equisized_dependent")
+
     # Two bins have an extra point in them and so has more diversity than other bins
     #   then the two expected molecules should be in those bins.
-    selected_ids = selector.select(grid, size=2, labels=None)
+    selected_ids = collector.select(grid, size=2, labels=None)
     right_molecules = True
     if not (2 in selected_ids or 3 in selected_ids):
         right_molecules = False
@@ -96,9 +98,10 @@ def test_grid_partitioning_equifrequent_dependent_on_simple_example(numb_pts):
 
     # Here the number of cells should be equal to the number of points in each dimension
     #  excluding the extra point, so that the answer is unique/known.
-    selector = GridPartition(nbins_axis=numb_pts, bin_method="equifrequent_dependent")
+    collector = GridPartition(nbins_axis=numb_pts, bin_method="equifrequent_dependent")
+
     # Sort the points so that they're comparable to the expected answer.
-    selected_ids = np.sort(selector.select(grid, size=len(grid) - 1))
+    selected_ids = np.sort(collector.select(grid, size=len(grid) - 1))
     expected = np.arange(len(grid) - 1)
     assert_equal(selected_ids, expected)
 
@@ -115,12 +118,13 @@ def test_bins_from_both_methods_dependent_same_as_independent_on_uniform_grid(nu
 
     # Here the number of cells should be equal to the number of points in each dimension
     #  excluding the extra point, so that the answer is unique/known.
-    selector_indept = GridPartition(nbins_axis=numb_pts, bin_method=f"{method}_independent")
-    selector_depend = GridPartition(nbins_axis=numb_pts, bin_method=f"{method}_dependent")
+    collector_indept = GridPartition(nbins_axis=numb_pts, bin_method=f"{method}_independent")
+    collector_depend = GridPartition(nbins_axis=numb_pts, bin_method=f"{method}_dependent")
+
 
     # Get the bins from the method
-    bins_indept = selector_indept.get_bins_from_method(grid)
-    bins_dept = selector_depend.get_bins_from_method(grid)
+    bins_indept = collector_indept.get_bins_from_method(grid)
+    bins_dept = collector_depend.get_bins_from_method(grid)
 
     # Test the bins are the same
     for key in bins_indept.keys():
@@ -135,16 +139,17 @@ def test_raises_grid_partitioning():
     assert_raises(TypeError, GridPartition, 5, 5.0)  # Test grid method should be string
     assert_raises(TypeError, GridPartition, 5, "string", [])  # Test random seed should be integer
 
-    # Test the selector grid method is not the correct string
-    selector = GridPartition(nbins_axis=5, bin_method="string")
-    assert_raises(ValueError, selector.select_from_cluster, grid, 5)
+    # Test the collector grid method is not the correct string
+    collector = GridPartition(nbins_axis=5, bin_method="string")
+    assert_raises(ValueError, collector.select_from_cluster, grid, 5)
 
-    selector = GridPartition(nbins_axis=5)
-    assert_raises(TypeError, selector.select_from_cluster, [5.0], 5)  # Test X is numpy array
+    collector = GridPartition(nbins_axis=5)
+    assert_raises(TypeError, collector.select_from_cluster, [5.0], 5)  # Test X is numpy array
+
     assert_raises(
-        TypeError, selector.select_from_cluster, grid, 5.0
+        TypeError, collector.select_from_cluster, grid, 5.0
     )  # Test number selected should be int
-    assert_raises(TypeError, selector.select_from_cluster, grid, 5, [5.0])
+    assert_raises(TypeError, collector.select_from_cluster, grid, 5, [5.0])
 
 
 def test_medoid():
@@ -166,12 +171,18 @@ def test_medoid():
         metric="euclidean",
         random_state=42,
     )
-    selector = Medoid()
-    selected_ids = selector.select(coords_cluster, size=12, labels=class_labels_cluster)
+    collector = Medoid()
+    selected_ids = collector.select(coords_cluster, size=12, labels=class_labels_cluster)
     # make sure all the selected indices are the same with expectation
     assert_equal(selected_ids, [2, 73, 94, 86, 1, 50, 93, 78, 0, 54, 33, 72])
 
-    selector = Medoid()
-    selected_ids = selector.select(coords, size=12)
+    collector = Medoid()
+    selected_ids = collector.select(coords, size=12)
     # make sure all the selected indices are the same with expectation
     assert_equal(selected_ids, [0, 95, 57, 41, 25, 9, 8, 6, 66, 1, 42, 82])
+
+    # test the case where KD-Tree query return is an integer
+    features = np.array([[1.5, 2.8], [2.3, 3.8], [1.5, 2.8], [4.0, 5.9]])
+    selector = Medoid()
+    selected_ids = selector.select(features, size=2)
+    assert_equal(selected_ids, [0, 3])

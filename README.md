@@ -30,8 +30,12 @@ first, and then:
     conda create -n qcdevs python=3.10
     conda activate qcdevs
 
-    # Install the stable release.
-    conda install -c theochem qc-selector
+    # Install the stable release
+    # current conda release is not ready yet
+    # conda install -c theochem qc-selector
+
+    # install the development version
+    pip install git+https://github.com/theochem/Selector.git
 ```
 
 To install `selector` with `pip`, you may want to create a
