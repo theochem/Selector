@@ -60,7 +60,7 @@ class MaxMin(SelectionBase):
     Structure‐Activity Relationships 21.6 (2002): 598-604.
     """
 
-    def __init__(self, fun_dist=None):
+    def __init__(self, fun_dist=None, ref_index="medoid"):
         """
         Initializing class.
 
@@ -68,20 +68,27 @@ class MaxMin(SelectionBase):
         ----------
         fun_distance : callable
             Function for calculating the pairwise distance between sample points.
-            `fun_dist(X) -> X_dist` takes a 2D feature array of shape (n_samples, n_features)
+            `fun_dist(x) -> x_dist` takes a 2D feature array of shape (n_samples, n_features)
             and returns a 2D distance array of shape (n_samples, n_samples).
+        ref_index: int, str, list, optional
+            Index of the reference sample to start the selection algorithm from.
+            It can be an integer, a float, a list of integers or floats or a mixture of them,
+            or "medoid", or "None". When `None`, the medoid center is chosen as the reference
+            sample. Default is "medoid".
+
         """
         self.fun_dist = fun_dist
+        self.ref_index = ref_index
 
-    def select_from_cluster(self, X, size, labels=None):
+    def select_from_cluster(self, x, size, labels=None):
         """Return selected samples from a cluster based on MaxMin algorithm.
 
         Parameters
         ----------
-        X: ndarray of shape (n_samples, n_features) or (n_samples, n_samples)
+        x: ndarray of shape (n_samples, n_features) or (n_samples, n_samples)
             Feature matrix of `n_samples` samples in `n_features` dimensional feature space,
             or the pairwise distance matrix between `n_samples` samples.
-            If `fun_dist` is `None`, the `X` is assumed to be a square pairwise distance matrix.
+            If `fun_dist` is `None`, the `x` is assumed to be a square pairwise distance matrix.
         size: int
             Number of sample points to select (i.e. size of the subset).
         labels: np.ndarray
@@ -93,27 +100,27 @@ class MaxMin(SelectionBase):
             List of indices of selected samples.
         """
         # calculate pairwise distance between points
-        X_dist = X
+        x_dist = x
         if self.fun_dist is not None:
-            X_dist = self.fun_dist(X)
-        # check X_dist is a square symmetric matrix
-        if X_dist.shape[0] != X_dist.shape[1]:
-            raise ValueError(f"The pairwise distance matrix must be square, got {X_dist.shape}.")
-        if np.max(abs(X_dist - X_dist.T)) > 1e-8:
+            x_dist = self.fun_dist(x)
+        # check x_dist is a square symmetric matrix
+        if x_dist.shape[0] != x_dist.shape[1]:
+            raise ValueError(f"The pairwise distance matrix must be square, got {x_dist.shape}.")
+        if np.max(abs(x_dist - x_dist.T)) > 1e-8:
             raise ValueError("The pairwise distance matrix must be symmetric.")
 
         if labels is not None:
             # extract pairwise distances from full pairwise distance matrix to obtain a new matrix
             # that only contains pairwise distances between samples within a given cluster
-            X_dist = X_dist[labels][:, labels]
+            x_dist = x_dist[labels][:, labels]
 
-        # choosing initial point as the medoid (i.e., point with minimum cumulative pairwise
-        # distances to other points)
-        selected = [np.argmin(np.sum(X_dist, axis=0))]
+        # choosing initial point
+        selected = setup_reference_index(x_dist=x_dist, ref_index=self.ref_index)
+
         # select following points until desired number of points have been obtained
         while len(selected) < size:
             # determine the min pairwise distances between the selected points and all other points
-            min_distances = np.min(X_dist[selected], axis=0)
+            min_distances = np.min(x_dist[selected], axis=0)
             # determine which point affords the maximum distance among the minimum distances
             # captured in min_distances
             new_id = np.argmax(min_distances)
@@ -152,20 +159,20 @@ class MaxSum(SelectionBase):
         ----------
         fun_dist : callable
             Function for calculating the pairwise distance between sample points.
-            `fun_dist(X) -> X_dist` takes a 2D feature array of shape (n_samples, n_features)
+            `fun_dist(x) -> x_dist` takes a 2D feature array of shape (n_samples, n_features)
             and returns a 2D distance array of shape (n_samples, n_samples).
         """
         self.fun_dist = fun_dist
 
-    def select_from_cluster(self, X, size, labels=None):
+    def select_from_cluster(self, x, size, labels=None):
         """Return selected samples from a cluster based on MaxSum algorithm.
 
         Parameters
         ----------
-        X: ndarray of shape (n_samples, n_features) or (n_samples, n_samples)
+        x: ndarray of shape (n_samples, n_features) or (n_samples, n_samples)
             Feature matrix of `n_samples` samples in `n_features` dimensional feature space,
             or the pairwise distance matrix between `n_samples` samples.
-            If `fun_dist` is `None`, the `X` is assumed to be a square pairwise distance matrix.
+            If `fun_dist` is `None`, the `x` is assumed to be a square pairwise distance matrix.
         size: int
             Number of sample points to select (i.e. size of the subset).
         labels: np.ndarray
@@ -176,33 +183,33 @@ class MaxSum(SelectionBase):
         selected : list
             List of indices of selected samples.
         """
-        if size > len(X):
+        if size > len(x):
             raise ValueError(
-                f"Given size is greater than the number of sample points, {size} > {len(X)} "
+                f"Given size is greater than the number of sample points, {size} > {len(x)} "
             )
 
         # calculate pairwise distance between points
-        X_dist = X
+        x_dist = x
         if self.fun_dist is not None:
-            X_dist = self.fun_dist(X)
-        # check X_dist is a square symmetric matrix
-        if X_dist.shape[0] != X_dist.shape[1]:
-            raise ValueError(f"The pairwise distance matrix must be square, got {X_dist.shape}.")
-        if np.max(abs(X_dist - X_dist.T)) > 1e-8:
+            x_dist = self.fun_dist(x)
+        # check x_dist is a square symmetric matrix
+        if x_dist.shape[0] != x_dist.shape[1]:
+            raise ValueError(f"The pairwise distance matrix must be square, got {x_dist.shape}.")
+        if np.max(abs(x_dist - x_dist.T)) > 1e-8:
             raise ValueError("The pairwise distance matrix must be symmetric.")
 
         if labels is not None:
             # extract pairwise distances from full pairwise distance matrix to obtain a new matrix
             # that only contains pairwise distances between samples within a given cluster.
-            X_dist = X_dist[labels][:, labels]
+            x_dist = x_dist[labels][:, labels]
 
         # choosing initial point as the medoid (i.e., point with minimum cumulative pairwise
         # distances to other points)
-        selected = [np.argmin(np.sum(X_dist, axis=0))]
+        selected = [np.argmin(np.sum(x_dist, axis=0))]
         # select following points until desired number of points have been obtained
         while len(selected) < size:
             # determine sum of pairwise distances between selected points and all other points
-            sum_distances = np.sum(X_dist[selected], axis=0)
+            sum_distances = np.sum(x_dist[selected], axis=0)
             # determine which point has the max sum of pairwise distances to already-selected points
             new_id = np.argmax(sum_distances)
             # make sure that new_id corresponds to a new point
@@ -275,12 +282,12 @@ class OptiSim(SelectionBase):
         self.p = p
         self.random_seed = random_seed
 
-    def algorithm(self, X, max_size) -> list:
+    def algorithm(self, x, max_size) -> list:
         """Return selected sample indices based on OptiSim algorithm.
 
         Parameters
         ----------
-        X: ndarray of shape (n_samples, n_features)
+        x: ndarray of shape (n_samples, n_features)
             Feature matrix of `n_samples` samples in `n_features` dimensional feature space.
         max_size : int
             Maximum number of samples to select.
@@ -294,18 +301,18 @@ class OptiSim(SelectionBase):
         count = 1
 
         # establish a kd-tree for nearest-neighbor lookup
-        tree = scipy.spatial.KDTree(X)
+        tree = scipy.spatial.KDTree(x)
         # use a random number generator that will be used to randomly select points
         rng = np.random.default_rng(seed=self.random_seed)
 
-        n_samples = len(X)
+        n_samples = len(x)
         # bv will serve as a mask to discard points within radius r of previously selected points
         bv = np.zeros(n_samples)
         candidates = list(range(n_samples))
         # determine which points are within radius r of initial point
         # note: workers=-1 uses all available processors/CPUs
         index_remove = tree.query_ball_point(
-            X[self.ref_index], self.r, eps=self.eps, p=self.p, workers=-1
+            x[self.ref_index], self.r, eps=self.eps, p=self.p, workers=-1
         )
         # exclude points within radius r of initial point from list of candidates using bv mask
         for idx in index_remove:
@@ -322,10 +329,10 @@ class OptiSim(SelectionBase):
                 sublist = candidates.compressed()
 
             # create a new kd-tree for nearest neighbor lookup with candidates
-            new_tree = scipy.spatial.KDTree(X[selected])
+            new_tree = scipy.spatial.KDTree(x[selected])
             # query the kd-tree for nearest neighbors to selected samples
             # note: workers=-1 uses all available processors/CPUs
-            search, _ = new_tree.query(X[sublist], eps=self.eps, p=self.p, workers=-1)
+            search, _ = new_tree.query(x[sublist], eps=self.eps, p=self.p, workers=-1)
             # identify the nearest neighbor with the largest distance from previously selected samples
             best_idx = sublist[np.argmax(search)]
             selected.append(best_idx)
@@ -337,7 +344,7 @@ class OptiSim(SelectionBase):
 
             # eliminate all samples within radius r of the selected sample
             index_remove = tree.query_ball_point(
-                X[best_idx], self.r, eps=self.eps, p=self.p, workers=-1
+                x[best_idx], self.r, eps=self.eps, p=self.p, workers=-1
             )
             for idx in index_remove:
                 bv[idx] = 1
@@ -345,12 +352,12 @@ class OptiSim(SelectionBase):
 
         return selected
 
-    def select_from_cluster(self, X, size, labels=None):
+    def select_from_cluster(self, x, size, labels=None):
         """Return selected samples from a cluster based on OptiSim algorithm.
 
         Parameters
         ----------
-        X: ndarray of shape (n_samples, n_features)
+        x: ndarray of shape (n_samples, n_features)
             Feature matrix of `n_samples` samples in `n_features` dimensional feature space.
         size : int
             Number of samples to be selected.
@@ -362,16 +369,16 @@ class OptiSim(SelectionBase):
         selected : list
             List of indices of selected samples.
         """
-        if self.ref_index is not None and self.ref_index >= len(X):
+        if self.ref_index is not None and self.ref_index >= len(x):
             raise ValueError(
-                f"ref_index is not less than the number of samples; {self.ref_index} >= {len(X)}."
+                f"ref_index is not less than the number of samples; {self.ref_index} >= {len(x)}."
             )
-        # pass subset of X to optimize_radius if labels is not None
+        # pass subset of x to optimize_radius if labels is not None
         if labels is not None:
-            X = X[labels]
+            x = x[labels]
         # reset radius to initial value (this is important when sampling multiple clusters)
         self.r = self.r0
-        return optimize_radius(self, X, size, labels)
+        return optimize_radius(self, x, size, labels)
 
 
 class DISE(SelectionBase):
@@ -434,12 +441,12 @@ class DISE(SelectionBase):
         self.p = p
         self.eps = eps
 
-    def algorithm(self, X, max_size):
+    def algorithm(self, x, max_size):
         """Return selected samples based on directed sphere exclusion algorithm.
 
         Parameters
         ----------
-        X: ndarray of shape (n_samples, n_features)
+        x: ndarray of shape (n_samples, n_features)
            Feature matrix of `n_samples` samples in `n_features` dimensional space.
         max_size: int
             Maximum number of samples to select.
@@ -452,16 +459,16 @@ class DISE(SelectionBase):
 
         # calculate distance of all samples from reference sample; distance is a (n_samples,) array
         # this includes the distance of reference sample from itself, which is 0
-        distances = scipy.spatial.minkowski_distance(X[self.ref_index], X, p=self.p)
+        distances = scipy.spatial.minkowski_distance(x[self.ref_index], x, p=self.p)
         # get sorted index of samples based on their distance from reference (closest to farthest)
         # the first index will be the ref_index which has distance of zero
         index_sorted = np.argsort(distances)
         assert index_sorted[0] == self.ref_index
         # construct KDTree for quick nearest-neighbor lookup
-        kdtree = scipy.spatial.KDTree(X)
+        kdtree = scipy.spatial.KDTree(x)
 
         # construct bitarray to track selected samples (1 means exclude)
-        bv = bitarray.bitarray(list(np.zeros(len(X), dtype=int)))
+        bv = bitarray.bitarray(list(np.zeros(len(x), dtype=int)))
 
         # the neighbours of the ref_index are going to be excluded in the first iteration
         # and ref_index is going to be added to the selected list
@@ -476,7 +483,7 @@ class DISE(SelectionBase):
                     return selected
                 # find index of all samples within radius of sample idx (this includes the sample index itself)
                 index_exclude = kdtree.query_ball_point(
-                    X[idx], self.r, eps=self.eps, p=self.p, workers=-1
+                    x[idx], self.r, eps=self.eps, p=self.p, workers=-1
                 )
                 # exclude samples within radius r of sample idx (measure by Minkowski p-norm) from
                 # future consideration by setting their bitarray value to 1
@@ -485,12 +492,12 @@ class DISE(SelectionBase):
 
         return selected
 
-    def select_from_cluster(self, X, size, labels=None):
+    def select_from_cluster(self, x, size, labels=None):
         """Return selected samples from a cluster based on directed sphere exclusion algorithm
 
         Parameters
         ----------
-        X: ndarray of shape (n_samples, n_features)
+        x: ndarray of shape (n_samples, n_features)
            Feature matrix of `n_samples` samples in `n_features` dimensional space.
         size: int
             Number of samples to be selected.
@@ -502,18 +509,73 @@ class DISE(SelectionBase):
         selected: list
             List of indices of selected samples.
         """
-        if self.ref_index is not None and self.ref_index >= len(X):
+        if self.ref_index is not None and self.ref_index >= len(x):
             raise ValueError(
-                f"ref_index is not less than the number of samples; {self.ref_index} >= {len(X)}."
+                f"ref_index is not less than the number of "
+                f"samples; {self.ref_index} >= {len(x)}."
             )
-        # pass subset of X to optimize_radius if labels is not None
+        # pass subset of x to optimize_radius if labels is not None
         if labels is not None:
-            X = X[labels]
+            x = x[labels]
 
-        if X.shape[0] < size:
+        if x.shape[0] < size:
             raise RuntimeError(
-                f"Number of samples is less than the requested sample size: {X.shape[0]} < {size}."
+                f"Number of samples is less than the requested "
+                f"sample size: {x.shape[0]} < {size}."
             )
         # reset radius to initial value (this is important when sampling multiple clusters)
         self.r = self.r0
-        return optimize_radius(self, X, size, labels)
+        return optimize_radius(self, x, size, labels)
+
+
+def setup_reference_index(x_dist, ref_index="medoid"):
+    """Set up the reference index for selecting.
+
+    Parameters
+    ----------
+    x_dist: ndarray of shape (n_samples, n_samples)
+        Pairwise distance matrix between `n_samples` samples.
+    ref_index: int, str, list, optional
+        Index of the reference sample to start the selection algorithm from.
+        It can be an integer, a float, a list of integers or floats or a mixture of them,
+        or "medoid", or "None". When `None`, the medoid center is chosen as the reference
+        sample. Default is None.
+
+    Returns
+    -------
+    selected: list
+        List of indices of the initial selected data points.
+
+    """
+    len_x = len(x_dist)
+
+    if ref_index is None or ref_index == "medoid":
+        selected = [np.argmin(np.sum(x_dist, axis=0))]
+
+    # when ref_index is a float or integer, it cannot be negative or greater than the number of samples
+    if isinstance(ref_index, float) or isinstance(ref_index, int):
+        # check if ref_index is a valid index
+        if ref_index < 0 or ref_index >= len_x:
+            raise ValueError(
+                f"The ref_index must be a non-negative integer less than the "
+                f"number of samples, got {ref_index} >= {len_x}."
+            )
+        selected = [int(ref_index)]
+
+    # when ref_index is a list, just use it
+    if isinstance(ref_index, list):
+        # all elements of ref_index must be integers or float
+        if not all(isinstance(i, (int, float)) for i in ref_index):
+            raise ValueError("All elements of ref_index must be integers or float.")
+
+        # all the elements of ref_index must be greater than or equal to 0 and less than the
+        # number of samples
+        if np.any(np.array(ref_index) < 0) or np.any(np.array(ref_index) >= len_x):
+            raise ValueError(
+                f"All elements of ref_index must be greater than or equal to 0 and less than "
+                f"the number of samples, got {ref_index}."
+            )
+
+        selected = [int(i) for i in ref_index]
+
+    return selected

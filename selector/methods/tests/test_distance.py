@@ -65,11 +65,48 @@ def test_maxmin():
     # make sure all the selected indices are the same with expectation
     assert_equal(selected_ids, [85, 57, 41, 25, 9, 62, 29, 65, 81, 61, 60, 97])
 
+    # use MaxMin algorithm to select points from non-clustered data with "medoid" as the reference point
+    collector_medoid_1 = MaxMin(ref_index="medoid")
+    selected_ids_medoid_1 = collector_medoid_1.select(arr_dist, size=12)
+    # make sure all the selected indices are the same with expectation
+    assert_equal(selected_ids_medoid_1, [85, 57, 41, 25, 9, 62, 29, 65, 81, 61, 60, 97])
+
+    # use MaxMin algorithm to select points from non-clustered data with "None" for the reference point
+    collector_medoid_2 = MaxMin(ref_index=None)
+    selected_ids_medoid_2 = collector_medoid_2.select(arr_dist, size=12)
+    # make sure all the selected indices are the same with expectation
+    assert_equal(selected_ids_medoid_2, [85, 57, 41, 25, 9, 62, 29, 65, 81, 61, 60, 97])
+
+    # use MaxMin algorithm to select points from non-clustered data with float as the reference point
+    collector_float = MaxMin(ref_index=85.0)
+    selected_ids_float = collector_float.select(arr_dist, size=12)
+    # make sure all the selected indices are the same with expectation
+    assert_equal(selected_ids_float, [85, 57, 41, 25, 9, 62, 29, 65, 81, 61, 60, 97])
+
+    # use MaxMin algorithm to select points from non-clustered data with a predefined list as the reference point
+    collector_float = MaxMin(ref_index=[85, 57, 41, 25])
+    selected_ids_float = collector_float.select(arr_dist, size=12)
+    # make sure all the selected indices are the same with expectation
+    assert_equal(selected_ids_float, [85, 57, 41, 25, 9, 62, 29, 65, 81, 61, 60, 97])
+
+    # test failing case when ref_index is not a valid index
+    with pytest.raises(ValueError):
+        collector_float = MaxMin(ref_index=-3)
+        selected_ids_float = collector_float.select(arr_dist, size=12)
+    # test failing case when ref_index contains a complex number
+    with pytest.raises(ValueError):
+        collector_float = MaxMin(ref_index=[1 + 5j, 2, 5])
+        selected_ids_float = collector_float.select(arr_dist, size=12)
+    # test failing case when ref_index contains a negative number
+    with pytest.raises(ValueError):
+        collector_float = MaxMin(ref_index=[-1, 2, 5])
+        selected_ids_float = collector_float.select(arr_dist, size=12)
+
     # use MaxMin algorithm, this time instantiating with a distance metric
-    collector = MaxMin(lambda x: pairwise_distances(x, metric="euclidean"))
+    collector = MaxMin(fun_dist=lambda x: pairwise_distances(x, metric="euclidean"))
     simple_coords = np.array([[0, 0], [2, 0], [0, 2], [2, 2], [-10, -10]])
     # provide coordinates rather than pairwise distance matrix to collector
-    selected_ids = collector.select(simple_coords, size=3)
+    selected_ids = collector.select(x=simple_coords, size=3)
     # make sure all the selected indices are the same with expectation
     assert_equal(selected_ids, [0, 4, 3])
 
