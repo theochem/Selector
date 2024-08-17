@@ -1,9 +1,0 @@
-[run]
-omit =
-    selector/*/tests/*
-    selector/tests/*
-    selector/__init__.py
-    selector/_version.py
-
-[report]
-show_missing = True
