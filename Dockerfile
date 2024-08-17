@@ -9,10 +9,6 @@ RUN apt-get update && \
     apt-get install -y build-essential git && \
     apt-get clean
 
-# Copy the requirements file into the container
-COPY requirements.txt requirements.txt
-COPY requirements_dev.txt requirements_dev.txt
-
 # Upgrade pip
 RUN pip install --upgrade pip
 
