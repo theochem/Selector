@@ -32,14 +32,14 @@ Running Web Interface Locally Using Docker
 git clone https://github.com/theochem/Selector.git
 ```
 
-- Change to the webapp branch
-```bash
-git checkout webapp
-```
-
 - Change to the Selector directory
 ```bash
 cd Selector
+```
+
+- Change to the webapp branch
+```bash
+git checkout webapp
 ```
 
 - Build the Docker image
