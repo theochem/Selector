@@ -60,7 +60,7 @@ class MaxMin(SelectionBase):
     Structure‐Activity Relationships 21.6 (2002): 598-604.
     """
 
-    def __init__(self, fun_dist=None, ref_index="medoid"):
+    def __init__(self, fun_dist=None, ref_index=None):
         """
         Initializing class.
 
@@ -74,7 +74,7 @@ class MaxMin(SelectionBase):
             Index of the reference sample to start the selection algorithm from.
             It can be an integer, a float, a list of integers or floats or a mixture of them,
             or "medoid", or "None". When `None`, the medoid center is chosen as the reference
-            sample. Default is "medoid".
+            sample. Default is "None".
 
         """
         self.fun_dist = fun_dist
@@ -151,7 +151,7 @@ class MaxSum(SelectionBase):
     symposium on Principles of Database Systems. 2012.
     """
 
-    def __init__(self, fun_dist=None):
+    def __init__(self, fun_dist=None, ref_index=None):
         """
         Initializing class.
 
@@ -161,8 +161,15 @@ class MaxSum(SelectionBase):
             Function for calculating the pairwise distance between sample points.
             `fun_dist(x) -> x_dist` takes a 2D feature array of shape (n_samples, n_features)
             and returns a 2D distance array of shape (n_samples, n_samples).
+        ref_index: int, str, list, optional
+            Index of the reference sample to start the selection algorithm from.
+            It can be an integer, a float, a list of integers or floats or a mixture of them,
+            or "medoid", or "None". When `None`, the medoid center is chosen as the reference
+            sample. Default is "None".
+
         """
         self.fun_dist = fun_dist
+        self.ref_index = ref_index
 
     def select_from_cluster(self, x, size, labels=None):
         """Return selected samples from a cluster based on MaxSum algorithm.
@@ -182,12 +189,8 @@ class MaxSum(SelectionBase):
         -------
         selected : list
             List of indices of selected samples.
-        """
-        if size > len(x):
-            raise ValueError(
-                f"Given size is greater than the number of sample points, {size} > {len(x)} "
-            )
 
+        """
         # calculate pairwise distance between points
         x_dist = x
         if self.fun_dist is not None:
@@ -203,9 +206,8 @@ class MaxSum(SelectionBase):
             # that only contains pairwise distances between samples within a given cluster.
             x_dist = x_dist[labels][:, labels]
 
-        # choosing initial point as the medoid (i.e., point with minimum cumulative pairwise
-        # distances to other points)
-        selected = [np.argmin(np.sum(x_dist, axis=0))]
+        # setting up initial point
+        selected = setup_reference_index(x_dist=x_dist, ref_index=self.ref_index)
         # select following points until desired number of points have been obtained
         while len(selected) < size:
             # determine sum of pairwise distances between selected points and all other points
