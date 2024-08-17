@@ -19,43 +19,35 @@ Please use the following citation in any publication using the `selector` librar
 }
 ```
 
-
-Installation
+Running Web Interface Locally Using Docker
 ------------
 
-To install `selector` using the conda package management system, install
-[miniconda](https://conda.io/miniconda.html) or [anaconda](https://www.anaconda.com/download)
-first, and then:
+### Install Docker
+  - Visit this [site](https://docs.docker.com/engine/install/) to install Docker Engine
+  - Open the installed Docker App once to complete the setup
 
+### Build the Docker Image
+- Clone the repository
 ```bash
-    # Create and activate qcdevs conda environment (optional, but recommended)
-    conda create -n qcdevs python=3.10
-    conda activate qcdevs
-
-    # Install the stable release
-    # current conda release is not ready yet
-    # conda install -c theochem qc-selector
-
-    # install the development version
-    pip install git+https://github.com/theochem/Selector.git
+git clone https://github.com/theochem/Selector.git
 ```
 
-To install `selector` with `pip`, you may want to create a
-[virtual environment](https://docs.python.org/3/tutorial/venv.html), and then:
-
-
+- Change to the webapp branch
 ```bash
-    # Install the stable release.
-    pip install qc-selector
+git checkout webapp
 ```
 
-See https://selector.qcdevs.org for full details.
-
-Running Web Interface Locally
-------------
-
-After installing the package, you can run the interface locally by running the following command:
-
+- Change to the Selector directory
 ```bash
-    streamlit run streamlit_app/app.py
+cd Selector
+```
+
+- Build the Docker image
+```bash
+docker build -t selector-webapp .
+```
+
+- Run the Webapp inside Docker Container
+```bash
+docker run -p 8501:8501 selector-webapp
 ```
