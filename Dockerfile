@@ -6,7 +6,7 @@ WORKDIR /app
 
 # Install system dependencies required for building packages
 RUN apt-get update && \
-    apt-get install -y build-essential && \
+    apt-get install -y build-essential git && \
     apt-get clean
 
 # Copy the requirements file into the container
@@ -20,11 +20,11 @@ RUN pip install --upgrade pip setuptools wheel
 RUN pip install --use-pep517 --no-cache-dir -r requirements.txt
 RUN pip install --use-pep517 --no-cache-dir -r requirements_dev.txt
 
+# Install the Selector package from the source code
+RUN pip install git+https://github.com/theochem/Selector.git
+
 # Copy the rest of the application code
 COPY . .
-
-# Install the Selector package using PEP 517 standards-based tools
-RUN pip install --use-pep517 .
 
 # Expose the port the app runs on
 EXPOSE 8501
