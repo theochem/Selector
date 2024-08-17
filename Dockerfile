@@ -13,12 +13,11 @@ RUN apt-get update && \
 COPY requirements.txt requirements.txt
 COPY requirements_dev.txt requirements_dev.txt
 
-# Upgrade pip, setuptools, and wheel
-RUN pip install --upgrade pip setuptools wheel
+# Upgrade pip
+RUN pip install --upgrade pip
 
-# Install the dependencies using --use-pep517
-RUN pip install --use-pep517 --no-cache-dir -r requirements.txt
-RUN pip install --use-pep517 --no-cache-dir -r requirements_dev.txt
+# Install streamlit
+RUN pip install streamlit
 
 # Install the Selector package from the source code
 RUN pip install git+https://github.com/theochem/Selector.git
