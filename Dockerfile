@@ -7,13 +7,14 @@ WORKDIR /app
 # Install system dependencies required for building packages
 RUN apt-get update && \
     apt-get install -y build-essential git && \
+    apt-get install -y libxrender1 libxext6 && \
     apt-get clean
 
 # Upgrade pip
 RUN pip install --upgrade pip
 
-# Install streamlit
-RUN pip install streamlit
+# Install dependencies
+RUN pip install streamlit rdkit
 
 # Install the Selector package from the source code
 RUN pip install git+https://github.com/theochem/Selector.git
