@@ -135,7 +135,7 @@ def test_maxmin_invalid_input():
         _ = collector.select(x_dist, size=2)
 
     # case when the distance matrix is not symmetric
-    x_dist = np.array([[0, 1, 2], [1, 0, 3], [4, 9, 0], [5, 6, 7]])
+    x_dist = np.array([[0, 1, 2, 1], [1, 1, 0, 3], [4, 9, 4, 0], [6, 5, 6, 7]])
     with pytest.raises(ValueError):
         collector = MaxMin(ref_index=0)
         _ = collector.select(x_dist, size=2)
@@ -229,8 +229,14 @@ def test_maxsum_invalid_input():
         collector = MaxSum(ref_index=0)
         _ = collector.select(x_dist, size=2)
 
-    # case when the distance matrix is not symmetric
+    # case when the distance matrix is not square
     x_dist = np.array([[0, 1, 2], [1, 0, 3], [4, 9, 0], [5, 6, 7]])
+    with pytest.raises(ValueError):
+        collector = MaxSum(ref_index=0)
+        _ = collector.select(x_dist, size=2)
+
+    # case when the distance matrix is not symmetric
+    x_dist = np.array([[0, 1, 2, 1], [1, 1, 0, 3], [4, 9, 4, 0], [6, 5, 6, 7]])
     with pytest.raises(ValueError):
         collector = MaxSum(ref_index=0)
         _ = collector.select(x_dist, size=2)
@@ -270,12 +276,17 @@ def test_optisim():
     # make sure all the selected indices are the same with expectation
     assert_equal(selected_ids, [0, 8, 55, 37, 41, 13, 12, 42, 6, 30, 57, 76])
 
-    # tester to check if OptiSim gives same results as MaxMin for k=>infinity
+    # check if OptiSim gives same results as MaxMin for k=>infinity
     collector = OptiSim(ref_index=85, k=999999)
     selected_ids_optisim = collector.select(coords, size=12)
     collector = MaxMin()
     selected_ids_maxmin = collector.select(arr_dist, size=12)
     assert_equal(selected_ids_optisim, selected_ids_maxmin)
+
+    # test with invalid ref_index
+    with pytest.raises(ValueError):
+        collector = OptiSim(ref_index=10000)
+        _ = collector.select(coords, size=12)
 
 
 def test_directed_sphere_size_error():
