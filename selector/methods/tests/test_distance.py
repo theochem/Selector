@@ -72,7 +72,7 @@ def test_maxmin():
     assert_equal(selected_ids_medoid_1, [85, 57, 41, 25, 9, 62, 29, 65, 81, 61, 60, 97])
 
     # use MaxMin algorithm to select points from non-clustered data with "None" for the reference point
-    collector_medoid_2 = MaxMin(ref_index=None)
+    collector_medoid_2 = MaxMin(ref_index="medoid")
     selected_ids_medoid_2 = collector_medoid_2.select(arr_dist, size=12)
     # make sure all the selected indices are the same with expectation
     assert_equal(selected_ids_medoid_2, [85, 57, 41, 25, 9, 62, 29, 65, 81, 61, 60, 97])
@@ -139,13 +139,15 @@ def test_maxsum_clustered_data():
     )
 
     # use MaxSum algorithm to select points from clustered data, instantiating with euclidean distance metric
-    collector = MaxSum(lambda x: pairwise_distances(x, metric="euclidean"))
+    collector = MaxSum(
+        fun_dist=lambda x: pairwise_distances(x, metric="euclidean"), ref_index="medoid"
+    )
     selected_ids = collector.select(coords_cluster, size=12, labels=class_labels_cluster)
     # make sure all the selected indices are the same with expectation
     assert_equal(selected_ids, [41, 34, 85, 94, 51, 50, 78, 66, 21, 64, 0, 83])
 
     # use MaxSum algorithm to select points from clustered data without instantiating with euclidean distance metric
-    collector = MaxSum()
+    collector = MaxSum(ref_index="medoid")
     selected_ids = collector.select(coords_cluster_dist, size=12, labels=class_labels_cluster)
     # make sure all the selected indices are the same with expectation
     assert_equal(selected_ids, [41, 34, 85, 94, 51, 50, 78, 66, 21, 64, 0, 83])
@@ -169,7 +171,9 @@ def test_maxsum_non_clustered_data():
         random_state=42,
     )
     # use MaxSum algorithm to select points from non-clustered data, instantiating with euclidean distance metric
-    collector = MaxSum(fun_dist=lambda x: pairwise_distances(x, metric="euclidean"), ref_index=None)
+    collector = MaxSum(
+        fun_dist=lambda x: pairwise_distances(x, metric="euclidean"), ref_index="medoid"
+    )
     selected_ids = collector.select(coords, size=12)
     # make sure all the selected indices are the same with expectation
     assert_equal(selected_ids, [85, 57, 25, 41, 95, 9, 21, 8, 13, 68, 37, 54])
