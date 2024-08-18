@@ -126,6 +126,21 @@ def test_maxmin():
     assert_equal(selected_mocked, [0, 1, 2, 3, 4, 5, 6, 7, 8, 16, 15, 10, 13, 9, 18])
 
 
+def test_maxmin_invalid_input():
+    """Testing MaxMin class with invalid input."""
+    # case when the distance matrix is not square
+    x_dist = np.array([[0, 1], [1, 0], [4, 9]])
+    with pytest.raises(ValueError):
+        collector = MaxMin(ref_index=0)
+        _ = collector.select(x_dist, size=2)
+
+    # case when the distance matrix is not symmetric
+    x_dist = np.array([[0, 1, 2], [1, 0, 3], [4, 9, 0], [5, 6, 7]])
+    with pytest.raises(ValueError):
+        collector = MaxMin(ref_index=0)
+        _ = collector.select(x_dist, size=2)
+
+
 def test_maxsum_clustered_data():
     """Testing MaxSum class."""
     # generate random data points belonging to multiple clusters - coordinates and class labels
@@ -204,6 +219,21 @@ def test_maxsum_non_clustered_data():
             fun_dist=lambda x: pairwise_distances(x, metric="euclidean"), ref_index=-1
         )
         selected_ids = collector.select(coords, size=12)
+
+
+def test_maxsum_invalid_input():
+    """Testing MaxSum class with invalid input."""
+    # case when the distance matrix is not square
+    x_dist = np.array([[0, 1], [1, 0], [4, 9]])
+    with pytest.raises(ValueError):
+        collector = MaxSum(ref_index=0)
+        _ = collector.select(x_dist, size=2)
+
+    # case when the distance matrix is not symmetric
+    x_dist = np.array([[0, 1, 2], [1, 0, 3], [4, 9, 0], [5, 6, 7]])
+    with pytest.raises(ValueError):
+        collector = MaxSum(ref_index=0)
+        _ = collector.select(x_dist, size=2)
 
 
 def test_optisim():
