@@ -637,12 +637,8 @@ class DISE(SelectionBase):
         -------
         selected: list
             List of indices of selected samples.
+
         """
-        if self.ref_index is not None and self.ref_index >= len(x):
-            raise ValueError(
-                f"ref_index is not less than the number of "
-                f"samples; {self.ref_index} >= {len(x)}."
-            )
         # pass subset of x to optimize_radius if labels is not None
         if labels is not None:
             x = x[labels]
