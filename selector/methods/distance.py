@@ -24,7 +24,7 @@ import warnings
 
 import bitarray
 import numpy as np
-import scipy
+from scipy import spatial
 
 from selector.methods.base import SelectionBase
 from selector.methods.utils import optimize_radius
@@ -361,7 +361,7 @@ class OptiSim(SelectionBase):
         count = 1
 
         # establish a kd-tree for nearest-neighbor lookup
-        tree = scipy.spatial.KDTree(x)
+        tree = spatial.KDTree(x)
         # use a random number generator that will be used to randomly select points
         rng = np.random.default_rng(seed=self.random_seed)
 
@@ -389,7 +389,7 @@ class OptiSim(SelectionBase):
                 sublist = candidates.compressed()
 
             # create a new kd-tree for nearest neighbor lookup with candidates
-            new_tree = scipy.spatial.KDTree(x[selected])
+            new_tree = spatial.KDTree(x[selected])
             # query the kd-tree for nearest neighbors to selected samples
             # note: workers=-1 uses all available processors/CPUs
             search, _ = new_tree.query(x[sublist], eps=self.eps, p=self.p, workers=-1)
@@ -469,7 +469,9 @@ class DISE(SelectionBase):
 
     """
 
-    def __init__(self, r0=None, ref_index=0, tol=0.05, n_iter=10, p=2.0, eps=0.0):
+    def __init__(
+        self, r0=None, ref_index=0, tol=0.05, n_iter=10, p=2.0, eps=0.0, fun_dist=None, **kwargs
+    ):
         """
         Initialize class.
 
@@ -489,12 +491,17 @@ class DISE(SelectionBase):
         p: float, optional
             This is `p` argument of scipy.spatial.KDTree.query_ball_point method denoting
             which Minkowski p-norm to use. The values of `p` should be within [1, inf].
-            A finite large p may cause a ValueError if overflow can occur.
+            A finite large p may cause a ValueError if overflow can occur. Default is 2.0.
         eps: nonnegative float, optional
             This is `eps` argument of scipy.spatial.KDTree.query_ball_point method denoting
             approximate nearest neighbor search for eliminating close points. Branches of the tree
             are not explored if their nearest points are further than r / (1 + eps), and branches
             are added in bulk if their furthest points are nearer than r * (1 + eps).
+        fun_dist: callable, optional
+            Function for calculating the distances between sample points. When `fun_dist` is `None`,
+            the Minkowski p-norm distance is used. Default is None.
+        kwargs: dict, optional
+            Additional keyword arguments to be passed to the distance function `fun_dist`.
 
         Notes
         -----
@@ -503,6 +510,11 @@ class DISE(SelectionBase):
         selection for each class separately where different `ref_index` parameters can be used.
         For example, if we have two classes, we can pass `ref_index=[0, 1, 4]` to select samples from
         class 0 and `ref_index=[3, 6]` class 1 respectively.
+
+        Notes
+        -----
+        If `p` is also defined in `kwargs`, the value of `p` from the argument will be used. For
+        example, when `p=2` and `kwargs={"p": 3}`, the value of `p` will be 2.
 
         """
         self.r0 = r0
@@ -514,6 +526,19 @@ class DISE(SelectionBase):
         self.n_iter = n_iter
         self.p = p
         self.eps = eps
+
+        if fun_dist is None:
+            self.fun_dist = spatial.distance.pdist
+        else:
+            self.fun_dist = fun_dist
+
+        self.kwargs = kwargs
+        if "p" in self.kwargs.keys():
+            warnings.warn(
+                f"Value of p in kwargs is overwritten by: {self.p} as defined in the "
+                f"argument `p`."
+            )
+            self.kwargs["p"] = p
 
     def algorithm(self, x, max_size):
         """Return selected samples based on directed sphere exclusion algorithm.
@@ -529,17 +554,47 @@ class DISE(SelectionBase):
         -------
         selected: list
             List of indices of selected samples.
-        """
 
-        # calculate distance of all samples from reference sample; distance is a (n_samples,) array
-        # this includes the distance of reference sample from itself, which is 0
-        distances = scipy.spatial.minkowski_distance(x[self.ref_index], x, p=self.p)
+        """
+        if self.fun_dist is None:
+            distances = spatial.distance.squareform(
+                spatial.distance.pdist(x, metric="minkowski", p=self.kwargs.get("p"))
+            )
+        else:
+            distances = spatial.distance.squareform(self.fun_dist(x, **self.kwargs))
+
+        # check if ref_index is a list and has more than one element
+        # TODO: a list of indices can be passed to ref_index (to be checked)
+        if isinstance(self.ref_index, list) and len(self.ref_index) > 1:
+            raise ValueError(
+                "Multiple reference indices are not supported in the current implementation yet."
+            )
+        else:
+            # set up the ref_index when None or "medoid" is passed
+            if self.ref_index is None or self.ref_index == "medoid":
+                self.ref_index = setup_reference_index(
+                    x=None,
+                    x_dist=distances,
+                    ref_index=self.ref_index,
+                    fun_dist=None,
+                )
+            # set up the ref_index for other cases, e.g. integer, float, etc.
+            else:
+                self.ref_index = setup_reference_index(
+                    x=x, x_dist=None, ref_index=self.ref_index, fun_dist=None
+                )
+
+        # # calculate distance of all samples from reference sample; distance is a (n_samples,) array
+        # # this includes the distance of reference sample from itself, which is 0
+        # distances = spatial.minkowski_distance(x[self.ref_index], x, p=self.p)
+        distances_ref = distances[self.ref_index[0], :]
+
         # get sorted index of samples based on their distance from reference (closest to farthest)
         # the first index will be the ref_index which has distance of zero
-        index_sorted = np.argsort(distances)
+        index_sorted = np.argsort(distances_ref)
         assert index_sorted[0] == self.ref_index
         # construct KDTree for quick nearest-neighbor lookup
-        kdtree = scipy.spatial.KDTree(x)
+        kdtree = spatial.KDTree(x)
 
         # construct bitarray to track selected samples (1 means exclude)
         bv = bitarray.bitarray(list(np.zeros(len(x), dtype=int)))
