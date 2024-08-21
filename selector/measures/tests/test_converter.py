@@ -24,7 +24,7 @@
 import numpy as np
 from numpy.testing import assert_almost_equal, assert_equal, assert_raises
 
-import selector.converter as cv
+from selector.measures import converter as cv
 
 # Tests for variations on input `x` for sim_to_dist()
 
