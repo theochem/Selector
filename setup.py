@@ -48,7 +48,13 @@ setup(
     version="0.0.1",
     license="GNU (Version 3)",
     package_dir={"selector": "selector"},
-    packages=["selector", "selector.methods", "selector.tests", "selector.methods.tests"],
+    packages=[
+        "selector",
+        "selector.methods",
+        "selector.measures",
+        "selector.methods.tests",
+        "selector.measures.tests",
+    ],
     # Optional include package data to ship with your package
     # Customize MANIFEST.in if the general case does not suit your needs
     # Comment out this line to prevent the files from being packaged with your software
