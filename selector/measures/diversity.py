@@ -26,7 +26,7 @@ import warnings
 
 import numpy as np
 
-from selector.similarity import tanimoto
+from selector.measures.similarity import tanimoto
 
 __all__ = [
     "compute_diversity",

@@ -341,7 +341,7 @@ addopts = [
 ]
 # directory containing the tests
 testpaths = [
-    "selector/tests",
+    "selector/measures/tests",
     "selector/methods/tests",
 ]
 norecursedirs = [
@@ -363,7 +363,7 @@ markers = [
 [tool.coverage.run]
 # files or directories to exclude from coverage calculations
 omit = [
-    'selector/tests/*',
+    'selector/measures/tests/*',
     'selector/methods/tests/*',
 ]
 
@@ -380,7 +380,7 @@ exclude = [
 # configuration for bandit
 [tool.bandit]
 exclude_dirs = [
-    "selector/tests",
+    "selector/measures/tests",
     "selector/methods",
 ]
 skips = [

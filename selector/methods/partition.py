@@ -28,7 +28,7 @@ import bitarray
 import numpy as np
 import scipy
 
-from selector.diversity import compute_diversity
+from selector.measures.diversity import compute_diversity
 from selector.methods.base import SelectionBase
 
 __all__ = [
