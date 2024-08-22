@@ -1,0 +1,63 @@
+name: Deployment on DockerHub and Hugging Face
+
+# Trigger the workflow on push and pull request events to the 'main' or 'master' branch
+on:
+  push:
+    branches:
+      - "master"
+      - "main"
+      - "webapp"
+      - "jun-intro-maxmin"
+  pull_request:
+    branches:
+      - "master"
+      - "main"
+      - "webapp"
+
+jobs:
+  build-and-deploy:
+    # Run the job on the latest Ubuntu runner
+    runs-on: ubuntu-latest
+
+    steps:
+    # Step 1: Check out the latest code from the repository
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        lfs: true
+
+    # Step 2: Set up Python environment with version 3.11
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: 3.11
+
+    # Step 3: Build the Docker image to Docker Hub
+    - name: Build Docker image
+      run: |
+        docker build . -t qcdevs/selector:latest
+
+    # Step 4: Push the Docker image to Docker Hub
+    - name: Push Docker image
+      env:
+        DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+      run: |
+        docker login -u qcdevs -p $DOCKERHUB_TOKEN
+        docker push qcdevs/selector:latest
+
+    # Step 5: Replace the README.md file for Hugging Face
+    - name: Replace README for Hugging Face
+      run: |
+        mv README_hf.md README.md
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "qcdevs@gmail.com"
+        git add README.md
+        git commit -m "Replace README.md with README_hf.md for Hugging Face"
+
+    # Step 6: Push the app to Hugging Face
+    - name: Push to Hugging Face
+      env:
+        HF_TOKEN: ${{ secrets.HF_TOKEN }}
+      run: |
+        git push https://QCDevs:$HF_TOKEN@huggingface.co/spaces/QCDevs/selector HEAD:main --force
