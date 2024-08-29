@@ -238,3 +238,87 @@ def scaled_similarity_matrix(X: np.array) -> np.ndarray:
         # divide each element of the matrix by the product of the square roots of diagonal elements
         s = X / product_sqrt_diag
         return s
+
+
+def similarity_index(x: np.array, y: np.array, sim_index: str) -> float:
+    """Compute similarity index matrix.
+
+    Parameters
+    ----------
+    x : ndarray of shape (n_features,)
+        Feature array of sample `x` in an `n_features` dimensional space
+    y : ndarray of shape (n_features,)
+        Feature array of sample `y` in an `n_features` dimensional space
+    sim_index : str, optional
+        The key with the abbreviation of the similarity index to be used for calculations.
+        Possible values are:
+            - 'AC': Austin-Colwell
+            - 'BUB': Baroni-Urbani-Buser
+            - 'CTn': Consoni-Todschini n (n=1,2)
+            - 'Fai': Faith
+            - 'Gle': Gleason
+            - 'Ja': Jaccard
+            - 'JT': Jaccard-Tanimoto
+            - 'RT': Rogers-Tanimoto
+            - 'RR': Russel-Rao
+            - 'SM': Sokal-Michener
+            - 'SSn': Sokal-Sneath n (n=1,2)
+        Default is 'RR'.
+
+    Returns
+    -------
+    sim : float
+        The similarity index value between the feature arrays `x` and `y`.
+    """
+    # Define the similarity index functions
+    similarity_indices = {
+        "AC": lambda a, d, dis, p: 2 / np.pi * np.arcsin(((a + d) / p) ** 0.5),
+        "BUB": lambda a, d, dis, p: ((a * d) ** 0.5 + a) / ((a * d) ** 0.5 + a + dis),
+        "CT1": lambda a, d, dis, p: np.log(1 + a + d) / np.log(1 + p),
+        "CT2": lambda a, d, dis, p: (np.log(1 + p) - np.log(1 + dis)) / np.log(1 + p),
+        "Fai": lambda a, d, dis, p: (a + 0.5 * d) / p,
+        "Gle": lambda a, d, dis, p: 2 * a / (2 * a + dis),
+        "Ja": lambda a, d, dis, p: 3 * a / (3 * a + dis),
+        "JT": lambda a, d, dis, p: a / (a + dis),
+        "RT": lambda a, d, dis, p: (a + d) / (p + dis),
+        "RR": lambda a, d, dis, p: a / p,
+        "SM": lambda a, d, dis, p: (a + d) / p,
+        "SS1": lambda a, d, dis, p: a / (a + 2 * dis),
+        "SS2": lambda a, d, dis, p: (2 * (a + d)) / (p + (a + d)),
+    }
+
+    if sim_index not in similarity_indices:
+        raise ValueError(
+            f"Argument sim_index={sim_index} is not recognized! Choose from {similarity_indices.keys()}"
+        )
+    if x.ndim != 1 or y.ndim != 1:
+        raise ValueError(f"Arguments x and y should be 1D arrays, got {x.ndim} and {y.ndim}")
+    if x.shape != y.shape:
+        raise ValueError(
+            f"Arguments x and y should have the same shape, got {x.shape} != {y.shape}"
+        )
+    a, d, dis, p = _compute_base_descriptors(x, y)
+    return similarity_indices[sim_index](a, d, dis, p)
+
+
+def _compute_base_descriptors(x, y):
+    """Compute the base descriptors for the similarity indices.
+
+    Parameters
+    ----------
+    x : ndarray of shape (n_features,)
+        Feature array of sample `x` in an `n_features` dimensional space
+    y : ndarray of shape (n_features,)
+        Feature array of sample `y` in an `n_features` dimensional space
+
+    Returns
+    -------
+    tuple(int, int, int, int)
+        The number of common on bits, number of common off bits, number of 1-0 mismatches, and the
+        length of the fingerprint.
+    """
+    p = len(x)
+    a = np.dot(x, y)
+    d = np.dot(1 - x, 1 - y)
+    dis = p - a - d
+    return a, d, dis, p
