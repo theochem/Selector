@@ -61,7 +61,7 @@ class MaxMin(SelectionBase):
     Structure‐Activity Relationships 21.6 (2002): 598-604.
     """
 
-    def __init__(self, fun_dist=None, ref_index="medoid"):
+    def __init__(self, fun_dist=None, ref_index=None):
         """
         Initializing class.
 
@@ -71,19 +71,15 @@ class MaxMin(SelectionBase):
             Function for calculating the pairwise distance between sample points.
             `fun_dist(x) -> x_dist` takes a 2D feature array of shape (n_samples, n_features)
             and returns a 2D distance array of shape (n_samples, n_samples).
-        ref_index: int, str, list, optional
+        ref_index: int, list, optional
             Index of the reference sample to start the selection algorithm from.
-            It can be an integer, a float, a list of integers or floats or a mixture of them,
-            or "medoid". When "medoid", the medoid center is chosen as the reference
+            It can be an integer, or a list of integers or None. When None, the medoid center is chosen as the reference
             sample. Default is "None".
-
-        Notes
-        -----
-        When the `ref_index` is a list for multiple classes, it will be shared among all clusters.
-        If we want to use different reference indices for each class, we can perform the subset
-        selection for each class separately where different `ref_index` parameters can be used.
-        For example, if we have two classes, we can pass `ref_index=[0, 1]` to select samples from
-        class 0 and `ref_index=[3, 6]` class 1 respectively.
+            When the `ref_index` is a list for multiple classes, it will be shared among all clusters.
+            If we want to use different reference indices for each class, we can perform the subset
+            selection for each class separately where different `ref_index` parameters can be used.
+            For example, if we have two classes, we can pass `ref_index=[0, 1]` to select samples
+            from class 0 and `ref_index=[3, 6]` class 1 respectively.
 
         """
         self.fun_dist = fun_dist
@@ -124,7 +120,7 @@ class MaxMin(SelectionBase):
             x_dist = x_dist[labels][:, labels]
 
         # choosing initial point
-        selected = setup_reference_index(
+        selected = get_initial_selection(
             x=None, x_dist=x_dist, ref_index=self.ref_index, fun_dist=None
         )
 
@@ -163,7 +159,7 @@ class MaxSum(SelectionBase):
     symposium on Principles of Database Systems. 2012.
     """
 
-    def __init__(self, fun_dist=None, ref_index="medoid"):
+    def __init__(self, fun_dist=None, ref_index=None):
         """
         Initializing class.
 
@@ -173,19 +169,15 @@ class MaxSum(SelectionBase):
             Function for calculating the pairwise distance between sample points.
             `fun_dist(x) -> x_dist` takes a 2D feature array of shape (n_samples, n_features)
             and returns a 2D distance array of shape (n_samples, n_samples).
-        ref_index: int, str, list, optional
+        ref_index: int, list, optional
             Index of the reference sample to start the selection algorithm from.
-            It can be an integer, a float, a list of integers or floats or a mixture of them,
-            or "medoid". When "medoid", the medoid center is chosen as the reference
-            sample. Default is "medoid".
-
-        Notes
-        -----
-        When the `ref_index` is a list for multiple classes, it will be shared among all clusters.
-        If we want to use different reference indices for each class, we can perform the subset
-        selection for each class separately where different `ref_index` parameters can be used.
-        For example, if we have two classes, we can pass `ref_index=[0, 1]` to select samples from
-        class 0 and `ref_index=[3, 6]` class 1 respectively.
+            It can be an integer, or a list of integers or None. When None, the medoid center is chosen as the reference
+            sample. Default is "None".
+            When the `ref_index` is a list for multiple classes, it will be shared among all clusters.
+            If we want to use different reference indices for each class, we can perform the subset
+            selection for each class separately where different `ref_index` parameters can be used.
+            For example, if we have two classes, we can pass `ref_index=[0, 1]` to select samples
+            from class 0 and `ref_index=[3, 6]` class 1 respectively.
 
         """
         self.fun_dist = fun_dist
@@ -227,7 +219,7 @@ class MaxSum(SelectionBase):
             x_dist = x_dist[labels][:, labels]
 
         # setting up initial point
-        selected = setup_reference_index(
+        selected = get_initial_selection(
             x=None, x_dist=x_dist, ref_index=self.ref_index, fun_dist=None
         )
         # select following points until desired number of points have been obtained
@@ -279,7 +271,7 @@ class OptiSim(SelectionBase):
         eps=0,
         p=2,
         random_seed=42,
-        ref_index=0,
+        ref_index=None,
         fun_dist=None,
     ):
         """
@@ -311,22 +303,19 @@ class OptiSim(SelectionBase):
             are added in bulk if their furthest points are nearer than r * (1 + eps).
         random_seed : int, optional
             Seed for random selection of points be evaluated.
-        ref_index: int, str, list, optional
+        ref_index: int, list, optional
             Index of the reference sample to start the selection algorithm from.
-            It can be an integer, a float, a list of integers or floats or a mixture of them,
-            or "medoid", or the zero-th element. Default is zero.
+            It can be an integer, or a list of integers or None. When None, the medoid center is chosen as the reference
+            sample. Default is "None".
+            When the `ref_index` is a list for multiple classes, it will be shared among all clusters.
+            If we want to use different reference indices for each class, we can perform the subset
+            selection for each class separately where different `ref_index` parameters can be used.
+            For example, if we have two classes, we can pass `ref_index=[0, 1]` to select samples
+            from class 0 and `ref_index=[3, 6]` class 1 respectively.
         fun_dist : callable, optional
             Function for calculating the pairwise distance between sample points to be used in
             calculating the medoid. `fun_dist(x) -> x_dist` takes a 2D feature array of shape
             (n_samples, n_features) and returns a 2D distance array of shape (n_samples, n_samples).
-
-        Notes
-        -----
-        When the `ref_index` is a list for multiple classes, it will be shared among all clusters.
-        If we want to use different reference indices for each class, we can perform the subset
-        selection for each class separately where different `ref_index` parameters can be used.
-        For example, if we have two classes, we can pass `ref_index=[0, 1]` to select samples from
-        class 0 and `ref_index=[3, 6]` class 1 respectively.
 
         """
         self.r0 = r0
@@ -357,7 +346,7 @@ class OptiSim(SelectionBase):
 
         """
         # set up reference index
-        selected = setup_reference_index(x=x, x_dist=None, ref_index=self.ref_index, fun_dist=None)
+        selected = get_initial_selection(x=x, x_dist=None, ref_index=self.ref_index, fun_dist=None)
         count = 1
 
         # establish a kd-tree for nearest-neighbor lookup
@@ -470,7 +459,7 @@ class DISE(SelectionBase):
     """
 
     def __init__(
-        self, r0=None, ref_index=0, tol=0.05, n_iter=10, p=2.0, eps=0.0, fun_dist=None, **kwargs
+        self, r0=None, ref_index=None, tol=0.05, n_iter=10, p=2.0, eps=0.0, fun_dist=None, **kwargs
     ):
         """
         Initialize class.
@@ -479,10 +468,15 @@ class DISE(SelectionBase):
         ----------
         r0: float, optional
             Initial guess for radius of the exclusion sphere.
-        ref_index: int, str, list, optional
+        ref_index: int, list, optional
             Index of the reference sample to start the selection algorithm from.
-            It can be an integer, a float, a list of integers or floats or a mixture of them,
-            or "medoid", or the zero-th element. Default is zero.
+            It can be an integer, or a list of integers or None. When None, the medoid center is chosen as the reference
+            sample. Default is "None".
+            When the `ref_index` is a list for multiple classes, it will be shared among all clusters.
+            If we want to use different reference indices for each class, we can perform the subset
+            selection for each class separately where different `ref_index` parameters can be used.
+            For example, if we have two classes, we can pass `ref_index=[0, 1]` to select samples
+            from class 0 and `ref_index=[3, 6]` class 1 respectively.
         tol: float, optional
             Percentage tolerance of sample size error. Given a subset size, the selected size
             will be within size * (1 - tol) and size * (1 + tol).
@@ -502,14 +496,6 @@ class DISE(SelectionBase):
             the Minkowski p-norm distance is used. Default is None.
         kwargs: dict, optional
             Additional keyword arguments to be passed to the distance function `fun_dist`.
-
-        Notes
-        -----
-        When the `ref_index` is a list for multiple classes, it will be shared among all clusters.
-        If we want to use different reference indices for each class, we can perform the subset
-        selection for each class separately where different `ref_index` parameters can be used.
-        For example, if we have two classes, we can pass `ref_index=[0, 1, 4]` to select samples from
-        class 0 and `ref_index=[3, 6]` class 1 respectively.
 
         Notes
         -----
@@ -572,7 +558,7 @@ class DISE(SelectionBase):
         else:
             # set up the ref_index when None or "medoid" is passed
             if self.ref_index is None or self.ref_index == "medoid":
-                self.ref_index = setup_reference_index(
+                self.ref_index = get_initial_selection(
                     x=None,
                     x_dist=distances,
                     ref_index=self.ref_index,
@@ -580,7 +566,7 @@ class DISE(SelectionBase):
                 )
             # set up the ref_index for other cases, e.g. integer, float, etc.
             else:
-                self.ref_index = setup_reference_index(
+                self.ref_index = get_initial_selection(
                     x=x, x_dist=None, ref_index=self.ref_index, fun_dist=None
                 )
 
@@ -653,7 +639,7 @@ class DISE(SelectionBase):
         return optimize_radius(self, x, size, labels)
 
 
-def setup_reference_index(x=None, x_dist=None, ref_index="medoid", fun_dist=None):
+def get_initial_selection(x=None, x_dist=None, ref_index="medoid", fun_dist=None):
     """Set up the reference index for selecting.
 
     Parameters
