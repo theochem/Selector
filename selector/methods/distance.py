@@ -513,10 +513,11 @@ class DISE(SelectionBase):
         self.p = p
         self.eps = eps
 
-        if fun_dist is None:
-            self.fun_dist = spatial.distance.pdist
-        else:
-            self.fun_dist = fun_dist
+        # if fun_dist is None:
+        #     self.fun_dist = spatial.distance.pdist
+        # else:
+        #     self.fun_dist = fun_dist
+        self.fun_dist = fun_dist
 
         self.kwargs = kwargs
         if "p" in self.kwargs.keys():
@@ -524,7 +525,7 @@ class DISE(SelectionBase):
                 f"Value of p in kwargs is overwritten by: {self.p} as defined in the "
                 f"argument `p`."
             )
-            self.kwargs["p"] = p
+        self.kwargs["p"] = p
 
     def algorithm(self, x, max_size):
         """Return selected samples based on directed sphere exclusion algorithm.
