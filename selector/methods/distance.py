@@ -639,7 +639,7 @@ class DISE(SelectionBase):
         return optimize_radius(self, x, size, labels)
 
 
-def get_initial_selection(x=None, x_dist=None, ref_index="medoid", fun_dist=None):
+def get_initial_selection(x=None, x_dist=None, ref_index=None, fun_dist=None):
     """Set up the reference index for selecting.
 
     Parameters
@@ -648,10 +648,15 @@ def get_initial_selection(x=None, x_dist=None, ref_index="medoid", fun_dist=None
         Feature matrix of `n_samples` samples in `n_features` dimensional feature space.
     x_dist: ndarray of shape (n_samples, n_samples), optional
         Pairwise distance matrix between `n_samples` samples.
-    ref_index: int, str, list, optional
+    ref_index: int, list, optional
         Index of the reference sample to start the selection algorithm from.
-        It can be an integer, a float, a list of integers or floats or a mixture of them,
-        or "medoid", or zero. Default is "medoid".
+        It can be an integer, or a list of integers or None. When None, the medoid center is chosen as the reference
+        sample. Default is "None".
+        When the `ref_index` is a list for multiple classes, it will be shared among all clusters.
+        If we want to use different reference indices for each class, we can perform the subset
+        selection for each class separately where different `ref_index` parameters can be used.
+        For example, if we have two classes, we can pass `ref_index=[0, 1]` to select samples
+        from class 0 and `ref_index=[3, 6]` class 1 respectively.
     func_dist: callable, optional
         Function for calculating the pairwise distance between sample points to be used in
         calculating the medoid. `func_dist(x) -> x_dist` takes a 2D feature array of shape
@@ -659,15 +664,16 @@ def get_initial_selection(x=None, x_dist=None, ref_index="medoid", fun_dist=None
 
     Returns
     -------
-    selected: list
+    initial_selections: list
         List of indices of the initial selected data points.
 
     """
-    if ref_index == "medoid":
+    # use the medoid center as the reference sample if ref_index is None
+    if ref_index is None:
         if x_dist is None:
             x_dist = fun_dist(x)
         # calculate the medoid center
-        selected = [np.argmin(np.sum(x_dist, axis=0))]
+        initial_selections = [np.argmin(np.sum(x_dist, axis=0))]
 
     # the length of the distance matrix is the number of samples
     if x_dist is not None:
@@ -675,21 +681,21 @@ def get_initial_selection(x=None, x_dist=None, ref_index="medoid", fun_dist=None
     else:
         len_x = len(x)
 
-    # when ref_index is a float or integer, it cannot be negative or greater than the number of samples
-    if isinstance(ref_index, float) or isinstance(ref_index, int):
+    # when ref_index is an integer, it cannot be negative or greater than the number of samples
+    if isinstance(ref_index, int):
         # check if ref_index is a valid index
         if ref_index < 0 or ref_index >= len_x:
             raise ValueError(
                 f"The ref_index must be a non-negative integer less than the "
                 f"number of samples, got {ref_index} >= {len_x}."
             )
-        selected = [int(ref_index)]
+        initial_selections = [int(ref_index)]
 
     # when ref_index is a list, just use it
     if isinstance(ref_index, list):
         # all elements of ref_index must be integers or float
-        if not all(isinstance(i, (int, float)) for i in ref_index):
-            raise ValueError("All elements of ref_index must be integers or float.")
+        if not all(isinstance(i, (int)) for i in ref_index):
+            raise ValueError("All elements of ref_index must be integers.")
 
         # all the elements of ref_index must be greater than or equal to 0 and less than the
         # number of samples
@@ -699,6 +705,6 @@ def get_initial_selection(x=None, x_dist=None, ref_index="medoid", fun_dist=None
                 f"the number of samples, got {ref_index}."
             )
 
-        selected = [int(i) for i in ref_index]
+        initial_selections = [int(i) for i in ref_index]
 
-    return selected
+    return initial_selections

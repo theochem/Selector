@@ -21,7 +21,6 @@
 # --
 """Test selector/methods/distance.py."""
 
-
 import numpy as np
 import pytest
 from numpy.testing import assert_equal, assert_raises
@@ -66,19 +65,19 @@ def test_maxmin():
     assert_equal(selected_ids, [85, 57, 41, 25, 9, 62, 29, 65, 81, 61, 60, 97])
 
     # use MaxMin algorithm to select points from non-clustered data with "medoid" as the reference point
-    collector_medoid_1 = MaxMin(ref_index="medoid")
+    collector_medoid_1 = MaxMin(ref_index=None)
     selected_ids_medoid_1 = collector_medoid_1.select(arr_dist, size=12)
     # make sure all the selected indices are the same with expectation
     assert_equal(selected_ids_medoid_1, [85, 57, 41, 25, 9, 62, 29, 65, 81, 61, 60, 97])
 
     # use MaxMin algorithm to select points from non-clustered data with "None" for the reference point
-    collector_medoid_2 = MaxMin(ref_index="medoid")
+    collector_medoid_2 = MaxMin(ref_index=None)
     selected_ids_medoid_2 = collector_medoid_2.select(arr_dist, size=12)
     # make sure all the selected indices are the same with expectation
     assert_equal(selected_ids_medoid_2, [85, 57, 41, 25, 9, 62, 29, 65, 81, 61, 60, 97])
 
     # use MaxMin algorithm to select points from non-clustered data with float as the reference point
-    collector_float = MaxMin(ref_index=85.0)
+    collector_float = MaxMin(ref_index=85)
     selected_ids_float = collector_float.select(arr_dist, size=12)
     # make sure all the selected indices are the same with expectation
     assert_equal(selected_ids_float, [85, 57, 41, 25, 9, 62, 29, 65, 81, 61, 60, 97])
@@ -154,15 +153,13 @@ def test_maxsum_clustered_data():
     )
 
     # use MaxSum algorithm to select points from clustered data, instantiating with euclidean distance metric
-    collector = MaxSum(
-        fun_dist=lambda x: pairwise_distances(x, metric="euclidean"), ref_index="medoid"
-    )
+    collector = MaxSum(fun_dist=lambda x: pairwise_distances(x, metric="euclidean"), ref_index=None)
     selected_ids = collector.select(coords_cluster, size=12, labels=class_labels_cluster)
     # make sure all the selected indices are the same with expectation
     assert_equal(selected_ids, [41, 34, 85, 94, 51, 50, 78, 66, 21, 64, 0, 83])
 
     # use MaxSum algorithm to select points from clustered data without instantiating with euclidean distance metric
-    collector = MaxSum(ref_index="medoid")
+    collector = MaxSum(ref_index=None)
     selected_ids = collector.select(coords_cluster_dist, size=12, labels=class_labels_cluster)
     # make sure all the selected indices are the same with expectation
     assert_equal(selected_ids, [41, 34, 85, 94, 51, 50, 78, 66, 21, 64, 0, 83])
@@ -186,18 +183,14 @@ def test_maxsum_non_clustered_data():
         random_state=42,
     )
     # use MaxSum algorithm to select points from non-clustered data, instantiating with euclidean distance metric
-    collector = MaxSum(
-        fun_dist=lambda x: pairwise_distances(x, metric="euclidean"), ref_index="medoid"
-    )
+    collector = MaxSum(fun_dist=lambda x: pairwise_distances(x, metric="euclidean"), ref_index=None)
     selected_ids = collector.select(coords, size=12)
     # make sure all the selected indices are the same with expectation
     assert_equal(selected_ids, [85, 57, 25, 41, 95, 9, 21, 8, 13, 68, 37, 54])
 
     # use MaxSum algorithm to select points from non-clustered data, instantiating with euclidean
     # distance metric and using "medoid" as the reference point
-    collector = MaxSum(
-        fun_dist=lambda x: pairwise_distances(x, metric="euclidean"), ref_index="medoid"
-    )
+    collector = MaxSum(fun_dist=lambda x: pairwise_distances(x, metric="euclidean"), ref_index=None)
     selected_ids = collector.select(coords, size=12)
     # make sure all the selected indices are the same with expectation
     assert_equal(selected_ids, [85, 57, 25, 41, 95, 9, 21, 8, 13, 68, 37, 54])
@@ -265,13 +258,13 @@ def test_optisim():
     )
 
     # use OptiSim algorithm to select points from clustered data
-    collector = OptiSim()
+    collector = OptiSim(ref_index=0)
     selected_ids = collector.select(coords_cluster, size=12, labels=class_labels_cluster)
     # make sure all the selected indices are the same with expectation
     # assert_equal(selected_ids, [2, 85, 86, 59, 1, 66, 50, 68, 0, 64, 83, 72])
 
     # use OptiSim algorithm to select points from non-clustered data
-    collector = OptiSim()
+    collector = OptiSim(ref_index=0)
     selected_ids = collector.select(coords, size=12)
     # make sure all the selected indices are the same with expectation
     assert_equal(selected_ids, [0, 8, 55, 37, 41, 13, 12, 42, 6, 30, 57, 76])
@@ -359,7 +352,7 @@ def test_directed_sphere_on_line_with_larger_radius():
             [0, 5],
         ]
     )
-    collector = DISE(r0=2.0, tol=0, ref_index=1)
+    collector = DISE(r0=2.0, tol=0, p=2.0, ref_index=1)
     selected = collector.select(x, size=3)
     expected = [1, 5, 9]
     assert_equal(selected, expected)
