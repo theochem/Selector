@@ -63,10 +63,10 @@ st.markdown(
     selector library on [GitHub Issues](https://github.com/theochem/Selector/issues). 
     For further information and inquiries please contact us at qcdevs@gmail.com.
 
-    ### Why QC-Selector?
+    ### Why Selector?
     In the world of chemistry, selecting the right subset of molecules is critical for a wide
     range of applications, including drug discovery, materials science, and molecular optimization. 
-    QC-Selector offers a cutting-edge solution to streamline this process, empowering researchers, 
+    Selector offers a cutting-edge solution to streamline this process, empowering researchers, 
     scientists, and developers to make smarter decisions faster.
 
     ### Key Features
@@ -74,7 +74,7 @@ st.markdown(
 
     2. Define Selection Criteria: Specify the desired level of diversity and other relevant parameters to tailor the subset selection to your unique requirements.
 
-    3. Run the Analysis: Let QC-Selector’s powerful algorithms process your dataset and efficiently select the most diverse molecules.
+    3. Run the Analysis: Let Selector’s powerful algorithms process your dataset and efficiently select the most diverse molecules.
 
     4. Export: Explore the diverse subset and export the results for further analysis and integration into your projects.
 """

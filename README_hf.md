@@ -1,5 +1,5 @@
 ---
-title: QC-Selector
+title: Selector
 emoji: 🐳
 colorFrom: purple
 colorTo: gray
