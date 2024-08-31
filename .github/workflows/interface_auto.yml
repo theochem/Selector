@@ -7,7 +7,7 @@ on:
       - "master"
       - "main"
       - "webapp"
-      - "jun-intro-maxmin"
+      - "jun-gsoc-final"
   pull_request:
     branches:
       - "master"
@@ -33,20 +33,25 @@ jobs:
       with:
         python-version: 3.11
 
-    # Step 3: Build the Docker image to Docker Hub
+    # Step 3: Get the short Git commit hash for versioning
+    - name: Get short Git commit hash
+      id: version
+      run: echo "VERSION=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+
+    # Step 4: Build the Docker image and tag it with the short Git commit hash
     - name: Build Docker image
       run: |
-        docker build . -t qcdevs/selector:latest
+        docker build . -t qcdevs/selector:${{ env.VERSION }}
 
-    # Step 4: Push the Docker image to Docker Hub
+    # Step 5: Push the Docker image to Docker Hub
     - name: Push Docker image
       env:
         DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
       run: |
         docker login -u qcdevs -p $DOCKERHUB_TOKEN
-        docker push qcdevs/selector:latest
+        docker push qcdevs/selector:${{ env.VERSION }}
 
-    # Step 5: Replace the README.md file for Hugging Face
+    # Step 6: Replace the README.md file for Hugging Face
     - name: Replace README for Hugging Face
       run: |
         mv README_hf.md README.md
@@ -55,7 +60,7 @@ jobs:
         git add README.md
         git commit -m "Replace README.md with README_hf.md for Hugging Face"
 
-    # Step 6: Push the app to Hugging Face
+    # Step 7: Push the app to Hugging Face
     - name: Push to Hugging Face
       env:
         HF_TOKEN: ${{ secrets.HF_TOKEN }}
