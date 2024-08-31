@@ -26,4 +26,4 @@ COPY . .
 EXPOSE 8501
 
 # Command to run the app
-CMD ["streamlit", "run", "streamlit_app/app.py", "--server.enableXsrfProtection=false"]
+CMD ["streamlit", "run", "streamlit_app/Selector.py", "--server.enableXsrfProtection=false"]
