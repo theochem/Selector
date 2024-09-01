@@ -24,6 +24,10 @@ jobs:
         fetch-depth: 0
         lfs: true
 
+    - name: Get short Git commit hash
+      id: version
+      run: echo "VERSION=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+
     - name: Checkout webapp branch
       uses: actions/checkout@v4
       with:
@@ -39,16 +43,12 @@ jobs:
     - name: Remove binary files from git history
       run: |
         pip install git-filter-repo
-        git filter-repo --path DiverseSelector/test/test2/BBB_SECFP6_1024.xlsx --path DiverseSelector/test/test2/BBB_SECFP6_2048.xlsx --invert-paths
+        git filter-repo --path DiverseSelector/test/test2/BBB_SECFP6_1024.xlsx --path DiverseSelector/test/test2/BBB_SECFP6_2048.xlsx --invert-paths --force
 
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
         python-version: 3.11
-
-    - name: Get short Git commit hash
-      id: version
-      run: echo "VERSION=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
     - name: Prepare build context
       run: |
