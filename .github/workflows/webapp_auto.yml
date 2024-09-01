@@ -1,0 +1,29 @@
+name: Trigger Webapp Deployment
+
+# Trigger the workflow on push and pull request events to the 'main' or 'master' branch
+on:
+  push:
+    branches:
+      - "master"
+      - "main"
+  pull_request:
+    branches:
+      - "master"
+      - "main"
+
+jobs:
+  trigger-webapp:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Trigger Deployment Workflow on Webapp Branch
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const response = await github.actions.createWorkflowDispatch({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            workflow_id: 'interface_auto.yml',
+            ref: 'webapp',
+          });
+          console.log(response);
