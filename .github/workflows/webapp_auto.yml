@@ -6,6 +6,7 @@ on:
     branches:
       - "master"
       - "main"
+      - "jun-test-cross-workflow"
   pull_request:
     branches:
       - "master"
