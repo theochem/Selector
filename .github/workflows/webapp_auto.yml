@@ -1,30 +1,72 @@
-name: Trigger Webapp Deployment
+name: Webapp Deployment Workflow
 
-# Trigger the workflow on push and pull request events to the 'main' or 'master' branch
 on:
   push:
-    branches:
+    branches: 
       - "master"
       - "main"
+      - "webapp"
       - "jun-test-cross-workflow"
   pull_request:
-    branches:
+    branches: 
       - "master"
       - "main"
+      - "webapp"
+      - "jun-test-cross-workflow"
 
 jobs:
-  trigger-webapp:
+  build-and-deploy:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Trigger Deployment Workflow on Webapp Branch
-      uses: actions/github-script@v6
+    - name: Checkout main branch
+      uses: actions/checkout@v4
       with:
-        script: |
-          const response = await github.actions.createWorkflowDispatch({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            workflow_id: 'interface_auto.yml',
-            ref: 'webapp',
-          });
-          console.log(response);
+        fetch-depth: 0
+        lfs: true
+
+    - name: Checkout webapp branch
+      uses: actions/checkout@v4
+      with:
+        ref: webapp
+        path: webapp
+        fetch-depth: 1
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: 3.11
+
+    - name: Get short Git commit hash
+      id: version
+      run: echo "VERSION=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+
+    - name: Prepare build context
+      run: |
+        cp webapp/Dockerfile .
+        cp -r webapp/streamlit_app .
+        cp webapp/README_hf.md .
+
+    - name: Build Docker image
+      run: |
+        docker build . -t qcdevs/selector:${{ env.VERSION }}
+
+    - name: Push Docker image
+      env:
+        DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+      run: |
+        docker login -u qcdevs -p $DOCKERHUB_TOKEN
+        docker push qcdevs/selector:${{ env.VERSION }}
+
+    - name: Replace README for Hugging Face
+      run: |
+        mv README_hf.md README.md
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "qcdevs@gmail.com"
+        git add README.md
+        git commit -m "Replace README.md with README_hf.md for Hugging Face"
+
+    - name: Push to Hugging Face
+      env:
+        HF_TOKEN: ${{ secrets.HF_TOKEN }}
+      run: |
+        git push https://QCDevs:$HF_TOKEN@huggingface.co/spaces/QCDevs/selector HEAD:main --force
