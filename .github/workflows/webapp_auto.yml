@@ -31,6 +31,16 @@ jobs:
         path: webapp
         fetch-depth: 1
 
+    - name: Set up Git LFS
+      run: |
+        git lfs install
+        git lfs pull
+
+    - name: Remove binary files from git history
+      run: |
+        pip install git-filter-repo
+        git filter-repo --path DiverseSelector/test/test2/BBB_SECFP6_1024.xlsx --path DiverseSelector/test/test2/BBB_SECFP6_2048.xlsx --invert-paths
+
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
