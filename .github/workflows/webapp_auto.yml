@@ -1,0 +1,92 @@
+name: Webapp Deployment Workflow
+
+on:
+  push:
+    branches: 
+      - "master"
+      - "main"
+      - "webapp"
+  pull_request:
+    branches: 
+      - "master"
+      - "main"
+      - "webapp"
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+
+    # Step 1: Check out the latest code from the main branch
+    - name: Checkout main branch
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        lfs: true
+
+    # Step 2: Get the short Git commit hash for versioning
+    - name: Get short Git commit hash
+      id: version
+      run: echo "VERSION=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+
+    # Step 3: Checkout the webapp branch
+    - name: Checkout webapp branch
+      uses: actions/checkout@v4
+      with:
+        ref: webapp
+        path: webapp
+        fetch-depth: 1
+
+    # Step 4: Set up Git LFS
+    - name: Set up Git LFS
+      run: |
+        git lfs install
+        git lfs pull
+
+    # Step 5: Remove binary files from git history
+    - name: Remove binary files from git history
+      run: |
+        pip install git-filter-repo
+        git filter-repo --path DiverseSelector/test/test2/BBB_SECFP6_1024.xlsx --path DiverseSelector/test/test2/BBB_SECFP6_2048.xlsx --invert-paths --force
+
+    # Step 6: Set up Python environment with version 3.11
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: 3.11
+
+    # Step 7: Prepare build dependency files
+    - name: Prepare build context
+      run: |
+        cp webapp/Dockerfile .
+        cp -r webapp/streamlit_app .
+        cp webapp/README_hf.md .
+
+    # Step 8: Build Docker image with git commit hash as tag
+    - name: Build Docker image
+      run: |
+        docker build . -t qcdevs/selector:${{ env.VERSION }}
+
+    # Step 9: Push Docker image to Docker Hub
+    - name: Push Docker image
+      env:
+        DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+      run: |
+        docker login -u qcdevs -p $DOCKERHUB_TOKEN
+        docker push qcdevs/selector:${{ env.VERSION }}
+
+    # Step 10: Replace README for Hugging Face
+    - name: Replace README for Hugging Face
+      run: |
+        mv README_hf.md README.md
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "qcdevs@gmail.com"
+        git add README.md
+        git commit -m "Replace README.md with README_hf.md for Hugging Face"
+
+    # Step 11: Push the app to Hugging Face
+    - name: Push to Hugging Face
+      env:
+        HF_TOKEN: ${{ secrets.HF_TOKEN }}
+      run: |
+        git push https://QCDevs:$HF_TOKEN@huggingface.co/spaces/QCDevs/selector HEAD:main --force
