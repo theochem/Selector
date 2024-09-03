@@ -21,7 +21,6 @@
 # --
 """Test selector/methods/distance.py."""
 
-
 import numpy as np
 import pytest
 from numpy.testing import assert_equal, assert_raises
@@ -65,11 +64,48 @@ def test_maxmin():
     # make sure all the selected indices are the same with expectation
     assert_equal(selected_ids, [85, 57, 41, 25, 9, 62, 29, 65, 81, 61, 60, 97])
 
+    # use MaxMin algorithm to select points from non-clustered data with "medoid" as the reference point
+    collector_medoid_1 = MaxMin(ref_index=None)
+    selected_ids_medoid_1 = collector_medoid_1.select(arr_dist, size=12)
+    # make sure all the selected indices are the same with expectation
+    assert_equal(selected_ids_medoid_1, [85, 57, 41, 25, 9, 62, 29, 65, 81, 61, 60, 97])
+
+    # use MaxMin algorithm to select points from non-clustered data with "None" for the reference point
+    collector_medoid_2 = MaxMin(ref_index=None)
+    selected_ids_medoid_2 = collector_medoid_2.select(arr_dist, size=12)
+    # make sure all the selected indices are the same with expectation
+    assert_equal(selected_ids_medoid_2, [85, 57, 41, 25, 9, 62, 29, 65, 81, 61, 60, 97])
+
+    # use MaxMin algorithm to select points from non-clustered data with float as the reference point
+    collector_float = MaxMin(ref_index=85)
+    selected_ids_float = collector_float.select(arr_dist, size=12)
+    # make sure all the selected indices are the same with expectation
+    assert_equal(selected_ids_float, [85, 57, 41, 25, 9, 62, 29, 65, 81, 61, 60, 97])
+
+    # use MaxMin algorithm to select points from non-clustered data with a predefined list as the reference point
+    collector_float = MaxMin(ref_index=[85, 57, 41, 25])
+    selected_ids_float = collector_float.select(arr_dist, size=12)
+    # make sure all the selected indices are the same with expectation
+    assert_equal(selected_ids_float, [85, 57, 41, 25, 9, 62, 29, 65, 81, 61, 60, 97])
+
+    # test failing case when ref_index is not a valid index
+    with pytest.raises(ValueError):
+        collector_float = MaxMin(ref_index=-3)
+        selected_ids_float = collector_float.select(arr_dist, size=12)
+    # test failing case when ref_index contains a complex number
+    with pytest.raises(ValueError):
+        collector_float = MaxMin(ref_index=[1 + 5j, 2, 5])
+        selected_ids_float = collector_float.select(arr_dist, size=12)
+    # test failing case when ref_index contains a negative number
+    with pytest.raises(ValueError):
+        collector_float = MaxMin(ref_index=[-1, 2, 5])
+        selected_ids_float = collector_float.select(arr_dist, size=12)
+
     # use MaxMin algorithm, this time instantiating with a distance metric
-    collector = MaxMin(lambda x: pairwise_distances(x, metric="euclidean"))
+    collector = MaxMin(fun_dist=lambda x: pairwise_distances(x, metric="euclidean"))
     simple_coords = np.array([[0, 0], [2, 0], [0, 2], [2, 2], [-10, -10]])
     # provide coordinates rather than pairwise distance matrix to collector
-    selected_ids = collector.select(simple_coords, size=3)
+    selected_ids = collector.select(x=simple_coords, size=3)
     # make sure all the selected indices are the same with expectation
     assert_equal(selected_ids, [0, 4, 3])
 
@@ -89,18 +125,23 @@ def test_maxmin():
     assert_equal(selected_mocked, [0, 1, 2, 3, 4, 5, 6, 7, 8, 16, 15, 10, 13, 9, 18])
 
 
-def test_maxsum():
-    """Testing MaxSum class."""
-    # generate random data points belonging to one cluster - coordinates
-    coords, _, _ = generate_synthetic_data(
-        n_samples=100,
-        n_features=2,
-        n_clusters=1,
-        pairwise_dist=True,
-        metric="euclidean",
-        random_state=42,
-    )
+def test_maxmin_invalid_input():
+    """Testing MaxMin class with invalid input."""
+    # case when the distance matrix is not square
+    x_dist = np.array([[0, 1], [1, 0], [4, 9]])
+    with pytest.raises(ValueError):
+        collector = MaxMin(ref_index=0)
+        _ = collector.select(x_dist, size=2)
 
+    # case when the distance matrix is not symmetric
+    x_dist = np.array([[0, 1, 2, 1], [1, 1, 0, 3], [4, 9, 4, 0], [6, 5, 6, 7]])
+    with pytest.raises(ValueError):
+        collector = MaxMin(ref_index=0)
+        _ = collector.select(x_dist, size=2)
+
+
+def test_maxsum_clustered_data():
+    """Testing MaxSum class."""
     # generate random data points belonging to multiple clusters - coordinates and class labels
     coords_cluster, class_labels_cluster, coords_cluster_dist = generate_synthetic_data(
         n_samples=100,
@@ -112,13 +153,13 @@ def test_maxsum():
     )
 
     # use MaxSum algorithm to select points from clustered data, instantiating with euclidean distance metric
-    collector = MaxSum(lambda x: pairwise_distances(x, metric="euclidean"))
+    collector = MaxSum(fun_dist=lambda x: pairwise_distances(x, metric="euclidean"), ref_index=None)
     selected_ids = collector.select(coords_cluster, size=12, labels=class_labels_cluster)
     # make sure all the selected indices are the same with expectation
     assert_equal(selected_ids, [41, 34, 85, 94, 51, 50, 78, 66, 21, 64, 0, 83])
 
     # use MaxSum algorithm to select points from clustered data without instantiating with euclidean distance metric
-    collector = MaxSum()
+    collector = MaxSum(ref_index=None)
     selected_ids = collector.select(coords_cluster_dist, size=12, labels=class_labels_cluster)
     # make sure all the selected indices are the same with expectation
     assert_equal(selected_ids, [41, 34, 85, 94, 51, 50, 78, 66, 21, 64, 0, 83])
@@ -129,11 +170,69 @@ def test_maxsum():
             coords_cluster, size=101, labels=class_labels_cluster
         )
 
+
+def test_maxsum_non_clustered_data():
+    """Testing MaxSum class with non-clustered data."""
+    # generate random data points belonging to one cluster - coordinates
+    coords, _, _ = generate_synthetic_data(
+        n_samples=100,
+        n_features=2,
+        n_clusters=1,
+        pairwise_dist=True,
+        metric="euclidean",
+        random_state=42,
+    )
     # use MaxSum algorithm to select points from non-clustered data, instantiating with euclidean distance metric
-    collector = MaxSum(lambda x: pairwise_distances(x, metric="euclidean"))
+    collector = MaxSum(fun_dist=lambda x: pairwise_distances(x, metric="euclidean"), ref_index=None)
     selected_ids = collector.select(coords, size=12)
     # make sure all the selected indices are the same with expectation
     assert_equal(selected_ids, [85, 57, 25, 41, 95, 9, 21, 8, 13, 68, 37, 54])
+
+    # use MaxSum algorithm to select points from non-clustered data, instantiating with euclidean
+    # distance metric and using "medoid" as the reference point
+    collector = MaxSum(fun_dist=lambda x: pairwise_distances(x, metric="euclidean"), ref_index=None)
+    selected_ids = collector.select(coords, size=12)
+    # make sure all the selected indices are the same with expectation
+    assert_equal(selected_ids, [85, 57, 25, 41, 95, 9, 21, 8, 13, 68, 37, 54])
+
+    # use MaxSum algorithm to select points from non-clustered data, instantiating with euclidean
+    # distance metric and using a list as the reference points
+    collector = MaxSum(
+        fun_dist=lambda x: pairwise_distances(x, metric="euclidean"),
+        ref_index=[85, 57, 25, 41, 95],
+    )
+    selected_ids = collector.select(coords, size=12)
+    # make sure all the selected indices are the same with expectation
+    assert_equal(selected_ids, [85, 57, 25, 41, 95, 9, 21, 8, 13, 68, 37, 54])
+
+    # use MaxSum algorithm to select points from non-clustered data, instantiating with euclidean
+    # distance metric and using an invalid reference point
+    with pytest.raises(ValueError):
+        collector = MaxSum(
+            fun_dist=lambda x: pairwise_distances(x, metric="euclidean"), ref_index=-1
+        )
+        selected_ids = collector.select(coords, size=12)
+
+
+def test_maxsum_invalid_input():
+    """Testing MaxSum class with invalid input."""
+    # case when the distance matrix is not square
+    x_dist = np.array([[0, 1], [1, 0], [4, 9]])
+    with pytest.raises(ValueError):
+        collector = MaxSum(ref_index=0)
+        _ = collector.select(x_dist, size=2)
+
+    # case when the distance matrix is not square
+    x_dist = np.array([[0, 1, 2], [1, 0, 3], [4, 9, 0], [5, 6, 7]])
+    with pytest.raises(ValueError):
+        collector = MaxSum(ref_index=0)
+        _ = collector.select(x_dist, size=2)
+
+    # case when the distance matrix is not symmetric
+    x_dist = np.array([[0, 1, 2, 1], [1, 1, 0, 3], [4, 9, 4, 0], [6, 5, 6, 7]])
+    with pytest.raises(ValueError):
+        collector = MaxSum(ref_index=0)
+        _ = collector.select(x_dist, size=2)
 
 
 def test_optisim():
@@ -159,23 +258,28 @@ def test_optisim():
     )
 
     # use OptiSim algorithm to select points from clustered data
-    collector = OptiSim()
+    collector = OptiSim(ref_index=0)
     selected_ids = collector.select(coords_cluster, size=12, labels=class_labels_cluster)
     # make sure all the selected indices are the same with expectation
     # assert_equal(selected_ids, [2, 85, 86, 59, 1, 66, 50, 68, 0, 64, 83, 72])
 
     # use OptiSim algorithm to select points from non-clustered data
-    collector = OptiSim()
+    collector = OptiSim(ref_index=0)
     selected_ids = collector.select(coords, size=12)
     # make sure all the selected indices are the same with expectation
     assert_equal(selected_ids, [0, 8, 55, 37, 41, 13, 12, 42, 6, 30, 57, 76])
 
-    # tester to check if OptiSim gives same results as MaxMin for k=>infinity
+    # check if OptiSim gives same results as MaxMin for k=>infinity
     collector = OptiSim(ref_index=85, k=999999)
     selected_ids_optisim = collector.select(coords, size=12)
     collector = MaxMin()
     selected_ids_maxmin = collector.select(arr_dist, size=12)
     assert_equal(selected_ids_optisim, selected_ids_maxmin)
+
+    # test with invalid ref_index
+    with pytest.raises(ValueError):
+        collector = OptiSim(ref_index=10000)
+        _ = collector.select(coords, size=12)
 
 
 def test_directed_sphere_size_error():
@@ -248,7 +352,7 @@ def test_directed_sphere_on_line_with_larger_radius():
             [0, 5],
         ]
     )
-    collector = DISE(r0=2.0, tol=0, ref_index=1)
+    collector = DISE(r0=2.0, tol=0, p=2.0, ref_index=1)
     selected = collector.select(x, size=3)
     expected = [1, 5, 9]
     assert_equal(selected, expected)
