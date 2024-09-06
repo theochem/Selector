@@ -1,0 +1,83 @@
+# This workflow builds and publishes Python packages to PyPI and Test PyPI
+# It triggers when a tag is pushed, builds wheels for different OS and Python versions,
+# uploads artifacts to GitHub, tests the upload to Test PyPI, and publishes to PyPI.
+
+name: Build and Publish
+
+on:
+  push:
+    tags:
+      - 'v*.*.*' # Only run this workflow for tags matching vX.X.X
+
+jobs:
+  build:
+    runs-on: ubuntu-latest # Use Ubuntu for the build process
+    strategy:
+      matrix:
+        python-version: [3.9, 3.10, 3.11, 3.12] # Define Python versions to test
+        os: [ubuntu-latest, macos-latest, windows-latest] # Define OS to test
+
+    steps:
+    # Step to checkout the code from the repository
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    # Step to set up the Python environment for the specified version
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    # Step to install required dependencies for building and uploading wheels
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install setuptools wheel twine
+
+    # Step to build source distribution and wheel files
+    - name: Build wheels
+      run: |
+        python setup.py sdist bdist_wheel
+
+    # Step to upload built wheels as artifacts for further usage
+    - name: Upload wheel to GitHub
+      uses: actions/upload-artifact@v3
+      with:
+        name: wheel-${{ matrix.os }}-py${{ matrix.python-version }}
+        path: dist/*.whl
+
+    # Step to test upload to Test PyPI (ensure this is working before publishing to PyPI)
+    - name: Test upload to test.pypi.org
+      run: |
+        pip install twine
+        twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+
+  publish:
+    needs: build # Ensure the build job is completed before running this job
+    if: startsWith(github.ref, 'refs/tags/') # Only run this job if the workflow is triggered by a tag
+    runs-on: ubuntu-latest # Use Ubuntu for the publish process
+
+    steps:
+    # Step to checkout the code from the repository
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    # Step to set up the Python environment (Python version is less relevant here as it's only for publishing)
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.9
+
+    # Step to install Twine for publishing the wheels
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install twine
+
+    # Step to publish wheels to PyPI
+    - name: Publish to PyPI
+      env:
+        PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }} # Use the PyPI token stored in secrets for authentication
+      run: |
+        twine upload dist/*
+
