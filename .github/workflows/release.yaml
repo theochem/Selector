@@ -43,7 +43,7 @@ jobs:
         with:
           # Name of the artifact to upload.
           # python-package-distributions-${{ github.run_id }} causes errors
-          name: ${{ matrix.os }}-python${{ matrix.python-version }}-{{ github.run_id }}
+          name: ${{ matrix.os }}-python${{ matrix.python-version }}
           # A file, directory or wildcard pattern that describes what to upload
           path: dist/
 
@@ -56,7 +56,8 @@ jobs:
           # If false, the action will fail if an artifact for the given name already exists.
           # Does not fail if the artifact does not exist.
           # Optional. Default is 'false'
-          overwrite: true
+          # overwrite: true
+           overwrite: false
 
           # Whether to include hidden files in the provided path in the artifact
           # The file contents of any hidden files in the path should be validated before
@@ -64,7 +65,16 @@ jobs:
           # Optional. Default is 'false'
           include-hidden-files: false
 
-  publish-to-testpypi:
+      - name: publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://upload.pypi.org/legacy/
+        env:
+          TWINE_USERNAME: "__token__"
+          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+
+  # publish-to-testpypi:
+  publish-to-pypi:
     name: Publish Python distribution to TestPyPI
     # Only publish on version tag pushes
     if: startsWith(github.ref, 'refs/tags/v')
@@ -80,7 +90,7 @@ jobs:
       - name: Download all the dists
         uses: actions/download-artifact@v4
         with:
-          name: ${{ matrix.os }}-python${{ matrix.python-version }}-{{ github.run_id }}
+          name: ${{ matrix.os }}-python${{ matrix.python-version }}
           path: dist/
       - name: Publish distribution to TestPyPI
         uses: pypa/gh-action-pypi-publish@release/v1
@@ -105,7 +115,7 @@ jobs:
       - name: Download all the dists
         uses: actions/download-artifact@v4
         with:
-          name: ${{ matrix.os }}-python${{ matrix.python-version }}-{{ github.run_id }}
+          name: ${{ matrix.os }}-python${{ matrix.python-version }}
           path: dist/
       - name: Sign the dists with Sigstore
         uses: sigstore/gh-action-sigstore-python@v2.1.1
@@ -144,7 +154,7 @@ jobs:
       - name: Download all the dists
         uses: actions/download-artifact@v4
         with:
-          name: ${{ matrix.os }}-python${{ matrix.python-version }}-{{ github.run_id }}
+          name: ${{ matrix.os }}-python${{ matrix.python-version }}
           path: dist/
       - name: Publish distribution with relaxed constraints
         uses: pypa/gh-action-pypi-publish@release/v1
