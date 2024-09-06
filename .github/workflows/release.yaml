@@ -44,8 +44,7 @@ jobs:
   publish-to-pypi:
     name: Publish Python distribution to PyPI
     # only publish on version tag pushes
-    # if: startsWith(github.ref, 'refs/tags/v')
-    if : false
+    if: startsWith(github.ref, 'refs/tags/v')
     needs:
     - build
     runs-on: ubuntu-latest
