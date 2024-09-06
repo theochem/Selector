@@ -23,7 +23,7 @@
 
 [project]
 # https://packaging.python.org/en/latest/specifications/declaring-project-metadata/
-name = "selector"
+name = "qc-selector"
 version = "0.0.1"
 description = "Molecule selection with maximum diversity."
 readme = "README.md"
@@ -49,7 +49,7 @@ keywords = [
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Environment :: Console",
-    "License :: OSI Approved :: GNU (Version 3)",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
     "Natural Language :: English",
     "Operating System :: MacOS",
     "Operating System :: Microsoft :: Windows",
