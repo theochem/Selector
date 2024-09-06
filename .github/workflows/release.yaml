@@ -2,7 +2,7 @@ name: PyPI release
 on:
   push:
     tags:
-    # Trigger on version tags (e.g., v1.0.0)
+      # Trigger on version tags (e.g., v1.0.0)
       - "v*.*.*"
 
 env:
@@ -41,47 +41,18 @@ jobs:
       - name: Store the distribution packages
         uses: actions/upload-artifact@v4
         with:
-          # Name of the artifact to upload.
-          name: ${{ matrix.os }}-python${{ matrix.python-version }}
-          # A file, directory or wildcard pattern that describes what to upload
+          # Name of the artifact to upload, unique for each OS and Python version
+          name: python-package-${{ matrix.os }}-py${{ matrix.python-version }}
           path: dist/
-
-          # The level of compression for Zlib to be applied to the artifact archive.
-          # The value can range from 0 to 9.
-          # For large files that are not easily compressed, a value of 0 is recommended for significantly faster uploads. Default is '6'
-          compression-level: 6
-
-          # If true, an artifact with a matching name will be deleted before a new one is     uploaded.
-          # If false, the action will fail if an artifact for the given name already exists.
-          # Does not fail if the artifact does not exist.
-          # Optional. Default is 'false'
-          # overwrite: true
-           overwrite: false
-
-          # Whether to include hidden files in the provided path in the artifact
-          # The file contents of any hidden files in the path should be validated before
-          # enabled this to avoid uploading sensitive information.
-          # Optional. Default is 'false'
+          # Optional parameters for better artifact management
+          overwrite: false
           include-hidden-files: false
 
-      - name: publish to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          repository-url: https://upload.pypi.org/legacy/
-        env:
-          TWINE_USERNAME: "__token__"
-          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
-
-  # publish-to-testpypi:
   publish-to-pypi:
-    name: Publish Python distribution to TestPyPI
-    # Only publish on version tag pushes
+    name: Publish Python distribution to PyPI
     if: startsWith(github.ref, 'refs/tags/v')
     needs: build
     runs-on: ubuntu-latest
-    environment:
-      name: testpypi
-      url: https://test.pypi.org/p/${{ env.PYPI_NAME }}
     permissions:
       id-token: write
 
@@ -89,22 +60,18 @@ jobs:
       - name: Download all the dists
         uses: actions/download-artifact@v4
         with:
-          name: ${{ matrix.os }}-python${{ matrix.python-version }}
+          name: python-package-*
           path: dist/
-      - name: Publish distribution to TestPyPI
+      - name: Publish distribution to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          repository-url: https://test.pypi.org/legacy/
         env:
           TWINE_USERNAME: "__token__"
-          TWINE_PASSWORD: ${{ secrets.TEST_PYPI_TOKEN }}
+          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
 
   github-release:
-    name: >-
-      Sign the Python distribution with Sigstore
-      and upload them to GitHub Release
+    name: Sign and Upload Python Distribution to GitHub Release
     needs:
-    - publish-to-testpypi
+      - publish-to-pypi
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -114,7 +81,7 @@ jobs:
       - name: Download all the dists
         uses: actions/download-artifact@v4
         with:
-          name: ${{ matrix.os }}-python${{ matrix.python-version }}
+          name: python-package-*
           path: dist/
       - name: Sign the dists with Sigstore
         uses: sigstore/gh-action-sigstore-python@v2.1.1
@@ -153,7 +120,7 @@ jobs:
       - name: Download all the dists
         uses: actions/download-artifact@v4
         with:
-          name: ${{ matrix.os }}-python${{ matrix.python-version }}
+          name: python-package-*
           path: dist/
       - name: Publish distribution with relaxed constraints
         uses: pypa/gh-action-pypi-publish@release/v1
