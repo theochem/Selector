@@ -1525,7 +1525,9 @@ def get_data_file_path(file_name):
         The absolute path of the data file inside the package
 
     """
-    data_file_path = importlib.resources.files(__name__).joinpath(f"data/{file_name}")
+    data_file_path = importlib.resources.files("selector.methods.tests").joinpath(
+        f"data/{file_name}"
+    )
 
     return data_file_path
 
