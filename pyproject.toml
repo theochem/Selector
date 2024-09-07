@@ -167,7 +167,8 @@ repository = "https://github.com/theochem/Selector"
 
 [build-system]
 # Minimum requirements for the build system to execute.
-requires = ["setuptools"]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
 
 [tool.setuptools.dynamic]
 dependencies = {file = ["requirements.txt"]}
