@@ -38,12 +38,13 @@ To install `selector` with `pip`, we can install the latest stable release from 
     pip install qc-selector
 ```
 
+To download the prebuilt wheel files, visit the [PyPI page](https://pypi.org/project/qc-selector/)
+and [GitHub releases](https://github.com/theochem/Selector/tags).
+
 In addition, we can install the latest development version from the GitHub repository as follows:
 
 ```bash
-    # Install the latest development version.
-
-    # install the development version
+    # install the latest development version
     pip install git+https://github.com/theochem/Selector.git
 
 ```
