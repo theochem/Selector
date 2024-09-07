@@ -50,7 +50,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           # Name of the artifact to upload, unique for each OS and Python version
-          name: selector-build-${{ matrix.os }}-py${{ matrix.python-version }}-${{ github.ref_name }}
+          name: selector-build-${{ matrix.os }}-py${{ matrix.python-version }}-${{ github.ref }}
           path: dist/
           # Optional parameters for better artifact management
           overwrite: false
@@ -71,7 +71,7 @@ jobs:
       - name: Download all the dists
         uses: actions/download-artifact@v4
         with:
-          name: selector-build-${{ needs.build.outputs.os }}-py${{ needs.build.outputs.python-version }}-${{ github.ref_name }}
+          name: selector-build-py${{ needs.build.outputs.python-version }}-${{ github.ref }}
           path: dist/
       - name: Publish distribution to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
@@ -93,7 +93,7 @@ jobs:
       - name: Download all the dists
         uses: actions/download-artifact@v4
         with:
-          name: selector-build-${{ needs.build.outputs.os }}-py${{ needs.build.outputs.python-version }}-${{ github.ref_name }}
+          name: selector-build-py${{ needs.build.outputs.python-version }}-${{ github.ref }}
           path: dist/
       - name: Sign the dists with Sigstore
         uses: sigstore/gh-action-sigstore-python@v2.1.1
@@ -106,7 +106,7 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         run: >
           gh release create
-          '${{ github.ref_name }}'
+          '${{ github.ref }}'
           --repo '${{ github.repository }}'
           --notes ""
       - name: Upload artifact signatures to GitHub Release
@@ -114,7 +114,7 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         run: >
           gh release upload
-          '${{ github.ref_name }}' dist/**
+          '${{ github.ref }}' dist/**
           --repo '${{ github.repository }}'
 
   publish-none-pypi:
@@ -132,7 +132,7 @@ jobs:
       - name: Download all the dists
         uses: actions/download-artifact@v4
         with:
-          name: selector-build-${{ needs.build.outputs.os }}-py${{ needs.build.outputs.python-version }}-${{ github.ref_name }}
+          name: selector-build-py${{ needs.build.outputs.python-version }}-${{ github.ref }}
           path: dist/
       - name: Publish distribution with relaxed constraints
         uses: pypa/gh-action-pypi-publish@release/v1
