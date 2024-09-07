@@ -50,7 +50,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           # Name of the artifact to upload, unique for each OS and Python version
-          name: selector-build-${{ matrix.os }}-py${{ matrix.python-version }}-${{ github.ref_name }}
+          name: selector-build-py${{ matrix.python-version }}-${{ github.ref_name }}
           path: dist/
           # Optional parameters for better artifact management
           overwrite: false
