@@ -1,7 +1,7 @@
 <!-- # The Selector Library -->
 <h1>
   The Selector Library
-  <img src="book/content/selector_logo.png" alt="Logo" align="right" width="120">
+  <img src="book/content/selector_logo.png" alt="Logo" align="right" width="180">
 </h1>
 
 [![This project supports Python 3.9+](https://img.shields.io/badge/Python-3.9+-blue.svg)](https://python.org/downloads)
