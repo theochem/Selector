@@ -58,11 +58,11 @@ jobs:
 
   publish-to-pypi:
     name: Publish Python distribution to PyPI
-    if: startsWith(github.ref_name, 'refs/tags/v')
+    if: startsWith(github.ref, 'refs/tags/v')
     needs: build
     runs-on: ubuntu-latest
     environment:
-      name: pypi
+      name: PyPI-Release
       url: https://pypi.org/p/${{ env.PYPI_NAME }}
     permissions:
       id-token: write
@@ -119,11 +119,11 @@ jobs:
 
   publish-none-pypi:
     name: Publish Python distribution to TestPyPI (none)
-    if: startsWith(github.ref_name, 'refs/tags/v')
+    if: startsWith(github.ref, 'refs/tags/v')
     needs: build
     runs-on: ubuntu-latest
     environment:
-      name: testpypi
+      name: TestPyPI
       url: https://test.pypi.org/p/${{ env.PYPI_NAME }}
     permissions:
       id-token: write
