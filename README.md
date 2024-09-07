@@ -1,6 +1,10 @@
-# The `selector` Library
+<!-- # The Selector Library -->
+<h1>
+  The Selector Library
+  <img src="book/content/selector_logo.png" alt="Logo" align="right" width="180">
+</h1>
 
-[![This project supports Python 3.7+](https://img.shields.io/badge/Python-3.7+-blue.svg)](https://python.org/downloads)
+[![This project supports Python 3.9+](https://img.shields.io/badge/Python-3.9+-blue.svg)](https://python.org/downloads)
 [![GPLv3 License](https://img.shields.io/badge/License-GPL%20v3-yellow.svg)](https://opensource.org/licenses/)
 [![GitHub Actions CI Tox Status](https://github.com/theochem/Selector/actions/workflows/ci_tox.yml/badge.svg?branch=main)](https://github.com/theochem/Selector/actions/workflows/ci_tox.yml)
 [![codecov](https://codecov.io/gh/theochem/Selector/graph/badge.svg?token=0UJixrJfNJ)](https://codecov.io/gh/theochem/Selector)
@@ -38,12 +42,13 @@ To install `selector` with `pip`, we can install the latest stable release from 
     pip install qc-selector
 ```
 
+To download the prebuilt wheel files, visit the [PyPI page](https://pypi.org/project/qc-selector/)
+and [GitHub releases](https://github.com/theochem/Selector/tags).
+
 In addition, we can install the latest development version from the GitHub repository as follows:
 
 ```bash
-    # Install the latest development version.
-
-    # install the development version
+    # install the latest development version
     pip install git+https://github.com/theochem/Selector.git
 
 ```
