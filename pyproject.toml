@@ -49,7 +49,7 @@ keywords = [
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Environment :: Console",
-    "License :: OSI Approved :: GNU (Version 3)",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
     "Natural Language :: English",
     "Operating System :: MacOS",
     "Operating System :: Microsoft :: Windows",
@@ -60,6 +60,7 @@ classifiers = [
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
 ]
 
 # Required dependencies for install/usage of your package or application
@@ -120,7 +121,6 @@ test = [
     # "Coverage" is how much of the code is actually run (it's "coverage")
     # Generates coverage reports from test suite runs
     "pytest-cov>=3.0.0",
-
     "tomli",
     "scikit-learn>=1.0.1",
     # Better parsing of doctests
@@ -320,9 +320,7 @@ ignore_missing_imports = true
 files = "selector"  # directory mypy should analyze
 # Directories to exclude from mypy's analysis
 exclude = [
-    "selector/somedir",
-    "selector/somefile\\.py",
-    "dirname",
+    "selector/book",
 ]
 
 
@@ -381,7 +379,7 @@ exclude = [
 [tool.bandit]
 exclude_dirs = [
     "selector/measures/tests",
-    "selector/methods",
+    "selector/methods/tests",
 ]
 skips = [
     "B101", # Ignore assert statements
