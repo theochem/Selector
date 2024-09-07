@@ -7,8 +7,7 @@
 
 The `selector` library provides methods for selecting a diverse subset of a (molecular) dataset.
 
-Citation
---------
+## Citation
 
 Please use the following citation in any publication using the `selector` library:
 
@@ -18,9 +17,7 @@ Please use the following citation in any publication using the `selector` librar
 }
 ```
 
-
-Installation
-------------
+## Installation
 
 It is recommended to install `selector` within a virtual environment. To create a virtual
 environment, we can use the `venv` module (Python 3.3+,
@@ -36,7 +33,6 @@ https://docs.python.org/3/tutorial/venv.html), `miniconda` (https://conda.io/pro
 
 To install `selector` with `pip`, we can install the latest stable release from the Python Package Index (PyPI) as follows:
 
-
 ```bash
     # Install the stable release.
     pip install qc-selector
@@ -51,5 +47,7 @@ In addition, we can install the latest development version from the GitHub repos
     pip install git+https://github.com/theochem/Selector.git
 
 ```
+
+## More
 
 See https://selector.qcdevs.org for full details.
