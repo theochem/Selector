@@ -25,7 +25,7 @@ import sys
 
 from setuptools import setup
 
-short_description = "Subset selection with maximized diversity".split("\n")[0]
+short_description = "Molecule selection with maximum diversity".split("\n")[0]
 
 # from https://github.com/pytest-dev/pytest-runner#conditional-requirement
 needs_pytest = {"pytest", "test", "ptr"}.intersection(sys.argv)
@@ -37,16 +37,15 @@ try:
 except ValueError:
     long_description = short_description
 
-
-setup(
-    name="selector",
+package_metadata = dict(
+    name="qc-selector",
     author="QC-Devs Community",
     author_email="qcdevs@gmail.com",
     description=short_description,
     long_description=long_description,
     long_description_content_type="text/markdown",
     version="0.0.1",
-    license="GNU (Version 3)",
+    license="GNU General Public License v3 (GPLv3)",
     package_dir={"selector": "selector"},
     packages=[
         "selector",
@@ -63,7 +62,7 @@ setup(
     setup_requires=[
         "numpy>=1.21.2",
         "scipy>=1.11.1",
-        "pytest>=7.4.0",
+        # "pytest>=7.4.0",
         "scikit-learn",
         "bitarray",
     ]
@@ -82,7 +81,7 @@ setup(
     #            "Unix",
     #            "Windows"],
     # Python version restrictions
-    python_requires=">=3.7",
+    python_requires=">=3.9",
     # Manual control if final package is compressible or not, set False to prevent the .egg
     # from being made
     # zip_safe=False,
