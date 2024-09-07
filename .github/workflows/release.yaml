@@ -20,6 +20,9 @@ jobs:
         os: [ubuntu-latest]
         # python-version: ["3.9", "3.10", "3.11", "3.12"]
         python-version: ["3.11"]
+    outputs:
+      os: ${{ matrix.os }}
+      python-version: ${{ matrix.python-version }}
 
     steps:
       - uses: actions/checkout@v4
@@ -45,7 +48,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           # Name of the artifact to upload, unique for each OS and Python version
-          name: selector-build-${{ matrix.os }}-py${{ matrix.python-version }}
+          name: selector-build-$matrix.os-py$matrix.python-version
           path: dist/
           # Optional parameters for better artifact management
           overwrite: false
@@ -66,7 +69,7 @@ jobs:
       - name: Download all the dists
         uses: actions/download-artifact@v4
         with:
-          name: selector-build-${{ matrix.os }}-py${{ matrix.python-version }}
+          name: selector-build-${{ needs.build.outputs.os }}-py${{ needs.build.outputs.python-version }}
           path: dist/
       - name: Publish distribution to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
@@ -77,6 +80,7 @@ jobs:
   github-release:
     name: Sign and Upload Python Distribution to GitHub Release
     needs:
+      - build
       - publish-to-pypi
     runs-on: ubuntu-latest
     permissions:
@@ -87,7 +91,7 @@ jobs:
       - name: Download all the dists
         uses: actions/download-artifact@v4
         with:
-          name: python-package-*
+          name: selector-build-${{ needs.build.outputs.os }}-py${{ needs.build.outputs.python-version }}
           path: dist/
       - name: Sign the dists with Sigstore
         uses: sigstore/gh-action-sigstore-python@v2.1.1
@@ -126,7 +130,7 @@ jobs:
       - name: Download all the dists
         uses: actions/download-artifact@v4
         with:
-          name: selector-build-${{ matrix.os }}-py${{ matrix.python-version }}
+          name: selector-build-${{ needs.build.outputs.os }}-py${{ needs.build.outputs.python-version }}
           path: dist/
       - name: Publish distribution with relaxed constraints
         uses: pypa/gh-action-pypi-publish@release/v1
