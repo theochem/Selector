@@ -23,9 +23,9 @@
 
 import ast
 import csv
+import importlib
 
 import numpy as np
-import pkg_resources
 import pytest
 from numpy.testing import assert_almost_equal, assert_equal, assert_raises
 
@@ -1523,8 +1523,10 @@ def get_data_file_path(file_name):
     -------
     str
         The absolute path of the data file inside the package
+
     """
-    data_file_path = pkg_resources.resource_filename(__name__, f"data/{file_name}")
+    data_file_path = importlib.resources.files(__name__).joinpath(f"data/{file_name}")
+
     return data_file_path
 
 
