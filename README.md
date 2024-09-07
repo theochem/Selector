@@ -7,44 +7,47 @@
 
 The `selector` library provides methods for selecting a diverse subset of a (molecular) dataset.
 
-Citation
---------
+## Citation
 
 Please use the following citation in any publication using the `selector` library:
 
 ```md
 @article{
+    TO BE ADDED LATER
 }
 ```
 
+## Installation
 
-Installation
-------------
-
-To install `selector` using the conda package management system, install
-[miniconda](https://conda.io/miniconda.html) or [anaconda](https://www.anaconda.com/download)
-first, and then:
+It is recommended to install `selector` within a virtual environment. To create a virtual
+environment, we can use the `venv` module (Python 3.3+,
+https://docs.python.org/3/tutorial/venv.html), `miniconda` (https://conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html), or
+`pipenv` (https://pipenv.pypa.io/en/latest/). We use `miniconda` in the following example to create a virtual environment:
 
 ```bash
     # Create and activate qcdevs conda environment (optional, but recommended)
-    conda create -n qcdevs python=3.10
+    conda create -n qcdevs python=3.11
     conda activate qcdevs
 
-    # Install the stable release
-    # current conda release is not ready yet
-    # conda install -c theochem qc-selector
-
-    # install the development version
-    pip install git+https://github.com/theochem/Selector.git
 ```
 
-To install `selector` with `pip`, you may want to create a
-[virtual environment](https://docs.python.org/3/tutorial/venv.html), and then:
-
+To install `selector` with `pip`, we can install the latest stable release from the Python Package Index (PyPI) as follows:
 
 ```bash
     # Install the stable release.
     pip install qc-selector
 ```
+
+In addition, we can install the latest development version from the GitHub repository as follows:
+
+```bash
+    # Install the latest development version.
+
+    # install the development version
+    pip install git+https://github.com/theochem/Selector.git
+
+```
+
+## More
 
 See https://selector.qcdevs.org for full details.

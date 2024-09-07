@@ -23,9 +23,9 @@
 
 [project]
 # https://packaging.python.org/en/latest/specifications/declaring-project-metadata/
-name = "selector"
-version = "0.0.1"
-description = "Molecule selection with maximum diversity."
+name = "qc-selector"
+version = "0.0.2b4"
+description = "Subset selection with maximum diversity."
 readme = "README.md"
 #requires-python = ">=3.9,<4.0"
 requires-python = ">=3.9"
@@ -49,7 +49,7 @@ keywords = [
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Environment :: Console",
-    "License :: OSI Approved :: GNU (Version 3)",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
     "Natural Language :: English",
     "Operating System :: MacOS",
     "Operating System :: Microsoft :: Windows",
@@ -60,21 +60,29 @@ classifiers = [
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
 ]
 
-# Required dependencies for install/usage of your package or application
-# If you don't have any dependencies, leave this section empty
-# Format for dependency strings: https://peps.python.org/pep-0508/
-dependencies = [
-    "bitarray~=2.5.1",
-    "importlib-resources>=5.6.0",
-    "numpy>=1.21.2",
-    "pandas>=1.3.5",
-    "pytest>=6.2.5",
-    "scikit-learn>=1.0.1",
-    "scipy>=1.11.1",
-    "setuptools>=58.0.4",
-]
+dynamic = ["dependencies", "optional-dependencies"]
+
+# not using this section now but it's here for reference
+# # Required dependencies for install/usage of your package or application
+# # If you don't have any dependencies, leave this section empty
+# # Format for dependency strings: https://peps.python.org/pep-0508/
+# # dependencies from requirements.txt
+# dependencies = [
+#     "bitarray>=2.5.1",
+#     "numpy>=1.21.2",
+#     "scipy>=1.11.1",
+# ]
+
+# [project.optional-dependencies]
+# tests = [
+#   'coverage>=5.0.3',
+#   "pandas>=1.3.5",
+#   "pytest>=7.4.0",
+#   "scikit-learn>=1.0.1",
+# ]
 
 [project.scripts]
 # Command line interface entrypoint scripts
@@ -95,66 +103,76 @@ repository = "https://github.com/theochem/Selector"
 # Development dependencies
 # pip install -e .[lint,test,exe]
 # pip install -e .[dev]
-[project.optional-dependencies]
-lint = [
-    # ruff linter checks for issues and potential bugs
-    "ruff",
-    # checks for unused code
-    # "vulture",
-    # # required for codespell to parse pyproject.toml
-    # "tomli",
-    # # validation of pyproject.toml
-    # "validate-pyproject[all]",
-    # automatic sorting of imports
-    "isort",
-    # # automatic code formatting to follow a consistent style
-    # "black",
-]
 
-test = [
-    # Handles most of the testing work, including execution
-    # Docs: https://docs.pytest.org/en/stable/contents.html
-    "pytest>=7.4.0",
-    # required by pytest
-    "hypothesis",
-    # "Coverage" is how much of the code is actually run (it's "coverage")
-    # Generates coverage reports from test suite runs
-    "pytest-cov>=3.0.0",
+# we can only provide one optional dependencies or dynamic dependencies
+# we can't provide both, which leads to errors
+# [project.optional-dependencies]
+# lint = [
+#     # ruff linter checks for issues and potential bugs
+#     "ruff",
+#     # checks for unused code
+#     # "vulture",
+#     # # required for codespell to parse pyproject.toml
+#     # "tomli",
+#     # # validation of pyproject.toml
+#     # "validate-pyproject[all]",
+#     # automatic sorting of imports
+#     "isort",
+#     # # automatic code formatting to follow a consistent style
+#     # "black",
+# ]
 
-    "tomli",
-    "scikit-learn>=1.0.1",
-    # Better parsing of doctests
-    "xdoctest",
-    # Colors for doctest output
-    "Pygments",
-]
+# test = [
+#     # Handles most of the testing work, including execution
+#     # Docs: https://docs.pytest.org/en/stable/contents.html
+#     "pytest>=7.4.0",
+#     # required by pytest
+#     "hypothesis",
+#     # "Coverage" is how much of the code is actually run (it's "coverage")
+#     # Generates coverage reports from test suite runs
+#     "pytest-cov>=3.0.0",
+#     "tomli",
+#     "scikit-learn>=1.0.1",
+#     # Better parsing of doctests
+#     "xdoctest",
+#     # Colors for doctest output
+#     "Pygments",
+# ]
 
-exe = [
-    "setuptools",
-    "wheel",
-    "build",
-    "tomli",
-    "pyinstaller",
-    "staticx;platform_system=='Linux'",
-]
+# exe = [
+#     "setuptools",
+#     "wheel",
+#     "build",
+#     "tomli",
+#     "pyinstaller",
+#     "staticx;platform_system=='Linux'",
+# ]
 
-dev = [
-    # https://hynek.me/articles/python-recursive-optional-dependencies/
-    "selector[lint,test,exe]",
+# dev = [
+#     # https://hynek.me/articles/python-recursive-optional-dependencies/
+#     "selector[lint,test,exe]",
 
-    # # Code quality tools
-    # "mypy",
+#     # # Code quality tools
+#     # "mypy",
 
-    # # Improved exception traceback output
-    # # https://github.com/qix-/better-exceptions
-    # "better_exceptions",
+#     # # Improved exception traceback output
+#     # # https://github.com/qix-/better-exceptions
+#     # "better_exceptions",
 
-    # # Analyzing dependencies
-    # # install graphviz to generate graphs
-    # "graphviz",
-    # "pipdeptree",
-]
+#     # # Analyzing dependencies
+#     # # install graphviz to generate graphs
+#     # "graphviz",
+#     # "pipdeptree",
+# ]
 
+[build-system]
+# Minimum requirements for the build system to execute.
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+optional-dependencies = {dev = { file = ["requirements_dev.txt"] }}
 
 [tool.setuptools]
 # https://setuptools.pypa.io/en/latest/userguide/pyproject_config.html
@@ -171,7 +189,7 @@ selector = ["*.xml"]
 # Python modules and packages that are included in the
 # distribution package (and therefore become importable)
 [tool.setuptools.packages.find]
-exclude = ["tests", "tests_*", "examples"]
+exclude = ["*/*/tests", "tests_*", "examples", "book"]
 
 
 # PDM example
@@ -320,9 +338,7 @@ ignore_missing_imports = true
 files = "selector"  # directory mypy should analyze
 # Directories to exclude from mypy's analysis
 exclude = [
-    "selector/somedir",
-    "selector/somefile\\.py",
-    "dirname",
+    "book",
 ]
 
 
@@ -381,7 +397,7 @@ exclude = [
 [tool.bandit]
 exclude_dirs = [
     "selector/measures/tests",
-    "selector/methods",
+    "selector/methods/tests",
 ]
 skips = [
     "B101", # Ignore assert statements
