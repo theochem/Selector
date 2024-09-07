@@ -6,7 +6,7 @@
 
 [![This project supports Python 3.9+](https://img.shields.io/badge/Python-3.9+-blue.svg)](https://python.org/downloads)
 [![GPLv3 License](https://img.shields.io/badge/License-GPL%20v3-yellow.svg)](https://opensource.org/licenses/)
-[![GitHub Actions CI Tox Status](https://github.com/theochem/Selector/actions/workflows/ci_tox.yml/badge.svg?branch=main)](https://github.com/theochem/Selector/actions/workflows/ci_tox.yml)
+[![CI Tox](https://github.com/theochem/Selector/actions/workflows/ci_tox.yaml/badge.svg?branch=main)](https://github.com/theochem/Selector/actions/workflows/ci_tox.yaml)
 [![codecov](https://codecov.io/gh/theochem/Selector/graph/badge.svg?token=0UJixrJfNJ)](https://codecov.io/gh/theochem/Selector)
 
 The `selector` library provides methods for selecting a diverse subset of a (molecular) dataset.
