@@ -1,5 +1,7 @@
-# The Selector library provides a set of tools for selecting a
-# subset of the dataset and computing diversity.
+# -*- coding: utf-8 -*-
+#
+# The Selector is a Python library of algorithms for selecting diverse
+# subsets of data for machine-learning.
 #
 # Copyright (C) 2022-2024 The QC-Devs Community
 #

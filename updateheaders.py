@@ -1,16 +1,18 @@
-# The selector library provides a set of tools to select molecule
-# subset with maximum molecular diversity.
+# -*- coding: utf-8 -*-
 #
-# Copyright (C) 2023 The QC-Devs Community
+# The Selector is a Python library of algorithms for selecting diverse
+# subsets of data for machine-learning.
 #
-# This file is part of selector.
+# Copyright (C) 2022-2024 The QC-Devs Community
 #
-# selector is free software; you can redistribute it and/or
+# This file is part of Selector.
+#
+# Selector is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
 # as published by the Free Software Foundation; either version 3
 # of the License, or (at your option) any later version.
 #
-# selector is distributed in the hope that it will be useful,
+# Selector is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
@@ -54,8 +56,11 @@ def fix_python(fn, lines, header_lines):
     # add new header (insert in reverse order)
     for hline in header_lines[::-1]:
         lines.insert(0, ("# " + hline).strip() + "\n")
-    # add a source code encoding line
-    lines.insert(0, "# -*- coding: utf-8 -*-\n")
+
+    if not hline.startswith("# -*- coding: utf-8 -*-"):
+        # add a source code encoding line
+        lines.insert(0, "# -*- coding: utf-8 -*-\n")
+
     if do_shebang:
         lines.insert(0, "#!/usr/bin/env python\n")
 
@@ -95,7 +100,7 @@ def iter_subdirs(root):
 
 
 def main():
-    source_dirs = [".", "doc", "scripts", "tools"] + list(iter_subdirs("procrustes"))
+    source_dirs = [".", "book", "notebooks", "selector"] + list(iter_subdirs("selector"))
 
     fixers = [
         ("*.py", fix_python),
