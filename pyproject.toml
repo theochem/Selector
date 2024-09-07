@@ -24,7 +24,6 @@
 [project]
 # https://packaging.python.org/en/latest/specifications/declaring-project-metadata/
 name = "qc-selector"
-version = "0.0.2b4"
 description = "Subset selection with maximum diversity."
 readme = "README.md"
 #requires-python = ">=3.9,<4.0"
@@ -53,6 +52,7 @@ classifiers = [
     "Natural Language :: English",
     "Operating System :: MacOS",
     "Operating System :: Microsoft :: Windows",
+    "Operating System :: Unix",
     "Operating System :: POSIX",
     "Operating System :: POSIX :: Linux",
     "Programming Language :: Python",
@@ -61,9 +61,17 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Sociology",
+
 ]
 
-dynamic = ["dependencies", "optional-dependencies"]
+# version = "0.0.2b4"
+dynamic = [
+    "dependencies",
+    "optional-dependencies",
+    "version",
+    ]
 
 # not using this section now but it's here for reference
 # # Required dependencies for install/usage of your package or application
@@ -167,12 +175,15 @@ repository = "https://github.com/theochem/Selector"
 
 [build-system]
 # Minimum requirements for the build system to execute.
-requires = ["setuptools", "wheel"]
+requires = ["setuptools>=64", "setuptools-scm>=8", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.dynamic]
 dependencies = {file = ["requirements.txt"]}
 optional-dependencies = {dev = { file = ["requirements_dev.txt"] }}
+
+[tool.setuptools_scm]
+# can be empty if no extra settings are needed, presence enables setuptools-scm
 
 [tool.setuptools]
 # https://setuptools.pypa.io/en/latest/userguide/pyproject_config.html
