@@ -8,3 +8,5 @@ pytest-cov>=3.0.0
 scikit-learn>=1.0.1
 scipy>=1.11.1
 setuptools>=62.6
+tomli
+xdoctest

@@ -122,48 +122,48 @@ repository = "https://github.com/theochem/Selector"
 #     # "black",
 # ]
 
-test = [
-    # Handles most of the testing work, including execution
-    # Docs: https://docs.pytest.org/en/stable/contents.html
-    "pytest>=7.4.0",
-    # required by pytest
-    "hypothesis",
-    # "Coverage" is how much of the code is actually run (it's "coverage")
-    # Generates coverage reports from test suite runs
-    "pytest-cov>=3.0.0",
-    "tomli",
-    "scikit-learn>=1.0.1",
-    # Better parsing of doctests
-    "xdoctest",
-    # Colors for doctest output
-    "Pygments",
-]
+# test = [
+#     # Handles most of the testing work, including execution
+#     # Docs: https://docs.pytest.org/en/stable/contents.html
+#     "pytest>=7.4.0",
+#     # required by pytest
+#     "hypothesis",
+#     # "Coverage" is how much of the code is actually run (it's "coverage")
+#     # Generates coverage reports from test suite runs
+#     "pytest-cov>=3.0.0",
+#     "tomli",
+#     "scikit-learn>=1.0.1",
+#     # Better parsing of doctests
+#     "xdoctest",
+#     # Colors for doctest output
+#     "Pygments",
+# ]
 
-exe = [
-    "setuptools",
-    "wheel",
-    "build",
-    "tomli",
-    "pyinstaller",
-    "staticx;platform_system=='Linux'",
-]
+# exe = [
+#     "setuptools",
+#     "wheel",
+#     "build",
+#     "tomli",
+#     "pyinstaller",
+#     "staticx;platform_system=='Linux'",
+# ]
 
-dev = [
-    # https://hynek.me/articles/python-recursive-optional-dependencies/
-    "selector[lint,test,exe]",
+# dev = [
+#     # https://hynek.me/articles/python-recursive-optional-dependencies/
+#     "selector[lint,test,exe]",
 
-    # # Code quality tools
-    # "mypy",
+#     # # Code quality tools
+#     # "mypy",
 
-    # # Improved exception traceback output
-    # # https://github.com/qix-/better-exceptions
-    # "better_exceptions",
+#     # # Improved exception traceback output
+#     # # https://github.com/qix-/better-exceptions
+#     # "better_exceptions",
 
-    # # Analyzing dependencies
-    # # install graphviz to generate graphs
-    # "graphviz",
-    # "pipdeptree",
-]
+#     # # Analyzing dependencies
+#     # # install graphviz to generate graphs
+#     # "graphviz",
+#     # "pipdeptree",
+# ]
 
 [build-system]
 # Minimum requirements for the build system to execute.
