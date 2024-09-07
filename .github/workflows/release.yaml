@@ -4,6 +4,8 @@ on:
     tags:
       # Trigger on version tags (e.g., v1.0.0)
       - "v*.*.*"
+      # Trigger on pre-release tags (e.g., v1.0.0-alpha.1)
+      - "v*.*.*-*"
 
 env:
   # package name
