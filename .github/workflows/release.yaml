@@ -42,7 +42,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           # Name of the artifact to upload, unique for each OS and Python version
-          name: python-package-${{ matrix.os }}-py${{ matrix.python-version }}
+          name: selector-build-${{ matrix.os }}-py${{ matrix.python-version }}
           path: dist/
           # Optional parameters for better artifact management
           overwrite: false
@@ -60,7 +60,7 @@ jobs:
       - name: Download all the dists
         uses: actions/download-artifact@v4
         with:
-          name: python-package-*
+          name: selector-build-*
           path: dist/
       - name: Publish distribution to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
@@ -120,7 +120,7 @@ jobs:
       - name: Download all the dists
         uses: actions/download-artifact@v4
         with:
-          name: python-package-*
+          name: selector-build-*
           path: dist/
       - name: Publish distribution with relaxed constraints
         uses: pypa/gh-action-pypi-publish@release/v1
