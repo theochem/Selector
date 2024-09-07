@@ -103,21 +103,24 @@ repository = "https://github.com/theochem/Selector"
 # Development dependencies
 # pip install -e .[lint,test,exe]
 # pip install -e .[dev]
-[project.optional-dependencies]
-lint = [
-    # ruff linter checks for issues and potential bugs
-    "ruff",
-    # checks for unused code
-    # "vulture",
-    # # required for codespell to parse pyproject.toml
-    # "tomli",
-    # # validation of pyproject.toml
-    # "validate-pyproject[all]",
-    # automatic sorting of imports
-    "isort",
-    # # automatic code formatting to follow a consistent style
-    # "black",
-]
+
+# we can only provide one optional dependencies or dynamic dependencies
+# we can't provide both, which leads to errors
+# [project.optional-dependencies]
+# lint = [
+#     # ruff linter checks for issues and potential bugs
+#     "ruff",
+#     # checks for unused code
+#     # "vulture",
+#     # # required for codespell to parse pyproject.toml
+#     # "tomli",
+#     # # validation of pyproject.toml
+#     # "validate-pyproject[all]",
+#     # automatic sorting of imports
+#     "isort",
+#     # # automatic code formatting to follow a consistent style
+#     # "black",
+# ]
 
 test = [
     # Handles most of the testing work, including execution
@@ -161,6 +164,10 @@ dev = [
     # "graphviz",
     # "pipdeptree",
 ]
+
+[build-system]
+# Minimum requirements for the build system to execute.
+requires = ["setuptools"]
 
 [tool.setuptools.dynamic]
 dependencies = {file = ["requirements.txt"]}
