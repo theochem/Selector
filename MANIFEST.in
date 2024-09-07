@@ -3,5 +3,10 @@ include MANIFEST.in
 include CODE_OF_CONDUCT.md
 include versioneer.py
 
+prune selector/methods/tests
+prune selector/measures/tests
+prune notebooks
+prune book
+
 graft selector
 global-exclude *.py[cod] __pycache__ *.so

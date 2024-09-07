@@ -200,7 +200,7 @@ selector = ["*.xml"]
 # Python modules and packages that are included in the
 # distribution package (and therefore become importable)
 [tool.setuptools.packages.find]
-exclude = ["*/*/tests", "tests_*", "examples", "book"]
+exclude = ["*/*/tests", "tests_*", "examples", "book/content", "notebooks"]
 
 
 # PDM example
