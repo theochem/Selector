@@ -25,7 +25,7 @@
 # https://packaging.python.org/en/latest/specifications/declaring-project-metadata/
 name = "selector"
 version = "0.0.1"
-description = "Molecule selection with maximum diversity."
+description = "Subset selection with maximum diversity."
 readme = "README.md"
 #requires-python = ">=3.9,<4.0"
 requires-python = ">=3.9"
@@ -171,7 +171,7 @@ selector = ["*.xml"]
 # Python modules and packages that are included in the
 # distribution package (and therefore become importable)
 [tool.setuptools.packages.find]
-exclude = ["tests", "tests_*", "examples"]
+exclude = ["*/*/tests", "tests_*", "examples", "book"]
 
 
 # PDM example
@@ -320,7 +320,7 @@ ignore_missing_imports = true
 files = "selector"  # directory mypy should analyze
 # Directories to exclude from mypy's analysis
 exclude = [
-    "selector/book",
+    "book",
 ]
 
 
