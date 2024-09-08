@@ -1,8 +1,7 @@
-<!-- # The Selector Library -->
-<h1>
-  The Selector Library
-  <img src="book/content/selector_logo.png" alt="Logo" align="right" width="180">
-</h1>
+<div style="text-align:center">
+  <!-- <h1 style="margin-right: 20px;">The Selector Library</h1> -->
+  <img src="https://github.com/theochem/Selector/blob/main/book/content/selector_logo.png?raw=true" alt="Logo" style="width: 50%">
+</div>
 
 [![This project supports Python 3.9+](https://img.shields.io/badge/Python-3.9+-blue.svg)](https://python.org/downloads)
 [![GPLv3 License](https://img.shields.io/badge/License-GPL%20v3-yellow.svg)](https://opensource.org/licenses/)
