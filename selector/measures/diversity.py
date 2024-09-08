@@ -203,12 +203,12 @@ def shannon_entropy(x: np.ndarray, normalize=True, truncation=False) -> float:
     References
     ----------
     .. [1] Wang, Y., Geppert, H., & Bajorath, J. (2009). Shannon entropy-based fingerprint similarity
-    search strategy. Journal of Chemical Information and Modeling, 49(7), 1687-1691.
+       search strategy. Journal of Chemical Information and Modeling, 49(7), 1687-1691.
     .. [2] Leguy, J., Glavatskikh, M., Cauchy, T., & Da Mota, B. (2021). Scalable estimator of the
-    diversity for de novo molecular generation resulting in a more robust QM dataset (OD9) and a
-    more efficient molecular optimization. Journal of Cheminformatics, 13(1), 1-17.
+       diversity for de novo molecular generation resulting in a more robust QM dataset (OD9) and a
+       more efficient molecular optimization. Journal of Cheminformatics, 13(1), 1-17.
     .. [3] Weidlich, I. E., & Filippov, I. V. (2016). Using the Gini coefficient to measure the
-    chemical diversity of small molecule libraries. Journal of Computational Chemistry, 37(22), 2091-2097.
+       chemical diversity of small molecule libraries. Journal of Computational Chemistry, 37(22), 2091-2097.
 
     """
     # check if matrix is binary
