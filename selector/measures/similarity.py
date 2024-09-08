@@ -80,7 +80,7 @@ def tanimoto(a: np.array, b: np.array) -> float:
     For two binary or non-binary arrays :math:`A` and :math:`B`, Tanimoto coefficient
     is defined as the size of their intersection divided by the size of their union:
 
-    ..math::
+    .. math::
         T(A, B) = \frac{| A \cap B|}{| A \cup B |} =
         \frac{| A \cap B|}{|A| + |B| - | A \cap B|} =
         \frac{A \cdot B}{\|A\|^2 + \|B\|^2 - A \cdot B}
@@ -120,8 +120,8 @@ def modified_tanimoto(a: np.array, b: np.array) -> float:
     Adjusts calculation of the Tanimoto coefficient to counter its natural bias towards
     shorter vectors using a Bernoulli probability model.
 
-    ..math::
-    MT = \frac{2-p}{3}T_1 + \frac{1+p}{3}T_0
+    .. math::
+        mt = \frac{2-p}{3} T_1 + \frac{1+p}{3} T_0
 
     where :math:`p` is success probability of independent trials,
     :math:`T_1` is the number of common '1' bits between data points
@@ -145,8 +145,8 @@ def modified_tanimoto(a: np.array, b: np.array) -> float:
     -----
     The equation above has been derived from
 
-    ..math::
-    MT_\alpha= {\alpha}T_1 + (1-\alpha)T_0
+    .. math::
+       mt_{\alpha} = {\alpha}T_1 + (1-\alpha)T_0
 
     where :math:`\alpha = \frac{2-p}{3}`. This is done so that the expected value
     of the modified tanimoto, :math:`E(MT)`, remains constant even as the number of
@@ -196,10 +196,10 @@ def modified_tanimoto(a: np.array, b: np.array) -> float:
 
 
 def scaled_similarity_matrix(X: np.array) -> np.ndarray:
-    """Compute the scaled similarity matrix.
+    r"""Compute the scaled similarity matrix.
 
-    ..math::
-    X(i,j)=\frac{X(i,j)}{\\sqrt{X(i,i)X(j,j)}}
+    .. math::
+        X(i,j) = \frac{X(i,j)}{\sqrt{X(i,i)X(j,j)}}
 
     Parameters
     ----------

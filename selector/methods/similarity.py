@@ -188,21 +188,22 @@ class NSimilarity(SelectionBase):
 
         First each data point is normalized to be between 0 and 1.
         .. math::
-            x_{ij} = \\frac{x_{ij} - min(x_j)}{max(x_j) - min(x_j)}
+            x_{ij} = \frac{x_{ij} - min(x_j)}{max(x_j) - min(x_j)}
 
         Then, the average of each column is calculated. Finally, each element of the final working
         array will be defined as
 
         .. math::
-            w_ij = 1 - | x_ij - a_j |
+            w_{ij} = 1 - | x_{ij} - a_j |
 
-        where $x_ij$ is the element of the normalized array, and $a_j$ is the average of the j-th
+        where :math:`x_{ij}` is the element of the normalized array, and :math:`a_j` is the average of the j-th
         column of the normalized array.
 
         Parameters
         ----------
         X: np.ndarray
             Array of features (columns) for each sample (rows).
+
         """
         min_value = np.min(X)
         max_value = np.max(X)
