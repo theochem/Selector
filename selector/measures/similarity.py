@@ -121,7 +121,7 @@ def modified_tanimoto(a: np.array, b: np.array) -> float:
     shorter vectors using a Bernoulli probability model.
 
     .. math::
-        mt = \frac{2-p}{3} T_1 + \frac{1+p}{3} T_0
+        {mt} = \frac{2-p}{3} T_1 + \frac{1+p}{3} T_0
 
     where :math:`p` is success probability of independent trials,
     :math:`T_1` is the number of common '1' bits between data points
@@ -146,10 +146,10 @@ def modified_tanimoto(a: np.array, b: np.array) -> float:
     The equation above has been derived from
 
     .. math::
-       mt_{\alpha} = {\alpha}T_1 + (1-\alpha)T_0
+       {mt}_{\alpha} = {\alpha}T_1 + (1-\alpha)T_0
 
     where :math:`\alpha = \frac{2-p}{3}`. This is done so that the expected value
-    of the modified tanimoto, :math:`E(MT)`, remains constant even as the number of
+    of the modified tanimoto, :math:`E(mt)`, remains constant even as the number of
     trials :math:`p` grows larger.
 
     Fligner, M. A., Verducci, J. S., and Blower, P. E.. (2002)

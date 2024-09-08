@@ -200,6 +200,8 @@ def shannon_entropy(x: np.ndarray, normalize=True, truncation=False) -> float:
     But please note, when `completeness` is False and `normalize` is True, the formula has not been
     used in any literature. It is just a simple normalization of the entropy and the user can use it at their own risk.
 
+    References
+    ----------
     .. [1] Wang, Y., Geppert, H., & Bajorath, J. (2009). Shannon entropy-based fingerprint similarity
     search strategy. Journal of Chemical Information and Modeling, 49(7), 1687-1691.
     .. [2] Leguy, J., Glavatskikh, M., Cauchy, T., & Da Mota, B. (2021). Scalable estimator of the
@@ -284,6 +286,7 @@ def wdud(x: np.ndarray) -> float:
     r"""Compute the Wasserstein Distance to Uniform Distribution(WDUD).
 
     The equation for the Wasserstein Distance for a single feature to uniform distribution is
+
     .. math::
         WDUD(x) = \int_{0}^{1} |U(x) - V(x)|dx
 

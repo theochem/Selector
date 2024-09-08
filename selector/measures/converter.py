@@ -294,8 +294,7 @@ def co_occurrence(x: np.ndarray) -> np.ndarray:
     r"""Calculate distance array from frequency using the co-occurrence method.
 
     .. math::
-        \delta_{ij} =  \left(1 + \frac{f_{ij}\sum_{i,j}{f_{ij}}}
-                       {\sum_{i}{f_{ij}}\sum_{j}{f_{ij}}} \right)^{-1}
+        \delta_{ij} =  \left(1 + \frac{f_{ij}\sum_{i,j}{f_{ij}}}{\sum_{i}{f_{ij}}\sum_{j}{f_{ij}}} \right)^{-1}
 
     where :math:`\delta_{ij}` is the distance between points :math:`i`
     and :math:`j`, and :math:`f_{ij}` is their frequency.

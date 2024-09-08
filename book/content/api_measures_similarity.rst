@@ -1,7 +1,7 @@
 .. _measures.similarity:
 
 :mod:`selector.measures.similarity`
-==================================
+===================================
 
 .. automodule:: selector.measures.similarity
    :members:

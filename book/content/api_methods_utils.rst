@@ -1,7 +1,7 @@
 .. _methods.utils:
 
 :mod:`selector.methods.utils`
-============================
+=============================
 
 .. automodule:: selector.methods.utils
    :members:

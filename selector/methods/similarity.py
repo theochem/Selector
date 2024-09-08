@@ -187,6 +187,7 @@ class NSimilarity(SelectionBase):
         r"""Scales the data between so it can be used with the similarity indexes.
 
         First each data point is normalized to be between 0 and 1.
+
         .. math::
             x_{ij} = \frac{x_{ij} - min(x_j)}{max(x_j) - min(x_j)}
 
@@ -196,14 +197,14 @@ class NSimilarity(SelectionBase):
         .. math::
             w_{ij} = 1 - | x_{ij} - a_j |
 
-        where :math:`x_{ij}` is the element of the normalized array, and :math:`a_j` is the average of the j-th
+        where :math:`x_{ij}` is the element of the normalized array,
+        and :math:`a_j` is the average of the j-th
         column of the normalized array.
 
         Parameters
         ----------
         X: np.ndarray
             Array of features (columns) for each sample (rows).
-
         """
         min_value = np.min(X)
         max_value = np.max(X)
@@ -428,9 +429,8 @@ class NSimilarity(SelectionBase):
             Array of integers or strings representing the points ids of the data that belong to the
             current cluster. If `None`, all the samples in the data are treated as one cluster.
         start: str or list
-            srt: key on what is used to start the selection
-                {'medoid', 'random', 'outlier'}
-            list: indices of points that are included in the selection since the beginning
+            srt: key on what is used to start the selection {'medoid', 'random', 'outlier'}.
+            list: indices of points that are included in the selection since the beginning.
 
         Returns
         -------
