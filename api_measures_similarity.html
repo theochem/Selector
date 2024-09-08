@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Installation &#8212; Ayers Lab</title>
+    <title>selector.measures.similarity &#8212; Ayers Lab</title>
   
   
   
@@ -59,12 +59,13 @@
     <script src="_static/design-tabs.js"></script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
     <script async="async" src="_static/sphinx-thebe.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'installation';</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api_measures_similarity';</script>
     <link rel="shortcut icon" href="_static/selector_logo.png"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Tutorial Distance-Based Selectors" href="tutorial_distance_based.html" />
-    <link rel="prev" title="Welcome to QC-Selector’s Documentation!" href="intro.html" />
+    <link rel="prev" title="selector.measures.diversity" href="api_measures_diversity.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -183,15 +184,15 @@
             </li>
         </ul>
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
-<ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Installation</a></li>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial_distance_based.html">Tutorial Distance-Based Selectors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial_partition_based.html">Tutorial Partition-Based Selectors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial_diversity_measures.html">Tutorial Diversity Measures</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial_similarity_based.html">Tutorial Similarity Based Selectors</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">API</span></p>
-<ul class="nav bd-sidenav">
+<ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="api_methods_base.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selector.methods.base</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="api_methods_distance.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selector.methods.distance</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="api_methods_partition.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selector.methods.partition</span></code></a></li>
@@ -199,7 +200,7 @@
 <li class="toctree-l1"><a class="reference internal" href="api_methods_utils.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selector.methods.utils</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="api_measures_converter.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selector.measures.converter</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="api_measures_diversity.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selector.measures.diversity</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="api_measures_similarity.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selector.measures.similarity</span></code></a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selector.measures.similarity</span></code></a></li>
 </ul>
 
     </div>
@@ -271,7 +272,7 @@
       
       
       
-      <li><a href="https://github.com/theochem/Selector/issues/new?title=Issue%20on%20page%20%2Finstallation.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/theochem/Selector/issues/new?title=Issue%20on%20page%20%2Fapi_measures_similarity.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -301,7 +302,7 @@
       
       
       
-      <li><a href="_sources/installation.md" target="_blank"
+      <li><a href="_sources/api_measures_similarity.rst" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -311,7 +312,7 @@
 <span class="btn__icon-container">
   <i class="fas fa-file"></i>
   </span>
-<span class="btn__text-container">.md</span>
+<span class="btn__text-container">.rst</span>
 </a>
 </li>
       
@@ -385,7 +386,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Installation</h1>
+    <h1>selector.measures.similarity</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -395,9 +396,10 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#stable-releases">Stable Releases</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#prebuilt-wheels">Prebuilt Wheels</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#development-version">Development Version</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.measures.similarity.modified_tanimoto"><code class="docutils literal notranslate"><span class="pre">modified_tanimoto()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.measures.similarity.pairwise_similarity_bit"><code class="docutils literal notranslate"><span class="pre">pairwise_similarity_bit()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.measures.similarity.scaled_similarity_matrix"><code class="docutils literal notranslate"><span class="pre">scaled_similarity_matrix()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.measures.similarity.tanimoto"><code class="docutils literal notranslate"><span class="pre">tanimoto()</span></code></a></li>
 </ul>
             </nav>
         </div>
@@ -409,56 +411,130 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="installation">
-<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this heading">#</a></h1>
-<section id="stable-releases">
-<h2>Stable Releases<a class="headerlink" href="#stable-releases" title="Permalink to this heading">#</a></h2>
-<div class="alert alert-block alert-warning">
-<b>Warning:
-</b>
-We are preparing a 1.0 release. Until then, we can install the beta relase with PyPI,
-https://pypi.org/project/qc-selector/.
-</div>
-<p>The following dependencies are required to run selector properly,</p>
-<ul class="simple">
-<li><p>Python &gt;= 3.9: <a class="reference external" href="http://www.python.org/">http://www.python.org/</a></p></li>
-<li><p>NumPy &gt;= 1.21.2: <a class="reference external" href="http://www.numpy.org/">http://www.numpy.org/</a></p></li>
-<li><p>SciPy &gt;= 1.11.1: <a class="reference external" href="http://www.scipy.org/">http://www.scipy.org/</a></p></li>
-<li><p>bitarray &gt;= 2.5.1: <a class="reference external" href="https://pypi.org/project/bitarray/">https://pypi.org/project/bitarray/</a></p></li>
-</ul>
-<p>Normally, you don’t need to install these dependencies manually. They will be installed automatically when you follow the instructions below.</p>
-<p>It is recommended to install <code class="docutils literal notranslate"><span class="pre">selector</span></code> within a virtual environment. To create a virtual
-environment, we can use the <code class="docutils literal notranslate"><span class="pre">venv</span></code> module (Python 3.3+,
-<a class="reference external" href="https://docs.python.org/3/tutorial/venv.html">https://docs.python.org/3/tutorial/venv.html</a>), <code class="docutils literal notranslate"><span class="pre">miniconda</span></code> (<a class="reference external" href="https://conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html">https://conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html</a>), or
-<code class="docutils literal notranslate"><span class="pre">pipenv</span></code> (<a class="reference external" href="https://pipenv.pypa.io/en/latest/">https://pipenv.pypa.io/en/latest/</a>). We use <code class="docutils literal notranslate"><span class="pre">miniconda</span></code> in the following example to create a virtual environment:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="c1"># Create and activate qcdevs conda environment (optional, but recommended)</span>
-<span class="w">    </span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>qcdevs<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.11
-<span class="w">    </span>conda<span class="w"> </span>activate<span class="w"> </span>qcdevs
-</pre></div>
-</div>
-<p>To install <code class="docutils literal notranslate"><span class="pre">selector</span></code> with <code class="docutils literal notranslate"><span class="pre">pip</span></code>, we can install the latest stable release from the Python Package Index (PyPI) as follows:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="c1"># Install the stable release.</span>
-<span class="w">    </span>pip<span class="w"> </span>install<span class="w"> </span>qc-selector
-</pre></div>
-</div>
+  <section id="module-selector.measures.similarity">
+<span id="selector-measures-similarity"></span><span id="measures-similarity"></span><h1><a class="reference internal" href="#module-selector.measures.similarity" title="selector.measures.similarity"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selector.measures.similarity</span></code></a><a class="headerlink" href="#module-selector.measures.similarity" title="Permalink to this heading">#</a></h1>
+<p>Similarity Module.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="selector.measures.similarity.modified_tanimoto">
+<span class="sig-prename descclassname"><span class="pre">selector.measures.similarity.</span></span><span class="sig-name descname"><span class="pre">modified_tanimoto</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#selector.measures.similarity.modified_tanimoto" title="Permalink to this definition">#</a></dt>
+<dd><p>Compute the modified tanimoto coefficient from bitstring vectors of data points A and B.</p>
+<p>Adjusts calculation of the Tanimoto coefficient to counter its natural bias towards
+shorter vectors using a Bernoulli probability model.</p>
+<div class="math notranslate nohighlight">
+\[{mt} = \frac{2-p}{3} T_1 + \frac{1+p}{3} T_0\]</div>
+<p>where <span class="math notranslate nohighlight">\(p\)</span> is success probability of independent trials,
+<span class="math notranslate nohighlight">\(T_1\)</span> is the number of common ‘1’ bits between data points
+(<span class="math notranslate nohighlight">\(T_1 = | A \cap B |\)</span>), and <span class="math notranslate nohighlight">\(T_0\)</span> is the number of common ‘0’
+bits between data points (<span class="math notranslate nohighlight">\(T_0 = |(1-A) \cap (1-B)|\)</span>).</p>
+<section id="parameters">
+<h2>Parameters<a class="headerlink" href="#parameters" title="Permalink to this heading">#</a></h2>
+<dl class="simple">
+<dt>a<span class="classifier">ndarray of shape (n_features,)</span></dt><dd><p>The 1D bitstring feature array of sample <span class="math notranslate nohighlight">\(A\)</span> in an <cite>n_features</cite> dimensional space.</p>
+</dd>
+<dt>b<span class="classifier">ndarray of shape (n_features,)</span></dt><dd><p>The 1D bitstring feature array of sample <span class="math notranslate nohighlight">\(B\)</span> in an <cite>n_features</cite> dimensional space.</p>
+</dd>
+</dl>
 </section>
-<section id="prebuilt-wheels">
-<h2>Prebuilt Wheels<a class="headerlink" href="#prebuilt-wheels" title="Permalink to this heading">#</a></h2>
-<p>To download the prebuilt wheel files, visit the <a class="reference external" href="https://pypi.org/project/qc-selector/">PyPI page</a>
-and <a class="reference external" href="https://github.com/theochem/Selector/releases">GitHub Releases</a>.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="c1"># install the prebuilt wheel file</span>
-<span class="w">    </span>pip<span class="w"> </span>install<span class="w"> </span>qc_selector-0.0.2b10-py3-none-any.whl
-</pre></div>
-</div>
+<section id="returns">
+<h2>Returns<a class="headerlink" href="#returns" title="Permalink to this heading">#</a></h2>
+<dl class="simple">
+<dt>mt<span class="classifier">float</span></dt><dd><p>Modified tanimoto coefficient between bitstring feature arrays <span class="math notranslate nohighlight">\(A\)</span> and <span class="math notranslate nohighlight">\(B\)</span>.</p>
+</dd>
+</dl>
 </section>
-<section id="development-version">
-<h2>Development Version<a class="headerlink" href="#development-version" title="Permalink to this heading">#</a></h2>
-<p>In addition, we can install the latest development version from the GitHub repository as follows:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="c1"># install the latest development version</span>
-<span class="w">    </span>pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com/theochem/Selector.git
-</pre></div>
-</div>
+<section id="notes">
+<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this heading">#</a></h2>
+<p>The equation above has been derived from</p>
+<div class="math notranslate nohighlight">
+\[{mt}_{\alpha} = {\alpha}T_1 + (1-\alpha)T_0\]</div>
+<p>where <span class="math notranslate nohighlight">\(\alpha = \frac{2-p}{3}\)</span>. This is done so that the expected value
+of the modified tanimoto, <span class="math notranslate nohighlight">\(E(mt)\)</span>, remains constant even as the number of
+trials <span class="math notranslate nohighlight">\(p\)</span> grows larger.</p>
+<p>Fligner, M. A., Verducci, J. S., and Blower, P. E.. (2002)
+A Modification of the Jaccard-Tanimoto Similarity Index for
+Diverse Selection of Chemical Compounds Using Binary Strings.
+Technometrics 44, 110-119.</p>
 </section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="selector.measures.similarity.pairwise_similarity_bit">
+<span class="sig-prename descclassname"><span class="pre">selector.measures.similarity.</span></span><span class="sig-name descname"><span class="pre">pairwise_similarity_bit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#selector.measures.similarity.pairwise_similarity_bit" title="Permalink to this definition">#</a></dt>
+<dd><p>Compute pairwise similarity coefficient matrix.</p>
+<section id="id1">
+<h2>Parameters<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h2>
+<dl class="simple">
+<dt>X<span class="classifier">ndarray of shape (n_samples, n_features)</span></dt><dd><p>Feature matrix of <cite>n_samples</cite> samples in <cite>n_features</cite> dimensional space.</p>
+</dd>
+<dt>metric<span class="classifier">str</span></dt><dd><p>The metric used when calculating similarity coefficients between samples in a feature array.
+Method for calculating similarity coefficient. Options: <cite>“tanimoto”</cite>, <cite>“modified_tanimoto”</cite>.</p>
+</dd>
+</dl>
+</section>
+<section id="id2">
+<h2>Returns<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h2>
+<dl class="simple">
+<dt>s<span class="classifier">ndarray of shape (n_samples, n_samples)</span></dt><dd><p>A symmetric similarity matrix between each pair of samples in the feature matrix.
+The diagonal elements are directly computed instead of assuming that they are 1.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="selector.measures.similarity.scaled_similarity_matrix">
+<span class="sig-prename descclassname"><span class="pre">selector.measures.similarity.</span></span><span class="sig-name descname"><span class="pre">scaled_similarity_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#selector.measures.similarity.scaled_similarity_matrix" title="Permalink to this definition">#</a></dt>
+<dd><p>Compute the scaled similarity matrix.</p>
+<div class="math notranslate nohighlight">
+\[X(i,j) = \frac{X(i,j)}{\sqrt{X(i,i)X(j,j)}}\]</div>
+<section id="id3">
+<h2>Parameters<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h2>
+<dl class="simple">
+<dt>X<span class="classifier">ndarray of shape (n_samples, n_samples)</span></dt><dd><p>Similarity matrix of <cite>n_samples</cite>.</p>
+</dd>
+</dl>
+</section>
+<section id="id4">
+<h2>Returns<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h2>
+<dl class="simple">
+<dt>s<span class="classifier">ndarray of shape (n_samples, n_samples)</span></dt><dd><p>A scaled symmetric similarity matrix.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="selector.measures.similarity.tanimoto">
+<span class="sig-prename descclassname"><span class="pre">selector.measures.similarity.</span></span><span class="sig-name descname"><span class="pre">tanimoto</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#selector.measures.similarity.tanimoto" title="Permalink to this definition">#</a></dt>
+<dd><p>Compute Tanimoto coefficient or index (a.k.a. Jaccard similarity coefficient).</p>
+<p>For two binary or non-binary arrays <span class="math notranslate nohighlight">\(A\)</span> and <span class="math notranslate nohighlight">\(B\)</span>, Tanimoto coefficient
+is defined as the size of their intersection divided by the size of their union:</p>
+<div class="math notranslate nohighlight">
+\[T(A, B) = \frac{| A \cap B|}{| A \cup B |} =
+\frac{| A \cap B|}{|A| + |B| - | A \cap B|} =
+\frac{A \cdot B}{\|A\|^2 + \|B\|^2 - A \cdot B}\]</div>
+<p>where <span class="math notranslate nohighlight">\(A \cdot B = \sum_i{A_i B_i}\)</span> and <span class="math notranslate nohighlight">\(\|A\|^2 = \sum_i{A_i^2}\)</span>.</p>
+<section id="id5">
+<h2>Parameters<a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h2>
+<dl class="simple">
+<dt>a<span class="classifier">ndarray of shape (n_features,)</span></dt><dd><p>The 1D feature array of sample <span class="math notranslate nohighlight">\(A\)</span> in an <cite>n_features</cite> dimensional space.</p>
+</dd>
+<dt>b<span class="classifier">ndarray of shape (n_features,)</span></dt><dd><p>The 1D feature array of sample <span class="math notranslate nohighlight">\(B\)</span> in an <cite>n_features</cite> dimensional space.</p>
+</dd>
+</dl>
+</section>
+<section id="id6">
+<h2>Returns<a class="headerlink" href="#id6" title="Permalink to this heading">#</a></h2>
+<dl class="simple">
+<dt>coeff<span class="classifier">float</span></dt><dd><p>Tanimoto coefficient between feature arrays <span class="math notranslate nohighlight">\(A\)</span> and <span class="math notranslate nohighlight">\(B\)</span>.</p>
+</dd>
+</dl>
+<p>Bajusz, D., Rácz, A., and Héberger, K.. (2015)
+Why is Tanimoto index an appropriate choice for fingerprint-based similarity calculations?.
+Journal of Cheminformatics 7.</p>
+</section>
+</dd></dl>
+
 </section>
 
     <script type="text/x-thebe-config">
@@ -492,22 +568,13 @@ and <a class="reference external" href="https://github.com/theochem/Selector/rel
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="intro.html"
+       href="api_measures_diversity.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Welcome to QC-Selector’s Documentation!</p>
+        <p class="prev-next-title"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selector.measures.diversity</span></code></p>
       </div>
-    </a>
-    <a class="right-next"
-       href="tutorial_distance_based.html"
-       title="next page">
-      <div class="prev-next-info">
-        <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Tutorial Distance-Based Selectors</p>
-      </div>
-      <i class="fa-solid fa-angle-right"></i>
     </a>
 </div>
                 </footer>
@@ -525,9 +592,10 @@ and <a class="reference external" href="https://github.com/theochem/Selector/rel
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#stable-releases">Stable Releases</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#prebuilt-wheels">Prebuilt Wheels</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#development-version">Development Version</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.measures.similarity.modified_tanimoto"><code class="docutils literal notranslate"><span class="pre">modified_tanimoto()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.measures.similarity.pairwise_similarity_bit"><code class="docutils literal notranslate"><span class="pre">pairwise_similarity_bit()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.measures.similarity.scaled_similarity_matrix"><code class="docutils literal notranslate"><span class="pre">scaled_similarity_matrix()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.measures.similarity.tanimoto"><code class="docutils literal notranslate"><span class="pre">tanimoto()</span></code></a></li>
 </ul>
   </nav></div>
 

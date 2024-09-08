@@ -1,0 +1,918 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>selector.methods.partition &#8212; Ayers Lab</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.5ea377869091fd0449014c60fc090103.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script src="_static/scripts/sphinx-book-theme.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api_methods_partition';</script>
+    <link rel="shortcut icon" href="_static/selector_logo.png"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="selector.methods.similarity" href="api_methods_similarity.html" />
+    <link rel="prev" title="selector.methods.distance" href="api_methods_distance.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/selector_logo.png" class="logo__image only-light" alt="Ayers Lab - Home"/>
+    <script>document.write(`<img src="_static/selector_logo.png" class="logo__image only-dark" alt="Ayers Lab - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="intro.html">
+                    Welcome to QC-Selector’s Documentation!
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_distance_based.html">Tutorial Distance-Based Selectors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_partition_based.html">Tutorial Partition-Based Selectors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_diversity_measures.html">Tutorial Diversity Measures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_similarity_based.html">Tutorial Similarity Based Selectors</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="api_methods_base.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selector.methods.base</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_methods_distance.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selector.methods.distance</span></code></a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selector.methods.partition</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_methods_similarity.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selector.methods.similarity</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_methods_utils.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selector.methods.utils</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_measures_converter.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selector.measures.converter</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_measures_diversity.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selector.measures.diversity</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_measures_similarity.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selector.measures.similarity</span></code></a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/theochem/Selector" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/theochem/Selector/issues/new?title=Issue%20on%20page%20%2Fapi_methods_partition.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/api_methods_partition.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>selector.methods.partition</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.partition.GridPartition"><code class="docutils literal notranslate"><span class="pre">GridPartition</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.partition.GridPartition._abc_impl"><code class="docutils literal notranslate"><span class="pre">GridPartition._abc_impl</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.partition.GridPartition.get_bins_from_method"><code class="docutils literal notranslate"><span class="pre">GridPartition.get_bins_from_method()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.partition.GridPartition.partition_points_to_bins_equifrequent"><code class="docutils literal notranslate"><span class="pre">GridPartition.partition_points_to_bins_equifrequent()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.partition.GridPartition.partition_points_to_bins_equisized"><code class="docutils literal notranslate"><span class="pre">GridPartition.partition_points_to_bins_equisized()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.partition.GridPartition.select"><code class="docutils literal notranslate"><span class="pre">GridPartition.select()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.partition.GridPartition.select_from_bins"><code class="docutils literal notranslate"><span class="pre">GridPartition.select_from_bins()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.partition.GridPartition.select_from_cluster"><code class="docutils literal notranslate"><span class="pre">GridPartition.select_from_cluster()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.partition.Medoid"><code class="docutils literal notranslate"><span class="pre">Medoid</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.partition.Medoid._abc_impl"><code class="docutils literal notranslate"><span class="pre">Medoid._abc_impl</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.partition.Medoid._eliminate"><code class="docutils literal notranslate"><span class="pre">Medoid._eliminate()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.partition.Medoid._find_furthest_neighbor"><code class="docutils literal notranslate"><span class="pre">Medoid._find_furthest_neighbor()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.partition.Medoid._kdtree"><code class="docutils literal notranslate"><span class="pre">Medoid._kdtree()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.partition.Medoid.select"><code class="docutils literal notranslate"><span class="pre">Medoid.select()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.partition.Medoid.select_from_cluster"><code class="docutils literal notranslate"><span class="pre">Medoid.select_from_cluster()</span></code></a></li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="module-selector.methods.partition">
+<span id="selector-methods-partition"></span><span id="methods-partition"></span><h1><a class="reference internal" href="#module-selector.methods.partition" title="selector.methods.partition"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selector.methods.partition</span></code></a><a class="headerlink" href="#module-selector.methods.partition" title="Permalink to this heading">#</a></h1>
+<p>Module for Partition-Based Selection Methods.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="selector.methods.partition.GridPartition">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">selector.methods.partition.</span></span><span class="sig-name descname"><span class="pre">GridPartition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nbins_axis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bin_method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'equisized_independent'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">42</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#selector.methods.partition.GridPartition" title="Permalink to this definition">#</a></dt>
+<dd><p>Select subset of sample points using the grid partitioning algorithms.</p>
+<p>Given the number of bins along each axis, samples are partitioned using various methods <a class="footnote-reference brackets" href="#id6" id="id1">1</a>:</p>
+<ul class="simple">
+<li><p>The <cite>equisized_independent</cite> partitions the feature space into bins of equal size along
+each dimension.</p></li>
+<li><p>The <cite>equisized_dependent</cite> partitions the space where the bins can have different length
+in each dimension. I.e., the <a href="#id2"><span class="problematic" id="id3">`</span></a>l-<a href="#id4"><span class="problematic" id="id5">`</span></a>th dimension bins depend on the previous dimensions.
+So, the order of features affects the outcome.</p></li>
+<li><p>The <cite>equifrequent_independent</cite> divides the space into bins with approximately equal
+number of sample points in each bin.</p></li>
+<li><p>The <cite>equifrequent_dependent</cite> is similar to <cite>equisized_dependent</cite> where the partition in
+each dimension will depend on the previous dimensions.</p></li>
+</ul>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this heading">#</a></h2>
+<dl class="footnote brackets">
+<dt class="label" id="id6"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
+<dd><p>Bayley, Martin J., and Peter Willett. “Binning schemes for partition-based
+compound selection.” Journal of Molecular Graphics and Modelling 17.1 (1999): 10-18.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="selector.methods.partition.GridPartition._abc_impl">
+<span class="sig-name descname"><span class="pre">_abc_impl</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;_abc._abc_data</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#selector.methods.partition.GridPartition._abc_impl" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="selector.methods.partition.GridPartition.get_bins_from_method">
+<span class="sig-name descname"><span class="pre">get_bins_from_method</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#selector.methods.partition.GridPartition.get_bins_from_method" title="Permalink to this definition">#</a></dt>
+<dd><p>Assign sample points to bins based on the partitioning method.</p>
+<section id="parameters">
+<h3>Parameters<a class="headerlink" href="#parameters" title="Permalink to this heading">#</a></h3>
+<dl class="simple">
+<dt>X: ndarray of shape (n_samples, n_features)</dt><dd><p>Feature matrix of <cite>n_samples</cite> samples in <cite>n_features</cite> dimensional space.</p>
+</dd>
+</dl>
+</section>
+<section id="returns">
+<h3>Returns<a class="headerlink" href="#returns" title="Permalink to this heading">#</a></h3>
+<dl class="simple">
+<dt>bins: dict[Tuple(int), List[int]]</dt><dd><p>Dictionary of bins where keys are the unique bin indices (that contain at least one
+sample point) and the values are the list of sample indices in that bin.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="selector.methods.partition.GridPartition.partition_points_to_bins_equifrequent">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">partition_points_to_bins_equifrequent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nbins_axis</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#selector.methods.partition.GridPartition.partition_points_to_bins_equifrequent" title="Permalink to this definition">#</a></dt>
+<dd><p>Find all bins ids that contains points using the equifrequent method.</p>
+<p>The equifrequent method partitions each bin to have equal number of points.
+This is done by doing a linear interpolation from integer indices and points, where
+it is then evaluated on a uniform grid with number of bins as the spacing in each axis.</p>
+<section id="id7">
+<h3>Parameters<a class="headerlink" href="#id7" title="Permalink to this heading">#</a></h3>
+<dl class="simple">
+<dt>X: ndarray of shape (n_samples, n_features)</dt><dd><p>Feature matrix of <cite>n_samples</cite> samples in <cite>n_features</cite> dimensional space.</p>
+</dd>
+<dt>nbins_axis: int</dt><dd><p>Number of bins along each axis or feature dimension.</p>
+</dd>
+</dl>
+</section>
+<section id="id8">
+<h3>Returns<a class="headerlink" href="#id8" title="Permalink to this heading">#</a></h3>
+<dl class="simple">
+<dt>unique_bin_indices: ndarray(int,)</dt><dd><p>Unique (without duplication) bin indices that have at least one sample point.
+These are integer tuples <span class="math notranslate nohighlight">\((i_1, \cdot, i_\text{n_features})\)</span> with elements
+corresponding to the bin index along each axis/dimension of feature space.
+<cite>inverse_ids</cite> contains indices of <cite>unique_bins_ids</cite> for each of the <span class="math notranslate nohighlight">\(N\)</span> points that
+it is assigned to.</p>
+</dd>
+<dt>inverse_indices: ndarray(int,)</dt><dd><p>Indices of the unique bins (along specified axis) that can be used to reconstruct bin
+index of each sample (<cite>unique_bin_indices[inverse_indices]</cite> gives bin index array).</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="selector.methods.partition.GridPartition.partition_points_to_bins_equisized">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">partition_points_to_bins_equisized</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nbins_axis</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#selector.methods.partition.GridPartition.partition_points_to_bins_equisized" title="Permalink to this definition">#</a></dt>
+<dd><p>Find all bins ids that has points in them and assign each point to each of those bins.</p>
+<p>For each <cite>n_features</cite> dimensions, get the minimum and maximum of feature to and use
+<cite>nbins_axis</cite> to compute length of the bin. Then assign sample points to bins along
+each axis/dimension of feature space.</p>
+<section id="id9">
+<h3>Parameters<a class="headerlink" href="#id9" title="Permalink to this heading">#</a></h3>
+<dl class="simple">
+<dt>X: ndarray of shape (n_samples, n_features)</dt><dd><p>Feature matrix of <cite>n_samples</cite> samples in <cite>n_features</cite> dimensional space.</p>
+</dd>
+<dt>nbins_axis: int</dt><dd><p>Number of bins along each axis/dimension of feature space.</p>
+</dd>
+</dl>
+</section>
+<section id="id10">
+<h3>Returns<a class="headerlink" href="#id10" title="Permalink to this heading">#</a></h3>
+<dl class="simple">
+<dt>unique_bin_indices: ndarray(int,)</dt><dd><p>Unique (without duplication) bin indices that have at least one sample point.
+These are integer tuples <span class="math notranslate nohighlight">\((i_1, \cdot, i_\text{n_features})\)</span> with elements
+corresponding to the bin index along each axis/dimension of feature space.
+<cite>inverse_ids</cite> contains indices of <cite>unique_bins_ids</cite> for each of the <span class="math notranslate nohighlight">\(N\)</span> points that
+it is assigned to.</p>
+</dd>
+<dt>inverse_indices: ndarray(int,)</dt><dd><p>Indices of the unique bins (along specified axis) that can be used to reconstruct bin
+index of each sample (<cite>unique_bin_indices[inverse_indices]</cite> gives bin index array).</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="selector.methods.partition.GridPartition.select">
+<span class="sig-name descname"><span class="pre">select</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#selector.methods.partition.GridPartition.select" title="Permalink to this definition">#</a></dt>
+<dd><p>Return indices representing subset of sample points.</p>
+<section id="id11">
+<h3>Parameters<a class="headerlink" href="#id11" title="Permalink to this heading">#</a></h3>
+<dl class="simple">
+<dt>x: ndarray of shape (n_samples, n_features) or (n_samples, n_samples)</dt><dd><p>Feature matrix of <cite>n_samples</cite> samples in <cite>n_features</cite> dimensional feature space.
+If fun_distance is <cite>None</cite>, this x is treated as a square pairwise distance matrix.</p>
+</dd>
+<dt>size: int</dt><dd><p>Number of sample points to select (i.e. size of the subset).</p>
+</dd>
+<dt>labels: np.ndarray, optional</dt><dd><p>Array of integers or strings representing the labels of the clusters that
+each sample belongs to. If <cite>None</cite>, the samples are treated as one cluster.
+If labels are provided, selection is made from each cluster.</p>
+</dd>
+</dl>
+</section>
+<section id="id12">
+<h3>Returns<a class="headerlink" href="#id12" title="Permalink to this heading">#</a></h3>
+<dl class="simple">
+<dt>selected: list</dt><dd><p>Indices of the selected sample points.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="selector.methods.partition.GridPartition.select_from_bins">
+<span class="sig-name descname"><span class="pre">select_from_bins</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_selected</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">diversity_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'hypersphere_overlap'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#selector.methods.partition.GridPartition.select_from_bins" title="Permalink to this definition">#</a></dt>
+<dd><p>From the bins, select a certain number of points of the bins.</p>
+<dl class="simple">
+<dt>Points are selected in an iterative manner. If the number of points needed to be selected</dt><dd><p>is greater than number of bins left then randomly select points from each of the bins. If
+any of the bins are empty then remove the bins. If it is less than the number of bins left,
+then calculate the diversity of each bin and choose points of bins with the highest diversity.</p>
+</dd>
+</dl>
+<section id="id13">
+<h3>Parameters<a class="headerlink" href="#id13" title="Permalink to this heading">#</a></h3>
+<dl class="simple">
+<dt>X: ndarray of shape (n_samples, n_features)</dt><dd><p>Feature matrix of <cite>n_samples</cite> samples in <cite>n_features</cite> dimensional space.</p>
+</dd>
+<dt>bins: dict(tuple(int), list[int])</dt><dd><p>The bins that map to the id the bin (as a tuple of integers) and returns
+the indices of the points that are contained in that bin.</p>
+</dd>
+<dt>num_selected: int</dt><dd><p>Number of points to select from the bins.</p>
+</dd>
+<dt>diversity_type: str, optional</dt><dd><p>Type of diversity to use. Default=”hypersphere_overlap”.</p>
+</dd>
+<dt>cs<span class="classifier">int, optional</span></dt><dd><p>Number of common substructures in molecular compound dataset. Used only if calculating
+<cite>explicit_diversity_index</cite>. Default is “None”.</p>
+</dd>
+</dl>
+</section>
+<section id="id14">
+<h3>Returns<a class="headerlink" href="#id14" title="Permalink to this heading">#</a></h3>
+<dl class="simple">
+<dt>List[int]:</dt><dd><p>Indices of the points that were selected.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="selector.methods.partition.GridPartition.select_from_cluster">
+<span class="sig-name descname"><span class="pre">select_from_cluster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_selected</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_ids</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#selector.methods.partition.GridPartition.select_from_cluster" title="Permalink to this definition">#</a></dt>
+<dd><p>Grid partitioning algorithm for selecting points from cluster.</p>
+<section id="id15">
+<h3>Parameters<a class="headerlink" href="#id15" title="Permalink to this heading">#</a></h3>
+<dl class="simple">
+<dt>X: ndarray of shape (n_samples, n_features)</dt><dd><p>Feature matrix of <cite>n_samples</cite> samples in <cite>n_features</cite> dimensional space.</p>
+</dd>
+<dt>num_selected: int</dt><dd><p>Number of molecules that need to be selected.</p>
+</dd>
+<dt>cluster_ids: ndarray</dt><dd><p>Indices of molecules that form a cluster</p>
+</dd>
+</dl>
+</section>
+<section id="id16">
+<h3>Returns<a class="headerlink" href="#id16" title="Permalink to this heading">#</a></h3>
+<dl class="simple">
+<dt>selected: list[int]</dt><dd><p>List of ids of selected molecules with size <cite>num_selected</cite>.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+</section>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="selector.methods.partition.Medoid">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">selector.methods.partition.</span></span><span class="sig-name descname"><span class="pre">Medoid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func_distance=&lt;function</span> <span class="pre">Medoid.&lt;lambda&gt;&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_index=0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scaling=10</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#selector.methods.partition.Medoid" title="Permalink to this definition">#</a></dt>
+<dd><p>Selecting points using an algorithm adapted from KDTree.</p>
+<p>Points are initially used to construct a KDTree. Euclidean distances are used for this
+algorithm. The first point selected is based on the ref_index provided and becomes the first
+query point. An approximation of the furthest point to the query point is found using
+find_furthest_neighbor and is selected. find_nearest_neighbor is then done to eliminate close
+neighbors to the new selected point. Medoid is then calculated from previously selected points
+and is used as the new query point for find_furthest_neighbor, repeating the process. Terminates
+upon selecting requested number of points or if all available points exhausted.</p>
+<p>Adapted from: <a class="reference external" href="https://en.wikipedia.org/wiki/K-d_tree#Construction">https://en.wikipedia.org/wiki/K-d_tree#Construction</a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="selector.methods.partition.Medoid._abc_impl">
+<span class="sig-name descname"><span class="pre">_abc_impl</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;_abc._abc_data</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#selector.methods.partition.Medoid._abc_impl" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="selector.methods.partition.Medoid._eliminate">
+<span class="sig-name descname"><span class="pre">_eliminate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tree</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">point</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_eliminate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bv</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#selector.methods.partition.Medoid._eliminate" title="Permalink to this definition">#</a></dt>
+<dd><p>Eliminates points from being selected in future rounds.</p>
+<section id="id17">
+<h2>Parameters<a class="headerlink" href="#id17" title="Permalink to this heading">#</a></h2>
+<dl class="simple">
+<dt>tree: scipy.spatial.KDTree</dt><dd><p>KDTree organizing coordinates.</p>
+</dd>
+<dt>point: list</dt><dd><p>Point where close neighbors should be eliminated.</p>
+</dd>
+<dt>threshold: float</dt><dd><p>An average of all the furthest distances found using find_furthest_neighbor</p>
+</dd>
+<dt>num_eliminate: int</dt><dd><p>Maximum number of points permitted to be eliminated.</p>
+</dd>
+<dt>bv: bitarray</dt><dd><p>Bitvector marking picked/eliminated points.</p>
+</dd>
+</dl>
+</section>
+<section id="id18">
+<h2>Returns<a class="headerlink" href="#id18" title="Permalink to this heading">#</a></h2>
+<dl class="simple">
+<dt>num_eliminate: int</dt><dd><p>Maximum number of points permitted to be eliminated.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="selector.methods.partition.Medoid._find_furthest_neighbor">
+<span class="sig-name descname"><span class="pre">_find_furthest_neighbor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kdtree</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">point</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">selected_bitvector</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#selector.methods.partition.Medoid._find_furthest_neighbor" title="Permalink to this definition">#</a></dt>
+<dd><p>Find approximately the furthest neighbor in a k-d tree for a given point.</p>
+<section id="id19">
+<h2>Parameters<a class="headerlink" href="#id19" title="Permalink to this heading">#</a></h2>
+<dl class="simple">
+<dt>kdtree: collections.namedtuple</dt><dd><p>KDTree organizing coordinates.</p>
+</dd>
+<dt>point: list</dt><dd><p>Query point for search.</p>
+</dd>
+<dt>selected_bitvector: bitarray</dt><dd><p>Bitvector to keep track of previously selected points from array.</p>
+</dd>
+</dl>
+</section>
+<section id="id20">
+<h2>Returns<a class="headerlink" href="#id20" title="Permalink to this heading">#</a></h2>
+<dl class="simple">
+<dt>best: collections.namedtuple</dt><dd><p>The furthest point found in search.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="selector.methods.partition.Medoid._kdtree">
+<span class="sig-name descname"><span class="pre">_kdtree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#selector.methods.partition.Medoid._kdtree" title="Permalink to this definition">#</a></dt>
+<dd><p>Construct a k-d tree from an iterable of points.</p>
+<section id="id21">
+<h2>Parameters<a class="headerlink" href="#id21" title="Permalink to this heading">#</a></h2>
+<dl class="simple">
+<dt>arr: list or np.ndarray</dt><dd><p>Coordinate array of points.</p>
+</dd>
+</dl>
+</section>
+<section id="id22">
+<h2>Returns<a class="headerlink" href="#id22" title="Permalink to this heading">#</a></h2>
+<dl class="simple">
+<dt>kdtree: collections.namedtuple</dt><dd><p>KDTree organizing coordinates.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="selector.methods.partition.Medoid.select">
+<span class="sig-name descname"><span class="pre">select</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#selector.methods.partition.Medoid.select" title="Permalink to this definition">#</a></dt>
+<dd><p>Return indices representing subset of sample points.</p>
+<section id="id23">
+<h2>Parameters<a class="headerlink" href="#id23" title="Permalink to this heading">#</a></h2>
+<dl class="simple">
+<dt>x: ndarray of shape (n_samples, n_features) or (n_samples, n_samples)</dt><dd><p>Feature matrix of <cite>n_samples</cite> samples in <cite>n_features</cite> dimensional feature space.
+If fun_distance is <cite>None</cite>, this x is treated as a square pairwise distance matrix.</p>
+</dd>
+<dt>size: int</dt><dd><p>Number of sample points to select (i.e. size of the subset).</p>
+</dd>
+<dt>labels: np.ndarray, optional</dt><dd><p>Array of integers or strings representing the labels of the clusters that
+each sample belongs to. If <cite>None</cite>, the samples are treated as one cluster.
+If labels are provided, selection is made from each cluster.</p>
+</dd>
+</dl>
+</section>
+<section id="id24">
+<h2>Returns<a class="headerlink" href="#id24" title="Permalink to this heading">#</a></h2>
+<dl class="simple">
+<dt>selected: list</dt><dd><p>Indices of the selected sample points.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="selector.methods.partition.Medoid.select_from_cluster">
+<span class="sig-name descname"><span class="pre">select_from_cluster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_selected</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#selector.methods.partition.Medoid.select_from_cluster" title="Permalink to this definition">#</a></dt>
+<dd><p>Main function for selecting points using the KDTree algorithm.</p>
+<section id="id25">
+<h2>Parameters<a class="headerlink" href="#id25" title="Permalink to this heading">#</a></h2>
+<dl class="simple">
+<dt>arr: np.ndarray</dt><dd><p>Coordinate array of points</p>
+</dd>
+<dt>num_selected: int</dt><dd><p>Number of molecules that need to be selected.</p>
+</dd>
+<dt>cluster_ids: np.ndarray</dt><dd><p>Indices of molecules that form a cluster</p>
+</dd>
+</dl>
+</section>
+<section id="id26">
+<h2>Returns<a class="headerlink" href="#id26" title="Permalink to this heading">#</a></h2>
+<dl class="simple">
+<dt>selected: list</dt><dd><p>List of ids of selected molecules</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "theochem/Selector",
+            ref: "main",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="api_methods_distance.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selector.methods.distance</span></code></p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="api_methods_similarity.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selector.methods.similarity</span></code></p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.partition.GridPartition"><code class="docutils literal notranslate"><span class="pre">GridPartition</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.partition.GridPartition._abc_impl"><code class="docutils literal notranslate"><span class="pre">GridPartition._abc_impl</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.partition.GridPartition.get_bins_from_method"><code class="docutils literal notranslate"><span class="pre">GridPartition.get_bins_from_method()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.partition.GridPartition.partition_points_to_bins_equifrequent"><code class="docutils literal notranslate"><span class="pre">GridPartition.partition_points_to_bins_equifrequent()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.partition.GridPartition.partition_points_to_bins_equisized"><code class="docutils literal notranslate"><span class="pre">GridPartition.partition_points_to_bins_equisized()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.partition.GridPartition.select"><code class="docutils literal notranslate"><span class="pre">GridPartition.select()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.partition.GridPartition.select_from_bins"><code class="docutils literal notranslate"><span class="pre">GridPartition.select_from_bins()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.partition.GridPartition.select_from_cluster"><code class="docutils literal notranslate"><span class="pre">GridPartition.select_from_cluster()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.partition.Medoid"><code class="docutils literal notranslate"><span class="pre">Medoid</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.partition.Medoid._abc_impl"><code class="docutils literal notranslate"><span class="pre">Medoid._abc_impl</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.partition.Medoid._eliminate"><code class="docutils literal notranslate"><span class="pre">Medoid._eliminate()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.partition.Medoid._find_furthest_neighbor"><code class="docutils literal notranslate"><span class="pre">Medoid._find_furthest_neighbor()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.partition.Medoid._kdtree"><code class="docutils literal notranslate"><span class="pre">Medoid._kdtree()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.partition.Medoid.select"><code class="docutils literal notranslate"><span class="pre">Medoid.select()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.partition.Medoid.select_from_cluster"><code class="docutils literal notranslate"><span class="pre">Medoid.select_from_cluster()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By The QC-Dev Community with the support of Digital Research Alliance of Canada and The Jupyter Book Community
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2022-2024.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

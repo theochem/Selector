@@ -1,0 +1,991 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Tutorial Similarity Based Selectors &#8212; Ayers Lab</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.5ea377869091fd0449014c60fc090103.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script src="_static/scripts/sphinx-book-theme.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tutorial_similarity_based';</script>
+    <link rel="shortcut icon" href="_static/selector_logo.png"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="selector.methods.base" href="api_methods_base.html" />
+    <link rel="prev" title="Tutorial Diversity Measures" href="tutorial_diversity_measures.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/selector_logo.png" class="logo__image only-light" alt="Ayers Lab - Home"/>
+    <script>document.write(`<img src="_static/selector_logo.png" class="logo__image only-dark" alt="Ayers Lab - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="intro.html">
+                    Welcome to QC-Selector’s Documentation!
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_distance_based.html">Tutorial Distance-Based Selectors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_partition_based.html">Tutorial Partition-Based Selectors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_diversity_measures.html">Tutorial Diversity Measures</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Tutorial Similarity Based Selectors</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="api_methods_base.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selector.methods.base</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_methods_distance.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selector.methods.distance</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_methods_partition.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selector.methods.partition</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_methods_similarity.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selector.methods.similarity</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_methods_utils.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selector.methods.utils</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_measures_converter.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selector.measures.converter</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_measures_diversity.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selector.measures.diversity</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_measures_similarity.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selector.measures.similarity</span></code></a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-launch-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Launch interactive content">
+    <i class="fas fa-rocket"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://colab.research.google.com/github/theochem/Selector/blob/main/book/content/tutorial_similarity_based.ipynb" target="_blank"
+   class="btn btn-sm dropdown-item"
+   title="Launch on Colab"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  
+    <img alt="Colab logo" src="_static/images/logo_colab.png">
+  </span>
+<span class="btn__text-container">Colab</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="initThebeSBT()"
+  class="btn btn-sm btn-launch-thebe dropdown-item"
+  title="Launch Thebe"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-play"></i>
+  </span>
+<span class="btn__text-container">Live Code</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/theochem/Selector" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/theochem/Selector/issues/new?title=Issue%20on%20page%20%2Ftutorial_similarity_based.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/tutorial_similarity_based.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Tutorial Similarity Based Selectors</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#utility-function-for-plotting-data">Utility Function for Plotting Data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#generating-data">Generating Data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selecting-from-one-cluster">Selecting from One Cluster</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nsimilarity-based-methods">NSimilarity based methods</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#compute-diversity-of-selected-points">Compute diversity of selected points</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#comparing-nsimilarity-based-selection-methods-multiple-clusters">Comparing NSimilarity based Selection Methods (Multiple Clusters)</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="tutorial-similarity-based-selectors">
+<h1>Tutorial Similarity Based Selectors<a class="headerlink" href="#tutorial-similarity-based-selectors" title="Permalink to this heading">#</a></h1>
+<p>This tutorial demonstrates using distance-based selectors in <code class="docutils literal notranslate"><span class="pre">selector</span></code> package. To easily visualize the data and sampled points, we will use a 2D dataset in this tutorial. However, the same functionality can be applied to higher dimensional datasets.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="c1"># uncomment the following line to run the code for your own project directory</span>
+<span class="c1"># sys.path.append(&quot;/Users/Someone/Documents/projects/Selector&quot;)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pylab</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">sklearn.datasets</span> <span class="kn">import</span> <span class="n">make_blobs</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics.pairwise</span> <span class="kn">import</span> <span class="n">pairwise_distances</span>
+<span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">Markdown</span>
+<span class="kn">from</span> <span class="nn">selector.measures.diversity</span> <span class="kn">import</span> <span class="n">compute_diversity</span>
+
+<span class="kn">from</span> <span class="nn">selector.methods.similarity</span> <span class="kn">import</span> <span class="n">SimilarityIndex</span><span class="p">,</span> <span class="n">NSimilarity</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="utility-function-for-plotting-data">
+<h2>Utility Function for Plotting Data<a class="headerlink" href="#utility-function-for-plotting-data" title="Permalink to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># define a function to make visualization easier</span>
+
+
+<span class="k">def</span> <span class="nf">graph_data</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">,</span>
+    <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span>
+    <span class="n">indices</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">labels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">reference</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="n">number</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">fname</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Graphs the data in a scatter plot.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data : numpy.ndarray of shape (n_samples, 2)</span>
+<span class="sd">        The original data points to be graphed.</span>
+<span class="sd">    indices : list of numpy.ndarray, optional</span>
+<span class="sd">        List of indices array of the data points selected.</span>
+<span class="sd">    labels : list of str, optional</span>
+<span class="sd">        List of labels denoting method for selected indices.</span>
+<span class="sd">    reference : bool, optional</span>
+<span class="sd">        Whether to highlight the first data point.</span>
+<span class="sd">    title : str, optional</span>
+<span class="sd">        The title of the plot.</span>
+<span class="sd">    xlabel : str, optional</span>
+<span class="sd">        The label of the x-axis.</span>
+<span class="sd">    ylabel : str, optional</span>
+<span class="sd">        The label of the y-axis.</span>
+<span class="sd">    number : bool, optional</span>
+<span class="sd">        Whether to label the selected data points with numbers representing the order of selection.</span>
+<span class="sd">    fname : str, optional</span>
+<span class="sd">        Filename for saving the figure. If None, figure is shown.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">2</span> <span class="ow">or</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expect data to be a 2D array with 2 columns, got </span><span class="si">{</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">labels</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">labels</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Expect indices and labels to have the same length, got </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Add a title and axis labels</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="n">xlabel</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="n">ylabel</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+
+    <span class="c1"># plot original data</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">data</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">data</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="n">facecolors</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">,</span> <span class="n">edgecolors</span><span class="o">=</span><span class="s2">&quot;0.75&quot;</span><span class="p">)</span>
+
+    <span class="n">colors</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;skyblue&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="s2">&quot;g&quot;</span><span class="p">,</span> <span class="s2">&quot;orange&quot;</span><span class="p">,</span> <span class="s2">&quot;navy&quot;</span><span class="p">,</span> <span class="s2">&quot;indigo&quot;</span><span class="p">,</span> <span class="s2">&quot;pink&quot;</span><span class="p">,</span> <span class="s2">&quot;purple&quot;</span><span class="p">,</span> <span class="s2">&quot;yellow&quot;</span><span class="p">]</span>
+    <span class="n">markers</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="s2">&quot;|&quot;</span><span class="p">,</span> <span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="s2">&quot;p&quot;</span><span class="p">,</span> <span class="s2">&quot;&gt;&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;&quot;</span><span class="p">,</span> <span class="s2">&quot;^&quot;</span><span class="p">,</span> <span class="s2">&quot;v&quot;</span><span class="p">]</span>
+    <span class="n">text_location</span> <span class="o">=</span> <span class="p">[(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)]</span>
+    <span class="n">colors_numbers</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="s2">&quot;blue&quot;</span><span class="p">,</span> <span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="s2">&quot;k&quot;</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">indices</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">selected_index</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">indices</span><span class="p">):</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span>
+                <span class="n">data</span><span class="p">[</span><span class="n">selected_index</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                <span class="n">data</span><span class="p">[</span><span class="n">selected_index</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+                <span class="n">c</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="n">index</span><span class="p">],</span>
+                <span class="n">label</span><span class="o">=</span><span class="n">labels</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="k">if</span> <span class="n">labels</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="n">marker</span><span class="o">=</span><span class="n">markers</span><span class="p">[</span><span class="n">index</span><span class="p">],</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">number</span><span class="p">:</span>
+                <span class="n">shift_x</span><span class="p">,</span> <span class="n">shift_y</span> <span class="o">=</span> <span class="n">text_location</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">mol_id</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">selected_index</span><span class="p">):</span>
+                    <span class="n">plt</span><span class="o">.</span><span class="n">text</span><span class="p">(</span>
+                        <span class="n">data</span><span class="p">[</span><span class="n">mol_id</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">shift_x</span><span class="p">,</span>
+                        <span class="n">data</span><span class="p">[</span><span class="n">mol_id</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">shift_y</span><span class="p">,</span>
+                        <span class="nb">str</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span>
+                        <span class="n">c</span><span class="o">=</span><span class="n">colors_numbers</span><span class="p">[</span><span class="n">index</span><span class="p">],</span>
+                    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">reference</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">labels</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># plt.legend(loc=&quot;upper left&quot;, frameon=False)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;best&quot;</span><span class="p">,</span> <span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">fname</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">600</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># define function to render tables easier</span>
+
+
+<span class="k">def</span> <span class="nf">render_table</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">caption</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Renders a list of lists in ta markdown table for easy visualization.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data : list of lists</span>
+<span class="sd">        The data to be rendered in a table, each inner list represents a row with the first row</span>
+<span class="sd">        being the header.</span>
+<span class="sd">    caption : str, optional</span>
+<span class="sd">        The caption of the table.</span>
+<span class="sd">    decimals : int, optional</span>
+<span class="sd">        The number of decimal places to round the data to.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># check all rows have the same number of columns</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">row</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">data</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Expect all rows to have the same number of columns.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">caption</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># check if caption is a string</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">caption</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Expect caption to be a string.&quot;</span><span class="p">)</span>
+        <span class="n">tmp_output</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;**</span><span class="si">{</span><span class="n">caption</span><span class="si">}</span><span class="s2">**</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+
+    <span class="c1"># get the width of each column (transpose the data list and get the max length of each new row)</span>
+    <span class="n">colwidths</span> <span class="o">=</span> <span class="p">[</span><span class="nb">max</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">))</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">col</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">data</span><span class="p">)]</span>
+
+    <span class="c1"># construct the header row</span>
+    <span class="n">header</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;| </span><span class="si">{</span><span class="s1">&#39; | &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="si">:</span><span class="s1">^</span><span class="si">{</span><span class="n">w</span><span class="si">}}</span><span class="s1">&#39;</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">s</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nb">zip</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="n">colwidths</span><span class="p">))</span><span class="si">}</span><span class="s2"> |&quot;</span>
+    <span class="n">tmp_output</span> <span class="o">+=</span> <span class="n">header</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+    <span class="c1"># construct a separator row</span>
+    <span class="n">separator</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;|</span><span class="si">{</span><span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;-&#39;</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">w</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">w</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">colwidths</span><span class="p">])</span><span class="si">}</span><span class="s2">|&quot;</span>
+    <span class="n">tmp_output</span> <span class="o">+=</span> <span class="n">separator</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+    <span class="c1"># construct the data rows</span>
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+        <span class="c1"># round the data to the specified number of decimal places</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="p">[</span><span class="nb">round</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">decimals</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span> <span class="k">else</span> <span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">row</span><span class="p">]</span>
+        <span class="n">row_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;| </span><span class="si">{</span><span class="s1">&#39; | &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="si">:</span><span class="s1">^</span><span class="si">{</span><span class="n">w</span><span class="si">}}</span><span class="s1">&#39;</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">s</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nb">zip</span><span class="p">(</span><span class="n">row</span><span class="p">,</span><span class="w"> </span><span class="n">colwidths</span><span class="p">))</span><span class="si">}</span><span class="s2"> |&quot;</span>
+        <span class="n">tmp_output</span> <span class="o">+=</span> <span class="n">row_str</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+    <span class="k">return</span> <span class="n">display</span><span class="p">(</span><span class="n">Markdown</span><span class="p">(</span><span class="n">tmp_output</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="generating-data">
+<h2>Generating Data<a class="headerlink" href="#generating-data" title="Permalink to this heading">#</a></h2>
+<p>The data should be provided as:</p>
+<ul class="simple">
+<li><p>either an array <code class="docutils literal notranslate"><span class="pre">X</span></code> of shape <code class="docutils literal notranslate"><span class="pre">(n_samples,</span> <span class="pre">n_features)</span></code> encoding <code class="docutils literal notranslate"><span class="pre">n_samples</span></code> samples (rows) each in <code class="docutils literal notranslate"><span class="pre">n_features</span></code>-dimensional (columns) feature space,</p></li>
+<li><p>or an array <code class="docutils literal notranslate"><span class="pre">X_dist</span></code> of shape <code class="docutils literal notranslate"><span class="pre">(n_samples,</span> <span class="pre">n_samples)</span></code> encoding the distance (i.e., dissimilarity) between each pair of <code class="docutils literal notranslate"><span class="pre">n_samples</span></code> sample points.</p></li>
+</ul>
+<p>This data can be loaded from various file formats (e.g., csv, npz, txt, etc.) or generated using various libraries on the fly. In this tutorial, we use <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.datasets.make_blobs.html"><code class="docutils literal notranslate"><span class="pre">sklearn.datasets.make_blobs</span></code></a> to generate cluster(s) of <code class="docutils literal notranslate"><span class="pre">n_samples</span></code> points in 2-dimensions (<code class="docutils literal notranslate"><span class="pre">n-features=2</span></code>), so that it can be easily visualized. However, the same functionality can be applied to higher dimensional datasets.</p>
+</section>
+<section id="selecting-from-one-cluster">
+<h2>Selecting from One Cluster<a class="headerlink" href="#selecting-from-one-cluster" title="Permalink to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># generate n_sample data in 2D feature space forming 1 cluster</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">make_blobs</span><span class="p">(</span>
+    <span class="n">n_samples</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
+    <span class="n">n_features</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">centers</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]]),</span>
+    <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># compute the (n_sample, n_sample) pairwise distance matrix</span>
+<span class="n">X_dist</span> <span class="o">=</span> <span class="n">pairwise_distances</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="s2">&quot;euclidean&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Shape of data   = &quot;</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Shape of labels = &quot;</span><span class="p">,</span> <span class="n">labels</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Unique labels   = &quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">labels</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Cluster size    = &quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">labels</span> <span class="o">==</span> <span class="mi">0</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Shape of the distance array = &quot;</span><span class="p">,</span> <span class="n">X_dist</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Shape of data   =  (500, 2)
+Shape of labels =  (500,)
+Unique labels   =  [0]
+Cluster size    =  500
+Shape of the distance array =  (500, 500)
+</pre></div>
+</div>
+</div>
+</div>
+<section id="nsimilarity-based-methods">
+<h3>NSimilarity based methods<a class="headerlink" href="#nsimilarity-based-methods" title="Permalink to this heading">#</a></h3>
+<p>Check Documentation: <span style="color:red;"><strong>Missing Documentation</strong></span></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># select data using n-similarity methods</span>
+<span class="c1"># -------------------------------------------</span>
+<span class="n">size</span> <span class="o">=</span> <span class="mi">50</span>
+
+<span class="c1"># Baroni-Urbani-Buser</span>
+<span class="c1"># selector = NSimilarity(similarity_index=&quot;BUB&quot;, preprocess_data=True)</span>
+<span class="c1"># selected_bub = selector.select(X, size=size)</span>
+
+<span class="c1"># Jaccard-Tanimoto</span>
+<span class="n">selector</span> <span class="o">=</span> <span class="n">NSimilarity</span><span class="p">(</span><span class="n">similarity_index</span><span class="o">=</span><span class="s2">&quot;JT&quot;</span><span class="p">,</span> <span class="n">preprocess_data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">selected_jt</span> <span class="o">=</span> <span class="n">selector</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">)</span>
+
+<span class="c1"># Austin-Colwell</span>
+<span class="n">selector</span> <span class="o">=</span> <span class="n">NSimilarity</span><span class="p">(</span><span class="n">similarity_index</span><span class="o">=</span><span class="s2">&quot;AC&quot;</span><span class="p">,</span> <span class="n">preprocess_data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">selected_ac</span> <span class="o">=</span> <span class="n">selector</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">)</span>
+
+<span class="c1"># Russel-Rao</span>
+<span class="n">selector</span> <span class="o">=</span> <span class="n">NSimilarity</span><span class="p">(</span><span class="n">similarity_index</span><span class="o">=</span><span class="s2">&quot;RR&quot;</span><span class="p">,</span> <span class="n">preprocess_data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">selected_rr</span> <span class="o">=</span> <span class="n">selector</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">)</span>
+
+<span class="c1"># Faith</span>
+<span class="n">selector</span> <span class="o">=</span> <span class="n">NSimilarity</span><span class="p">(</span><span class="n">similarity_index</span><span class="o">=</span><span class="s2">&quot;Fai&quot;</span><span class="p">,</span> <span class="n">preprocess_data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">selected_fai</span> <span class="o">=</span> <span class="n">selector</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">)</span>
+
+
+<span class="n">graph_data</span><span class="p">(</span>
+    <span class="n">X</span><span class="p">,</span>
+    <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span>
+    <span class="n">indices</span><span class="o">=</span><span class="p">[</span><span class="n">selected_jt</span><span class="p">,</span> <span class="n">selected_ac</span><span class="p">,</span> <span class="n">selected_rr</span><span class="p">,</span> <span class="n">selected_fai</span><span class="p">],</span>
+    <span class="n">labels</span><span class="o">=</span><span class="p">[</span>
+        <span class="s2">&quot;Jaccard-Tanimoto&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Austin-Colwell&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Russel-Rao&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Faith&quot;</span><span class="p">,</span>
+    <span class="p">],</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Comparing N-Similarity-Based Selectors&quot;</span><span class="p">,</span>
+    <span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;Feature 1&quot;</span><span class="p">,</span>
+    <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Feature 2&quot;</span><span class="p">,</span>
+    <span class="n">fname</span><span class="o">=</span><span class="s2">&quot;quick_start_compare_partition_methods.png&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/caf92e349b9e20aa3c443703aa633a32aea6266b80ee48b37fda7d1503847270.png" src="_images/caf92e349b9e20aa3c443703aa633a32aea6266b80ee48b37fda7d1503847270.png" />
+</div>
+</div>
+</section>
+<section id="compute-diversity-of-selected-points">
+<h3>Compute diversity of selected points<a class="headerlink" href="#compute-diversity-of-selected-points" title="Permalink to this heading">#</a></h3>
+<p>The similarity of a set of points can be computed using the <code class="docutils literal notranslate"><span class="pre">SimilarityIndex</span></code> class and an appropriate similarity index (Check Documentation: <span style="color:red;"><strong>Missing Documentation</strong></span>). The diversity of the set can then be computed as <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">-</span> <span class="pre">similarity_index</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">set_indices</span> <span class="o">=</span> <span class="p">[</span><span class="n">selected_jt</span><span class="p">,</span> <span class="n">selected_ac</span><span class="p">,</span> <span class="n">selected_rr</span><span class="p">,</span> <span class="n">selected_fai</span><span class="p">]</span>
+<span class="n">sim_idx_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;JT&quot;</span><span class="p">,</span> <span class="s2">&quot;AC&quot;</span><span class="p">,</span> <span class="s2">&quot;RR&quot;</span><span class="p">,</span> <span class="s2">&quot;Fai&quot;</span><span class="p">]</span>
+<span class="n">set_labels</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Jaccard-Tanimoto&quot;</span><span class="p">,</span> <span class="s2">&quot;Austin-Colwell&quot;</span><span class="p">,</span> <span class="s2">&quot;Russel-Rao&quot;</span><span class="p">,</span> <span class="s2">&quot;Faith&quot;</span><span class="p">]</span>
+<span class="n">selected_sets</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="n">set_labels</span><span class="p">,</span> <span class="n">sim_idx_list</span><span class="p">,</span> <span class="n">set_indices</span><span class="p">)</span>
+
+<span class="n">scaled_data</span> <span class="o">=</span> <span class="n">NSimilarity</span><span class="p">()</span><span class="o">.</span><span class="n">_scale_data</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+
+<span class="c1"># The similarity of a set of data points</span>
+<span class="n">table_data</span> <span class="o">=</span> <span class="p">[[</span><span class="s2">&quot;&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">sim_idx_list</span><span class="p">]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">selected_sets</span><span class="p">:</span>
+    <span class="n">table_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+        <span class="o">+</span> <span class="p">[</span>
+            <span class="mi">1</span> <span class="o">-</span> <span class="n">SimilarityIndex</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;esim&quot;</span><span class="p">,</span> <span class="n">sim_index</span><span class="o">=</span><span class="n">si</span><span class="p">)(</span><span class="n">scaled_data</span><span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="mi">2</span><span class="p">]])</span>
+            <span class="k">for</span> <span class="n">si</span> <span class="ow">in</span> <span class="n">sim_idx_list</span>
+        <span class="p">]</span>
+    <span class="p">)</span>
+
+<span class="n">caption</span> <span class="o">=</span> <span class="s2">&quot;Diversity of Selected Sets: row = selected set, column = 1 - similarity index&quot;</span>
+<span class="n">render_table</span><span class="p">(</span><span class="n">table_data</span><span class="p">,</span> <span class="n">caption</span><span class="o">=</span><span class="n">caption</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span>
+    <span class="s2">&quot;The selected sets coincide for all similarity indices.</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="s2">&quot;This is due to the fact that the data has low dimensionality</span><span class="se">\n</span><span class="s2">&quot;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<p><strong>Diversity of Selected Sets: row = selected set, column = 1 - similarity index</strong></p>
+<p>|                    |          JT           |          AC          |          RR           |          Fai          |
+|——————|———————|——————–|———————|———————|
+|  Jaccard-Tanimoto  |         0.442         |        0.463         |         0.442         |         0.442         |
+|   Austin-Colwell   |         0.442         |        0.463         |         0.442         |         0.442         |
+|     Russel-Rao     |         0.442         |        0.463         |         0.442         |         0.442         |
+|       Faith        |         0.442         |        0.463         |         0.442         |         0.442         |</p>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The selected sets coincide for all similarity indices.
+This is due to the fact that the data has low dimensionality
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="comparing-nsimilarity-based-selection-methods-multiple-clusters">
+<h2>Comparing NSimilarity based Selection Methods (Multiple Clusters)<a class="headerlink" href="#comparing-nsimilarity-based-selection-methods-multiple-clusters" title="Permalink to this heading">#</a></h2>
+<p>Each cluster is treated independently, and if possible, equal number of samples are selected from each cluster. However, if a cluster is underpopulated, then all points from that cluster are selected. This is to ensure that the selected subset is representative of the entire dataset.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># generate n_sample data in 2D feature space forming 3 clusters</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">make_blobs</span><span class="p">(</span><span class="n">n_samples</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">n_features</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">centers</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+
+<span class="c1"># compute the (n_sample, n_sample) pairwise distance matrix</span>
+<span class="n">X_dist</span> <span class="o">=</span> <span class="n">pairwise_distances</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="s2">&quot;euclidean&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Shape of data   = &quot;</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Shape of labels = &quot;</span><span class="p">,</span> <span class="n">labels</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Unique labels   = &quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">labels</span><span class="p">))</span>
+<span class="n">size_0</span><span class="p">,</span> <span class="n">size_1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">labels</span> <span class="o">==</span> <span class="mi">0</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">labels</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Cluster sizes = &quot;</span><span class="p">,</span> <span class="n">size_0</span><span class="p">,</span> <span class="n">size_1</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Shape of the distance array = &quot;</span><span class="p">,</span> <span class="n">X_dist</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Shape of data   =  (500, 2)
+Shape of labels =  (500,)
+Unique labels   =  [0 1]
+Cluster sizes =  250 250
+Shape of the distance array =  (500, 500)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># select data using n-similarity methods</span>
+<span class="c1"># -------------------------------------------</span>
+<span class="n">size</span> <span class="o">=</span> <span class="mi">50</span>
+
+<span class="c1"># Jaccard-Tanimoto</span>
+<span class="n">selector</span> <span class="o">=</span> <span class="n">NSimilarity</span><span class="p">(</span><span class="n">similarity_index</span><span class="o">=</span><span class="s2">&quot;JT&quot;</span><span class="p">,</span> <span class="n">preprocess_data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">selected_jt</span> <span class="o">=</span> <span class="n">selector</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">)</span>
+
+<span class="c1"># Austin-Colwell</span>
+<span class="n">selector</span> <span class="o">=</span> <span class="n">NSimilarity</span><span class="p">(</span><span class="n">similarity_index</span><span class="o">=</span><span class="s2">&quot;AC&quot;</span><span class="p">,</span> <span class="n">preprocess_data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">selected_ac</span> <span class="o">=</span> <span class="n">selector</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">)</span>
+
+<span class="c1"># Russel-Rao</span>
+<span class="n">selector</span> <span class="o">=</span> <span class="n">NSimilarity</span><span class="p">(</span><span class="n">similarity_index</span><span class="o">=</span><span class="s2">&quot;RR&quot;</span><span class="p">,</span> <span class="n">preprocess_data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">selected_rr</span> <span class="o">=</span> <span class="n">selector</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">)</span>
+
+<span class="c1"># Faith</span>
+<span class="n">selector</span> <span class="o">=</span> <span class="n">NSimilarity</span><span class="p">(</span><span class="n">similarity_index</span><span class="o">=</span><span class="s2">&quot;Fai&quot;</span><span class="p">,</span> <span class="n">preprocess_data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">selected_fai</span> <span class="o">=</span> <span class="n">selector</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">)</span>
+
+
+<span class="n">graph_data</span><span class="p">(</span>
+    <span class="n">X</span><span class="p">,</span>
+    <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span>
+    <span class="n">indices</span><span class="o">=</span><span class="p">[</span><span class="n">selected_jt</span><span class="p">,</span> <span class="n">selected_ac</span><span class="p">,</span> <span class="n">selected_rr</span><span class="p">,</span> <span class="n">selected_fai</span><span class="p">],</span>
+    <span class="n">labels</span><span class="o">=</span><span class="p">[</span>
+        <span class="s2">&quot;Jaccard-Tanimoto&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Austin-Colwell&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Russel-Rao&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Faith&quot;</span><span class="p">,</span>
+    <span class="p">],</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Comparing NSimilarity-Based Selectors&quot;</span><span class="p">,</span>
+    <span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;Feature 1&quot;</span><span class="p">,</span>
+    <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Feature 2&quot;</span><span class="p">,</span>
+    <span class="n">fname</span><span class="o">=</span><span class="s2">&quot;quick_start_compare_nsim_methods_cluster.png&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/706991d30662e9cdb9126ac9d472f4ee74f2f8006cae3c4cc61fe50333810715.png" src="_images/706991d30662e9cdb9126ac9d472f4ee74f2f8006cae3c4cc61fe50333810715.png" />
+</div>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "theochem/Selector",
+            ref: "main",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="tutorial_diversity_measures.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Tutorial Diversity Measures</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="api_methods_base.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selector.methods.base</span></code></p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#utility-function-for-plotting-data">Utility Function for Plotting Data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#generating-data">Generating Data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selecting-from-one-cluster">Selecting from One Cluster</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nsimilarity-based-methods">NSimilarity based methods</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#compute-diversity-of-selected-points">Compute diversity of selected points</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#comparing-nsimilarity-based-selection-methods-multiple-clusters">Comparing NSimilarity based Selection Methods (Multiple Clusters)</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By The QC-Dev Community with the support of Digital Research Alliance of Canada and The Jupyter Book Community
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2022-2024.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

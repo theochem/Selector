@@ -1,0 +1,853 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>selector.measures.diversity &#8212; Ayers Lab</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.5ea377869091fd0449014c60fc090103.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script src="_static/scripts/sphinx-book-theme.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api_measures_diversity';</script>
+    <link rel="shortcut icon" href="_static/selector_logo.png"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="selector.measures.similarity" href="api_measures_similarity.html" />
+    <link rel="prev" title="selector.measures.converter" href="api_measures_converter.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/selector_logo.png" class="logo__image only-light" alt="Ayers Lab - Home"/>
+    <script>document.write(`<img src="_static/selector_logo.png" class="logo__image only-dark" alt="Ayers Lab - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="intro.html">
+                    Welcome to QC-Selector’s Documentation!
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_distance_based.html">Tutorial Distance-Based Selectors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_partition_based.html">Tutorial Partition-Based Selectors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_diversity_measures.html">Tutorial Diversity Measures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_similarity_based.html">Tutorial Similarity Based Selectors</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="api_methods_base.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selector.methods.base</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_methods_distance.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selector.methods.distance</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_methods_partition.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selector.methods.partition</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_methods_similarity.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selector.methods.similarity</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_methods_utils.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selector.methods.utils</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_measures_converter.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selector.measures.converter</span></code></a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selector.measures.diversity</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_measures_similarity.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selector.measures.similarity</span></code></a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/theochem/Selector" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/theochem/Selector/issues/new?title=Issue%20on%20page%20%2Fapi_measures_diversity.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/api_measures_diversity.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>selector.measures.diversity</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.measures.diversity.compute_diversity"><code class="docutils literal notranslate"><span class="pre">compute_diversity()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.measures.diversity.explicit_diversity_index"><code class="docutils literal notranslate"><span class="pre">explicit_diversity_index()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.measures.diversity.gini_coefficient"><code class="docutils literal notranslate"><span class="pre">gini_coefficient()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.measures.diversity.hypersphere_overlap_of_subset"><code class="docutils literal notranslate"><span class="pre">hypersphere_overlap_of_subset()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.measures.diversity.logdet"><code class="docutils literal notranslate"><span class="pre">logdet()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.measures.diversity.nearest_average_tanimoto"><code class="docutils literal notranslate"><span class="pre">nearest_average_tanimoto()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.measures.diversity.shannon_entropy"><code class="docutils literal notranslate"><span class="pre">shannon_entropy()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.measures.diversity.wdud"><code class="docutils literal notranslate"><span class="pre">wdud()</span></code></a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="module-selector.measures.diversity">
+<span id="selector-measures-diversity"></span><span id="measures-diversity"></span><h1><a class="reference internal" href="#module-selector.measures.diversity" title="selector.measures.diversity"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selector.measures.diversity</span></code></a><a class="headerlink" href="#module-selector.measures.diversity" title="Permalink to this heading">#</a></h1>
+<p>Molecule dataset diversity calculation module.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="selector.measures.diversity.compute_diversity">
+<span class="sig-prename descclassname"><span class="pre">selector.measures.diversity.</span></span><span class="sig-name descname"><span class="pre">compute_diversity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">feature_subset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">div_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'shannon_entropy'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">truncation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">features</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#selector.measures.diversity.compute_diversity" title="Permalink to this definition">#</a></dt>
+<dd><p>Compute diversity metrics.</p>
+<section id="parameters">
+<h2>Parameters<a class="headerlink" href="#parameters" title="Permalink to this heading">#</a></h2>
+<dl class="simple">
+<dt>feature_subset<span class="classifier">np.ndarray</span></dt><dd><p>Feature matrix.</p>
+</dd>
+<dt>div_type<span class="classifier">str, optional</span></dt><dd><p>Method of calculation diversity for a given molecule set, which
+includes “entropy”, “logdet”, “shannon entropy”, “wdud”,
+“gini coefficient” “hypersphere_overlap”, and
+“explicit diversity index”.
+The default is “entropy”.</p>
+</dd>
+<dt>normalize<span class="classifier">bool, optional</span></dt><dd><p>Normalize the entropy to [0, 1]. Default is “False”.</p>
+</dd>
+<dt>truncation<span class="classifier">bool, optional</span></dt><dd><p>Use the truncated Shannon entropy. Default is “False”.</p>
+</dd>
+<dt>features<span class="classifier">np.ndarray, optional</span></dt><dd><p>Feature matrix of entire molecule library, used only if
+calculating <cite>hypersphere_overlap_of_subset</cite>. Default is “None”.</p>
+</dd>
+<dt>cs<span class="classifier">int, optional</span></dt><dd><p>Number of common substructures in molecular compound dataset.
+Used only if calculating <cite>explicit_diversity_index</cite>. Default is “None”.</p>
+</dd>
+</dl>
+</section>
+<section id="returns">
+<h2>Returns<a class="headerlink" href="#returns" title="Permalink to this heading">#</a></h2>
+<p>float, computed diversity.</p>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="selector.measures.diversity.explicit_diversity_index">
+<span class="sig-prename descclassname"><span class="pre">selector.measures.diversity.</span></span><span class="sig-name descname"><span class="pre">explicit_diversity_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#selector.measures.diversity.explicit_diversity_index" title="Permalink to this definition">#</a></dt>
+<dd><p>Compute the explicit diversity index.</p>
+<section id="id1">
+<h2>Parameters<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h2>
+<dl class="simple">
+<dt>x: ndarray of shape (n_samples, n_features)</dt><dd><p>Feature matrix of <cite>n_samples</cite> samples in <cite>n_features</cite> dimensional feature space.</p>
+</dd>
+<dt>cs<span class="classifier">int</span></dt><dd><p>Number of common substructures in the compound set.</p>
+</dd>
+</dl>
+</section>
+<section id="id2">
+<h2>Returns<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h2>
+<dl class="simple">
+<dt>edi_scaled<span class="classifier">float</span></dt><dd><p>Explicit diversity index.</p>
+</dd>
+</dl>
+</section>
+<section id="notes">
+<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this heading">#</a></h2>
+<p>This method hasn’t been tested.</p>
+<p>This method is used only for datasets of molecular compounds.</p>
+<p>Papp, Á., Gulyás-Forró, A., Gulyás, Z., Dormán, G., Ürge, L.,
+and Darvas, F.. (2006) Explicit Diversity Index (EDI):
+A Novel Measure for Assessing the Diversity of Compound Databases.
+Journal of Chemical Information and Modeling 46, 1898-1904.</p>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="selector.measures.diversity.gini_coefficient">
+<span class="sig-prename descclassname"><span class="pre">selector.measures.diversity.</span></span><span class="sig-name descname"><span class="pre">gini_coefficient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#selector.measures.diversity.gini_coefficient" title="Permalink to this definition">#</a></dt>
+<dd><p>Gini coefficient of bit-wise fingerprints of a database of molecules.</p>
+<p>Measures the chemical diversity of a database of molecules defined by
+the following formula:</p>
+<div class="math notranslate nohighlight">
+\[G = \frac{2 \sum_{i=1}^L i ||y_i||_1 }{N \sum_{i=1}^L ||y_i||_1} - \frac{L+1}{L},\]</div>
+<p>where <span class="math notranslate nohighlight">\(y_i \in \{0, 1\}^N\)</span> is a vector of zero and ones of length the
+number of molecules <span class="math notranslate nohighlight">\(N\)</span> of the <cite>i`th feature, and :math:`L</cite> is the feature length.</p>
+<p>Lower values mean more diversity.</p>
+<section id="id3">
+<h2>Parameters<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h2>
+<dl class="simple">
+<dt>x<span class="classifier">ndarray(N, L)</span></dt><dd><p>Molecule features in L bits with N molecules.</p>
+</dd>
+</dl>
+</section>
+<section id="id4">
+<h2>Returns<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h2>
+<dl class="simple">
+<dt>float :</dt><dd><p>Gini coefficient in the range [0,1].</p>
+</dd>
+</dl>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this heading">#</a></h2>
+<p>Weidlich, Iwona E., and Igor V. Filippov. “Using the gini coefficient to measure the
+chemical diversity of small‐molecule libraries.” (2016): 2091-2097.</p>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="selector.measures.diversity.hypersphere_overlap_of_subset">
+<span class="sig-prename descclassname"><span class="pre">selector.measures.diversity.</span></span><span class="sig-name descname"><span class="pre">hypersphere_overlap_of_subset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_subset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#selector.measures.diversity.hypersphere_overlap_of_subset" title="Permalink to this definition">#</a></dt>
+<dd><p>Compute the overlap of subset with hyper-spheres around each point</p>
+<p>The edge penalty is also included, which disregards areas
+outside of the boundary of the full feature space/library.
+This is calculated as:</p>
+<div class="math notranslate nohighlight">
+\[g(S) = \sum_{i &lt; j}^k O(i, j) + \sum^k_m E(m)\]</div>
+<p>where <span class="math notranslate nohighlight">\(i, j\)</span> is over the subset of molecules,
+<span class="math notranslate nohighlight">\(O(i, j)\)</span> is the approximate overlap between hyperspheres,
+<span class="math notranslate nohighlight">\(k\)</span> is the number of features and <span class="math notranslate nohighlight">\(E\)</span>
+is the edge penalty of a molecule.</p>
+<p>Lower values mean more diversity.</p>
+<section id="id5">
+<h2>Parameters<a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h2>
+<dl class="simple">
+<dt>x<span class="classifier">ndarray</span></dt><dd><p>Feature matrix of all molecules.</p>
+</dd>
+<dt>x_subset<span class="classifier">ndarray</span></dt><dd><p>Feature matrix of selected subset of molecules.</p>
+</dd>
+</dl>
+</section>
+<section id="id6">
+<h2>Returns<a class="headerlink" href="#id6" title="Permalink to this heading">#</a></h2>
+<dl class="simple">
+<dt>float :</dt><dd><p>The approximate overlapping volume of hyperspheres
+drawn around the selected points/molecules.</p>
+</dd>
+</dl>
+</section>
+<section id="id7">
+<h2>Notes<a class="headerlink" href="#id7" title="Permalink to this heading">#</a></h2>
+<p>The hypersphere overlap volume is calculated using an approximation formula from Agrafiotis (1997).</p>
+<p>Agrafiotis, D. K.. (1997) Stochastic Algorithms for Maximizing Molecular Diversity.
+Journal of Chemical Information and Computer Sciences 37, 841-851.</p>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="selector.measures.diversity.logdet">
+<span class="sig-prename descclassname"><span class="pre">selector.measures.diversity.</span></span><span class="sig-name descname"><span class="pre">logdet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#selector.measures.diversity.logdet" title="Permalink to this definition">#</a></dt>
+<dd><p>Compute the log determinant function.</p>
+<p>Given a  <span class="math notranslate nohighlight">\(n_s \times n_f\)</span> feature matrix <span class="math notranslate nohighlight">\(x\)</span>, where <span class="math notranslate nohighlight">\(n_s\)</span> is the number of
+samples and <span class="math notranslate nohighlight">\(n_f\)</span> is the number of features, the log determinant function is defined as:</p>
+<p>where the <span class="math notranslate nohighlight">\(I\)</span> is the <span class="math notranslate nohighlight">\(n_s \times n_s\)</span> identity matrix.
+Higher values of <span class="math notranslate nohighlight">\(F_\text{logdet}\)</span> mean more diversity.</p>
+<section id="id8">
+<h2>Parameters<a class="headerlink" href="#id8" title="Permalink to this heading">#</a></h2>
+<dl class="simple">
+<dt>x: ndarray of shape (n_samples, n_features)</dt><dd><p>Feature matrix of <cite>n_samples</cite> samples in <cite>n_features</cite> dimensional feature space,</p>
+</dd>
+</dl>
+</section>
+<section id="id9">
+<h2>Returns<a class="headerlink" href="#id9" title="Permalink to this heading">#</a></h2>
+<dl class="simple">
+<dt>f_logdet: float</dt><dd><p>The volume of parallelotope spanned by the matrix.</p>
+</dd>
+</dl>
+</section>
+<section id="id10">
+<h2>Notes<a class="headerlink" href="#id10" title="Permalink to this heading">#</a></h2>
+<p>The log-determinant function is based on the formula in Nakamura, T., Sci Rep 2022.
+Please note that we used the
+natural logrithim to avoid the numerical stability issues,
+<a class="github reference external" href="https://github.com/theochem/Selector/issues/229">theochem/Selector#229</a>.</p>
+</section>
+<section id="id11">
+<h2>References<a class="headerlink" href="#id11" title="Permalink to this heading">#</a></h2>
+<p>Nakamura, T., Sakaue, S., Fujii, K., Harabuchi, Y., Maeda, S., and Iwata, S.., Selecting
+molecules with diverse structures and properties by maximizing submodular functions of
+descriptors learned with graph neural networks. Scientific Reports 12, 2022.</p>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="selector.measures.diversity.nearest_average_tanimoto">
+<span class="sig-prename descclassname"><span class="pre">selector.measures.diversity.</span></span><span class="sig-name descname"><span class="pre">nearest_average_tanimoto</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#selector.measures.diversity.nearest_average_tanimoto" title="Permalink to this definition">#</a></dt>
+<dd><p>Computes the average tanimoto for nearest molecules.</p>
+<section id="id12">
+<h2>Parameters<a class="headerlink" href="#id12" title="Permalink to this heading">#</a></h2>
+<dl class="simple">
+<dt>x<span class="classifier">ndarray</span></dt><dd><p>Feature matrix.</p>
+</dd>
+</dl>
+</section>
+<section id="id13">
+<h2>Returns<a class="headerlink" href="#id13" title="Permalink to this heading">#</a></h2>
+<dl class="simple">
+<dt>nat<span class="classifier">float</span></dt><dd><p>Average tanimoto of closest pairs.</p>
+</dd>
+</dl>
+</section>
+<section id="id14">
+<h2>Notes<a class="headerlink" href="#id14" title="Permalink to this heading">#</a></h2>
+<p>This computes the tanimoto coefficient of pairs with the shortest
+distances, then returns the average of them.
+This calculation is explictly for the explicit diversity index.</p>
+<p>Papp, Á., Gulyás-Forró, A., Gulyás, Z., Dormán, G., Ürge, L.,
+and Darvas, F.. (2006) Explicit Diversity Index (EDI):
+A Novel Measure for Assessing the Diversity of Compound Databases.
+Journal of Chemical Information and Modeling 46, 1898-1904.</p>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="selector.measures.diversity.shannon_entropy">
+<span class="sig-prename descclassname"><span class="pre">selector.measures.diversity.</span></span><span class="sig-name descname"><span class="pre">shannon_entropy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">truncation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#selector.measures.diversity.shannon_entropy" title="Permalink to this definition">#</a></dt>
+<dd><p>Compute the shannon entropy of a binary matrix.</p>
+<p>Higher values mean more diversity.</p>
+<section id="id15">
+<h2>Parameters<a class="headerlink" href="#id15" title="Permalink to this heading">#</a></h2>
+<dl class="simple">
+<dt>x<span class="classifier">ndarray</span></dt><dd><p>Bit-string matrix.</p>
+</dd>
+<dt>normalize<span class="classifier">bool, optional</span></dt><dd><p>Normalize the entropy to [0, 1]. Default=True.</p>
+</dd>
+<dt>truncation<span class="classifier">bool, optional</span></dt><dd><p>Use the truncated Shannon entropy by only counting the contributions of one-bits.
+Default=False.</p>
+</dd>
+</dl>
+</section>
+<section id="id16">
+<h2>Returns<a class="headerlink" href="#id16" title="Permalink to this heading">#</a></h2>
+<dl class="simple">
+<dt>float :</dt><dd><p>The shannon entropy of the matrix.</p>
+</dd>
+</dl>
+</section>
+<section id="id17">
+<h2>Notes<a class="headerlink" href="#id17" title="Permalink to this heading">#</a></h2>
+<p>Suppose we have <span class="math notranslate nohighlight">\(m\)</span> compounds and each compound has <span class="math notranslate nohighlight">\(n\)</span> bits binary fingerprints.
+The binary matrix (feature matrix) is <span class="math notranslate nohighlight">\(\mathbf{x} \in m \times n\)</span>, where each
+row is a compound and each column contains the <span class="math notranslate nohighlight">\(n\)</span>-bit binary fingerprint.
+The equation for Shannon entropy is given by <a class="footnote-reference brackets" href="#id23" id="id18">1</a> and <a class="footnote-reference brackets" href="#id25" id="id19">3</a>,</p>
+<div class="math notranslate nohighlight">
+\[H = \sum_i^m \left[ - p_i \log_2{p_i }  - (1 - p_i)\log_2(1 - p_i) \right]\]</div>
+<p>where <span class="math notranslate nohighlight">\(p_i\)</span> represents the relative frequency of <cite>1</cite> bits at the fingerprint position
+<span class="math notranslate nohighlight">\(i\)</span>. When <span class="math notranslate nohighlight">\(p_i = 0\)</span> or <span class="math notranslate nohighlight">\(p_i = 1\)</span>, the <span class="math notranslate nohighlight">\(SE_i\)</span> is zero.
+When <cite>completeness</cite> is True, the entropy is calculated as in <a class="footnote-reference brackets" href="#id24" id="id20">2</a> instead</p>
+<div class="math notranslate nohighlight">
+\[H = \sum_i^m \left[ - p_i \log_2{p_i } \right]\]</div>
+<p>When <cite>normalize</cite> is True, the entropy is normalized by a scaling factor so that the entropy is in the range of
+[0, 1], <a class="footnote-reference brackets" href="#id24" id="id21">2</a></p>
+<div class="math notranslate nohighlight">
+\[H = \frac{ \sum_i^m \left[ - p_i \log_2{p_i }  - (1 - p_i)\log_2(1 - p_i) \right]}
+    {n \log_2{2} / 2}\]</div>
+<p>But please note, when <cite>completeness</cite> is False and <cite>normalize</cite> is True, the formula has not been
+used in any literature. It is just a simple normalization of the entropy and the user can use it at their own risk.</p>
+</section>
+<section id="id22">
+<h2>References<a class="headerlink" href="#id22" title="Permalink to this heading">#</a></h2>
+<dl class="footnote brackets">
+<dt class="label" id="id23"><span class="brackets"><a class="fn-backref" href="#id18">1</a></span></dt>
+<dd><p>Wang, Y., Geppert, H., &amp; Bajorath, J. (2009). Shannon entropy-based fingerprint similarity
+search strategy. Journal of Chemical Information and Modeling, 49(7), 1687-1691.</p>
+</dd>
+<dt class="label" id="id24"><span class="brackets">2</span><span class="fn-backref">(<a href="#id20">1</a>,<a href="#id21">2</a>)</span></dt>
+<dd><p>Leguy, J., Glavatskikh, M., Cauchy, T., &amp; Da Mota, B. (2021). Scalable estimator of the
+diversity for de novo molecular generation resulting in a more robust QM dataset (OD9) and a
+more efficient molecular optimization. Journal of Cheminformatics, 13(1), 1-17.</p>
+</dd>
+<dt class="label" id="id25"><span class="brackets"><a class="fn-backref" href="#id19">3</a></span></dt>
+<dd><p>Weidlich, I. E., &amp; Filippov, I. V. (2016). Using the Gini coefficient to measure the
+chemical diversity of small molecule libraries. Journal of Computational Chemistry, 37(22), 2091-2097.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="selector.measures.diversity.wdud">
+<span class="sig-prename descclassname"><span class="pre">selector.measures.diversity.</span></span><span class="sig-name descname"><span class="pre">wdud</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#selector.measures.diversity.wdud" title="Permalink to this definition">#</a></dt>
+<dd><p>Compute the Wasserstein Distance to Uniform Distribution(WDUD).</p>
+<p>The equation for the Wasserstein Distance for a single feature to uniform distribution is</p>
+<div class="math notranslate nohighlight">
+\[WDUD(x) = \int_{0}^{1} |U(x) - V(x)|dx\]</div>
+<p>where the feature is normalized to [0, 1], <span class="math notranslate nohighlight">\(U(x)=x\)</span> is the cumulative distribution
+of the uniform distribution on [0, 1], and <span class="math notranslate nohighlight">\(V(x) = \sum_{y &lt;= x}1 / N\)</span> is the discrete
+distribution of the values of the feature in <span class="math notranslate nohighlight">\(x\)</span>, where <span class="math notranslate nohighlight">\(y\)</span> is the ith feature. This
+integral is calculated iteratively between <span class="math notranslate nohighlight">\(y_i\)</span> and <span class="math notranslate nohighlight">\(y_{i+1}\)</span>, using trapezoidal method.</p>
+<p>Lower values of the WDUD mean more diversity because the features of the selected set are
+more evenly distributed over the range of feature values.</p>
+<section id="id26">
+<h2>Parameters<a class="headerlink" href="#id26" title="Permalink to this heading">#</a></h2>
+<dl class="simple">
+<dt>x: ndarray of shape (n_samples, n_features)</dt><dd><p>Feature matrix of <cite>n_samples</cite> samples in <cite>n_features</cite> dimensional feature space.</p>
+</dd>
+</dl>
+</section>
+<section id="id27">
+<h2>Returns<a class="headerlink" href="#id27" title="Permalink to this heading">#</a></h2>
+<dl class="simple">
+<dt>float :</dt><dd><p>The mean of the WDUD of each feature over all molecules.</p>
+</dd>
+</dl>
+</section>
+<section id="id28">
+<h2>Notes<a class="headerlink" href="#id28" title="Permalink to this heading">#</a></h2>
+<p>Nakamura, T., Sakaue, S., Fujii, K., Harabuchi, Y., Maeda, S., and Iwata, S.. (2022)
+Selecting molecules with diverse structures and properties by maximizing
+submodular functions of descriptors learned with graph neural networks.
+Scientific Reports 12.</p>
+</section>
+</dd></dl>
+
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "theochem/Selector",
+            ref: "main",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="api_measures_converter.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selector.measures.converter</span></code></p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="api_measures_similarity.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selector.measures.similarity</span></code></p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.measures.diversity.compute_diversity"><code class="docutils literal notranslate"><span class="pre">compute_diversity()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.measures.diversity.explicit_diversity_index"><code class="docutils literal notranslate"><span class="pre">explicit_diversity_index()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.measures.diversity.gini_coefficient"><code class="docutils literal notranslate"><span class="pre">gini_coefficient()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.measures.diversity.hypersphere_overlap_of_subset"><code class="docutils literal notranslate"><span class="pre">hypersphere_overlap_of_subset()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.measures.diversity.logdet"><code class="docutils literal notranslate"><span class="pre">logdet()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.measures.diversity.nearest_average_tanimoto"><code class="docutils literal notranslate"><span class="pre">nearest_average_tanimoto()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.measures.diversity.shannon_entropy"><code class="docutils literal notranslate"><span class="pre">shannon_entropy()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.measures.diversity.wdud"><code class="docutils literal notranslate"><span class="pre">wdud()</span></code></a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By The QC-Dev Community with the support of Digital Research Alliance of Canada and The Jupyter Book Community
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2022-2024.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

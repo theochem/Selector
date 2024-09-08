@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Installation &#8212; Ayers Lab</title>
+    <title>selector.methods.base &#8212; Ayers Lab</title>
   
   
   
@@ -59,12 +59,12 @@
     <script src="_static/design-tabs.js"></script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
     <script async="async" src="_static/sphinx-thebe.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'installation';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api_methods_base';</script>
     <link rel="shortcut icon" href="_static/selector_logo.png"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Tutorial Distance-Based Selectors" href="tutorial_distance_based.html" />
-    <link rel="prev" title="Welcome to QC-Selector’s Documentation!" href="intro.html" />
+    <link rel="next" title="selector.methods.distance" href="api_methods_distance.html" />
+    <link rel="prev" title="Tutorial Similarity Based Selectors" href="tutorial_similarity_based.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -183,16 +183,16 @@
             </li>
         </ul>
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
-<ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Installation</a></li>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial_distance_based.html">Tutorial Distance-Based Selectors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial_partition_based.html">Tutorial Partition-Based Selectors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial_diversity_measures.html">Tutorial Diversity Measures</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial_similarity_based.html">Tutorial Similarity Based Selectors</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">API</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="api_methods_base.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selector.methods.base</span></code></a></li>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selector.methods.base</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="api_methods_distance.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selector.methods.distance</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="api_methods_partition.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selector.methods.partition</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="api_methods_similarity.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selector.methods.similarity</span></code></a></li>
@@ -271,7 +271,7 @@
       
       
       
-      <li><a href="https://github.com/theochem/Selector/issues/new?title=Issue%20on%20page%20%2Finstallation.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/theochem/Selector/issues/new?title=Issue%20on%20page%20%2Fapi_methods_base.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -301,7 +301,7 @@
       
       
       
-      <li><a href="_sources/installation.md" target="_blank"
+      <li><a href="_sources/api_methods_base.rst" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -311,7 +311,7 @@
 <span class="btn__icon-container">
   <i class="fas fa-file"></i>
   </span>
-<span class="btn__text-container">.md</span>
+<span class="btn__text-container">.rst</span>
 </a>
 </li>
       
@@ -385,7 +385,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Installation</h1>
+    <h1>selector.methods.base</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -395,9 +395,12 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#stable-releases">Stable Releases</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#prebuilt-wheels">Prebuilt Wheels</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#development-version">Development Version</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.base.SelectionBase"><code class="docutils literal notranslate"><span class="pre">SelectionBase</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.base.SelectionBase._abc_impl"><code class="docutils literal notranslate"><span class="pre">SelectionBase._abc_impl</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.base.SelectionBase.select"><code class="docutils literal notranslate"><span class="pre">SelectionBase.select()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.base.SelectionBase.select_from_cluster"><code class="docutils literal notranslate"><span class="pre">SelectionBase.select_from_cluster()</span></code></a></li>
+</ul>
+</li>
 </ul>
             </nav>
         </div>
@@ -409,56 +412,74 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="installation">
-<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this heading">#</a></h1>
-<section id="stable-releases">
-<h2>Stable Releases<a class="headerlink" href="#stable-releases" title="Permalink to this heading">#</a></h2>
-<div class="alert alert-block alert-warning">
-<b>Warning:
-</b>
-We are preparing a 1.0 release. Until then, we can install the beta relase with PyPI,
-https://pypi.org/project/qc-selector/.
-</div>
-<p>The following dependencies are required to run selector properly,</p>
-<ul class="simple">
-<li><p>Python &gt;= 3.9: <a class="reference external" href="http://www.python.org/">http://www.python.org/</a></p></li>
-<li><p>NumPy &gt;= 1.21.2: <a class="reference external" href="http://www.numpy.org/">http://www.numpy.org/</a></p></li>
-<li><p>SciPy &gt;= 1.11.1: <a class="reference external" href="http://www.scipy.org/">http://www.scipy.org/</a></p></li>
-<li><p>bitarray &gt;= 2.5.1: <a class="reference external" href="https://pypi.org/project/bitarray/">https://pypi.org/project/bitarray/</a></p></li>
-</ul>
-<p>Normally, you don’t need to install these dependencies manually. They will be installed automatically when you follow the instructions below.</p>
-<p>It is recommended to install <code class="docutils literal notranslate"><span class="pre">selector</span></code> within a virtual environment. To create a virtual
-environment, we can use the <code class="docutils literal notranslate"><span class="pre">venv</span></code> module (Python 3.3+,
-<a class="reference external" href="https://docs.python.org/3/tutorial/venv.html">https://docs.python.org/3/tutorial/venv.html</a>), <code class="docutils literal notranslate"><span class="pre">miniconda</span></code> (<a class="reference external" href="https://conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html">https://conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html</a>), or
-<code class="docutils literal notranslate"><span class="pre">pipenv</span></code> (<a class="reference external" href="https://pipenv.pypa.io/en/latest/">https://pipenv.pypa.io/en/latest/</a>). We use <code class="docutils literal notranslate"><span class="pre">miniconda</span></code> in the following example to create a virtual environment:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="c1"># Create and activate qcdevs conda environment (optional, but recommended)</span>
-<span class="w">    </span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>qcdevs<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.11
-<span class="w">    </span>conda<span class="w"> </span>activate<span class="w"> </span>qcdevs
-</pre></div>
-</div>
-<p>To install <code class="docutils literal notranslate"><span class="pre">selector</span></code> with <code class="docutils literal notranslate"><span class="pre">pip</span></code>, we can install the latest stable release from the Python Package Index (PyPI) as follows:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="c1"># Install the stable release.</span>
-<span class="w">    </span>pip<span class="w"> </span>install<span class="w"> </span>qc-selector
-</pre></div>
-</div>
+  <section id="module-selector.methods.base">
+<span id="selector-methods-base"></span><span id="methods-base"></span><h1><a class="reference internal" href="#module-selector.methods.base" title="selector.methods.base"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selector.methods.base</span></code></a><a class="headerlink" href="#module-selector.methods.base" title="Permalink to this heading">#</a></h1>
+<p>Base class for diversity based subset selection.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="selector.methods.base.SelectionBase">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">selector.methods.base.</span></span><span class="sig-name descname"><span class="pre">SelectionBase</span></span><a class="headerlink" href="#selector.methods.base.SelectionBase" title="Permalink to this definition">#</a></dt>
+<dd><p>Base class for selecting subset of sample points.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="selector.methods.base.SelectionBase._abc_impl">
+<span class="sig-name descname"><span class="pre">_abc_impl</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;_abc._abc_data</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#selector.methods.base.SelectionBase._abc_impl" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="selector.methods.base.SelectionBase.select">
+<span class="sig-name descname"><span class="pre">select</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#selector.methods.base.SelectionBase.select" title="Permalink to this definition">#</a></dt>
+<dd><p>Return indices representing subset of sample points.</p>
+<section id="parameters">
+<h2>Parameters<a class="headerlink" href="#parameters" title="Permalink to this heading">#</a></h2>
+<dl class="simple">
+<dt>x: ndarray of shape (n_samples, n_features) or (n_samples, n_samples)</dt><dd><p>Feature matrix of <cite>n_samples</cite> samples in <cite>n_features</cite> dimensional feature space.
+If fun_distance is <cite>None</cite>, this x is treated as a square pairwise distance matrix.</p>
+</dd>
+<dt>size: int</dt><dd><p>Number of sample points to select (i.e. size of the subset).</p>
+</dd>
+<dt>labels: np.ndarray, optional</dt><dd><p>Array of integers or strings representing the labels of the clusters that
+each sample belongs to. If <cite>None</cite>, the samples are treated as one cluster.
+If labels are provided, selection is made from each cluster.</p>
+</dd>
+</dl>
 </section>
-<section id="prebuilt-wheels">
-<h2>Prebuilt Wheels<a class="headerlink" href="#prebuilt-wheels" title="Permalink to this heading">#</a></h2>
-<p>To download the prebuilt wheel files, visit the <a class="reference external" href="https://pypi.org/project/qc-selector/">PyPI page</a>
-and <a class="reference external" href="https://github.com/theochem/Selector/releases">GitHub Releases</a>.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="c1"># install the prebuilt wheel file</span>
-<span class="w">    </span>pip<span class="w"> </span>install<span class="w"> </span>qc_selector-0.0.2b10-py3-none-any.whl
-</pre></div>
-</div>
+<section id="returns">
+<h2>Returns<a class="headerlink" href="#returns" title="Permalink to this heading">#</a></h2>
+<dl class="simple">
+<dt>selected: list</dt><dd><p>Indices of the selected sample points.</p>
+</dd>
+</dl>
 </section>
-<section id="development-version">
-<h2>Development Version<a class="headerlink" href="#development-version" title="Permalink to this heading">#</a></h2>
-<p>In addition, we can install the latest development version from the GitHub repository as follows:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="c1"># install the latest development version</span>
-<span class="w">    </span>pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com/theochem/Selector.git
-</pre></div>
-</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="selector.methods.base.SelectionBase.select_from_cluster">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">select_from_cluster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#selector.methods.base.SelectionBase.select_from_cluster" title="Permalink to this definition">#</a></dt>
+<dd><p>Return indices representing subset of sample points from one cluster.</p>
+<section id="id1">
+<h2>Parameters<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h2>
+<dl class="simple">
+<dt>x: ndarray of shape (n_samples, n_features) or (n_samples, n_samples)</dt><dd><p>Feature matrix of <cite>n_samples</cite> samples in <cite>n_features</cite> dimensional feature space.
+If fun_distance is <cite>None</cite>, this x is treated as a square pairwise distance matrix.</p>
+</dd>
+<dt>size: int</dt><dd><p>Number of sample points to select (i.e. size of the subset).</p>
+</dd>
+<dt>labels: np.ndarray, optional</dt><dd><p>Array of integers or strings representing the labels of the clusters that
+each sample belongs to. If <cite>None</cite>, the samples are treated as one cluster.
+If labels are provided, selection is made from each cluster.</p>
+</dd>
+</dl>
 </section>
+<section id="id2">
+<h2>Returns<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h2>
+<dl class="simple">
+<dt>selected: list</dt><dd><p>Indices of the selected sample points.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
     <script type="text/x-thebe-config">
@@ -492,20 +513,20 @@ and <a class="reference external" href="https://github.com/theochem/Selector/rel
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="intro.html"
+       href="tutorial_similarity_based.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Welcome to QC-Selector’s Documentation!</p>
+        <p class="prev-next-title">Tutorial Similarity Based Selectors</p>
       </div>
     </a>
     <a class="right-next"
-       href="tutorial_distance_based.html"
+       href="api_methods_distance.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Tutorial Distance-Based Selectors</p>
+        <p class="prev-next-title"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selector.methods.distance</span></code></p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -525,9 +546,12 @@ and <a class="reference external" href="https://github.com/theochem/Selector/rel
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#stable-releases">Stable Releases</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#prebuilt-wheels">Prebuilt Wheels</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#development-version">Development Version</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.base.SelectionBase"><code class="docutils literal notranslate"><span class="pre">SelectionBase</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.base.SelectionBase._abc_impl"><code class="docutils literal notranslate"><span class="pre">SelectionBase._abc_impl</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.base.SelectionBase.select"><code class="docutils literal notranslate"><span class="pre">SelectionBase.select()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.base.SelectionBase.select_from_cluster"><code class="docutils literal notranslate"><span class="pre">SelectionBase.select_from_cluster()</span></code></a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 
