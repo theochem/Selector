@@ -180,7 +180,7 @@ def shannon_entropy(x: np.ndarray, normalize=True, truncation=False) -> float:
     Suppose we have :math:`m` compounds and each compound has :math:`n` bits binary fingerprints.
     The binary matrix (feature matrix) is :math:`\mathbf{x} \in m \times n`, where each
     row is a compound and each column contains the :math:`n`-bit binary fingerprint.
-    The equation for Shannon entropy is given by [1]_
+    The equation for Shannon entropy is given by [1]_ and [3]_,
 
     .. math::
         H = \sum_i^m \left[ - p_i \log_2{p_i }  - (1 - p_i)\log_2(1 - p_i) \right]
