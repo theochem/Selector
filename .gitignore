@@ -158,4 +158,7 @@ tags
 *.gcno
 *.gcda
 *.gcov
-test_calculator
+
+*/*/_build
+*/_build
+

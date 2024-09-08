@@ -2,15 +2,22 @@
 # Learn more at https://jupyterbook.org/customize/toc.html
 
 format: jb-book
-root: intro
+root: intro.md
 parts:
-  - caption: Quick Start
+  - caption: Tutorial
     chapters:
-    - file: installation.ipynb
-    - file: starting.ipynb
+    - file: installation.md
+    - file: tutorial_distance_based.ipynb
+    - file: tutorial_partition_based.ipynb
+    - file: tutorial_diversity_measures.ipynb
+    - file: tutorial_similarity_based.ipynb
   - caption: API
     chapters:
-    - file: base.rst
-    - file: dissimilarity.rst
-    - file: partition.rst
-    - file: utils.rst
+    - file: api_methods_base.rst
+    - file: api_methods_distance.rst
+    - file: api_methods_partition.rst
+    - file: api_methods_similarity.rst
+    - file: api_methods_utils.rst
+    - file: api_measures_converter.rst
+    - file: api_measures_diversity.rst
+    - file: api_measures_similarity.rst
