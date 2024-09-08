@@ -137,14 +137,16 @@ def logdet(x: np.ndarray) -> float:
 
     Notes
     -----
-    The log-determinant function is based on the formula in [1]_. Please note that we used the
+    The log-determinant function is based on the formula in Nakamura, T., Sci Rep 2022.
+    Please note that we used the
     natural logrithim to avoid the numerical stability issues,
     https://github.com/theochem/Selector/issues/229.
 
-    .. [1] Nakamura, T., Sakaue, S., Fujii, K., Harabuchi, Y., Maeda, S., and Iwata, S..,
-       Selecting molecules with diverse structures and properties by maximizing
-       submodular functions of descriptors learned with graph neural networks.
-       Scientific Reports 12, 2022.
+    References
+    ----------
+    Nakamura, T., Sakaue, S., Fujii, K., Harabuchi, Y., Maeda, S., and Iwata, S.., Selecting
+    molecules with diverse structures and properties by maximizing submodular functions of
+    descriptors learned with graph neural networks. Scientific Reports 12, 2022.
 
     """
     mid = np.dot(x, np.transpose(x)) + np.identity(x.shape[0])
@@ -178,7 +180,7 @@ def shannon_entropy(x: np.ndarray, normalize=True, truncation=False) -> float:
     Suppose we have :math:`m` compounds and each compound has :math:`n` bits binary fingerprints.
     The binary matrix (feature matrix) is :math:`\mathbf{x} \in m \times n`, where each
     row is a compound and each column contains the :math:`n`-bit binary fingerprint.
-    The equation for Shannon entropy is given by [1]_
+    The equation for Shannon entropy is given by [1]_ and [3]_,
 
     .. math::
         H = \sum_i^m \left[ - p_i \log_2{p_i }  - (1 - p_i)\log_2(1 - p_i) \right]
@@ -200,13 +202,15 @@ def shannon_entropy(x: np.ndarray, normalize=True, truncation=False) -> float:
     But please note, when `completeness` is False and `normalize` is True, the formula has not been
     used in any literature. It is just a simple normalization of the entropy and the user can use it at their own risk.
 
+    References
+    ----------
     .. [1] Wang, Y., Geppert, H., & Bajorath, J. (2009). Shannon entropy-based fingerprint similarity
-    search strategy. Journal of Chemical Information and Modeling, 49(7), 1687-1691.
+       search strategy. Journal of Chemical Information and Modeling, 49(7), 1687-1691.
     .. [2] Leguy, J., Glavatskikh, M., Cauchy, T., & Da Mota, B. (2021). Scalable estimator of the
-    diversity for de novo molecular generation resulting in a more robust QM dataset (OD9) and a
-    more efficient molecular optimization. Journal of Cheminformatics, 13(1), 1-17.
+       diversity for de novo molecular generation resulting in a more robust QM dataset (OD9) and a
+       more efficient molecular optimization. Journal of Cheminformatics, 13(1), 1-17.
     .. [3] Weidlich, I. E., & Filippov, I. V. (2016). Using the Gini coefficient to measure the
-    chemical diversity of small molecule libraries. Journal of Computational Chemistry, 37(22), 2091-2097.
+       chemical diversity of small molecule libraries. Journal of Computational Chemistry, 37(22), 2091-2097.
 
     """
     # check if matrix is binary
@@ -284,6 +288,7 @@ def wdud(x: np.ndarray) -> float:
     r"""Compute the Wasserstein Distance to Uniform Distribution(WDUD).
 
     The equation for the Wasserstein Distance for a single feature to uniform distribution is
+
     .. math::
         WDUD(x) = \int_{0}^{1} |U(x) - V(x)|dx
 

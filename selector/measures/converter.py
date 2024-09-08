@@ -133,7 +133,7 @@ def reverse(x: np.ndarray) -> np.ndarray:
     r"""Calculate distance array from similarity using the reverse method.
 
     .. math::
-    \delta_{ij} = min(s_{ij}) + max(s_{ij}) - s_{ij}
+        \delta_{ij} = min(s_{ij}) + max(s_{ij}) - s_{ij}
 
     where :math:`\delta_{ij}` is the distance between points :math:`i`
     and :math:`j`, :math:`s_{ij}` is their similarity coefficient,
@@ -159,7 +159,7 @@ def reciprocal(x: np.ndarray) -> np.ndarray:
     r"""Calculate distance array from similarity using the reciprocal method.
 
     .. math::
-    \delta_{ij} = \frac{1}{s_{ij}}
+        \delta_{ij} = \frac{1}{s_{ij}}
 
     where :math:`\delta_{ij}` is the distance between points :math:`i`
     and :math:`j`, and :math:`s_{ij}` is their similarity coefficient.
@@ -186,7 +186,7 @@ def exponential(x: np.ndarray) -> np.ndarray:
     r"""Calculate distance matrix from similarity using the exponential method.
 
     .. math::
-    \delta_{ij} = -\ln{\frac{s_{ij}}{max(s_{ij})}}
+        \delta_{ij} = -\ln{\frac{s_{ij}}{max(s_{ij})}}
 
     where :math:`\delta_{ij}` is the distance between points :math:`i`
     and :math:`j`, and :math:`s_{ij}` is their similarity coefficient.
@@ -213,7 +213,7 @@ def gaussian(x: np.ndarray) -> np.ndarray:
     r"""Calculate distance matrix from similarity using the Gaussian method.
 
     .. math::
-    \delta_{ij} = \sqrt{-\ln{\frac{s_{ij}}{max(s_{ij})}}}
+        \delta_{ij} = \sqrt{-\ln{\frac{s_{ij}}{max(s_{ij})}}}
 
     where :math:`\delta_{ij}` is the distance between points :math:`i`
     and :math:`j`, and :math:`s_{ij}` is their similarity coefficient.
@@ -241,7 +241,7 @@ def correlation(x: np.ndarray) -> np.ndarray:
     r"""Calculate distance array from correlation array.
 
     .. math::
-    \delta_{ij} = \sqrt{1 - r_{ij}}
+        \delta_{ij} = \sqrt{1 - r_{ij}}
 
     where :math:`\delta_{ij}` is the distance between points :math:`i`
     and :math:`j`, and :math:`r_{ij}` is their correlation.
@@ -270,7 +270,7 @@ def transition(x: np.ndarray) -> np.ndarray:
     r"""Calculate distance array from frequency using the transition method.
 
     .. math::
-    \delta_{ij} = \frac{1}{\sqrt{f_{ij}}}
+        \delta_{ij} = \frac{1}{\sqrt{f_{ij}}}
 
     where :math:`\delta_{ij}` is the distance between points :math:`i`
     and :math:`j`, and :math:`f_{ij}` is their frequency.
@@ -294,8 +294,7 @@ def co_occurrence(x: np.ndarray) -> np.ndarray:
     r"""Calculate distance array from frequency using the co-occurrence method.
 
     .. math::
-    \delta_{ij} =  \left(1 + \frac{f_{ij}\sum_{i,j}{f_{ij}}}
-    {\sum_{i}{f_{ij}}\sum_{j}{f_{ij}}} \right)^{-1}
+        \delta_{ij} =  \left(1 + \frac{f_{ij}\sum_{i,j}{f_{ij}}}{\sum_{i}{f_{ij}}\sum_{j}{f_{ij}}} \right)^{-1}
 
     where :math:`\delta_{ij}` is the distance between points :math:`i`
     and :math:`j`, and :math:`f_{ij}` is their frequency.
@@ -360,7 +359,7 @@ def probability(x: np.ndarray) -> np.ndarray:
     r"""Calculate distance array from probability array.
 
     .. math::
-    \delta_{ij} = \sqrt{-\ln{\frac{s_{ij}}{max(s_{ij})}}}
+        \delta_{ij} = \sqrt{-\ln{\frac{s_{ij}}{max(s_{ij})}}}
 
     where :math:`\delta_{ij}` is the distance between points :math:`i`
     and :math:`j`, and :math:`p_{ij}` is their probablity.
@@ -390,7 +389,7 @@ def covariance(x: np.ndarray) -> np.ndarray:
     r"""Calculate distance array from similarity using the covariance method.
 
     .. math::
-    \delta_{ij} = \sqrt{s_{ii}+s_{jj}-2s_{ij}}
+        \delta_{ij} = \sqrt{s_{ii}+s_{jj}-2s_{ij}}
 
     where :math:`\delta_{ij}` is the distance between points :math:`i`
     and :math:`j`, :math:`s_{ii}` and :math:`s_{jj}` are the variances

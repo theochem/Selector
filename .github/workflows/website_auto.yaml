@@ -45,6 +45,7 @@ jobs:
       # Build the book
       - name: Build the book
         run: |
+          cp notebooks/*.ipynb book/content/.
           jupyter-book build ./book/content
 
       # Push the book's HTML to github-pages
