@@ -301,6 +301,16 @@ def test_directed_sphere_same_number_of_pts():
     assert_equal(collector.r, 1)
 
 
+def test_directed_sphere_same_number_of_pts_None():
+    """Test DirectSphereExclusion with `size` = number of points in dataset with the ref_index None."""
+    # None as the reference point
+    x = np.array([[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]])
+    collector = DISE(r0=1, tol=0, ref_index=None)
+    selected = collector.select(x, size=3)
+    assert_equal(selected, [2, 0, 4])
+    assert_equal(collector.r, 1)
+
+
 def test_directed_sphere_exclusion_select_more_number_of_pts():
     """Test DirectSphereExclusion on points on the line with `size` < number of points in dataset."""
     # (0,0) as the reference point
