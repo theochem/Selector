@@ -677,7 +677,7 @@ def get_initial_selection(x=None, x_dist=None, ref_index=None, fun_dist=None):
         if x_dist is None:
             x_dist = fun_dist(x)
         # calculate the medoid center
-        initial_selections = [np.argmin(np.sum(x_dist, axis=0))]
+        initial_selections = [int(np.argmin(np.sum(x_dist, axis=0)))]
 
     # the length of the distance matrix is the number of samples
     if x_dist is not None:
