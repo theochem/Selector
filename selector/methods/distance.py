@@ -507,8 +507,6 @@ class DISE(SelectionBase):
         """
         self.r0 = r0
         self.r = r0
-        if ref_index is not None and ref_index < 0:
-            raise ValueError(f"ref_index must be a non-negative integer, got {ref_index}.")
         self.ref_index = ref_index
         self.tol = tol
         self.n_iter = n_iter
