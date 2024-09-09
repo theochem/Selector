@@ -507,8 +507,6 @@ class DISE(SelectionBase):
         """
         self.r0 = r0
         self.r = r0
-        if ref_index is not None and ref_index < 0:
-            raise ValueError(f"ref_index must be a non-negative integer, got {ref_index}.")
         self.ref_index = ref_index
         self.tol = tol
         self.n_iter = n_iter
@@ -677,7 +675,7 @@ def get_initial_selection(x=None, x_dist=None, ref_index=None, fun_dist=None):
         if x_dist is None:
             x_dist = fun_dist(x)
         # calculate the medoid center
-        initial_selections = [np.argmin(np.sum(x_dist, axis=0))]
+        initial_selections = [int(np.argmin(np.sum(x_dist, axis=0)))]
 
     # the length of the distance matrix is the number of samples
     if x_dist is not None:
