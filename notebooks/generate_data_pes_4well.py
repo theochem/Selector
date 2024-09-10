@@ -185,7 +185,7 @@ def select_subsets(points, percentages, methods, seed=42):
                 indices = Medoid().select(points, size=size)
             elif method.startswith("GridPartition"):
                 grid_method = method.split("-")[1]
-                indices = GridPartition(numb_bins_axis=5, grid_method=grid_method).select(
+                indices = GridPartition(nbins_axis=5, bin_method=grid_method).select(
                     points, size=size
                 )
             else:
@@ -291,7 +291,7 @@ if __name__ == "__main__":
             "GridPartition-equifrequent_dependent",
             "GridPartition-equifrequent_independent",
         ]
-        percentages = [2**i for i in range(6)]
+        percentages = [2**i for i in range(7)]
 
         # Make an instance of potential for visualization
         # -----------------------------------------------
@@ -323,12 +323,18 @@ if __name__ == "__main__":
                 # indices are returned as a nested dictionary {method: {percentage: indices}}
                 selected_indices = select_subsets(points_iter, percentages, selectors, seed=42)
                 database_indices[fname_iter] = selected_indices
+                print("DONE SELECTING")
                 # Plot Subsets
                 # ------------
                 for method, values in selected_indices.items():
+                    print("PLOTTING.....")
+                    os.makedirs(f"{folder}/plots/{method}", exist_ok=True)
                     for p, indices in values.items():
                         p = int(p)
-                        fname_plot = f"{folder}/plots/subset_{method}_p{p:02d}_{fname_iter}.png"
+                        fname_plot = (
+                            f"{folder}/plots/{method}/subset_{method}_p{p:02d}_{fname_iter}.png"
+                        )
+                        print(f"PLOT {fname_plot}")
                         plot_data_2d(
                             points_plot,
                             values_plot,
