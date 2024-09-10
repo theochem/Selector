@@ -71,4 +71,3 @@ We can also clone the repository to access the latest development version, test 
     pip install .
 
 ```
-
