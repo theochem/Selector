@@ -26,7 +26,9 @@
 import numpy as np
 import pytest
 from numpy.testing import assert_equal, assert_raises
+from scipy.spatial.distance import pdist, squareform
 from sklearn.metrics import pairwise_distances
+
 
 from selector.methods.distance import DISE, MaxMin, MaxSum, OptiSim
 from selector.methods.tests.common import generate_synthetic_data
@@ -369,3 +371,18 @@ def test_directed_sphere_on_line_with_larger_radius():
     expected = [1, 5, 9]
     assert_equal(selected, expected)
     assert_equal(collector.r, 1.0)
+
+
+def test_directed_sphere_dist_func():
+    """Test Direct Sphere Exclusion with a distance function."""
+    # (0,0) as the reference point
+    x = np.array([[0, 0], [0, 1], [0, 2], [0, 3], [0, 4], [0, 5], [0, 6]])
+    collector = DISE(r0=0.5,
+                     tol=0,
+                     ref_index=0,
+                     fun_dist=lambda x: squareform(pdist(x, metric="minkowski", p=0.1))
+                     )
+    selected = collector.select(x, size=3)
+    expected = [0, 3, 6]
+    assert_equal(selected, expected)
+    assert_equal(collector.r, 2.0)

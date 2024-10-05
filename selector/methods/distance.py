@@ -22,7 +22,6 @@
 #
 # --
 """Module for Distance-Based Selection Methods."""
-import warnings
 
 import bitarray
 import numpy as np
@@ -461,7 +460,7 @@ class DISE(SelectionBase):
     """
 
     def __init__(
-        self, r0=None, ref_index=None, tol=0.05, n_iter=10, p=2.0, eps=0.0, fun_dist=None, **kwargs
+        self, r0=None, ref_index=None, tol=0.05, n_iter=10, p=2.0, eps=0.0, fun_dist=None
     ):
         """
         Initialize class.
@@ -496,13 +495,6 @@ class DISE(SelectionBase):
         fun_dist: callable, optional
             Function for calculating the distances between sample points. When `fun_dist` is `None`,
             the Minkowski p-norm distance is used. Default is None.
-        kwargs: dict, optional
-            Additional keyword arguments to be passed to the distance function `fun_dist`.
-
-        Notes
-        -----
-        If `p` is also defined in `kwargs`, the value of `p` from the argument will be used. For
-        example, when `p=2` and `kwargs={"p": 3}`, the value of `p` will be 2.
 
         """
         self.r0 = r0
@@ -518,14 +510,6 @@ class DISE(SelectionBase):
         # else:
         #     self.fun_dist = fun_dist
         self.fun_dist = fun_dist
-
-        self.kwargs = kwargs
-        if "p" in self.kwargs.keys():
-            warnings.warn(
-                f"Value of p in kwargs is overwritten by: {self.p} as defined in the "
-                f"argument `p`."
-            )
-        self.kwargs["p"] = p
 
     def algorithm(self, x, max_size):
         """Return selected samples based on directed sphere exclusion algorithm.
@@ -545,10 +529,10 @@ class DISE(SelectionBase):
         """
         if self.fun_dist is None:
             distances = spatial.distance.squareform(
-                spatial.distance.pdist(x, metric="minkowski", p=self.kwargs.get("p"))
+                spatial.distance.pdist(x, metric="minkowski", p=self.p)
             )
         else:
-            distances = spatial.distance.squareform(self.fun_dist(x, **self.kwargs))
+            distances = self.fun_dist(x)
 
         # set up the ref_index as when is None
         if self.ref_index is None:
