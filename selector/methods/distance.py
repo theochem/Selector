@@ -22,8 +22,6 @@
 #
 # --
 """Module for Distance-Based Selection Methods."""
-import inspect
-import warnings
 
 import bitarray
 import numpy as np
