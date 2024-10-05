@@ -71,11 +71,9 @@ class SelectionBase(ABC):
             )
 
         # compute the number of samples (i.e. population or pop) in each cluster
-        unique_labels = np.unique(labels)
+        unique_labels, unique_label_counts = np.unique(labels, return_counts=True)
         num_clusters = len(unique_labels)
-        pop_clusters = {
-            unique_label: len(np.where(labels == unique_label)[0]) for unique_label in unique_labels
-        }
+        pop_clusters = dict(zip(unique_labels, unique_label_counts))
         # compute number of samples to be selected from each cluster
         n = size // num_clusters
 
