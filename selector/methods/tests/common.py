@@ -23,6 +23,7 @@
 # --
 """Common functions for test module."""
 
+from importlib import resources
 from typing import Any, Tuple, Union
 
 import numpy as np
@@ -32,6 +33,7 @@ from sklearn.metrics import pairwise_distances
 __all__ = [
     "generate_synthetic_cluster_data",
     "generate_synthetic_data",
+    "get_data_file_path",
 ]
 
 
@@ -118,3 +120,24 @@ def generate_synthetic_data(
         )
         return syn_data, class_labels, dist
     return syn_data, class_labels
+
+
+def get_data_file_path(file_name):
+    """Get the absolute path of the data file inside the package.
+
+    Parameters
+    ----------
+    file_name : str
+        The name of the data file to load.
+
+    Returns
+    -------
+    str
+        The absolute path of the data file inside the package
+
+    """
+    data_file_path = resources.files("selector.methods.tests").joinpath(
+        f"data/{file_name}"
+    )
+
+    return data_file_path

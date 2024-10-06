@@ -33,6 +33,7 @@ from selector.methods.distance import DISE, MaxMin, MaxSum, OptiSim
 from selector.methods.tests.common import (
     generate_synthetic_cluster_data,
     generate_synthetic_data,
+    get_data_file_path,
 )
 
 
@@ -162,6 +163,67 @@ def test_maxmin_proportional_selection():
     assert_equal((labels[selected_ids] == 1).sum(), 2)
     # check the number of points selected from cluster three
     assert_equal((labels[selected_ids] == 2).sum(), 3)
+
+
+def test_maxmin_proportional_selection_imbalance_1():
+    """Test MaxMin class with proportional selection with imbalance case 1."""
+    # load three-cluster data from file
+    # 2 from class 0, 10 from class 1, 40 from class 2
+    coords_file_path = get_data_file_path("coords_imbalance_case1.txt")
+    coords = np.genfromtxt(coords_file_path, delimiter=",", skip_header=0)
+    labels_file_path = get_data_file_path("labels_imbalance_case1.txt")
+    labels = np.genfromtxt(labels_file_path, delimiter=",", skip_header=0)
+
+    # instantiate the MaxMin class
+    collector = MaxMin(fun_dist=lambda x: pairwise_distances(x, metric="euclidean"), ref_index=0)
+    # select 12 points with proportional selection from each cluster
+    selected_ids = collector.select(coords,
+                                    size=9,
+                                    labels=labels,
+                                    proportional_selection=True,
+                                    )
+
+    # make sure all the selected indices are the same with expectation
+    assert_equal(selected_ids,[0, 2, 6, 12, 15, 38, 16, 41, 36])
+    # check how many points are selected from each cluster
+    assert_equal(len(selected_ids), 9)
+    # check the number of points selected from cluster one
+    assert_equal((labels[selected_ids] == 0).sum(), 1)
+    # check the number of points selected from cluster two
+    assert_equal((labels[selected_ids] == 1).sum(), 2)
+    # check the number of points selected from cluster three
+    assert_equal((labels[selected_ids] == 2).sum(), 6)
+
+
+def test_maxmin_proportional_selection_imbalance_2():
+    """Test MaxMin class with proportional selection with imbalance case 2."""
+    # load three-cluster data from file
+    # 3 from class 0, 11 from class 1, 40 from class 2
+    coords_file_path = get_data_file_path("coords_imbalance_case2.txt")
+    coords = np.genfromtxt(coords_file_path, delimiter=",", skip_header=0)
+    labels_file_path = get_data_file_path("labels_imbalance_case2.txt")
+    labels = np.genfromtxt(labels_file_path, delimiter=",", skip_header=0)
+
+    # instantiate the MaxMin class
+    collector = MaxMin(fun_dist=lambda x: pairwise_distances(x, metric="euclidean"), ref_index=0)
+    # select 12 points with proportional selection from each cluster
+    selected_ids = collector.select(coords,
+                                    size=14,
+                                    labels=labels,
+                                    proportional_selection=True,
+                                    )
+
+    # # make sure all the selected indices are the same with expectation
+    assert_equal(selected_ids,[0, 3, 9, 6, 14, 36, 53, 17, 44, 23, 28, 50, 52, 49])
+    print(f"selected_ids: {selected_ids}")
+    # check how many points are selected from each cluster
+    assert_equal(len(selected_ids), 14)
+    # check the number of points selected from cluster one
+    assert_equal((labels[selected_ids] == 0).sum(), 1)
+    # check the number of points selected from cluster two
+    assert_equal((labels[selected_ids] == 1).sum(), 3)
+    # check the number of points selected from cluster three
+    assert_equal((labels[selected_ids] == 2).sum(), 10)
 
 
 def test_maxmin_invalid_input():
