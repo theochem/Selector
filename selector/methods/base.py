@@ -38,7 +38,7 @@ class SelectionBase(ABC):
                x: np.ndarray,
                size: int,
                labels: np.ndarray = None,
-               proportional_selection: bool = False,
+               proportional_selection: bool = True,
                ) -> list:
         """Return indices representing subset of sample points.
 
@@ -56,7 +56,7 @@ class SelectionBase(ABC):
         proportional_selection: bool, optional
             If True, the number of samples to be selected from each cluster is proportional.
             Otherwise, the number of samples to be selected from each cluster is equal.
-            Default is False.
+            Default is True.
 
         Returns
         -------
@@ -92,20 +92,33 @@ class SelectionBase(ABC):
             # using np.round to get to the nearest integer
             # not using int function directly to avoid truncation of decimal values
             size_each_cluster = np.round(size_each_cluster).astype(int)
+            # make sure each cluster has at least one sample
+            size_each_cluster[size_each_cluster < 1] = 1
+
             # the total number of samples selected from all clusters at this point
             size_each_cluster_total = np.sum(size_each_cluster)
             # Adjust if the total is less than the required number
             if size_each_cluster_total < size:
                 while size_each_cluster_total < size:
+                    # select the largest cluster with maximum number of data points not selected
+                    # and add one sample to it
                     largest_cluster_index = np.argmax(unique_label_counts - size_each_cluster)
                     size_each_cluster[largest_cluster_index] += 1
                     size_each_cluster_total += 1
             # Adjust if the total is more than the required number
             elif size_each_cluster_total > size:
                 while size_each_cluster_total > size:
-                    smallest_cluster_index = np.argmin(unique_label_counts - size_each_cluster)
-                    size_each_cluster[smallest_cluster_index] -= 1
+                    largest_cluster_index = np.argmax(unique_label_counts - size_each_cluster)
+                    size_each_cluster[largest_cluster_index] -= 1
                     size_each_cluster_total -= 1
+
+                # # when the total number of samples selected is more than the required number
+                # # we need to remove samples from the largest clusters
+                # while size_each_cluster_total > size:
+                #     largest_cluster_index = np.argmax(size_each_cluster)
+                #     size_each_cluster[largest_cluster_index] -= 1
+                #     size_each_cluster_total -= 1
+
             # perfect case where the total is equal to the required number
             else:
                 pass
@@ -119,7 +132,6 @@ class SelectionBase(ABC):
             while np.any(
                     [value <= size_each_cluster for value in pop_clusters.values() if value != 0]
             ):
-            # while list(pop_clusters.values()).count(0) < num_clusters:
                 for unique_label in unique_labels:
                     if pop_clusters[unique_label] != 0:
                         # get index of sample labelled with unique_label
