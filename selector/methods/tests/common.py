@@ -30,9 +30,24 @@ from sklearn.datasets import make_blobs
 from sklearn.metrics import pairwise_distances
 
 __all__ = [
+    "generate_synthetic_cluster_data",
     "generate_synthetic_data",
 ]
 
+
+def generate_synthetic_cluster_data():
+    # generate the first cluster with 3 points
+    cluster_one = np.array([[0, 0], [0, 1], [0, 2]])
+    # generate the second cluster with 6 points
+    cluster_two = np.array([[3, 0], [3, 1], [3, 2], [3, 3], [3, 4], [3, 5]])
+    # generate the third cluster with 9 points
+    cluster_three = np.array([[6, 0], [6, 1], [6, 2], [6, 3], [6, 4], [6, 5], [6, 6], [6, 7], [6, 8]])
+    # concatenate the clusters
+    coords = np.vstack([cluster_one, cluster_two, cluster_three])
+    # generate the labels
+    labels = np.hstack([[0 for _ in range(3)], [1 for _ in range(6)], [2 for _ in range(9)]])
+
+    return coords, labels, cluster_one, cluster_two, cluster_three
 
 def generate_synthetic_data(
     n_samples: int = 100,
