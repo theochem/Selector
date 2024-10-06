@@ -25,6 +25,7 @@
 
 import warnings
 from abc import ABC, abstractmethod
+from typing import List, Iterable, Union
 
 import numpy as np
 
@@ -40,7 +41,7 @@ class SelectionBase(ABC):
         size: int,
         labels: np.ndarray = None,
         proportional_selection: bool = True,
-    ) -> list:
+    ) -> Union[List, Iterable]:
         """Return indices representing subset of sample points.
 
         Parameters
