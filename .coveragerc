@@ -7,3 +7,7 @@ omit =
 
 [report]
 show_missing = True
+exclude_also =
+    pragma: no cover
+    raise NotImplementedError
+    if __name__ == .__main__.:

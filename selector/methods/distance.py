@@ -26,6 +26,7 @@
 import bitarray
 import numpy as np
 from scipy import spatial
+from typing import List, Iterable, Union
 
 from selector.methods.base import SelectionBase
 from selector.methods.utils import optimize_radius
@@ -86,7 +87,7 @@ class MaxMin(SelectionBase):
         self.fun_dist = fun_dist
         self.ref_index = ref_index
 
-    def select_from_cluster(self, x, size, labels=None):
+    def select_from_cluster(self, x, size, labels=None) -> Union[List, Iterable]:
         """Return selected samples from a cluster based on MaxMin algorithm.
 
         Parameters
@@ -102,7 +103,7 @@ class MaxMin(SelectionBase):
 
         Returns
         -------
-        selected : list
+        selected : Union[List, Iterable]
             List of indices of selected samples.
         """
         # calculate pairwise distance between points
@@ -133,6 +134,8 @@ class MaxMin(SelectionBase):
             # captured in min_distances
             new_id = np.argmax(min_distances)
             selected.append(new_id)
+
+        selected = [int(i) for i in selected]
 
         return selected
 
@@ -184,7 +187,7 @@ class MaxSum(SelectionBase):
         self.fun_dist = fun_dist
         self.ref_index = ref_index
 
-    def select_from_cluster(self, x, size, labels=None):
+    def select_from_cluster(self, x, size, labels=None) -> Union[List, Iterable]:
         """Return selected samples from a cluster based on MaxSum algorithm.
 
         Parameters
@@ -200,7 +203,7 @@ class MaxSum(SelectionBase):
 
         Returns
         -------
-        selected : list
+        selected : Union[List, Iterable]
             List of indices of selected samples.
 
         """
@@ -237,6 +240,8 @@ class MaxSum(SelectionBase):
                 # already-selected points
                 new_id = np.argmax(sum_distances)
             selected.append(new_id)
+
+        selected = [int(i) for i in selected]
         return selected
 
 
@@ -261,6 +266,7 @@ class OptiSim(SelectionBase):
     References
     ----------
     [1] J. Chem. Inf. Comput. Sci. 1997, 37, 6, 1181–1188. https://doi.org/10.1021/ci970282v
+
     """
 
     def __init__(
@@ -330,7 +336,7 @@ class OptiSim(SelectionBase):
         self.random_seed = random_seed
         self.fun_dist = fun_dist
 
-    def algorithm(self, x, max_size) -> list:
+    def algorithm(self, x, max_size) -> Union[List, Iterable]:
         """Return selected sample indices based on OptiSim algorithm.
 
         Parameters
@@ -342,7 +348,7 @@ class OptiSim(SelectionBase):
 
         Returns
         -------
-        selected : list
+        selected : Union[List, Iterable]
             List of indices of selected sample indices.
 
         """
@@ -402,7 +408,7 @@ class OptiSim(SelectionBase):
 
         return selected
 
-    def select_from_cluster(self, x, size, labels=None):
+    def select_from_cluster(self, x, size, labels=None) -> Union[List, Iterable]:
         """Return selected samples from a cluster based on OptiSim algorithm.
 
         Parameters
@@ -416,7 +422,7 @@ class OptiSim(SelectionBase):
 
         Returns
         -------
-        selected : list
+        selected : Union[List, Iterable]
             List of indices of selected samples.
 
         """
@@ -459,9 +465,7 @@ class DISE(SelectionBase):
 
     """
 
-    def __init__(
-        self, r0=None, ref_index=None, tol=0.05, n_iter=10, p=2.0, eps=0.0, fun_dist=None
-    ):
+    def __init__(self, r0=None, ref_index=None, tol=0.05, n_iter=10, p=2.0, eps=0.0, fun_dist=None):
         """
         Initialize class.
 
@@ -511,7 +515,7 @@ class DISE(SelectionBase):
         #     self.fun_dist = fun_dist
         self.fun_dist = fun_dist
 
-    def algorithm(self, x, max_size):
+    def algorithm(self, x, max_size) -> Union[List, Iterable]:
         """Return selected samples based on directed sphere exclusion algorithm.
 
         Parameters
@@ -523,7 +527,7 @@ class DISE(SelectionBase):
 
         Returns
         -------
-        selected: list
+        selected: Union[List, Iterable]
             List of indices of selected samples.
 
         """
@@ -593,7 +597,7 @@ class DISE(SelectionBase):
 
         return selected
 
-    def select_from_cluster(self, x, size, labels=None):
+    def select_from_cluster(self, x, size, labels=None) -> Union[List, Iterable]:
         """Return selected samples from a cluster based on directed sphere exclusion algorithm
 
         Parameters
@@ -607,7 +611,7 @@ class DISE(SelectionBase):
 
         Returns
         -------
-        selected: list
+        selected: Union[List, Iterable]
             List of indices of selected samples.
 
         """
@@ -625,7 +629,7 @@ class DISE(SelectionBase):
         return optimize_radius(self, x, size, labels)
 
 
-def get_initial_selection(x=None, x_dist=None, ref_index=None, fun_dist=None):
+def get_initial_selection(x=None, x_dist=None, ref_index=None, fun_dist=None) -> List:
     """Set up the reference index for selecting.
 
     Parameters
@@ -650,7 +654,7 @@ def get_initial_selection(x=None, x_dist=None, ref_index=None, fun_dist=None):
 
     Returns
     -------
-    initial_selections: list
+    initial_selections: List
         List of indices of the initial selected data points.
 
     """

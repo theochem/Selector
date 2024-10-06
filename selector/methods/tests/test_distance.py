@@ -29,9 +29,12 @@ from numpy.testing import assert_equal, assert_raises
 from scipy.spatial.distance import pdist, squareform
 from sklearn.metrics import pairwise_distances
 
-
 from selector.methods.distance import DISE, MaxMin, MaxSum, OptiSim
-from selector.methods.tests.common import generate_synthetic_data
+from selector.methods.tests.common import (
+    generate_synthetic_cluster_data,
+    generate_synthetic_data,
+    get_data_file_path,
+)
 
 
 def test_maxmin():
@@ -58,7 +61,12 @@ def test_maxmin():
 
     # use MaxMin algorithm to select points from clustered data
     collector = MaxMin()
-    selected_ids = collector.select(arr_dist_cluster, size=12, labels=class_labels_cluster)
+    selected_ids = collector.select(
+        arr_dist_cluster,
+        size=12,
+        labels=class_labels_cluster,
+        proportional_selection=False,
+    )
     # make sure all the selected indices are the same with expectation
     assert_equal(selected_ids, [41, 34, 94, 85, 51, 50, 66, 78, 21, 64, 29, 83])
 
@@ -99,11 +107,18 @@ def test_maxmin():
     # test failing case when ref_index contains a complex number
     with pytest.raises(ValueError):
         collector_float = MaxMin(ref_index=[1 + 5j, 2, 5])
-        selected_ids_float = collector_float.select(arr_dist, size=12)
+        _ = collector_float.select(arr_dist, size=12)
     # test failing case when ref_index contains a negative number
     with pytest.raises(ValueError):
         collector_float = MaxMin(ref_index=[-1, 2, 5])
-        selected_ids_float = collector_float.select(arr_dist, size=12)
+        _ = collector_float.select(arr_dist, size=12)
+
+    # test failing case when the number of labels is not equal to the number of samples
+    with pytest.raises(ValueError):
+        collector_float = MaxMin(ref_index=85)
+        _ = collector_float.select(
+            arr_dist, size=12, labels=class_labels_cluster[:90], proportional_selection=False
+        )
 
     # use MaxMin algorithm, this time instantiating with a distance metric
     collector = MaxMin(fun_dist=lambda x: pairwise_distances(x, metric="euclidean"))
@@ -125,8 +140,101 @@ def test_maxmin():
 
     # selecting molecules
     collector = MaxMin(lambda x: pairwise_distances(x, metric="euclidean"))
-    selected_mocked = collector.select(mocked_cluster_coords, size=15, labels=labels_mocked)
+    selected_mocked = collector.select(
+        mocked_cluster_coords,
+        size=15,
+        labels=labels_mocked,
+        proportional_selection=False,
+    )
     assert_equal(selected_mocked, [0, 1, 2, 3, 4, 5, 6, 7, 8, 16, 15, 10, 13, 9, 18])
+
+
+def test_maxmin_proportional_selection():
+    """Test MaxMin class with proportional selection."""
+    # generate the first cluster with 3 points
+    coords, labels, cluster_one, cluster_two, cluster_three = generate_synthetic_cluster_data()
+    # instantiate the MaxMin class
+    collector = MaxMin(fun_dist=lambda x: pairwise_distances(x, metric="euclidean"), ref_index=0)
+    # select 6 points with proportional selection from each cluster
+    selected_ids = collector.select(
+        coords,
+        size=6,
+        labels=labels,
+        proportional_selection=True,
+    )
+    # make sure all the selected indices are the same with expectation
+    assert_equal(selected_ids, [0, 3, 8, 9, 17, 13])
+    # check how many points are selected from each cluster
+    assert_equal(len(selected_ids), 6)
+    # check the number of points selected from cluster one
+    assert_equal((labels[selected_ids] == 0).sum(), 1)
+    # check the number of points selected from cluster two
+    assert_equal((labels[selected_ids] == 1).sum(), 2)
+    # check the number of points selected from cluster three
+    assert_equal((labels[selected_ids] == 2).sum(), 3)
+
+
+def test_maxmin_proportional_selection_imbalance_1():
+    """Test MaxMin class with proportional selection with imbalance case 1."""
+    # load three-cluster data from file
+    # 2 from class 0, 10 from class 1, 40 from class 2
+    coords_file_path = get_data_file_path("coords_imbalance_case1.txt")
+    coords = np.genfromtxt(coords_file_path, delimiter=",", skip_header=0)
+    labels_file_path = get_data_file_path("labels_imbalance_case1.txt")
+    labels = np.genfromtxt(labels_file_path, delimiter=",", skip_header=0)
+
+    # instantiate the MaxMin class
+    collector = MaxMin(fun_dist=lambda x: pairwise_distances(x, metric="euclidean"), ref_index=0)
+    # select 12 points with proportional selection from each cluster
+    selected_ids = collector.select(
+        coords,
+        size=9,
+        labels=labels,
+        proportional_selection=True,
+    )
+
+    # make sure all the selected indices are the same with expectation
+    assert_equal(selected_ids, [0, 2, 6, 12, 15, 38, 16, 41, 36])
+    # check how many points are selected from each cluster
+    assert_equal(len(selected_ids), 9)
+    # check the number of points selected from cluster one
+    assert_equal((labels[selected_ids] == 0).sum(), 1)
+    # check the number of points selected from cluster two
+    assert_equal((labels[selected_ids] == 1).sum(), 2)
+    # check the number of points selected from cluster three
+    assert_equal((labels[selected_ids] == 2).sum(), 6)
+
+
+def test_maxmin_proportional_selection_imbalance_2():
+    """Test MaxMin class with proportional selection with imbalance case 2."""
+    # load three-cluster data from file
+    # 3 from class 0, 11 from class 1, 40 from class 2
+    coords_file_path = get_data_file_path("coords_imbalance_case2.txt")
+    coords = np.genfromtxt(coords_file_path, delimiter=",", skip_header=0)
+    labels_file_path = get_data_file_path("labels_imbalance_case2.txt")
+    labels = np.genfromtxt(labels_file_path, delimiter=",", skip_header=0)
+
+    # instantiate the MaxMin class
+    collector = MaxMin(fun_dist=lambda x: pairwise_distances(x, metric="euclidean"), ref_index=0)
+    # select 12 points with proportional selection from each cluster
+    selected_ids = collector.select(
+        coords,
+        size=14,
+        labels=labels,
+        proportional_selection=True,
+    )
+
+    # # make sure all the selected indices are the same with expectation
+    assert_equal(selected_ids, [0, 3, 9, 6, 14, 36, 53, 17, 44, 23, 28, 50, 52, 49])
+    print(f"selected_ids: {selected_ids}")
+    # check how many points are selected from each cluster
+    assert_equal(len(selected_ids), 14)
+    # check the number of points selected from cluster one
+    assert_equal((labels[selected_ids] == 0).sum(), 1)
+    # check the number of points selected from cluster two
+    assert_equal((labels[selected_ids] == 1).sum(), 3)
+    # check the number of points selected from cluster three
+    assert_equal((labels[selected_ids] == 2).sum(), 10)
 
 
 def test_maxmin_invalid_input():
@@ -158,20 +266,32 @@ def test_maxsum_clustered_data():
 
     # use MaxSum algorithm to select points from clustered data, instantiating with euclidean distance metric
     collector = MaxSum(fun_dist=lambda x: pairwise_distances(x, metric="euclidean"), ref_index=None)
-    selected_ids = collector.select(coords_cluster, size=12, labels=class_labels_cluster)
+    selected_ids = collector.select(
+        coords_cluster,
+        size=12,
+        labels=class_labels_cluster,
+        proportional_selection=False,
+    )
     # make sure all the selected indices are the same with expectation
     assert_equal(selected_ids, [41, 34, 85, 94, 51, 50, 78, 66, 21, 64, 0, 83])
 
     # use MaxSum algorithm to select points from clustered data without instantiating with euclidean distance metric
     collector = MaxSum(ref_index=None)
-    selected_ids = collector.select(coords_cluster_dist, size=12, labels=class_labels_cluster)
+    selected_ids = collector.select(
+        coords_cluster_dist,
+        size=12,
+        labels=class_labels_cluster,
+        proportional_selection=False,
+    )
     # make sure all the selected indices are the same with expectation
     assert_equal(selected_ids, [41, 34, 85, 94, 51, 50, 78, 66, 21, 64, 0, 83])
 
     # check that ValueError is raised when number of points requested is greater than number of points in array
     with pytest.raises(ValueError):
-        selected_ids = collector.select_from_cluster(
-            coords_cluster, size=101, labels=class_labels_cluster
+        _ = collector.select_from_cluster(
+            coords_cluster,
+            size=101,
+            labels=class_labels_cluster,
         )
 
 
@@ -239,6 +359,31 @@ def test_maxsum_invalid_input():
         _ = collector.select(x_dist, size=2)
 
 
+def test_maxsum_proportional_selection():
+    """Test MaxSum class with proportional selection."""
+    # generate the first cluster with 3 points
+    coords, labels, cluster_one, cluster_two, cluster_three = generate_synthetic_cluster_data()
+    # instantiate the MaxSum class
+    collector = MaxSum(fun_dist=lambda x: pairwise_distances(x, metric="euclidean"), ref_index=0)
+    # select 6 points with proportional selection from each cluster
+    selected_ids = collector.select(
+        coords,
+        size=6,
+        labels=labels,
+        proportional_selection=True,
+    )
+    # make sure all the selected indices are the same with expectation
+    assert_equal(selected_ids, [0, 3, 8, 9, 17, 10])
+    # check how many points are selected from each cluster
+    assert_equal(len(selected_ids), 6)
+    # check the number of points selected from cluster one
+    assert_equal((labels[selected_ids] == 0).sum(), 1)
+    # check the number of points selected from cluster two
+    assert_equal((labels[selected_ids] == 1).sum(), 2)
+    # check the number of points selected from cluster three
+    assert_equal((labels[selected_ids] == 2).sum(), 3)
+
+
 def test_optisim():
     """Testing OptiSim class."""
     # generate random data points belonging to one cluster - coordinates and pairwise distance matrix
@@ -284,6 +429,31 @@ def test_optisim():
     with pytest.raises(ValueError):
         collector = OptiSim(ref_index=10000)
         _ = collector.select(coords, size=12)
+
+
+def test_optisim_proportional_selection():
+    """Test OptiSim class with proportional selection."""
+    # generate the first cluster with 3 points
+    coords, labels, cluster_one, cluster_two, cluster_three = generate_synthetic_cluster_data()
+    # instantiate the Optisim class
+    collector = OptiSim(fun_dist=lambda x: pairwise_distances(x, metric="euclidean"), ref_index=0)
+    # select 6 points with proportional selection from each cluster
+    selected_ids = collector.select(
+        coords,
+        size=6,
+        labels=labels,
+        proportional_selection=True,
+    )
+    # make sure all the selected indices are the same with expectation
+    assert_equal(selected_ids, [0, 3, 8, 9, 17, 13])
+    # check how many points are selected from each cluster
+    assert_equal(len(selected_ids), 6)
+    # check the number of points selected from cluster one
+    assert_equal((labels[selected_ids] == 0).sum(), 1)
+    # check the number of points selected from cluster two
+    assert_equal((labels[selected_ids] == 1).sum(), 2)
+    # check the number of points selected from cluster three
+    assert_equal((labels[selected_ids] == 2).sum(), 3)
 
 
 def test_directed_sphere_size_error():
@@ -377,12 +547,38 @@ def test_directed_sphere_dist_func():
     """Test Direct Sphere Exclusion with a distance function."""
     # (0,0) as the reference point
     x = np.array([[0, 0], [0, 1], [0, 2], [0, 3], [0, 4], [0, 5], [0, 6]])
-    collector = DISE(r0=0.5,
-                     tol=0,
-                     ref_index=0,
-                     fun_dist=lambda x: squareform(pdist(x, metric="minkowski", p=0.1))
-                     )
+    collector = DISE(
+        r0=0.5,
+        tol=0,
+        ref_index=0,
+        fun_dist=lambda x: squareform(pdist(x, metric="minkowski", p=0.1)),
+    )
     selected = collector.select(x, size=3)
     expected = [0, 3, 6]
     assert_equal(selected, expected)
     assert_equal(collector.r, 2.0)
+
+
+def test_directed_sphere_proportional_selection():
+    """Test DISE class with proportional selection."""
+    # generate the first cluster with 3 points
+    coords, labels, cluster_one, cluster_two, cluster_three = generate_synthetic_cluster_data()
+    # instantiate the DISE class
+    collector = DISE(fun_dist=lambda x: pairwise_distances(x, metric="euclidean"), ref_index=0)
+    # select 6 points with proportional selection from each cluster
+    selected_ids = collector.select(
+        coords,
+        size=6,
+        labels=labels,
+        proportional_selection=True,
+    )
+    # make sure all the selected indices are the same with expectation
+    assert_equal(selected_ids, [0, 3, 7, 9, 12, 15])
+    # check how many points are selected from each cluster
+    assert_equal(len(selected_ids), 6)
+    # check the number of points selected from cluster one
+    assert_equal((labels[selected_ids] == 0).sum(), 1)
+    # check the number of points selected from cluster two
+    assert_equal((labels[selected_ids] == 1).sum(), 2)
+    # check the number of points selected from cluster three
+    assert_equal((labels[selected_ids] == 2).sum(), 3)

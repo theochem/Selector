@@ -31,13 +31,14 @@ import numpy as np
 import pytest
 from numpy.testing import assert_almost_equal, assert_equal, assert_raises
 
-from selector.methods.similarity import NSimilarity, SimilarityIndex
 from selector.measures.similarity import (
     modified_tanimoto,
     pairwise_similarity_bit,
     scaled_similarity_matrix,
     tanimoto,
 )
+from selector.methods.similarity import NSimilarity, SimilarityIndex
+from selector.methods.tests.common import get_data_file_path
 
 
 def test_pairwise_similarity_bit_raises():
@@ -1513,27 +1514,6 @@ sample_size_values = [10, 20, 30]
 # --------------------------------------------------------------------------------------------- #
 # Get reference data for testing the selection of the diverse subset
 # --------------------------------------------------------------------------------------------- #
-def get_data_file_path(file_name):
-    """Get the absolute path of the data file inside the package.
-
-    Parameters
-    ----------
-    file_name : str
-        The name of the data file to load.
-
-    Returns
-    -------
-    str
-        The absolute path of the data file inside the package
-
-    """
-    data_file_path = importlib.resources.files("selector.methods.tests").joinpath(
-        f"data/{file_name}"
-    )
-
-    return data_file_path
-
-
 # get reference selected data for esim method
 def _get_selections_esim_ref_dict():
     """Returns a dictionary with the reference values for the selection of samples.
