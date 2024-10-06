@@ -107,11 +107,18 @@ def test_maxmin():
     # test failing case when ref_index contains a complex number
     with pytest.raises(ValueError):
         collector_float = MaxMin(ref_index=[1 + 5j, 2, 5])
-        selected_ids_float = collector_float.select(arr_dist, size=12)
+        _ = collector_float.select(arr_dist, size=12)
     # test failing case when ref_index contains a negative number
     with pytest.raises(ValueError):
         collector_float = MaxMin(ref_index=[-1, 2, 5])
-        selected_ids_float = collector_float.select(arr_dist, size=12)
+        _ = collector_float.select(arr_dist, size=12)
+
+    # test failing case when the number of labels is not equal to the number of samples
+    with pytest.raises(ValueError):
+        collector_float = MaxMin(ref_index=85)
+        _ = collector_float.select(
+            arr_dist, size=12, labels=class_labels_cluster[:90], proportional_selection=False
+        )
 
     # use MaxMin algorithm, this time instantiating with a distance metric
     collector = MaxMin(fun_dist=lambda x: pairwise_distances(x, metric="euclidean"))
