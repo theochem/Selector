@@ -165,7 +165,7 @@ class SelectionBase(ABC):
     @abstractmethod
     def select_from_cluster(
         self, x: np.ndarray, size: int, labels: np.ndarray = None
-    ) -> np.ndarray:
+    ) -> np.ndarray: # pragma: no cover
         """Return indices representing subset of sample points from one cluster.
 
         Parameters
