@@ -141,6 +141,7 @@ def test_maxmin():
     )
     assert_equal(selected_mocked, [0, 1, 2, 3, 4, 5, 6, 7, 8, 16, 15, 10, 13, 9, 18])
 
+
 def test_maxmin_proportional_selection():
     """Test MaxMin class with proportional selection."""
     # generate the first cluster with 3 points
@@ -148,13 +149,14 @@ def test_maxmin_proportional_selection():
     # instantiate the MaxMin class
     collector = MaxMin(fun_dist=lambda x: pairwise_distances(x, metric="euclidean"), ref_index=0)
     # select 6 points with proportional selection from each cluster
-    selected_ids = collector.select(coords,
-                                    size=6,
-                                    labels=labels,
-                                    proportional_selection=True,
-                                    )
+    selected_ids = collector.select(
+        coords,
+        size=6,
+        labels=labels,
+        proportional_selection=True,
+    )
     # make sure all the selected indices are the same with expectation
-    assert_equal(selected_ids,[0, 3, 8, 9, 17, 13])
+    assert_equal(selected_ids, [0, 3, 8, 9, 17, 13])
     # check how many points are selected from each cluster
     assert_equal(len(selected_ids), 6)
     # check the number of points selected from cluster one
@@ -177,14 +179,15 @@ def test_maxmin_proportional_selection_imbalance_1():
     # instantiate the MaxMin class
     collector = MaxMin(fun_dist=lambda x: pairwise_distances(x, metric="euclidean"), ref_index=0)
     # select 12 points with proportional selection from each cluster
-    selected_ids = collector.select(coords,
-                                    size=9,
-                                    labels=labels,
-                                    proportional_selection=True,
-                                    )
+    selected_ids = collector.select(
+        coords,
+        size=9,
+        labels=labels,
+        proportional_selection=True,
+    )
 
     # make sure all the selected indices are the same with expectation
-    assert_equal(selected_ids,[0, 2, 6, 12, 15, 38, 16, 41, 36])
+    assert_equal(selected_ids, [0, 2, 6, 12, 15, 38, 16, 41, 36])
     # check how many points are selected from each cluster
     assert_equal(len(selected_ids), 9)
     # check the number of points selected from cluster one
@@ -207,14 +210,15 @@ def test_maxmin_proportional_selection_imbalance_2():
     # instantiate the MaxMin class
     collector = MaxMin(fun_dist=lambda x: pairwise_distances(x, metric="euclidean"), ref_index=0)
     # select 12 points with proportional selection from each cluster
-    selected_ids = collector.select(coords,
-                                    size=14,
-                                    labels=labels,
-                                    proportional_selection=True,
-                                    )
+    selected_ids = collector.select(
+        coords,
+        size=14,
+        labels=labels,
+        proportional_selection=True,
+    )
 
     # # make sure all the selected indices are the same with expectation
-    assert_equal(selected_ids,[0, 3, 9, 6, 14, 36, 53, 17, 44, 23, 28, 50, 52, 49])
+    assert_equal(selected_ids, [0, 3, 9, 6, 14, 36, 53, 17, 44, 23, 28, 50, 52, 49])
     print(f"selected_ids: {selected_ids}")
     # check how many points are selected from each cluster
     assert_equal(len(selected_ids), 14)
@@ -355,13 +359,14 @@ def test_maxsum_proportional_selection():
     # instantiate the MaxSum class
     collector = MaxSum(fun_dist=lambda x: pairwise_distances(x, metric="euclidean"), ref_index=0)
     # select 6 points with proportional selection from each cluster
-    selected_ids = collector.select(coords,
-                                    size=6,
-                                    labels=labels,
-                                    proportional_selection=True,
-                                    )
+    selected_ids = collector.select(
+        coords,
+        size=6,
+        labels=labels,
+        proportional_selection=True,
+    )
     # make sure all the selected indices are the same with expectation
-    assert_equal(selected_ids,[0, 3, 8, 9, 17, 10])
+    assert_equal(selected_ids, [0, 3, 8, 9, 17, 10])
     # check how many points are selected from each cluster
     assert_equal(len(selected_ids), 6)
     # check the number of points selected from cluster one
@@ -426,13 +431,14 @@ def test_optisim_proportional_selection():
     # instantiate the Optisim class
     collector = OptiSim(fun_dist=lambda x: pairwise_distances(x, metric="euclidean"), ref_index=0)
     # select 6 points with proportional selection from each cluster
-    selected_ids = collector.select(coords,
-                                    size=6,
-                                    labels=labels,
-                                    proportional_selection=True,
-                                    )
+    selected_ids = collector.select(
+        coords,
+        size=6,
+        labels=labels,
+        proportional_selection=True,
+    )
     # make sure all the selected indices are the same with expectation
-    assert_equal(selected_ids,[0, 3, 8, 9, 17, 13])
+    assert_equal(selected_ids, [0, 3, 8, 9, 17, 13])
     # check how many points are selected from each cluster
     assert_equal(len(selected_ids), 6)
     # check the number of points selected from cluster one
@@ -441,6 +447,7 @@ def test_optisim_proportional_selection():
     assert_equal((labels[selected_ids] == 1).sum(), 2)
     # check the number of points selected from cluster three
     assert_equal((labels[selected_ids] == 2).sum(), 3)
+
 
 def test_directed_sphere_size_error():
     """Test DirectedSphereExclusion error when too many points requested."""
@@ -552,13 +559,14 @@ def test_directed_sphere_proportional_selection():
     # instantiate the DISE class
     collector = DISE(fun_dist=lambda x: pairwise_distances(x, metric="euclidean"), ref_index=0)
     # select 6 points with proportional selection from each cluster
-    selected_ids = collector.select(coords,
-                                    size=6,
-                                    labels=labels,
-                                    proportional_selection=True,
-                                    )
+    selected_ids = collector.select(
+        coords,
+        size=6,
+        labels=labels,
+        proportional_selection=True,
+    )
     # make sure all the selected indices are the same with expectation
-    assert_equal(selected_ids,[0, 3, 7, 9, 12, 15])
+    assert_equal(selected_ids, [0, 3, 7, 9, 12, 15])
     # check how many points are selected from each cluster
     assert_equal(len(selected_ids), 6)
     # check the number of points selected from cluster one

@@ -34,12 +34,13 @@ __all__ = ["SelectionBase"]
 class SelectionBase(ABC):
     """Base class for selecting subset of sample points."""
 
-    def select(self,
-               x: np.ndarray,
-               size: int,
-               labels: np.ndarray = None,
-               proportional_selection: bool = True,
-               ) -> list:
+    def select(
+        self,
+        x: np.ndarray,
+        size: int,
+        labels: np.ndarray = None,
+        proportional_selection: bool = True,
+    ) -> list:
         """Return indices representing subset of sample points.
 
         Parameters
@@ -130,7 +131,7 @@ class SelectionBase(ABC):
             # (pop < size_each_cluster) and needs to be done iteratively until all remaining clusters
             # have at least size_each_cluster samples
             while np.any(
-                    [value <= size_each_cluster for value in pop_clusters.values() if value != 0]
+                [value <= size_each_cluster for value in pop_clusters.values() if value != 0]
             ):
                 for unique_label in unique_labels:
                     if pop_clusters[unique_label] != 0:
@@ -143,7 +144,8 @@ class SelectionBase(ABC):
                 # update number of samples to be selected from each cluster
                 totally_used_clusters = list(pop_clusters.values()).count(0)
                 size_each_cluster = (size - len(np.hstack(selected_ids))) // (
-                            num_clusters - totally_used_clusters)
+                    num_clusters - totally_used_clusters
+                )
 
                 warnings.warn(
                     f"Number of molecules in one cluster is less than"
@@ -165,7 +167,7 @@ class SelectionBase(ABC):
 
     @abstractmethod
     def select_from_cluster(
-            self, x: np.ndarray, size: int, labels: np.ndarray = None
+        self, x: np.ndarray, size: int, labels: np.ndarray = None
     ) -> np.ndarray:
         """Return indices representing subset of sample points from one cluster.
 

@@ -459,9 +459,7 @@ class DISE(SelectionBase):
 
     """
 
-    def __init__(
-        self, r0=None, ref_index=None, tol=0.05, n_iter=10, p=2.0, eps=0.0, fun_dist=None
-    ):
+    def __init__(self, r0=None, ref_index=None, tol=0.05, n_iter=10, p=2.0, eps=0.0, fun_dist=None):
         """
         Initialize class.
 
