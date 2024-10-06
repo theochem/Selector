@@ -34,7 +34,12 @@ __all__ = ["SelectionBase"]
 class SelectionBase(ABC):
     """Base class for selecting subset of sample points."""
 
-    def select(self, x: np.ndarray, size: int, labels: np.ndarray = None) -> np.ndarray:
+    def select(self,
+               x: np.ndarray,
+               size: int,
+               labels: np.ndarray = None,
+               proportional_selection: bool = False,
+               ) -> list:
         """Return indices representing subset of sample points.
 
         Parameters
@@ -48,6 +53,10 @@ class SelectionBase(ABC):
             Array of integers or strings representing the labels of the clusters that
             each sample belongs to. If `None`, the samples are treated as one cluster.
             If labels are provided, selection is made from each cluster.
+        proportional_selection: bool, optional
+            If True, the number of samples to be selected from each cluster is proportional.
+            Otherwise, the number of samples to be selected from each cluster is equal.
+            Default is False.
 
         Returns
         -------
@@ -70,49 +79,81 @@ class SelectionBase(ABC):
                 f"Number of labels {len(labels)} does not match number of samples {len(x)}."
             )
 
+        selected_ids = []
+
         # compute the number of samples (i.e. population or pop) in each cluster
         unique_labels, unique_label_counts = np.unique(labels, return_counts=True)
         num_clusters = len(unique_labels)
         pop_clusters = dict(zip(unique_labels, unique_label_counts))
         # compute number of samples to be selected from each cluster
-        n = size // num_clusters
+        if proportional_selection:
+            # make sure that tht total number of samples selected is equal to size
+            size_each_cluster = size * unique_label_counts / len(labels)
+            # using np.round to get to the nearest integer
+            # not using int function directly to avoid truncation of decimal values
+            size_each_cluster = np.round(size_each_cluster).astype(int)
+            # the total number of samples selected from all clusters at this point
+            size_each_cluster_total = np.sum(size_each_cluster)
+            # Adjust if the total is less than the required number
+            if size_each_cluster_total < size:
+                while size_each_cluster_total < size:
+                    largest_cluster_index = np.argmax(unique_label_counts - size_each_cluster)
+                    size_each_cluster[largest_cluster_index] += 1
+                    size_each_cluster_total += 1
+            # Adjust if the total is more than the required number
+            elif size_each_cluster_total > size:
+                while size_each_cluster_total > size:
+                    smallest_cluster_index = np.argmin(unique_label_counts - size_each_cluster)
+                    size_each_cluster[smallest_cluster_index] -= 1
+                    size_each_cluster_total -= 1
+            # perfect case where the total is equal to the required number
+            else:
+                pass
+        else:
+            size_each_cluster = size // num_clusters
 
-        # update number of samples to select from each cluster based on the cluster population.
-        # this is needed when some clusters do not have enough samples in them (pop < n) and
-        # needs to be done iteratively until all remaining clusters have at least n samples
-        selected_ids = []
-        while np.any([value <= n for value in pop_clusters.values() if value != 0]):
-            for unique_label in unique_labels:
-                if pop_clusters[unique_label] != 0:
-                    # get index of sample labelled with unique_label
-                    cluster_ids = np.where(labels == unique_label)[0]
-                    if len(cluster_ids) <= n:
-                        # all samples in the cluster are selected & population becomes zero
-                        selected_ids.append(cluster_ids)
-                        pop_clusters[unique_label] = 0
-            # update number of samples to be selected from each cluster
-            totally_used_clusters = list(pop_clusters.values()).count(0)
-            n = (size - len(np.hstack(selected_ids))) // (num_clusters - totally_used_clusters)
+            # update number of samples to select from each cluster based on the cluster population.
+            # this is needed when some clusters do not have enough samples in them
+            # (pop < size_each_cluster) and needs to be done iteratively until all remaining clusters
+            # have at least size_each_cluster samples
+            while np.any(
+                    [value <= size_each_cluster for value in pop_clusters.values() if value != 0]
+            ):
+            # while list(pop_clusters.values()).count(0) < num_clusters:
+                for unique_label in unique_labels:
+                    if pop_clusters[unique_label] != 0:
+                        # get index of sample labelled with unique_label
+                        cluster_ids = np.where(labels == unique_label)[0]
+                        if len(cluster_ids) <= size_each_cluster:
+                            # all samples in the cluster are selected & population becomes zero
+                            selected_ids.append(cluster_ids)
+                            pop_clusters[unique_label] = 0
+                # update number of samples to be selected from each cluster
+                totally_used_clusters = list(pop_clusters.values()).count(0)
+                size_each_cluster = (size - len(np.hstack(selected_ids))) // (
+                            num_clusters - totally_used_clusters)
 
-            warnings.warn(
-                f"Number of molecules in one cluster is less than"
-                f" {size}/{num_clusters}.\nNumber of selected "
-                f"molecules might be less than desired.\nIn order to avoid this "
-                f"problem. Try to use less number of clusters"
-            )
+                warnings.warn(
+                    f"Number of molecules in one cluster is less than"
+                    f" {size}/{num_clusters}.\nNumber of selected "
+                    f"molecules might be less than desired.\nIn order to avoid this "
+                    f"problem. Try to use less number of clusters."
+                )
+            # save the number of samples to be selected from each cluster in an array
+            size_each_cluster = np.full(num_clusters, size_each_cluster)
 
-        for unique_label in unique_labels:
+        for unique_label, size_sub in zip(unique_labels, size_each_cluster):
             if pop_clusters[unique_label] != 0:
-                # sample n ids from cluster labeled unique_label
+                # sample size_each_cluster ids from cluster labeled unique_label
                 cluster_ids = np.where(labels == unique_label)[0]
-                selected = self.select_from_cluster(x, n, cluster_ids)
+                selected = self.select_from_cluster(x, size_sub, cluster_ids)
                 selected_ids.append(cluster_ids[selected])
 
         return np.hstack(selected_ids).flatten().tolist()
 
     @abstractmethod
     def select_from_cluster(
-        self, x: np.ndarray, size: int, labels: np.ndarray = None
+            self, x: np.ndarray, size: int, labels: np.ndarray = None
     ) -> np.ndarray:
         """Return indices representing subset of sample points from one cluster.
 
