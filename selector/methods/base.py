@@ -98,28 +98,25 @@ class SelectionBase(ABC):
 
             # the total number of samples selected from all clusters at this point
             size_each_cluster_total = np.sum(size_each_cluster)
-            # Adjust if the total is less than the required number
+            # when the total of data points in each class is less than the required number
+            # add one sample to the smallest cluster iteratively until the total is equal to the
+            # required number
             if size_each_cluster_total < size:
                 while size_each_cluster_total < size:
-                    # select the largest cluster with maximum number of data points not selected
-                    # and add one sample to it
-                    largest_cluster_index = np.argmax(unique_label_counts - size_each_cluster)
-                    size_each_cluster[largest_cluster_index] += 1
+                    # the number of remaining data points in each cluster
+                    size_each_cluster_remaining = unique_label_counts - size_each_cluster_total
+                    # skip the clusters with no data points left
+                    size_each_cluster_remaining[size_each_cluster_remaining == 0] = np.inf
+                    smallest_cluster_index = np.argmin(size_each_cluster_remaining)
+                    size_each_cluster[smallest_cluster_index] += 1
                     size_each_cluster_total += 1
-            # Adjust if the total is more than the required number
+            # when the total of data points in each class is more than the required number
+            # we need to remove samples from the largest clusters
             elif size_each_cluster_total > size:
                 while size_each_cluster_total > size:
-                    largest_cluster_index = np.argmax(unique_label_counts - size_each_cluster)
+                    largest_cluster_index = np.argmax(size_each_cluster)
                     size_each_cluster[largest_cluster_index] -= 1
                     size_each_cluster_total -= 1
-
-                # # when the total number of samples selected is more than the required number
-                # # we need to remove samples from the largest clusters
-                # while size_each_cluster_total > size:
-                #     largest_cluster_index = np.argmax(size_each_cluster)
-                #     size_each_cluster[largest_cluster_index] -= 1
-                #     size_each_cluster_total -= 1
-
             # perfect case where the total is equal to the required number
             else:
                 pass
