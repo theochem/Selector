@@ -463,7 +463,7 @@ Journal of Chemical Information and Computer Sciences,
 
 <dl class="py method">
 <dt class="sig sig-object py" id="selector.methods.distance.DISE.algorithm">
-<span class="sig-name descname"><span class="pre">algorithm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_size</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#selector.methods.distance.DISE.algorithm" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">algorithm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_size</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Iterable</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#selector.methods.distance.DISE.algorithm" title="Permalink to this definition">#</a></dt>
 <dd><p>Return selected samples based on directed sphere exclusion algorithm.</p>
 <section id="parameters">
 <h3>Parameters<a class="headerlink" href="#parameters" title="Permalink to this heading">#</a></h3>
@@ -477,7 +477,7 @@ Journal of Chemical Information and Computer Sciences,
 <section id="returns">
 <h3>Returns<a class="headerlink" href="#returns" title="Permalink to this heading">#</a></h3>
 <dl class="simple">
-<dt>selected: list</dt><dd><p>List of indices of selected samples.</p>
+<dt>selected: Union[List, Iterable]</dt><dd><p>List of indices of selected samples.</p>
 </dd>
 </dl>
 </section>
@@ -485,7 +485,7 @@ Journal of Chemical Information and Computer Sciences,
 
 <dl class="py method">
 <dt class="sig sig-object py" id="selector.methods.distance.DISE.select">
-<span class="sig-name descname"><span class="pre">select</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#selector.methods.distance.DISE.select" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">select</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proportional_selection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Iterable</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#selector.methods.distance.DISE.select" title="Permalink to this definition">#</a></dt>
 <dd><p>Return indices representing subset of sample points.</p>
 <section id="id1">
 <h3>Parameters<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h3>
@@ -498,6 +498,10 @@ If fun_distance is <cite>None</cite>, this x is treated as a square pairwise dis
 <dt>labels: np.ndarray, optional</dt><dd><p>Array of integers or strings representing the labels of the clusters that
 each sample belongs to. If <cite>None</cite>, the samples are treated as one cluster.
 If labels are provided, selection is made from each cluster.</p>
+</dd>
+<dt>proportional_selection: bool, optional</dt><dd><p>If True, the number of samples to be selected from each cluster is proportional.
+Otherwise, the number of samples to be selected from each cluster is equal.
+Default is True.</p>
 </dd>
 </dl>
 </section>
@@ -512,7 +516,7 @@ If labels are provided, selection is made from each cluster.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="selector.methods.distance.DISE.select_from_cluster">
-<span class="sig-name descname"><span class="pre">select_from_cluster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#selector.methods.distance.DISE.select_from_cluster" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">select_from_cluster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Iterable</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#selector.methods.distance.DISE.select_from_cluster" title="Permalink to this definition">#</a></dt>
 <dd><p>Return selected samples from a cluster based on directed sphere exclusion algorithm</p>
 <section id="id3">
 <h3>Parameters<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h3>
@@ -528,7 +532,7 @@ If labels are provided, selection is made from each cluster.</p>
 <section id="id4">
 <h3>Returns<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h3>
 <dl class="simple">
-<dt>selected: list</dt><dd><p>List of indices of selected samples.</p>
+<dt>selected: Union[List, Iterable]</dt><dd><p>List of indices of selected samples.</p>
 </dd>
 </dl>
 </section>
@@ -566,7 +570,7 @@ Structure‐Activity Relationships 21.6 (2002): 598-604.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="selector.methods.distance.MaxMin.select">
-<span class="sig-name descname"><span class="pre">select</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#selector.methods.distance.MaxMin.select" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">select</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proportional_selection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Iterable</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#selector.methods.distance.MaxMin.select" title="Permalink to this definition">#</a></dt>
 <dd><p>Return indices representing subset of sample points.</p>
 <section id="id6">
 <h3>Parameters<a class="headerlink" href="#id6" title="Permalink to this heading">#</a></h3>
@@ -579,6 +583,10 @@ If fun_distance is <cite>None</cite>, this x is treated as a square pairwise dis
 <dt>labels: np.ndarray, optional</dt><dd><p>Array of integers or strings representing the labels of the clusters that
 each sample belongs to. If <cite>None</cite>, the samples are treated as one cluster.
 If labels are provided, selection is made from each cluster.</p>
+</dd>
+<dt>proportional_selection: bool, optional</dt><dd><p>If True, the number of samples to be selected from each cluster is proportional.
+Otherwise, the number of samples to be selected from each cluster is equal.
+Default is True.</p>
 </dd>
 </dl>
 </section>
@@ -593,7 +601,7 @@ If labels are provided, selection is made from each cluster.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="selector.methods.distance.MaxMin.select_from_cluster">
-<span class="sig-name descname"><span class="pre">select_from_cluster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#selector.methods.distance.MaxMin.select_from_cluster" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">select_from_cluster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Iterable</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#selector.methods.distance.MaxMin.select_from_cluster" title="Permalink to this definition">#</a></dt>
 <dd><p>Return selected samples from a cluster based on MaxMin algorithm.</p>
 <section id="id8">
 <h3>Parameters<a class="headerlink" href="#id8" title="Permalink to this heading">#</a></h3>
@@ -611,7 +619,7 @@ If <cite>fun_dist</cite> is <cite>None</cite>, the <cite>x</cite> is assumed to 
 <section id="id9">
 <h3>Returns<a class="headerlink" href="#id9" title="Permalink to this heading">#</a></h3>
 <dl class="simple">
-<dt>selected<span class="classifier">list</span></dt><dd><p>List of indices of selected samples.</p>
+<dt>selected<span class="classifier">Union[List, Iterable]</span></dt><dd><p>List of indices of selected samples.</p>
 </dd>
 </dl>
 </section>
@@ -649,7 +657,7 @@ symposium on Principles of Database Systems. 2012.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="selector.methods.distance.MaxSum.select">
-<span class="sig-name descname"><span class="pre">select</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#selector.methods.distance.MaxSum.select" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">select</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proportional_selection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Iterable</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#selector.methods.distance.MaxSum.select" title="Permalink to this definition">#</a></dt>
 <dd><p>Return indices representing subset of sample points.</p>
 <section id="id11">
 <h3>Parameters<a class="headerlink" href="#id11" title="Permalink to this heading">#</a></h3>
@@ -662,6 +670,10 @@ If fun_distance is <cite>None</cite>, this x is treated as a square pairwise dis
 <dt>labels: np.ndarray, optional</dt><dd><p>Array of integers or strings representing the labels of the clusters that
 each sample belongs to. If <cite>None</cite>, the samples are treated as one cluster.
 If labels are provided, selection is made from each cluster.</p>
+</dd>
+<dt>proportional_selection: bool, optional</dt><dd><p>If True, the number of samples to be selected from each cluster is proportional.
+Otherwise, the number of samples to be selected from each cluster is equal.
+Default is True.</p>
 </dd>
 </dl>
 </section>
@@ -676,7 +688,7 @@ If labels are provided, selection is made from each cluster.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="selector.methods.distance.MaxSum.select_from_cluster">
-<span class="sig-name descname"><span class="pre">select_from_cluster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#selector.methods.distance.MaxSum.select_from_cluster" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">select_from_cluster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Iterable</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#selector.methods.distance.MaxSum.select_from_cluster" title="Permalink to this definition">#</a></dt>
 <dd><p>Return selected samples from a cluster based on MaxSum algorithm.</p>
 <section id="id13">
 <h3>Parameters<a class="headerlink" href="#id13" title="Permalink to this heading">#</a></h3>
@@ -694,7 +706,7 @@ If <cite>fun_dist</cite> is <cite>None</cite>, the <cite>x</cite> is assumed to 
 <section id="id14">
 <h3>Returns<a class="headerlink" href="#id14" title="Permalink to this heading">#</a></h3>
 <dl class="simple">
-<dt>selected<span class="classifier">list</span></dt><dd><p>List of indices of selected samples.</p>
+<dt>selected<span class="classifier">Union[List, Iterable]</span></dt><dd><p>List of indices of selected samples.</p>
 </dd>
 </dl>
 </section>
@@ -731,7 +743,7 @@ class 0 and <cite>ref_index=[3, 6]</cite> class 1 respectively.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="selector.methods.distance.OptiSim.algorithm">
-<span class="sig-name descname"><span class="pre">algorithm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_size</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#selector.methods.distance.OptiSim.algorithm" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">algorithm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_size</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Iterable</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#selector.methods.distance.OptiSim.algorithm" title="Permalink to this definition">#</a></dt>
 <dd><p>Return selected sample indices based on OptiSim algorithm.</p>
 <section id="id16">
 <h3>Parameters<a class="headerlink" href="#id16" title="Permalink to this heading">#</a></h3>
@@ -745,7 +757,7 @@ class 0 and <cite>ref_index=[3, 6]</cite> class 1 respectively.</p>
 <section id="id17">
 <h3>Returns<a class="headerlink" href="#id17" title="Permalink to this heading">#</a></h3>
 <dl class="simple">
-<dt>selected<span class="classifier">list</span></dt><dd><p>List of indices of selected sample indices.</p>
+<dt>selected<span class="classifier">Union[List, Iterable]</span></dt><dd><p>List of indices of selected sample indices.</p>
 </dd>
 </dl>
 </section>
@@ -753,7 +765,7 @@ class 0 and <cite>ref_index=[3, 6]</cite> class 1 respectively.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="selector.methods.distance.OptiSim.select">
-<span class="sig-name descname"><span class="pre">select</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#selector.methods.distance.OptiSim.select" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">select</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proportional_selection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Iterable</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#selector.methods.distance.OptiSim.select" title="Permalink to this definition">#</a></dt>
 <dd><p>Return indices representing subset of sample points.</p>
 <section id="id18">
 <h3>Parameters<a class="headerlink" href="#id18" title="Permalink to this heading">#</a></h3>
@@ -766,6 +778,10 @@ If fun_distance is <cite>None</cite>, this x is treated as a square pairwise dis
 <dt>labels: np.ndarray, optional</dt><dd><p>Array of integers or strings representing the labels of the clusters that
 each sample belongs to. If <cite>None</cite>, the samples are treated as one cluster.
 If labels are provided, selection is made from each cluster.</p>
+</dd>
+<dt>proportional_selection: bool, optional</dt><dd><p>If True, the number of samples to be selected from each cluster is proportional.
+Otherwise, the number of samples to be selected from each cluster is equal.
+Default is True.</p>
 </dd>
 </dl>
 </section>
@@ -780,7 +796,7 @@ If labels are provided, selection is made from each cluster.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="selector.methods.distance.OptiSim.select_from_cluster">
-<span class="sig-name descname"><span class="pre">select_from_cluster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#selector.methods.distance.OptiSim.select_from_cluster" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">select_from_cluster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Iterable</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#selector.methods.distance.OptiSim.select_from_cluster" title="Permalink to this definition">#</a></dt>
 <dd><p>Return selected samples from a cluster based on OptiSim algorithm.</p>
 <section id="id20">
 <h3>Parameters<a class="headerlink" href="#id20" title="Permalink to this heading">#</a></h3>
@@ -796,7 +812,7 @@ If labels are provided, selection is made from each cluster.</p>
 <section id="id21">
 <h3>Returns<a class="headerlink" href="#id21" title="Permalink to this heading">#</a></h3>
 <dl class="simple">
-<dt>selected<span class="classifier">list</span></dt><dd><p>List of indices of selected samples.</p>
+<dt>selected<span class="classifier">Union[List, Iterable]</span></dt><dd><p>List of indices of selected samples.</p>
 </dd>
 </dl>
 </section>
