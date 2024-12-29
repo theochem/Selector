@@ -278,7 +278,7 @@ class OptiSim(SelectionBase):
         eps=0,
         p=2,
         random_seed=42,
-        ref_index=None,
+        ref_index=0,
         fun_dist=None,
     ):
         """
@@ -312,13 +312,13 @@ class OptiSim(SelectionBase):
             Seed for random selection of points be evaluated.
         ref_index: int, list, optional
             Index of the reference sample to start the selection algorithm from.
-            It can be an integer, or a list of integers or None. When None, the medoid center is chosen as the reference
-            sample.
-            When the `ref_index` is a list for multiple classes, it will be shared among all clusters.
-            If we want to use different reference indices for each class, we can perform the subset
-            selection for each class separately where different `ref_index` parameters can be used.
-            For example, if we have two classes, we can pass `ref_index=[0, 1]` to select samples
-            from class 0 and `ref_index=[3, 6]` class 1 respectively.
+            It can be an integer, or a list of integers.
+            When the `ref_index` is a list for multiple classes, it will be shared among all
+            clusters. If we want to use different reference indices for each class, we can perform
+            the subset selection for each class separately where different `ref_index` parameters
+            can be used. For example, if we have two classes, we can pass `ref_index=[0, 1]` to
+            select samples from class 0 and `ref_index=[3, 6]` class 1 respectively.
+            Default is [0].
         fun_dist : callable, optional
             Function for calculating the pairwise distance between sample points to be used in
             calculating the medoid. `fun_dist(x) -> x_dist` takes a 2D feature array of shape
@@ -354,7 +354,7 @@ class OptiSim(SelectionBase):
         """
         # set up reference index
         selected = get_initial_selection(x=x, x_dist=None, ref_index=self.ref_index, fun_dist=None)
-        count = 1
+        count = len(selected)
 
         # establish a kd-tree for nearest-neighbor lookup
         tree = spatial.KDTree(x)
@@ -475,9 +475,10 @@ class DISE(SelectionBase):
             Initial guess for radius of the exclusion sphere.
         ref_index: int, list, optional
             Index of the reference sample to start the selection algorithm from.
-            It can be an integer, or a list of integers or None. When None, the medoid center is chosen as the reference
-            sample.
-            When the `ref_index` is a list for multiple classes, it will be shared among all clusters.
+            It can be an integer, or a list of integers or None. When None, the medoid center is
+            chosen as the reference sample.
+            When the `ref_index` is a list for multiple classes,
+            it will be shared among all clusters.
             If we want to use different reference indices for each class, we can perform the subset
             selection for each class separately where different `ref_index` parameters can be used.
             For example, if we have two classes, we can pass `ref_index=[0, 1]` to select samples
