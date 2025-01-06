@@ -17,6 +17,7 @@ RUN pip install --upgrade pip
 RUN pip install streamlit rdkit
 
 # Install the Selector package from the source code
+RUN pip install -r https://raw.githubusercontent.com/theochem/Selector/refs/heads/main/requirements_dev.txt
 RUN pip install git+https://github.com/theochem/Selector.git
 
 # Copy the rest of the application code
