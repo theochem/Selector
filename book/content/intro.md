@@ -20,6 +20,13 @@ addition, it includes seven diversity measures for quantifying the diversity of 
 implemented various mathematical formulations to convert similarities into dissimilarities.
 
 
+## Web Server
+
+We have a web server for the `selector` library at https://huggingface.co/spaces/QCDevs/Selector.
+For small and prototype datasets, you can use the web server to select a diverse subset of your
+dataset and compute the diversity metrics, where you can download the selected subset and the
+computed diversity metrics.
+
 ## Installation
 
 It is recommended to install `selector` within a virtual environment. To create a virtual
