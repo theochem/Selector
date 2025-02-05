@@ -463,8 +463,8 @@ document.write(`
 <code class="docutils literal notranslate"><span class="pre">selector</span></code> package. The diversity measures are calculated based on the feature matrix of the selected subset.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
 <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
 
@@ -476,14 +476,14 @@ document.write(`
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pylab</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">sklearn.datasets</span> <span class="kn">import</span> <span class="n">make_blobs</span>
-<span class="kn">from</span> <span class="nn">sklearn.metrics.pairwise</span> <span class="kn">import</span> <span class="n">pairwise_distances</span>
-<span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">Markdown</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pylab</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">make_blobs</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.metrics.pairwise</span><span class="w"> </span><span class="kn">import</span> <span class="n">pairwise_distances</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">IPython.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">Markdown</span>
 
-<span class="kn">from</span> <span class="nn">selector.methods.distance</span> <span class="kn">import</span> <span class="n">MaxMin</span><span class="p">,</span> <span class="n">MaxSum</span><span class="p">,</span> <span class="n">OptiSim</span><span class="p">,</span> <span class="n">DISE</span>
-<span class="kn">from</span> <span class="nn">selector.diversity</span> <span class="kn">import</span> <span class="n">compute_diversity</span><span class="p">,</span> <span class="n">hypersphere_overlap_of_subset</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">selector.methods.distance</span><span class="w"> </span><span class="kn">import</span> <span class="n">MaxMin</span><span class="p">,</span> <span class="n">MaxSum</span><span class="p">,</span> <span class="n">OptiSim</span><span class="p">,</span> <span class="n">DISE</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">selector.diversity</span><span class="w"> </span><span class="kn">import</span> <span class="n">compute_diversity</span><span class="p">,</span> <span class="n">hypersphere_overlap_of_subset</span>
 </pre></div>
 </div>
 </div>
@@ -495,7 +495,7 @@ document.write(`
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># define function to render tables easier</span>
 
 
-<span class="k">def</span> <span class="nf">render_table</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">caption</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">render_table</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">caption</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Renders a list of lists in ta markdown table for easy visualization.</span>
 
 <span class="sd">    Parameters</span>
@@ -591,7 +591,7 @@ Shape of the distance array =  (500, 500)
 <h2>Perform the Subset Selection<a class="headerlink" href="#perform-the-subset-selection" title="Permalink to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">scipy.spatial.distance</span> <span class="kn">import</span> <span class="n">pdist</span><span class="p">,</span> <span class="n">squareform</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">scipy.spatial.distance</span><span class="w"> </span><span class="kn">import</span> <span class="n">pdist</span><span class="p">,</span> <span class="n">squareform</span>
 
 <span class="c1"># select data using distance base methods</span>
 <span class="c1"># ---------------------------------------</span>
