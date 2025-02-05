@@ -20,6 +20,13 @@ Please use the following citation in any publication using the `selector` librar
 }
 ```
 
+## Web Server
+
+We have a web server for the `selector` library at https://huggingface.co/spaces/QCDevs/Selector.
+For small and prototype datasets, you can use the web server to select a diverse subset of your
+dataset and compute the diversity metrics, where you can download the selected subset and the
+computed diversity metrics.
+
 ## Installation
 
 It is recommended to install `selector` within a virtual environment. To create a virtual
