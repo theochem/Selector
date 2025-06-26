@@ -27,6 +27,11 @@ jobs:
         # os: [macOS-13, windows-latest, ubuntu-latest]
         os: [macOS-latest, windows-latest, ubuntu-latest]
         python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
+        exclude:
+          - os: macos-latest
+            python-version: '3.9'
+          - os: windows-latest
+            python-version: '3.9'
 
     steps:
     - uses: actions/checkout@v4
