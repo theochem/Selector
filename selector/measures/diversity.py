@@ -58,10 +58,10 @@ def compute_diversity(
         Feature matrix.
     div_type : str, optional
         Method of calculation diversity for a given molecule set, which
-        includes "entropy", "logdet", "shannon entropy", "wdud",
-        "gini coefficient" "hypersphere_overlap", and
-        "explicit diversity index".
-        The default is "entropy".
+        includes "logdet", "shannon_entropy", "wdud",
+        "gini_coefficient" "hypersphere_overlap", and
+        "explicit_diversity_index".
+        The default is "shannon_entropy".
     normalize : bool, optional
         Normalize the entropy to [0, 1]. Default is "False".
     truncation : bool, optional
