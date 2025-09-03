@@ -256,7 +256,7 @@ def test_hypersphere_normalization_error():
 
 def test_hypersphere_radius_warning():
     """Test the hypersphere overlap method gives warning when radius is too large."""
-    corner_pts = np.array([[0.0, 0.0], [0.0, 1.0], [1.0, 0.0], [1.0, 1.0]])
+    corner_pts = np.array([[0.0, 0.0], [0.0, 2.0], [2.0, 0.0], [2.0, 2.0]])
     assert_warns(Warning, hypersphere_overlap_of_subset, corner_pts, corner_pts)
 
 
