@@ -403,6 +403,11 @@ def hypersphere_overlap_of_subset(x: np.ndarray, x_subset: np.array) -> float:
     Agrafiotis, D. K.. (1997) Stochastic Algorithms for Maximizing Molecular Diversity.
     Journal of Chemical Information and Computer Sciences 37, 841-851.
     """
+    # check if x is binary matrix or not
+    if np.array_equal(x, x.astype(bool)):
+        raise ValueError(
+            "Input matrix cannot be binary because the diversity measurement is designed for continuous orthogonal features."
+        )
 
     # Find the maximum and minimum over each feature across all molecules.
     max_x = np.max(x, axis=0)
