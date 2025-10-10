@@ -409,7 +409,7 @@ def hypersphere_overlap_of_subset(x: np.ndarray, x_subset: np.array) -> float:
             "Input matrix cannot be binary because the diversity measurement is designed for continuous orthogonal features."
         )
 
-    # Find the maximum and minimum over each feature across all /samples/molecules.
+    # Find the maximum and minimum over each feature across all samples.
     max_x = np.max(x, axis=0)
     min_x = np.min(x, axis=0)
 
