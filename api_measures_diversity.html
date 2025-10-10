@@ -417,7 +417,7 @@ document.write(`
                   
   <section id="module-selector.measures.diversity">
 <span id="selector-measures-diversity"></span><span id="measures-diversity"></span><h1><a class="reference internal" href="#module-selector.measures.diversity" title="selector.measures.diversity"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selector.measures.diversity</span></code></a><a class="headerlink" href="#module-selector.measures.diversity" title="Permalink to this heading">#</a></h1>
-<p>Molecule dataset diversity calculation module.</p>
+<p>Subset diversity calculation module.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="selector.measures.diversity.compute_diversity">
 <span class="sig-prename descclassname"><span class="pre">selector.measures.diversity.</span></span><span class="sig-name descname"><span class="pre">compute_diversity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">feature_subset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">div_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'shannon_entropy'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">truncation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">features</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#selector.measures.diversity.compute_diversity" title="Permalink to this definition">#</a></dt>
@@ -523,17 +523,17 @@ outside of the boundary of the full feature space/library.
 This is calculated as:</p>
 <div class="math notranslate nohighlight">
 \[g(S) = \sum_{i &lt; j}^k O(i, j) + \sum^k_m E(m)\]</div>
-<p>where <span class="math notranslate nohighlight">\(i, j\)</span> is over the subset of molecules,
+<p>where <span class="math notranslate nohighlight">\(i, j\)</span> is over the subset of samples, e.g. molecules,
 <span class="math notranslate nohighlight">\(O(i, j)\)</span> is the approximate overlap between hyperspheres,
 <span class="math notranslate nohighlight">\(k\)</span> is the number of features and <span class="math notranslate nohighlight">\(E\)</span>
-is the edge penalty of a molecule.</p>
+is the edge penalty of a sample.</p>
 <p>Lower values mean more diversity.</p>
 <section id="id5">
 <h2>Parameters<a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h2>
 <dl class="simple">
-<dt>x<span class="classifier">ndarray</span></dt><dd><p>Feature matrix of all molecules.</p>
+<dt>x<span class="classifier">ndarray</span></dt><dd><p>Feature matrix of all samples.</p>
 </dd>
-<dt>x_subset<span class="classifier">ndarray</span></dt><dd><p>Feature matrix of selected subset of molecules.</p>
+<dt>x_subset<span class="classifier">ndarray</span></dt><dd><p>Feature matrix of selected subset of samples.</p>
 </dd>
 </dl>
 </section>
@@ -541,7 +541,7 @@ is the edge penalty of a molecule.</p>
 <h2>Returns<a class="headerlink" href="#id6" title="Permalink to this heading">#</a></h2>
 <dl class="simple">
 <dt>float :</dt><dd><p>The approximate overlapping volume of hyperspheres
-drawn around the selected points/molecules.</p>
+drawn around the selected points/samples.</p>
 </dd>
 </dl>
 </section>
@@ -708,7 +708,7 @@ more evenly distributed over the range of feature values.</p>
 <section id="id27">
 <h2>Returns<a class="headerlink" href="#id27" title="Permalink to this heading">#</a></h2>
 <dl class="simple">
-<dt>float :</dt><dd><p>The mean of the WDUD of each feature over all molecules.</p>
+<dt>float :</dt><dd><p>The mean of the WDUD of each feature over all samples.</p>
 </dd>
 </dl>
 </section>
