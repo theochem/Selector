@@ -22,7 +22,7 @@
 #
 # --
 
-"""Molecule dataset diversity calculation module."""
+"""Subset diversity calculation module."""
 
 import warnings
 
@@ -308,7 +308,7 @@ def wdud(x: np.ndarray) -> float:
     Returns
     -------
     float :
-        The mean of the WDUD of each feature over all molecules.
+        The mean of the WDUD of each feature over all samples.
 
     Notes
     -----
@@ -376,25 +376,25 @@ def hypersphere_overlap_of_subset(x: np.ndarray, x_subset: np.array) -> float:
     .. math::
         g(S) = \sum_{i < j}^k O(i, j) + \sum^k_m E(m)
 
-    where :math:`i, j` is over the subset of molecules,
+    where :math:`i, j` is over the subset of samples, e.g. molecules,
     :math:`O(i, j)` is the approximate overlap between hyperspheres,
     :math:`k` is the number of features and :math:`E`
-    is the edge penalty of a molecule.
+    is the edge penalty of a sample.
 
     Lower values mean more diversity.
 
     Parameters
     ----------
     x : ndarray
-        Feature matrix of all molecules.
+        Feature matrix of all samples.
     x_subset : ndarray
-        Feature matrix of selected subset of molecules.
+        Feature matrix of selected subset of samples.
 
     Returns
     -------
     float :
         The approximate overlapping volume of hyperspheres
-        drawn around the selected points/molecules.
+        drawn around the selected points/samples.
 
     Notes
     -----
@@ -409,7 +409,7 @@ def hypersphere_overlap_of_subset(x: np.ndarray, x_subset: np.array) -> float:
             "Input matrix cannot be binary because the diversity measurement is designed for continuous orthogonal features."
         )
 
-    # Find the maximum and minimum over each feature across all molecules.
+    # Find the maximum and minimum over each feature across all samples.
     max_x = np.max(x, axis=0)
     min_x = np.min(x, axis=0)
 
@@ -432,9 +432,7 @@ def hypersphere_overlap_of_subset(x: np.ndarray, x_subset: np.array) -> float:
     # r_o = hypersphere radius
     r_o = d * np.sqrt(1 / k)
     if r_o > 0.5:
-        warnings.warn(
-            "The number of molecules should be much larger" " than the number of features."
-        )
+        warnings.warn("The number of samples should be much larger" " than the number of features.")
     g_s = 0
     edge = 0
 
