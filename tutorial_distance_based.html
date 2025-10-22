@@ -188,6 +188,7 @@
 <li class="toctree-l1"><a class="reference internal" href="tutorial_partition_based.html">Tutorial Partition-Based Selectors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial_diversity_measures.html">Tutorial Diversity Measures</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial_similarity_based.html">Tutorial Similarity Based Selectors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_image_classification.html">Limitations</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">API</span></p>
 <ul class="nav bd-sidenav">
@@ -580,7 +581,7 @@ document.write(`
         <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">labels</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># plt.legend(loc=&quot;upper left&quot;, frameon=False)</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;best&quot;</span><span class="p">,</span> <span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;best&quot;</span><span class="p">,</span> <span class="n">frameon</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">fname</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
@@ -714,7 +715,7 @@ Shape of the distance array =  (500, 500)
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/83015e9f518741b177c9b5c750acf5dd00d9e69f9e166f20c0261124084a462d.png" src="_images/83015e9f518741b177c9b5c750acf5dd00d9e69f9e166f20c0261124084a462d.png" />
+<img alt="_images/dbd5dca9ce7984a3486cb66fd538c2fd53d36a0592b2639a366f9af78070a36f.png" src="_images/dbd5dca9ce7984a3486cb66fd538c2fd53d36a0592b2639a366f9af78070a36f.png" />
 </div>
 </div>
 </section>
@@ -744,7 +745,7 @@ For example, <code class="docutils literal notranslate"><span class="pre">ref_in
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/65bfcbe332eb57b4a55bcaa60596ba66dff9deeb46fc93faa762f7d04bbf08b6.png" src="_images/65bfcbe332eb57b4a55bcaa60596ba66dff9deeb46fc93faa762f7d04bbf08b6.png" />
+<img alt="_images/77398676c0212a702cbe8c8326dd289b53ce2822422ab413e22fe45145854553.png" src="_images/77398676c0212a702cbe8c8326dd289b53ce2822422ab413e22fe45145854553.png" />
 </div>
 </div>
 </section>
@@ -787,7 +788,7 @@ For example, <code class="docutils literal notranslate"><span class="pre">ref_in
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/74e68d14f8af86555ea989aad38224a049162d4dbecc6044b27239884b19f28c.png" src="_images/74e68d14f8af86555ea989aad38224a049162d4dbecc6044b27239884b19f28c.png" />
+<img alt="_images/f730b797406c4ccd957f5c03baf743ee455c8500b7e2d1654ead3c38a4be912a.png" src="_images/f730b797406c4ccd957f5c03baf743ee455c8500b7e2d1654ead3c38a4be912a.png" />
 </div>
 </div>
 </section>
@@ -830,9 +831,43 @@ For example, <code class="docutils literal notranslate"><span class="pre">ref_in
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># generate n_sample data in 2D feature space forming 3 clusters</span>
-<span class="n">X</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">make_blobs</span><span class="p">(</span><span class="n">n_samples</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">n_features</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">centers</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+<span class="c1"># X, labels = make_blobs(n_samples=500, n_features=2, centers=2, random_state=42)</span>
 
-<span class="c1"># compute the (n_sample, n_sample) pairwise distance matrix</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">make_blobs</span><span class="p">(</span>
+    <span class="n">n_samples</span><span class="o">=</span><span class="p">[</span><span class="mi">150</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">8</span><span class="p">],</span>  <span class="c1"># cluster sizes</span>
+    <span class="n">centers</span><span class="o">=</span><span class="p">[(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">)],</span>  <span class="c1"># fixed centers for clear separation</span>
+    <span class="n">n_features</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">cluster_std</span><span class="o">=</span><span class="p">[</span><span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span>  <span class="c1"># per-cluster spread</span>
+    <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># update labels as we intentially merged two clusters</span>
+<span class="n">labels</span><span class="p">[</span><span class="n">labels</span> <span class="o">==</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">labels</span><span class="p">[</span><span class="n">labels</span> <span class="o">==</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+
+<span class="c1"># plot the coordinates with the updated labels</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Data with 2 Clusters&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Feature 1&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Feature 2&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+<span class="n">scatter</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">X</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;viridis&quot;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="n">edgecolors</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="o">*</span><span class="n">scatter</span><span class="o">.</span><span class="n">legend_elements</span><span class="p">(),</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Clusters&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/12123276f0562181a2105c2e0c4b8a675e3ee6ff53a41c4d2ac2b93ae4e5d42d.png" src="_images/12123276f0562181a2105c2e0c4b8a675e3ee6ff53a41c4d2ac2b93ae4e5d42d.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># compute the (n_sample, n_sample) pairwise distance matrix</span>
 <span class="n">X_dist</span> <span class="o">=</span> <span class="n">pairwise_distances</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="s2">&quot;euclidean&quot;</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Shape of data   = &quot;</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
@@ -845,11 +880,11 @@ For example, <code class="docutils literal notranslate"><span class="pre">ref_in
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Shape of data   =  (500, 2)
-Shape of labels =  (500,)
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Shape of data   =  (163, 2)
+Shape of labels =  (163,)
 Unique labels   =  [0 1]
-Cluster sizes =  250 250
-Shape of the distance array =  (500, 500)
+Cluster sizes =  155 8
+Shape of the distance array =  (163, 163)
 </pre></div>
 </div>
 </div>
@@ -860,7 +895,7 @@ Check Documentation: <strong><a class="reference external" href="https://selecto
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># select data using distance base methods with labels</span>
 <span class="c1"># ---------------------------------------------------</span>
-<span class="n">size</span> <span class="o">=</span> <span class="mi">50</span>
+<span class="n">size</span> <span class="o">=</span> <span class="mi">10</span>
 
 <span class="n">collector</span> <span class="o">=</span> <span class="n">MaxMin</span><span class="p">()</span>
 <span class="n">index_maxmin</span> <span class="o">=</span> <span class="n">collector</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">X_dist</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">)</span>
@@ -878,7 +913,7 @@ Check Documentation: <strong><a class="reference external" href="https://selecto
     <span class="n">X</span><span class="p">,</span>
     <span class="n">indices</span><span class="o">=</span><span class="p">[</span><span class="n">index_maxmin</span><span class="p">,</span> <span class="n">index_maxsum</span><span class="p">,</span> <span class="n">index_optisim</span><span class="p">,</span> <span class="n">index_dise</span><span class="p">],</span>
     <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;MaxMin&quot;</span><span class="p">,</span> <span class="s2">&quot;MaxSum&quot;</span><span class="p">,</span> <span class="s2">&quot;OptiSim&quot;</span><span class="p">,</span> <span class="s2">&quot;DISE&quot;</span><span class="p">],</span>
-    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Comparing Distance Based Selectors&quot;</span><span class="p">,</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Comparing Distance Based Selectors with Labels&quot;</span><span class="p">,</span>
     <span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;Feature 1&quot;</span><span class="p">,</span>
     <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Feature 2&quot;</span><span class="p">,</span>
 <span class="p">)</span>
@@ -886,7 +921,7 @@ Check Documentation: <strong><a class="reference external" href="https://selecto
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/9694b842fb9ab4ff8b2936c369787f9297cbde0197565dabf7dbfc3f3457394f.png" src="_images/9694b842fb9ab4ff8b2936c369787f9297cbde0197565dabf7dbfc3f3457394f.png" />
+<img alt="_images/1a08bc2b859ff2da0a0bf6087c335d302185df4e7a7d57e079d562d0e6531fdc.png" src="_images/1a08bc2b859ff2da0a0bf6087c335d302185df4e7a7d57e079d562d0e6531fdc.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -911,10 +946,73 @@ Check Documentation: <strong><a class="reference external" href="https://selecto
 <p><strong>Diversity of Selected Sets</strong></p>
 <p>|           |        logdet        |         wdud          |
 |———|——————–|———————|
-|  MaxMin   |       122.879        |         0.067         |
-|  MaxSum   |       107.355        |         0.071         |
-|  OptiSim  |       121.862        |         0.075         |
-|   DISE    |       123.071        |         0.075         |</p>
+|  MaxMin   |        36.484        |         0.247         |
+|  MaxSum   |        33.63         |         0.233         |
+|  OptiSim  |        35.184        |         0.249         |
+|   DISE    |        35.998        |         0.259         |</p>
+</div>
+</div>
+<p>To better demonstrate how the labels can facilitate selection from multiple clusters, let’s check
+what if we don’t provide the <code class="docutils literal notranslate"><span class="pre">labels</span></code> argument to the <code class="docutils literal notranslate"><span class="pre">select</span></code> method. In this case, the selection methods will treat the entire dataset as one cluster and select points accordingly. This may lead to underrepresentation of some clusters in the selected subset, especially if the clusters are of varying densities or sizes.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># select data using distance base methods with labels</span>
+<span class="c1"># ---------------------------------------------------</span>
+<span class="n">size</span> <span class="o">=</span> <span class="mi">10</span>
+
+<span class="n">collector</span> <span class="o">=</span> <span class="n">MaxMin</span><span class="p">()</span>
+<span class="n">index_maxmin</span> <span class="o">=</span> <span class="n">collector</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">X_dist</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+<span class="n">collector</span> <span class="o">=</span> <span class="n">MaxSum</span><span class="p">()</span>
+<span class="n">index_maxsum</span> <span class="o">=</span> <span class="n">collector</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">X_dist</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+<span class="n">collector</span> <span class="o">=</span> <span class="n">OptiSim</span><span class="p">(</span><span class="n">ref_index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="n">index_optisim</span> <span class="o">=</span> <span class="n">collector</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">X_dist</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+<span class="n">collector</span> <span class="o">=</span> <span class="n">DISE</span><span class="p">(</span><span class="n">ref_index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
+<span class="n">index_dise</span> <span class="o">=</span> <span class="n">collector</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+<span class="n">graph_data</span><span class="p">(</span>
+    <span class="n">X</span><span class="p">,</span>
+    <span class="n">indices</span><span class="o">=</span><span class="p">[</span><span class="n">index_maxmin</span><span class="p">,</span> <span class="n">index_maxsum</span><span class="p">,</span> <span class="n">index_optisim</span><span class="p">,</span> <span class="n">index_dise</span><span class="p">],</span>
+    <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;MaxMin&quot;</span><span class="p">,</span> <span class="s2">&quot;MaxSum&quot;</span><span class="p">,</span> <span class="s2">&quot;OptiSim&quot;</span><span class="p">,</span> <span class="s2">&quot;DISE&quot;</span><span class="p">],</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Comparing Distance Based Selectors without Labels&quot;</span><span class="p">,</span>
+    <span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;Feature 1&quot;</span><span class="p">,</span>
+    <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Feature 2&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/f681c9d120cb49f687b34991de7291f18b0d051323bfc6f0eaa03459ce009e55.png" src="_images/f681c9d120cb49f687b34991de7291f18b0d051323bfc6f0eaa03459ce009e55.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">div_measure</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;logdet&quot;</span><span class="p">,</span> <span class="s2">&quot;wdud&quot;</span><span class="p">]</span>
+<span class="n">seleced_sets</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span>
+    <span class="p">[</span><span class="s2">&quot;MaxMin&quot;</span><span class="p">,</span> <span class="s2">&quot;MaxSum&quot;</span><span class="p">,</span> <span class="s2">&quot;OptiSim&quot;</span><span class="p">,</span> <span class="s2">&quot;DISE&quot;</span><span class="p">],</span>
+    <span class="p">[</span><span class="n">index_maxmin</span><span class="p">,</span> <span class="n">index_maxsum</span><span class="p">,</span> <span class="n">index_optisim</span><span class="p">,</span> <span class="n">index_dise</span><span class="p">],</span>
+<span class="p">)</span>
+
+<span class="c1"># compute the diversity of the selected sets and render the results in a table</span>
+<span class="n">table_data</span> <span class="o">=</span> <span class="p">[[</span><span class="s2">&quot;&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">div_measure</span><span class="p">]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">seleced_sets</span><span class="p">:</span>
+    <span class="c1"># print([i[0]] + [compute_diversity(X[i[1]], div_type=m) for m in div_measure])</span>
+    <span class="n">table_data</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">+</span> <span class="p">[</span><span class="n">compute_diversity</span><span class="p">(</span><span class="n">X_dist</span><span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="n">div_type</span><span class="o">=</span><span class="n">m</span><span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">div_measure</span><span class="p">])</span>
+
+<span class="n">render_table</span><span class="p">(</span><span class="n">table_data</span><span class="p">,</span> <span class="n">caption</span><span class="o">=</span><span class="s2">&quot;Diversity of Selected Sets&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<p><strong>Diversity of Selected Sets</strong></p>
+<p>|           |        logdet        |         wdud          |
+|———|——————–|———————|
+|  MaxMin   |        37.537        |         0.154         |
+|  MaxSum   |        32.678        |         0.145         |
+|  OptiSim  |        36.661        |          0.2          |
+|   DISE    |        36.818        |         0.181         |</p>
 </div>
 </div>
 </section>
