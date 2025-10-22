@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Tutorial: Image Classification with Data Subsets &#8212; Ayers Lab</title>
+    <title>Tutorial Image Classification &#8212; Ayers Lab</title>
   
   
   
@@ -188,7 +188,7 @@
 <li class="toctree-l1"><a class="reference internal" href="tutorial_partition_based.html">Tutorial Partition-Based Selectors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial_diversity_measures.html">Tutorial Diversity Measures</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial_similarity_based.html">Tutorial Similarity Based Selectors</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Tutorial: Image Classification with Data Subsets</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Tutorial Image Classification</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">API</span></p>
 <ul class="nav bd-sidenav">
@@ -432,7 +432,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Tutorial: Image Classification with Data Subsets</h1>
+    <h1>Tutorial Image Classification</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -446,8 +446,8 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="tutorial-image-classification-with-data-subsets">
-<h1>Tutorial: Image Classification with Data Subsets<a class="headerlink" href="#tutorial-image-classification-with-data-subsets" title="Permalink to this heading">#</a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="tutorial-image-classification">
+<h1>Tutorial Image Classification<a class="headerlink" href="#tutorial-image-classification" title="Permalink to this heading">#</a></h1>
 <p>In this tutorial, we show how the Selector library can be used for image classification tasks. We
 will select different percentages of the MINST dataset and evaluate the performances of a simple
 support vector machine (SVM) classifier on the selected subsets. We will compare the results of
@@ -571,194 +571,6 @@ different selection methods with the random selection baseline.</p>
 
     <span class="n">results_accuracies</span><span class="p">[</span><span class="n">method_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">method_accuracies</span>
     <span class="n">results_f1_scores</span><span class="p">[</span><span class="n">method_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">method_f1_scores</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Method: MaxMin
-  Percentage: 0.05, Accuracy: 0.7580
-  Percentage: 0.12, Accuracy: 0.9499
-  Percentage: 0.19, Accuracy: 0.9777
-  Percentage: 0.25, Accuracy: 0.9875
-  Percentage: 0.32, Accuracy: 0.9889
-  Percentage: 0.39, Accuracy: 0.9875
-  Percentage: 0.46, Accuracy: 0.9917
-  Percentage: 0.53, Accuracy: 0.9736
-  Percentage: 0.59, Accuracy: 0.9764
-  Percentage: 0.66, Accuracy: 0.9805
-  Percentage: 0.73, Accuracy: 0.9819
-  Percentage: 0.80, Accuracy: 0.9819
-  Percentage: 0.86, Accuracy: 0.9861
-  Percentage: 0.93, Accuracy: 0.9903
-  Percentage: 1.00, Accuracy: 0.9930
-Method: MaxSum
-  Percentage: 0.05, Accuracy: 0.5925
-  Percentage: 0.12, Accuracy: 0.8484
-  Percentage: 0.19, Accuracy: 0.8526
-  Percentage: 0.25, Accuracy: 0.8873
-  Percentage: 0.32, Accuracy: 0.8929
-  Percentage: 0.39, Accuracy: 0.9374
-  Percentage: 0.46, Accuracy: 0.9624
-  Percentage: 0.53, Accuracy: 0.9318
-  Percentage: 0.59, Accuracy: 0.9513
-  Percentage: 0.66, Accuracy: 0.9652
-  Percentage: 0.73, Accuracy: 0.9847
-  Percentage: 0.80, Accuracy: 0.9861
-  Percentage: 0.86, Accuracy: 0.9889
-  Percentage: 0.93, Accuracy: 0.9917
-  Percentage: 1.00, Accuracy: 0.9930
-Method: DISE
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/opt/homebrew/Caskroom/miniforge/base/envs/chem_py312/lib/python3.12/site-packages/selector/methods/utils.py:113: UserWarning: Optimal radius finder failed to converge, selected 49 points instead of requested 53.
-  warnings.warn(
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Percentage: 0.05, Accuracy: 0.7538
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/opt/homebrew/Caskroom/miniforge/base/envs/chem_py312/lib/python3.12/site-packages/selector/methods/utils.py:113: UserWarning: Optimal radius finder failed to converge, selected 134 points instead of requested 127.
-  warnings.warn(
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Percentage: 0.12, Accuracy: 0.9569
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/opt/homebrew/Caskroom/miniforge/base/envs/chem_py312/lib/python3.12/site-packages/selector/methods/utils.py:113: UserWarning: Optimal radius finder failed to converge, selected 104 points instead of requested 200.
-  warnings.warn(
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Percentage: 0.10, Accuracy: 0.9541
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/opt/homebrew/Caskroom/miniforge/base/envs/chem_py312/lib/python3.12/site-packages/selector/methods/utils.py:113: UserWarning: Optimal radius finder failed to converge, selected 287 points instead of requested 273.
-  warnings.warn(
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Percentage: 0.27, Accuracy: 0.9819
-  Percentage: 0.32, Accuracy: 0.9875
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/opt/homebrew/Caskroom/miniforge/base/envs/chem_py312/lib/python3.12/site-packages/selector/methods/utils.py:113: UserWarning: Optimal radius finder failed to converge, selected 378 points instead of requested 419.
-  warnings.warn(
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Percentage: 0.35, Accuracy: 0.9903
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/opt/homebrew/Caskroom/miniforge/base/envs/chem_py312/lib/python3.12/site-packages/selector/methods/utils.py:113: UserWarning: Optimal radius finder failed to converge, selected 518 points instead of requested 492.
-  warnings.warn(
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Percentage: 0.48, Accuracy: 0.9903
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/opt/homebrew/Caskroom/miniforge/base/envs/chem_py312/lib/python3.12/site-packages/selector/methods/utils.py:113: UserWarning: Optimal radius finder failed to converge, selected 539 points instead of requested 512.
-  warnings.warn(
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Percentage: 0.50, Accuracy: 0.9722
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/opt/homebrew/Caskroom/miniforge/base/envs/chem_py312/lib/python3.12/site-packages/selector/methods/utils.py:113: UserWarning: Optimal radius finder failed to converge, selected 424 points instead of requested 438.
-  warnings.warn(
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Percentage: 0.61, Accuracy: 0.9764
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/opt/homebrew/Caskroom/miniforge/base/envs/chem_py312/lib/python3.12/site-packages/selector/methods/utils.py:113: UserWarning: Optimal radius finder failed to converge, selected 250 points instead of requested 365.
-  warnings.warn(
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Percentage: 0.77, Accuracy: 0.9903
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/opt/homebrew/Caskroom/miniforge/base/envs/chem_py312/lib/python3.12/site-packages/selector/methods/utils.py:113: UserWarning: Optimal radius finder failed to converge, selected 308 points instead of requested 292.
-  warnings.warn(
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Percentage: 0.71, Accuracy: 0.9819
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/opt/homebrew/Caskroom/miniforge/base/envs/chem_py312/lib/python3.12/site-packages/selector/methods/utils.py:113: UserWarning: Optimal radius finder failed to converge, selected 138 points instead of requested 219.
-  warnings.warn(
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Percentage: 0.87, Accuracy: 0.9944
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/opt/homebrew/Caskroom/miniforge/base/envs/chem_py312/lib/python3.12/site-packages/selector/methods/utils.py:113: UserWarning: Optimal radius finder failed to converge, selected 151 points instead of requested 146.
-  warnings.warn(
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Percentage: 0.86, Accuracy: 0.9917
-  Percentage: 0.94, Accuracy: 0.9903
-  Percentage: 1.00, Accuracy: 0.9930
-Method: OptiSim
-  Percentage: 0.05, Accuracy: 0.8498
-  Percentage: 0.11, Accuracy: 0.9722
-  Percentage: 0.18, Accuracy: 0.9791
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/opt/homebrew/Caskroom/miniforge/base/envs/chem_py312/lib/python3.12/site-packages/selector/methods/utils.py:113: UserWarning: Optimal radius finder failed to converge, selected 271 points instead of requested 273.
-  warnings.warn(
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Percentage: 0.25, Accuracy: 0.9833
-  Percentage: 0.29, Accuracy: 0.9875
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/opt/homebrew/Caskroom/miniforge/base/envs/chem_py312/lib/python3.12/site-packages/selector/methods/utils.py:113: UserWarning: Optimal radius finder failed to converge, selected 350 points instead of requested 419.
-  warnings.warn(
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Percentage: 0.32, Accuracy: 0.9889
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/opt/homebrew/Caskroom/miniforge/base/envs/chem_py312/lib/python3.12/site-packages/selector/methods/utils.py:113: UserWarning: Optimal radius finder failed to converge, selected 529 points instead of requested 492.
-  warnings.warn(
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Percentage: 0.49, Accuracy: 0.9930
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/opt/homebrew/Caskroom/miniforge/base/envs/chem_py312/lib/python3.12/site-packages/selector/methods/utils.py:113: UserWarning: Optimal radius finder failed to converge, selected 564 points instead of requested 512.
-  warnings.warn(
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Percentage: 0.48, Accuracy: 0.9736
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/opt/homebrew/Caskroom/miniforge/base/envs/chem_py312/lib/python3.12/site-packages/selector/methods/utils.py:113: UserWarning: Optimal radius finder failed to converge, selected 398 points instead of requested 438.
-  warnings.warn(
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Percentage: 0.63, Accuracy: 0.9791
-  Percentage: 0.65, Accuracy: 0.9750
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/opt/homebrew/Caskroom/miniforge/base/envs/chem_py312/lib/python3.12/site-packages/selector/methods/utils.py:113: UserWarning: Optimal radius finder failed to converge, selected 322 points instead of requested 292.
-  warnings.warn(
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Percentage: 0.70, Accuracy: 0.9861
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/opt/homebrew/Caskroom/miniforge/base/envs/chem_py312/lib/python3.12/site-packages/selector/methods/utils.py:113: UserWarning: Optimal radius finder failed to converge, selected 126 points instead of requested 219.
-  warnings.warn(
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Percentage: 0.88, Accuracy: 0.9889
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/opt/homebrew/Caskroom/miniforge/base/envs/chem_py312/lib/python3.12/site-packages/selector/methods/utils.py:113: UserWarning: Optimal radius finder failed to converge, selected 135 points instead of requested 146.
-  warnings.warn(
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Percentage: 0.87, Accuracy: 0.9889
-  Percentage: 0.93, Accuracy: 0.9930
-  Percentage: 1.00, Accuracy: 0.9930
 </pre></div>
 </div>
 </div>
