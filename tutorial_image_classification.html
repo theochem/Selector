@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Limitations &#8212; Ayers Lab</title>
+    <title>Tutorial: Image Classification with Data Subsets &#8212; Ayers Lab</title>
   
   
   
@@ -188,7 +188,7 @@
 <li class="toctree-l1"><a class="reference internal" href="tutorial_partition_based.html">Tutorial Partition-Based Selectors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial_diversity_measures.html">Tutorial Diversity Measures</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial_similarity_based.html">Tutorial Similarity Based Selectors</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Limitations</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Tutorial: Image Classification with Data Subsets</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">API</span></p>
 <ul class="nav bd-sidenav">
@@ -432,7 +432,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Limitations</h1>
+    <h1>Tutorial: Image Classification with Data Subsets</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -446,7 +446,9 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <p>In this tutorial, we show how the Selector library can be used for image classification tasks. We
+  <section class="tex2jax_ignore mathjax_ignore" id="tutorial-image-classification-with-data-subsets">
+<h1>Tutorial: Image Classification with Data Subsets<a class="headerlink" href="#tutorial-image-classification-with-data-subsets" title="Permalink to this heading">#</a></h1>
+<p>In this tutorial, we show how the Selector library can be used for image classification tasks. We
 will select different percentages of the MINST dataset and evaluate the performances of a simple
 support vector machine (SVM) classifier on the selected subsets. We will compare the results of
 different selection methods with the random selection baseline.</p>
@@ -906,8 +908,7 @@ This suggests that MaxSum may not be as effective for selecting representative s
 for image classification tasks on the MNIST dataset as it tends to select outliers or less
 informative samples. This indicates the potential usage of MaxSum for outlier detection tasks.</p></li>
 </ul>
-<section id="limitations">
-<h1>Limitations<a class="headerlink" href="#limitations" title="Permalink to this heading">#</a></h1>
+<p><em>Limitations</em></p>
 <p>This tutorial uses a simple SVM classifier for demonstration purposes. In practice, more advanced
 neural network architectures should be used for image classification tasks to achieve better
 performance.
