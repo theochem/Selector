@@ -10,6 +10,7 @@ parts:
     - file: tutorial_partition_based.ipynb
     - file: tutorial_diversity_measures.ipynb
     - file: tutorial_similarity_based.ipynb
+    - file: tutorial_image_classification.ipynb
   - caption: API
     chapters:
     - file: api_methods_base.rst
