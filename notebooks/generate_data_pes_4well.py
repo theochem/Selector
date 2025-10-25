@@ -7,7 +7,16 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.metrics.pairwise import pairwise_distances
 from selector import MaxMin, MaxSum, OptiSim, DISE, Medoid, GridPartition
+from selector.measures.diversity import logdet, wdud
 
+"""
+python generate_data_pes_4well.py generate_data
+
+python generate_data_pes_4well.py select_subsets data/monte_carlo_k*/dataset_*.json
+
+python generate_data_pes_4well.py compute_diversity data/monte_carlo_k02/dataset_1.0e+07_k02_size10000.json
+
+"""
 
 class FourWellPotential:
     def __init__(self):
@@ -273,7 +282,8 @@ if __name__ == "__main__":
     if args[0] == "generate_data":
         # These parameter choices are discussed in generate_datasets function
         size_random, size_dataset = 1.0e7, 10000
-        k_values = np.arange(0.0, 21.0, 1.0, dtype=int)
+        # k_values = np.arange(0.0, 21.0, 1.0, dtype=int)
+        k_values = [2, 10]
         generate_datasets(size_random, k_values, size_dataset, niter=10, seed=42)
 
     elif args[0] == "select_subsets":
@@ -353,60 +363,119 @@ if __name__ == "__main__":
                     json.dump(temp, fp, indent=4, sort_keys=True)
 
     elif args[0] == "compute_diversity":
-        # make a dictionary for each dataset, so that diversity of iterations can be stored
-        # diversity_iterations = diversity.setdefault(fname.replace("data/", ""), {})
-        # measures = ["LogDet", "WDUD", "MinDist", "MeanDist"]
-        # # Compute diversity measures and plot subsets
-        # # -------------------------------------------
-        # for method, values in selected_indices.items():
-        #     if method not in diversity_iterations:
-        #         diversity_iterations[method] = {}
-        #     for p, indices in values.items():
-        #         if p not in diversity_iterations[method]:
-        #             diversity_iterations[method][p] = {}
-        #         # compute diversity returns a dictionary {measure: value}
-        #         print(f" Compute diversity for method={method} and p={p}")
-        #         d = compute_diversity(points_selected, indices, measures)
-        #         for measure, value in d.items():
-        #             items = diversity_iterations[method][p].setdefault(measure, [])
-        #             items.append(value)
-        #         # plot subsets
-        #         fname = f"data/{folder}/{method}_p{p:02d}_{fname_selected}.png"
-        #         plot_data_2d(
-        #             points_plot,
-        #             values_plot,
-        #             highlight=(points_selected, points_selected[indices]),
-        #             title=f"{fname_selected}\nMethod={method}, Percentage={p}, Size={len(indices)}",
-        #             fname=fname,
-        #         )
+        fnames = sorted(args[1:])
+        if not fnames:
+            raise ValueError("No dataset JSON files were provided.")
 
-        # # Save diversity data
-        # # -------------------
-        # # data is {fname: {method: {percentage: {measure: iteration_diversity_values}}}}
-        # print("Save diversity data to data/diversity.json")
-        # with open("data/diversity.json", "w") as fp:
-        #     json.dump(diversity, fp, indent=4, sort_keys=True)
-
-        # data is {fname: {method: {percentage: {measure: iteration_diversity_values}}}}
-        with open("data/diversity.json", "r") as fp:
-            data = json.load(fp)
-        print(len(data))
+        selectors = [
+            "Random",
+            "MaxMin",
+            "MaxSum",
+            "OptiSim",
+            "DISE",
+            "Medoid",
+            "GridPartition-equisized_dependent",
+            "GridPartition-equisized_independent",
+            "GridPartition-equifrequent_dependent",
+            "GridPartition-equifrequent_independent",
+        ]
         measures = ["LogDet", "WDUD"]
-        for measure in measures:
-            # for each dataset, plot diversity measures vs. percentage
-            for fname, diversity in data.items():
-                print(fname)
-                print(diversity)
-                print(type(diversity))
-                for method, values in diversity.items():
-                    x_values = sorted([int(p) for p in values.keys()])
-                    print("percentage values = ", x_values)
-                    y_values = [np.mean(values[str(p)][measure]) for p in x_values]
-                    plt.plot(x_values, y_values, label=method)
+
+        diversity_results = {}
+
+        for dataset_path in fnames:
+            print(f"LOAD DATASET {dataset_path}")
+
+            # break
+            with open(dataset_path, "r") as fp:
+                dataset_entries = json.load(fp)
+
+            folder, dataset_fname = os.path.split(dataset_path)
+            dataset_key = dataset_path.replace("data/", "", 1)
+            diversity_dataset = diversity_results.setdefault(dataset_key, {})
+            # diversity_dataset = {}
+
+            # Load subset index files for all selector methods
+            subset_indices = {}
+            for method in selectors:
+                subset_fname = dataset_fname.replace("dataset", f"subset_{method}_dataset")
+                subset_path = os.path.join(folder, subset_fname)
+                if not os.path.exists(subset_path):
+                    print(f" SKIP {method}: missing subset file {subset_path}")
+                    continue
+                print(f"LOAD SUBSET {subset_path}")
+                with open(subset_path, "r") as fp:
+                    subset_indices[method] = json.load(fp)
+                diversity_dataset.setdefault(method, {})
+
+            # Iterate over dataset iterations and compute diversity for each subset
+            for iteration_name, iteration_values in dataset_entries.items():
+                points_iter = np.array(iteration_values["points"], dtype=float)
+                for method, method_indices in subset_indices.items():
+                    if iteration_name not in method_indices:
+                        print(
+                            f" SKIP method={method}: iteration {iteration_name} not found in subset file."
+                        )
+                        continue
+                    for percentage, indices in method_indices[iteration_name].items():
+                        if not indices:
+                            print(
+                                f" SKIP method={method}, iteration={iteration_name}, percentage={percentage}: empty selection."
+                            )
+                            continue
+                        indices_array = np.asarray(indices, dtype=int)
+                        diversity_values = compute_diversity(points_iter, indices_array, measures)
+
+                        method_store = diversity_dataset.setdefault(method, {})
+                        percentage_store = method_store.setdefault(percentage, {})
+                        for measure, value in diversity_values.items():
+                            percentage_store.setdefault(measure, []).append(float(value))
+
+            # Save per-dataset diversity summary next to dataset file
+            diversity_out_fname = dataset_fname.replace("dataset", "diversity")
+            diversity_out_path = os.path.join(folder, diversity_out_fname)
+            print(f"WRITE {diversity_out_path}")
+            with open(diversity_out_path, "w", encoding="utf-8") as fp:
+                json.dump(diversity_dataset, fp, indent=4, sort_keys=True)
+
+        # Save combined diversity results
+        os.makedirs("data", exist_ok=True)
+        # dataset_path
+        # data/monte_carlo_k02/dataset_1.0e+07_k02_size10000.json
+        diversity_master_path = dataset_path.replace("dataset", "diversity")
+        print(f"WRITE {diversity_master_path}")
+        with open(diversity_master_path, "w", encoding="utf-8") as fp:
+            json.dump(diversity_results, fp, indent=4, sort_keys=True)
+
+        # Plot summary metrics for quick inspection
+        plot_measures = ["LogDet", "WDUD"]
+        for measure in plot_measures:
+            for dataset_key, dataset_values in diversity_results.items():
+                if not dataset_values:
+                    continue
+                plt.figure()
+                for method, method_values in dataset_values.items():
+                    if not method_values:
+                        continue
+                    percentages = sorted(int(p) for p in method_values.keys())
+                    averages = []
+                    for percentage in percentages:
+                        measure_values = method_values[str(percentage)].get(measure, [])
+                        if not measure_values:
+                            averages.append(np.nan)
+                        else:
+                            averages.append(float(np.mean(measure_values)))
+                    plt.plot(percentages, averages, marker="o", label=method)
                 plt.xlabel("Percentage (%)")
                 plt.ylabel(measure)
-                plt.title(fname)
+                plt.title(dataset_key)
                 plt.legend()
-                plt.show()
+                plot_fname = dataset_key.replace("/", "_").replace(".json", f"_{measure}.png")
+                # dataset_path
+                plot_path = os.path.join(folder, "plots", plot_fname)
+                os.makedirs(os.path.dirname(plot_path), exist_ok=True)
+                print(f"SAVE PLOT {plot_path}")
+                plt.savefig(plot_path, dpi=300, bbox_inches="tight")
+                plt.close()
     else:
         raise ValueError(f"Unknown task={args}")
