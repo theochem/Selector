@@ -360,8 +360,8 @@ def wdud(x: np.ndarray) -> float:
             # Evaluate the integrand  |x - \sum_{x <= y_{i + 1}} 1/k|
             p += counts[j - 1]
             integrand = np.abs(grid - p / n_samples)
-            # Integrate using np.trapz
-            wdu += np.trapz(y=integrand, x=grid)
+            # Integrate using np.trapezoid
+            wdu += np.trapezoid(y=integrand, x=grid)
         ans.append(wdu)
     return np.average(ans)
 
