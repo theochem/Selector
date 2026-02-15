@@ -648,9 +648,9 @@ def get_initial_selection(x=None, x_dist=None, ref_index=None, fun_dist=None) ->
         selection for each class separately where different `ref_index` parameters can be used.
         For example, if we have two classes, we can pass `ref_index=[0, 1]` to select samples
         from class 0 and `ref_index=[3, 6]` class 1 respectively.
-    func_dist: callable, optional
+    fun_dist: callable, optional
         Function for calculating the pairwise distance between sample points to be used in
-        calculating the medoid. `func_dist(x) -> x_dist` takes a 2D feature array of shape
+        calculating the medoid. `fun_dist(x) -> x_dist` takes a 2D feature array of shape
         (n_samples, n_features) and returns a 2D distance array of shape (n_samples, n_samples).
 
     Returns
