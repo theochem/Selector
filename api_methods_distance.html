@@ -1,0 +1,971 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>selector.methods.distance &#8212; Ayers Lab</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.5ea377869091fd0449014c60fc090103.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script src="_static/scripts/sphinx-book-theme.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api_methods_distance';</script>
+    <link rel="shortcut icon" href="_static/selector_logo.png"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="selector.methods.partition" href="api_methods_partition.html" />
+    <link rel="prev" title="selector.methods.base" href="api_methods_base.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/selector_logo.png" class="logo__image only-light" alt="Ayers Lab - Home"/>
+    <script>document.write(`<img src="_static/selector_logo.png" class="logo__image only-dark" alt="Ayers Lab - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="intro.html">
+                    Welcome to QC-Selector’s Documentation!
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="tutorial_distance_based.html">Tutorial Distance-Based Selectors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_partition_based.html">Tutorial Partition-Based Selectors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_diversity_measures.html">Tutorial Diversity Measures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_similarity_based.html">Tutorial Similarity Based Selectors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_image_classification.html">Tutorial Image Classification</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="api_methods_base.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selector.methods.base</span></code></a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selector.methods.distance</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_methods_partition.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selector.methods.partition</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_methods_similarity.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selector.methods.similarity</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_methods_utils.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selector.methods.utils</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_measures_converter.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selector.measures.converter</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_measures_diversity.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selector.measures.diversity</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_measures_similarity.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selector.measures.similarity</span></code></a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/theochem/Selector" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/theochem/Selector/issues/new?title=Issue%20on%20page%20%2Fapi_methods_distance.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/api_methods_distance.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>selector.methods.distance</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.distance.DISE"><code class="docutils literal notranslate"><span class="pre">DISE</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.distance.DISE._abc_impl"><code class="docutils literal notranslate"><span class="pre">DISE._abc_impl</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.distance.DISE.algorithm"><code class="docutils literal notranslate"><span class="pre">DISE.algorithm()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.distance.DISE.select"><code class="docutils literal notranslate"><span class="pre">DISE.select()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.distance.DISE.select_from_cluster"><code class="docutils literal notranslate"><span class="pre">DISE.select_from_cluster()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.distance.MaxMin"><code class="docutils literal notranslate"><span class="pre">MaxMin</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.distance.MaxMin._abc_impl"><code class="docutils literal notranslate"><span class="pre">MaxMin._abc_impl</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.distance.MaxMin.select"><code class="docutils literal notranslate"><span class="pre">MaxMin.select()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.distance.MaxMin.select_from_cluster"><code class="docutils literal notranslate"><span class="pre">MaxMin.select_from_cluster()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.distance.MaxSum"><code class="docutils literal notranslate"><span class="pre">MaxSum</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.distance.MaxSum._abc_impl"><code class="docutils literal notranslate"><span class="pre">MaxSum._abc_impl</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.distance.MaxSum.select"><code class="docutils literal notranslate"><span class="pre">MaxSum.select()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.distance.MaxSum.select_from_cluster"><code class="docutils literal notranslate"><span class="pre">MaxSum.select_from_cluster()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.distance.OptiSim"><code class="docutils literal notranslate"><span class="pre">OptiSim</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.distance.OptiSim._abc_impl"><code class="docutils literal notranslate"><span class="pre">OptiSim._abc_impl</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.distance.OptiSim.algorithm"><code class="docutils literal notranslate"><span class="pre">OptiSim.algorithm()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.distance.OptiSim.select"><code class="docutils literal notranslate"><span class="pre">OptiSim.select()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.distance.OptiSim.select_from_cluster"><code class="docutils literal notranslate"><span class="pre">OptiSim.select_from_cluster()</span></code></a></li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="module-selector.methods.distance">
+<span id="selector-methods-distance"></span><span id="methods-distance"></span><h1><a class="reference internal" href="#module-selector.methods.distance" title="selector.methods.distance"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selector.methods.distance</span></code></a><a class="headerlink" href="#module-selector.methods.distance" title="Permalink to this heading">#</a></h1>
+<p>Module for Distance-Based Selection Methods.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="selector.methods.distance.DISE">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">selector.methods.distance.</span></span><span class="sig-name descname"><span class="pre">DISE</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fun_dist</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#selector.methods.distance.DISE" title="Permalink to this definition">#</a></dt>
+<dd><p>Select samples using Directed Sphere Exclusion (DISE) algorithm.</p>
+<p>In a nutshell, this algorithm iteratively excludes any sample within a given radius from
+any already selected sample. The radius of the exclusion sphere is an adjustable parameter.
+Compared to Sphere Exclusion algorithm, the Directed Sphere Exclusion algorithm achieves a
+more evenly distributed subset selection by abandoning the random selection approach and
+instead imposing a directed selection.</p>
+<p>Reference sample is chosen based on the <cite>ref_index</cite>, which is excluded from the selected
+subset. All samples are sorted (ascending order) based on their Minkowski p-norm distance
+from the reference sample. Looping through sorted samples, the sample is selected if it is
+not already excluded. If selected, all its neighboring samples within a sphere of radius r
+(i.e., exclusion sphere) are excluded from being selected. When the selected number of points
+is greater than specified subset <cite>size</cite>, the selection process terminates. The <cite>r0</cite> is used
+as the initial radius of exclusion sphere, however, it is optimized to select the desired
+number of samples.</p>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this heading">#</a></h2>
+<p>Gobbi, A., and Lee, M.-L. (2002). DISE: directed sphere exclusion.
+Journal of Chemical Information and Computer Sciences,
+43(1), 317–323. <a class="reference external" href="https://doi.org/10.1021/ci025554v">https://doi.org/10.1021/ci025554v</a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="selector.methods.distance.DISE._abc_impl">
+<span class="sig-name descname"><span class="pre">_abc_impl</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;_abc._abc_data</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#selector.methods.distance.DISE._abc_impl" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="selector.methods.distance.DISE.algorithm">
+<span class="sig-name descname"><span class="pre">algorithm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_size</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Iterable</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#selector.methods.distance.DISE.algorithm" title="Permalink to this definition">#</a></dt>
+<dd><p>Return selected samples based on directed sphere exclusion algorithm.</p>
+<section id="parameters">
+<h3>Parameters<a class="headerlink" href="#parameters" title="Permalink to this heading">#</a></h3>
+<dl class="simple">
+<dt>x: ndarray of shape (n_samples, n_features)</dt><dd><p>Feature matrix of <cite>n_samples</cite> samples in <cite>n_features</cite> dimensional space.</p>
+</dd>
+<dt>max_size: int</dt><dd><p>Maximum number of samples to select.</p>
+</dd>
+</dl>
+</section>
+<section id="returns">
+<h3>Returns<a class="headerlink" href="#returns" title="Permalink to this heading">#</a></h3>
+<dl class="simple">
+<dt>selected: Union[List, Iterable]</dt><dd><p>List of indices of selected samples.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="selector.methods.distance.DISE.select">
+<span class="sig-name descname"><span class="pre">select</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proportional_selection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Iterable</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#selector.methods.distance.DISE.select" title="Permalink to this definition">#</a></dt>
+<dd><p>Return indices representing subset of sample points.</p>
+<section id="id1">
+<h3>Parameters<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h3>
+<dl class="simple">
+<dt>x: ndarray of shape (n_samples, n_features) or (n_samples, n_samples)</dt><dd><p>Feature matrix of <cite>n_samples</cite> samples in <cite>n_features</cite> dimensional feature space.
+If fun_distance is <cite>None</cite>, this x is treated as a square pairwise distance matrix.</p>
+</dd>
+<dt>size: int</dt><dd><p>Number of sample points to select (i.e. size of the subset).</p>
+</dd>
+<dt>labels: np.ndarray, optional</dt><dd><p>Array of integers or strings representing the labels of the clusters that
+each sample belongs to. If <cite>None</cite>, the samples are treated as one cluster.
+If labels are provided, selection is made from each cluster.</p>
+</dd>
+<dt>proportional_selection: bool, optional</dt><dd><p>If True, the number of samples to be selected from each cluster is proportional.
+Otherwise, the number of samples to be selected from each cluster is equal.
+Default is True.</p>
+</dd>
+</dl>
+</section>
+<section id="id2">
+<h3>Returns<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h3>
+<dl class="simple">
+<dt>selected: list</dt><dd><p>Indices of the selected sample points.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="selector.methods.distance.DISE.select_from_cluster">
+<span class="sig-name descname"><span class="pre">select_from_cluster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Iterable</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#selector.methods.distance.DISE.select_from_cluster" title="Permalink to this definition">#</a></dt>
+<dd><p>Return selected samples from a cluster based on directed sphere exclusion algorithm</p>
+<section id="id3">
+<h3>Parameters<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h3>
+<dl class="simple">
+<dt>x: ndarray of shape (n_samples, n_features)</dt><dd><p>Feature matrix of <cite>n_samples</cite> samples in <cite>n_features</cite> dimensional space.</p>
+</dd>
+<dt>size: int</dt><dd><p>Number of samples to be selected.</p>
+</dd>
+<dt>labels: np.ndarray, optional</dt><dd><p>Indices of samples that form a cluster.</p>
+</dd>
+</dl>
+</section>
+<section id="id4">
+<h3>Returns<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h3>
+<dl class="simple">
+<dt>selected: Union[List, Iterable]</dt><dd><p>List of indices of selected samples.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+</section>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="selector.methods.distance.MaxMin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">selector.methods.distance.</span></span><span class="sig-name descname"><span class="pre">MaxMin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fun_dist</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#selector.methods.distance.MaxMin" title="Permalink to this definition">#</a></dt>
+<dd><p>Select samples using MaxMin algorithm.</p>
+<p>MaxMin is possibly the most widely used method for dissimilarity-based
+compound selection. When presented with a dataset of samples, the
+initial point is chosen as the dataset’s medoid center. Next, the second
+point is chosen to be that which is furthest from this initial point.
+Subsequently, all following points are selected via the following
+logic:</p>
+<ol class="arabic simple">
+<li><p>Find the minimum distance from every point to the already-selected ones.</p></li>
+<li><p>Select the point which has the maximum distance among those calculated
+in the previous step.</p></li>
+</ol>
+<p>In the current implementation, this method requires or computes the full pairwise-distance
+matrix, so it is not recommended for large datasets.</p>
+<section id="id5">
+<h2>References<a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h2>
+<p>[1] Ashton, Mark, et al., Identification of diverse database subsets using
+property‐based and fragment‐based molecular descriptions, Quantitative
+Structure‐Activity Relationships 21.6 (2002): 598-604.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="selector.methods.distance.MaxMin._abc_impl">
+<span class="sig-name descname"><span class="pre">_abc_impl</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;_abc._abc_data</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#selector.methods.distance.MaxMin._abc_impl" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="selector.methods.distance.MaxMin.select">
+<span class="sig-name descname"><span class="pre">select</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proportional_selection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Iterable</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#selector.methods.distance.MaxMin.select" title="Permalink to this definition">#</a></dt>
+<dd><p>Return indices representing subset of sample points.</p>
+<section id="id6">
+<h3>Parameters<a class="headerlink" href="#id6" title="Permalink to this heading">#</a></h3>
+<dl class="simple">
+<dt>x: ndarray of shape (n_samples, n_features) or (n_samples, n_samples)</dt><dd><p>Feature matrix of <cite>n_samples</cite> samples in <cite>n_features</cite> dimensional feature space.
+If fun_distance is <cite>None</cite>, this x is treated as a square pairwise distance matrix.</p>
+</dd>
+<dt>size: int</dt><dd><p>Number of sample points to select (i.e. size of the subset).</p>
+</dd>
+<dt>labels: np.ndarray, optional</dt><dd><p>Array of integers or strings representing the labels of the clusters that
+each sample belongs to. If <cite>None</cite>, the samples are treated as one cluster.
+If labels are provided, selection is made from each cluster.</p>
+</dd>
+<dt>proportional_selection: bool, optional</dt><dd><p>If True, the number of samples to be selected from each cluster is proportional.
+Otherwise, the number of samples to be selected from each cluster is equal.
+Default is True.</p>
+</dd>
+</dl>
+</section>
+<section id="id7">
+<h3>Returns<a class="headerlink" href="#id7" title="Permalink to this heading">#</a></h3>
+<dl class="simple">
+<dt>selected: list</dt><dd><p>Indices of the selected sample points.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="selector.methods.distance.MaxMin.select_from_cluster">
+<span class="sig-name descname"><span class="pre">select_from_cluster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Iterable</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#selector.methods.distance.MaxMin.select_from_cluster" title="Permalink to this definition">#</a></dt>
+<dd><p>Return selected samples from a cluster based on MaxMin algorithm.</p>
+<section id="id8">
+<h3>Parameters<a class="headerlink" href="#id8" title="Permalink to this heading">#</a></h3>
+<dl class="simple">
+<dt>x: ndarray of shape (n_samples, n_features) or (n_samples, n_samples)</dt><dd><p>Feature matrix of <cite>n_samples</cite> samples in <cite>n_features</cite> dimensional feature space,
+or the pairwise distance matrix between <cite>n_samples</cite> samples.
+If <cite>fun_dist</cite> is <cite>None</cite>, the <cite>x</cite> is assumed to be a square pairwise distance matrix.</p>
+</dd>
+<dt>size: int</dt><dd><p>Number of sample points to select (i.e. size of the subset).</p>
+</dd>
+<dt>labels: np.ndarray</dt><dd><p>Indices of samples that form a cluster.</p>
+</dd>
+</dl>
+</section>
+<section id="id9">
+<h3>Returns<a class="headerlink" href="#id9" title="Permalink to this heading">#</a></h3>
+<dl class="simple">
+<dt>selected<span class="classifier">Union[List, Iterable]</span></dt><dd><p>List of indices of selected samples.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+</section>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="selector.methods.distance.MaxSum">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">selector.methods.distance.</span></span><span class="sig-name descname"><span class="pre">MaxSum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fun_dist</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#selector.methods.distance.MaxSum" title="Permalink to this definition">#</a></dt>
+<dd><p>Select samples using MaxSum algorithm.</p>
+<p>Whereas the goal of the MaxMin algorithm is to maximize the minimum distance
+between any pair of distinct elements in the selected subset of a dataset,
+the MaxSum algorithm aims to maximize the sum of distances between all
+pairs of elements in the selected subset. When presented with a dataset of
+samples, the initial point is chosen as the dataset’s medoid center. Next,
+the second point is chosen to be that which is furthest from this initial
+point. Subsequently, all following points are selected via the following
+logic:</p>
+<ol class="arabic simple">
+<li><p>Determine the sum of distances from every point to the already-selected ones.</p></li>
+<li><p>Select the point which has the maximum sum of distances among those calculated
+in the previous step.</p></li>
+</ol>
+<section id="id10">
+<h2>References<a class="headerlink" href="#id10" title="Permalink to this heading">#</a></h2>
+<p>[1] Borodin, Allan, Hyun Chul Lee, and Yuli Ye, Max-sum diversification, monotone
+submodular functions and dynamic updates, Proceedings of the 31st ACM SIGMOD-SIGACT-SIGAI
+symposium on Principles of Database Systems. 2012.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="selector.methods.distance.MaxSum._abc_impl">
+<span class="sig-name descname"><span class="pre">_abc_impl</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;_abc._abc_data</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#selector.methods.distance.MaxSum._abc_impl" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="selector.methods.distance.MaxSum.select">
+<span class="sig-name descname"><span class="pre">select</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proportional_selection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Iterable</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#selector.methods.distance.MaxSum.select" title="Permalink to this definition">#</a></dt>
+<dd><p>Return indices representing subset of sample points.</p>
+<section id="id11">
+<h3>Parameters<a class="headerlink" href="#id11" title="Permalink to this heading">#</a></h3>
+<dl class="simple">
+<dt>x: ndarray of shape (n_samples, n_features) or (n_samples, n_samples)</dt><dd><p>Feature matrix of <cite>n_samples</cite> samples in <cite>n_features</cite> dimensional feature space.
+If fun_distance is <cite>None</cite>, this x is treated as a square pairwise distance matrix.</p>
+</dd>
+<dt>size: int</dt><dd><p>Number of sample points to select (i.e. size of the subset).</p>
+</dd>
+<dt>labels: np.ndarray, optional</dt><dd><p>Array of integers or strings representing the labels of the clusters that
+each sample belongs to. If <cite>None</cite>, the samples are treated as one cluster.
+If labels are provided, selection is made from each cluster.</p>
+</dd>
+<dt>proportional_selection: bool, optional</dt><dd><p>If True, the number of samples to be selected from each cluster is proportional.
+Otherwise, the number of samples to be selected from each cluster is equal.
+Default is True.</p>
+</dd>
+</dl>
+</section>
+<section id="id12">
+<h3>Returns<a class="headerlink" href="#id12" title="Permalink to this heading">#</a></h3>
+<dl class="simple">
+<dt>selected: list</dt><dd><p>Indices of the selected sample points.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="selector.methods.distance.MaxSum.select_from_cluster">
+<span class="sig-name descname"><span class="pre">select_from_cluster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Iterable</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#selector.methods.distance.MaxSum.select_from_cluster" title="Permalink to this definition">#</a></dt>
+<dd><p>Return selected samples from a cluster based on MaxSum algorithm.</p>
+<section id="id13">
+<h3>Parameters<a class="headerlink" href="#id13" title="Permalink to this heading">#</a></h3>
+<dl class="simple">
+<dt>x: ndarray of shape (n_samples, n_features) or (n_samples, n_samples)</dt><dd><p>Feature matrix of <cite>n_samples</cite> samples in <cite>n_features</cite> dimensional feature space,
+or the pairwise distance matrix between <cite>n_samples</cite> samples.
+If <cite>fun_dist</cite> is <cite>None</cite>, the <cite>x</cite> is assumed to be a square pairwise distance matrix.</p>
+</dd>
+<dt>size: int</dt><dd><p>Number of sample points to select (i.e. size of the subset).</p>
+</dd>
+<dt>labels: np.ndarray</dt><dd><p>Indices of samples that form a cluster.</p>
+</dd>
+</dl>
+</section>
+<section id="id14">
+<h3>Returns<a class="headerlink" href="#id14" title="Permalink to this heading">#</a></h3>
+<dl class="simple">
+<dt>selected<span class="classifier">Union[List, Iterable]</span></dt><dd><p>List of indices of selected samples.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+</section>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="selector.methods.distance.OptiSim">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">selector.methods.distance.</span></span><span class="sig-name descname"><span class="pre">OptiSim</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">42</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fun_dist</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#selector.methods.distance.OptiSim" title="Permalink to this definition">#</a></dt>
+<dd><p>Selecting samples using OptiSim algorithm.</p>
+<p>The OptiSim algorithm selects samples from a dataset by first choosing the medoid center as the
+initial point. Next, points are randomly chosen and added to a subsample if they exist
+outside of radius r from all previously selected points (otherwise, they are discarded). Once k
+number of points have been added to the subsample, the point with the greatest minimum distance
+to the previously selected points is chosen. Then, the subsample is cleared and the process is
+repeated.</p>
+<section id="notes">
+<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this heading">#</a></h2>
+<p>When the <cite>ref_index</cite> is a list for multiple classes, it will be shared among all clusters.
+If we want to use different reference indices for each class, we can perform the subset
+selection for each class separately where different <cite>ref_index</cite> parameters can be used.
+For example, if we have two classes, we can pass <cite>ref_index=[0, 1]</cite> to select samples from
+class 0 and <cite>ref_index=[3, 6]</cite> class 1 respectively.</p>
+</section>
+<section id="id15">
+<h2>References<a class="headerlink" href="#id15" title="Permalink to this heading">#</a></h2>
+<p>[1] J. Chem. Inf. Comput. Sci. 1997, 37, 6, 1181–1188. <a class="reference external" href="https://doi.org/10.1021/ci970282v">https://doi.org/10.1021/ci970282v</a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="selector.methods.distance.OptiSim._abc_impl">
+<span class="sig-name descname"><span class="pre">_abc_impl</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;_abc._abc_data</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#selector.methods.distance.OptiSim._abc_impl" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="selector.methods.distance.OptiSim.algorithm">
+<span class="sig-name descname"><span class="pre">algorithm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_size</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Iterable</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#selector.methods.distance.OptiSim.algorithm" title="Permalink to this definition">#</a></dt>
+<dd><p>Return selected sample indices based on OptiSim algorithm.</p>
+<section id="id16">
+<h3>Parameters<a class="headerlink" href="#id16" title="Permalink to this heading">#</a></h3>
+<dl class="simple">
+<dt>x: ndarray of shape (n_samples, n_features)</dt><dd><p>Feature matrix of <cite>n_samples</cite> samples in <cite>n_features</cite> dimensional feature space.</p>
+</dd>
+<dt>max_size<span class="classifier">int</span></dt><dd><p>Maximum number of samples to select.</p>
+</dd>
+</dl>
+</section>
+<section id="id17">
+<h3>Returns<a class="headerlink" href="#id17" title="Permalink to this heading">#</a></h3>
+<dl class="simple">
+<dt>selected<span class="classifier">Union[List, Iterable]</span></dt><dd><p>List of indices of selected sample indices.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="selector.methods.distance.OptiSim.select">
+<span class="sig-name descname"><span class="pre">select</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proportional_selection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Iterable</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#selector.methods.distance.OptiSim.select" title="Permalink to this definition">#</a></dt>
+<dd><p>Return indices representing subset of sample points.</p>
+<section id="id18">
+<h3>Parameters<a class="headerlink" href="#id18" title="Permalink to this heading">#</a></h3>
+<dl class="simple">
+<dt>x: ndarray of shape (n_samples, n_features) or (n_samples, n_samples)</dt><dd><p>Feature matrix of <cite>n_samples</cite> samples in <cite>n_features</cite> dimensional feature space.
+If fun_distance is <cite>None</cite>, this x is treated as a square pairwise distance matrix.</p>
+</dd>
+<dt>size: int</dt><dd><p>Number of sample points to select (i.e. size of the subset).</p>
+</dd>
+<dt>labels: np.ndarray, optional</dt><dd><p>Array of integers or strings representing the labels of the clusters that
+each sample belongs to. If <cite>None</cite>, the samples are treated as one cluster.
+If labels are provided, selection is made from each cluster.</p>
+</dd>
+<dt>proportional_selection: bool, optional</dt><dd><p>If True, the number of samples to be selected from each cluster is proportional.
+Otherwise, the number of samples to be selected from each cluster is equal.
+Default is True.</p>
+</dd>
+</dl>
+</section>
+<section id="id19">
+<h3>Returns<a class="headerlink" href="#id19" title="Permalink to this heading">#</a></h3>
+<dl class="simple">
+<dt>selected: list</dt><dd><p>Indices of the selected sample points.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="selector.methods.distance.OptiSim.select_from_cluster">
+<span class="sig-name descname"><span class="pre">select_from_cluster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Iterable</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#selector.methods.distance.OptiSim.select_from_cluster" title="Permalink to this definition">#</a></dt>
+<dd><p>Return selected samples from a cluster based on OptiSim algorithm.</p>
+<section id="id20">
+<h3>Parameters<a class="headerlink" href="#id20" title="Permalink to this heading">#</a></h3>
+<dl class="simple">
+<dt>x: ndarray of shape (n_samples, n_features)</dt><dd><p>Feature matrix of <cite>n_samples</cite> samples in <cite>n_features</cite> dimensional feature space.</p>
+</dd>
+<dt>size<span class="classifier">int</span></dt><dd><p>Number of samples to be selected.</p>
+</dd>
+<dt>labels: np.ndarray</dt><dd><p>Indices of samples that form a cluster.</p>
+</dd>
+</dl>
+</section>
+<section id="id21">
+<h3>Returns<a class="headerlink" href="#id21" title="Permalink to this heading">#</a></h3>
+<dl class="simple">
+<dt>selected<span class="classifier">Union[List, Iterable]</span></dt><dd><p>List of indices of selected samples.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+</section>
+</dd></dl>
+
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "theochem/Selector",
+            ref: "main",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="api_methods_base.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selector.methods.base</span></code></p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="api_methods_partition.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selector.methods.partition</span></code></p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.distance.DISE"><code class="docutils literal notranslate"><span class="pre">DISE</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.distance.DISE._abc_impl"><code class="docutils literal notranslate"><span class="pre">DISE._abc_impl</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.distance.DISE.algorithm"><code class="docutils literal notranslate"><span class="pre">DISE.algorithm()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.distance.DISE.select"><code class="docutils literal notranslate"><span class="pre">DISE.select()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.distance.DISE.select_from_cluster"><code class="docutils literal notranslate"><span class="pre">DISE.select_from_cluster()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.distance.MaxMin"><code class="docutils literal notranslate"><span class="pre">MaxMin</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.distance.MaxMin._abc_impl"><code class="docutils literal notranslate"><span class="pre">MaxMin._abc_impl</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.distance.MaxMin.select"><code class="docutils literal notranslate"><span class="pre">MaxMin.select()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.distance.MaxMin.select_from_cluster"><code class="docutils literal notranslate"><span class="pre">MaxMin.select_from_cluster()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.distance.MaxSum"><code class="docutils literal notranslate"><span class="pre">MaxSum</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.distance.MaxSum._abc_impl"><code class="docutils literal notranslate"><span class="pre">MaxSum._abc_impl</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.distance.MaxSum.select"><code class="docutils literal notranslate"><span class="pre">MaxSum.select()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.distance.MaxSum.select_from_cluster"><code class="docutils literal notranslate"><span class="pre">MaxSum.select_from_cluster()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.distance.OptiSim"><code class="docutils literal notranslate"><span class="pre">OptiSim</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.distance.OptiSim._abc_impl"><code class="docutils literal notranslate"><span class="pre">OptiSim._abc_impl</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.distance.OptiSim.algorithm"><code class="docutils literal notranslate"><span class="pre">OptiSim.algorithm()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.distance.OptiSim.select"><code class="docutils literal notranslate"><span class="pre">OptiSim.select()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.methods.distance.OptiSim.select_from_cluster"><code class="docutils literal notranslate"><span class="pre">OptiSim.select_from_cluster()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By The QC-Dev Community with the support of Digital Research Alliance of Canada and The Jupyter Book Community
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2022-2024.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
