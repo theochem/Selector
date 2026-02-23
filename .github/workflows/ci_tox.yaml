@@ -29,9 +29,9 @@ jobs:
         python-version: ["3.9", "3.10", "3.11", "3.12", "3.13", "3.14"]
         # https://github.com/actions/setup-python/issues/875
         exclude:
-          - os: macOS-latest
+          - os: macos-latest
             python-version: "3.9"
-          - os: macOS-latest
+          - os: macos-latest
             python-version: "3.10"
 
     steps:
