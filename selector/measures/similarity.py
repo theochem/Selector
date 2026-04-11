@@ -24,6 +24,7 @@
 """Similarity Module."""
 
 from itertools import combinations_with_replacement
+
 import numpy as np
 
 __all__ = [
@@ -32,6 +33,7 @@ __all__ = [
     "modified_tanimoto",
     "scaled_similarity_matrix",
 ]
+
 
 def pairwise_similarity_bit(X: np.array, metric: str) -> np.ndarray:
     """Compute pairwise similarity coefficient matrix.
@@ -49,38 +51,40 @@ def pairwise_similarity_bit(X: np.array, metric: str) -> np.ndarray:
     s : ndarray of shape (n_samples, n_samples)
         A symmetric similarity matrix between each pair of samples in the feature matrix.
         The diagonal elements are directly computed instead of assuming that they are 1.
+
     """
+
     available_methods = {
         "tanimoto": tanimoto,
         "modified_tanimoto": modified_tanimoto,
     }
-
     if metric not in available_methods:
         raise ValueError(
             f"Argument metric={metric} is not recognized! Choose from {available_methods.keys()}"
         )
-
     if X.ndim != 2:
         raise ValueError(f"Argument features should be a 2D array, got {X.ndim}")
 
     # make pairwise m-by-m similarity matrix
     n_samples = len(X)
     s = np.zeros((n_samples, n_samples))
-
     # compute similarity between all pairs of points (including the diagonal elements)
     for i, j in combinations_with_replacement(range(n_samples), 2):
         s[i, j] = s[j, i] = available_methods[metric](X[i], X[j])
-
     return s
+
 
 def tanimoto(a: np.array, b: np.array) -> float:
     r"""Compute Tanimoto coefficient or index (a.k.a. Jaccard similarity coefficient).
+
     For two binary or non-binary arrays :math:`A` and :math:`B`, Tanimoto coefficient
     is defined as the size of their intersection divided by the size of their union:
+
     .. math::
         T(A, B) = \frac{| A \cap B|}{| A \cup B |} =
         \frac{| A \cap B|}{|A| + |B| - | A \cap B|} =
         \frac{A \cdot B}{\|A\|^2 + \|B\|^2 - A \cdot B}
+
     where :math:`A \cdot B = \sum_i{A_i B_i}` and :math:`\|A\|^2 = \sum_i{A_i^2}`.
 
     Parameters
@@ -94,32 +98,36 @@ def tanimoto(a: np.array, b: np.array) -> float:
     -------
     coeff : float
         Tanimoto coefficient between feature arrays :math:`A` and :math:`B`.
+
     Bajusz, D., Rácz, A., and Héberger, K.. (2015)
     Why is Tanimoto index an appropriate choice for fingerprint-based similarity calculations?.
     Journal of Cheminformatics 7.
-    """
 
+    """
     if a.ndim != 1 or b.ndim != 1:
         raise ValueError(f"Arguments a and b should be 1D arrays, got {a.ndim} and {b.ndim}")
-
     if a.shape != b.shape:
         raise ValueError(
             f"Arguments a and b should have the same shape, got {a.shape} != {b.shape}"
         )
-
     coeff = sum(a * b) / (sum(a**2) + sum(b**2) - sum(a * b))
     return coeff
 
+
 def modified_tanimoto(a: np.array, b: np.array) -> float:
     r"""Compute the modified tanimoto coefficient from bitstring vectors of data points A and B.
+
     Adjusts calculation of the Tanimoto coefficient to counter its natural bias towards
     shorter vectors using a Bernoulli probability model.
+
     .. math::
         {mt} = \frac{2-p}{3} T_1 + \frac{1+p}{3} T_0
+
     where :math:`p` is success probability of independent trials,
     :math:`T_1` is the number of common '1' bits between data points
     (:math:`T_1 = | A \cap B |`), and :math:`T_0` is the number of common '0'
     bits between data points (:math:`T_0 = |(1-A) \cap (1-B)|`).
+
 
     Parameters
     ----------
@@ -136,8 +144,10 @@ def modified_tanimoto(a: np.array, b: np.array) -> float:
     Notes
     -----
     The equation above has been derived from
+
     .. math::
        {mt}_{\alpha} = {\alpha}T_1 + (1-\alpha)T_0
+
     where :math:`\alpha = \frac{2-p}{3}`. This is done so that the expected value
     of the modified tanimoto, :math:`E(mt)`, remains constant even as the number of
     trials :math:`p` grows larger.
@@ -146,14 +156,12 @@ def modified_tanimoto(a: np.array, b: np.array) -> float:
     A Modification of the Jaccard-Tanimoto Similarity Index for
     Diverse Selection of Chemical Compounds Using Binary Strings.
     Technometrics 44, 110-119.
-    """
 
+    """
     if a.ndim != 1:
         raise ValueError(f"Argument `a` should have dimension 1 rather than {a.ndim}.")
-
     if b.ndim != 1:
         raise ValueError(f"Argument `b` should have dimension 1 rather than {b.ndim}.")
-
     if a.shape != b.shape:
         raise ValueError(
             f"Arguments a and b should have the same shape, got {a.shape} != {b.shape}"
@@ -167,14 +175,11 @@ def modified_tanimoto(a: np.array, b: np.array) -> float:
 
     # calculate Tanimoto coefficient based on '0' bits
     t_1 = 1
-
     if n_00 != n_features:
         # bit strings are not all '0's
         t_1 = n_11 / (n_features - n_00)
-
     # calculate Tanimoto coefficient based on '1' bits
     t_0 = 1
-
     if n_11 != n_features:
         # bit strings are not all '1's
         t_0 = n_00 / (n_features - n_11)
@@ -189,18 +194,23 @@ def modified_tanimoto(a: np.array, b: np.array) -> float:
     mt = (((2 - p) / 3) * t_1) + (((1 + p) / 3) * t_0)
     return mt
 
+
 def scaled_similarity_matrix(X: np.array) -> np.ndarray:
     r"""Compute the scaled similarity matrix.
+
     .. math::
         X(i,j) = \frac{X(i,j)}{\sqrt{X(i,i)X(j,j)}}
+
     Parameters
     ----------
     X : ndarray of shape (n_samples, n_samples)
         Similarity matrix of `n_samples`.
+
     Returns
     -------
     s : ndarray of shape (n_samples, n_samples)
         A scaled symmetric similarity matrix.
+
     """
     if X.ndim != 2:
         raise ValueError(f"Argument similarity matrix should be a 2D array, got {X.ndim}")
@@ -216,11 +226,9 @@ def scaled_similarity_matrix(X: np.array) -> np.ndarray:
         )
 
     # scaling does not happen if the matrix is binary similarity matrix with all diagonal elements as 1
-
     if np.all(np.diag(X) == 1):
         print("No scaling is taking effect")
         return X
-
     else:
         # make a scaled similarity matrix
         n_samples = len(X)
@@ -232,6 +240,7 @@ def scaled_similarity_matrix(X: np.array) -> np.ndarray:
         # divide each element of the matrix by the product of the square roots of diagonal elements
         s = X / product_sqrt_diag
         return s
+
 
 def similarity_index(x: np.array, y: np.array, sim_index: str) -> float:
     """Compute similarity index matrix.
@@ -263,7 +272,6 @@ def similarity_index(x: np.array, y: np.array, sim_index: str) -> float:
     sim : float
         The similarity index value between the feature arrays `x` and `y`.
     """
-
     # Define the similarity index functions
     similarity_indices = {
         "AC": lambda a, d, dis, p: 2 / np.pi * np.arcsin(((a + d) / p) ** 0.5),
@@ -285,17 +293,15 @@ def similarity_index(x: np.array, y: np.array, sim_index: str) -> float:
         raise ValueError(
             f"Argument sim_index={sim_index} is not recognized! Choose from {similarity_indices.keys()}"
         )
-
     if x.ndim != 1 or y.ndim != 1:
         raise ValueError(f"Arguments x and y should be 1D arrays, got {x.ndim} and {y.ndim}")
-
     if x.shape != y.shape:
         raise ValueError(
             f"Arguments x and y should have the same shape, got {x.shape} != {y.shape}"
         )
-
     a, d, dis, p = _compute_base_descriptors(x, y)
     return similarity_indices[sim_index](a, d, dis, p)
+
 
 def _compute_base_descriptors(x, y):
     """Compute the base descriptors for the similarity indices.
@@ -313,7 +319,6 @@ def _compute_base_descriptors(x, y):
         The number of common on bits, number of common off bits, number of 1-0 mismatches, and the
         length of the fingerprint.
     """
-
     p = len(x)
     a = np.dot(x, y)
     d = np.dot(1 - x, 1 - y)
