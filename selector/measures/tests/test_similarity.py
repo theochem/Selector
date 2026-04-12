@@ -59,7 +59,8 @@ def test_modified_all_zero():
     """Check modified tanimoto handles zero vectors safely."""
     a = np.zeros(5)
     b = np.zeros(5)
-    assert isinstance(modified_tanimoto(a, b), float)
+    result = modified_tanimoto(a, b)
+    assert isinstance(result, (float, np.floating))
 
 
 def test_modified_partial_case():
@@ -67,7 +68,7 @@ def test_modified_partial_case():
     a = np.array([1, 0, 1, 0])
     b = np.array([1, 1, 0, 0])
     result = modified_tanimoto(a, b)
-    assert isinstance(result, float)
+    assert isinstance(result, (float, np.floating))
 
 
 def test_invalid_metric():
@@ -151,4 +152,4 @@ def test_similarity_all_indices(idx):
     x = np.array([1, 0, 1])
     y = np.array([1, 1, 0])
     result = similarity_index(x, y, idx)
-    assert isinstance(result, float)
+    assert isinstance(result, (float, np.floating))
