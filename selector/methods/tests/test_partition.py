@@ -183,3 +183,65 @@ def test_medoid():
     selector = Medoid()
     selected_ids = selector.select(features, size=2)
     assert_equal(selected_ids, [0, 3])
+
+
+def test_grid_partition_per_axis_bins_initialization():
+    """Test initializing GridPartition with per-axis bin counts."""
+    # Valid list input
+    selector = GridPartition(nbins_axis=[3, 5])
+    assert selector.nbins_axis == [3, 5]
+
+    # Valid int input
+    selector = GridPartition(nbins_axis=5)
+    assert selector.nbins_axis == 5
+
+
+@pytest.mark.parametrize("method", [
+    "equisized_independent",
+    "equisized_dependent",
+    "equifrequent_independent",
+    "equifrequent_dependent",
+])
+def test_grid_partition_per_axis_bins_execution(method):
+    """Test execution of all partitioning methods with per-axis bin counts."""
+    rng = np.random.default_rng(42)
+    X = rng.standard_normal((100, 2))
+
+    nbins_axis = [3, 7]
+    selector = GridPartition(nbins_axis=nbins_axis, bin_method=method)
+
+    # Should not raise any errors
+    bins = selector.get_bins_from_method(X)
+
+    # Every sample must appear in exactly one bin
+    all_indices = []
+    for sample_list in bins.values():
+        all_indices.extend(sample_list)
+    assert sorted(all_indices) == list(range(100))
+
+
+def test_grid_partition_per_axis_mismatch():
+    """Test that ValueError is raised when nbins_axis length doesn't match features."""
+    rng = np.random.default_rng(42)
+    X = rng.standard_normal((100, 2))
+
+    # 3 bin counts for 2 features should fail
+    selector = GridPartition(nbins_axis=[2, 5, 10])
+    with assert_raises(ValueError):
+        selector.get_bins_from_method(X)
+
+
+def test_grid_partition_backward_compatibility():
+    """Ensure single integer nbins_axis produces identical results to new list form."""
+    rng = np.random.default_rng(42)
+    X = rng.standard_normal((50, 2))
+
+    selector_int = GridPartition(nbins_axis=5, bin_method="equifrequent_independent")
+    selector_list = GridPartition(nbins_axis=[5, 5], bin_method="equifrequent_independent")
+
+    bins_int = selector_int.get_bins_from_method(X)
+    bins_list = selector_list.get_bins_from_method(X)
+
+    assert bins_int.keys() == bins_list.keys()
+    for key in bins_int:
+        assert bins_int[key] == bins_list[key]
