@@ -341,8 +341,9 @@ class OptiSim(SelectionBase):
 
         Parameters
         ----------
-        x: ndarray of shape (n_samples, n_features)
-            Feature matrix of `n_samples` samples in `n_features` dimensional feature space.
+        x: ndarray of shape (n_samples, n_features) or (n_samples, n_samples)
+            Feature matrix of `n_samples` samples in `n_features` dimensional feature space,
+            or a pre-computed symmetric pairwise distance matrix.
         max_size : int
             Maximum number of samples to select.
 
@@ -352,59 +353,54 @@ class OptiSim(SelectionBase):
             List of indices of selected sample indices.
 
         """
+        n_samples = len(x)
+        is_dist_matrix = (x.ndim == 2 and x.shape[0] == x.shape[1] and np.allclose(np.diag(x), 0))
+
         # set up reference index
         selected = get_initial_selection(x=x, x_dist=None, ref_index=self.ref_index, fun_dist=None)
         count = len(selected)
 
-        # establish a kd-tree for nearest-neighbor lookup
-        tree = spatial.KDTree(x)
-        # use a random number generator that will be used to randomly select points
         rng = np.random.default_rng(seed=self.random_seed)
+        bv = np.zeros(n_samples, dtype=bool)
 
-        n_samples = len(x)
-        # bv will serve as a mask to discard points within radius r of previously selected points
-        bv = np.zeros(n_samples)
-        candidates = list(range(n_samples))
-        # determine which points are within radius r of initial point
-        # note: workers=-1 uses all available processors/CPUs
-        index_remove = tree.query_ball_point(
-            x[self.ref_index], self.r, eps=self.eps, p=self.p, workers=-1
-        )
-        # exclude points within radius r of initial point from list of candidates using bv mask
-        for idx in index_remove:
-            bv[idx] = 1
-        candidates = np.ma.array(candidates, mask=bv)
+        # Initialize min_dists: minimum distance from each point to any selected point.
+        min_dists = np.full(n_samples, np.inf)
+
+        if is_dist_matrix:
+            # ath A: Distance matrix path
+            for idx in selected:
+                min_dists = np.minimum(min_dists, x[idx])
+                bv |= x[idx] <= self.r
+        else:
+            # Path B: Raw feature path
+            for idx in selected:
+                dists = np.linalg.norm(x - x[idx], ord=self.p if np.isfinite(self.p) else np.inf, axis=1)
+                min_dists = np.minimum(min_dists, dists)
+                bv |= dists <= self.r
+
+        candidates = np.where(~bv)[0]
 
         # while there are still remaining candidates to be selected
-        # compressed returns all the non-masked data as a 1-D array
-        while len(candidates.compressed()) > 0:
-            # randomly select samples from list of candidates
-            try:
-                sublist = rng.choice(candidates.compressed(), size=self.k, replace=False)
-            except ValueError:
-                sublist = candidates.compressed()
+        while len(candidates) > 0:
+            k = min(self.k, len(candidates))
+            sublist = rng.choice(candidates, size=k, replace=False)
 
-            # create a new kd-tree for nearest neighbor lookup with candidates
-            new_tree = spatial.KDTree(x[selected])
-            # query the kd-tree for nearest neighbors to selected samples
-            # note: workers=-1 uses all available processors/CPUs
-            search, _ = new_tree.query(x[sublist], eps=self.eps, p=self.p, workers=-1)
-            # identify the nearest neighbor with the largest distance from previously selected samples
-            best_idx = sublist[np.argmax(search)]
+            best_idx = sublist[np.argmax(min_dists[sublist])]
             selected.append(best_idx)
 
             count += 1
             if count > max_size:
-                # do this if you have reached the maximum number of points selected
                 return selected
 
-            # eliminate all samples within radius r of the selected sample
-            index_remove = tree.query_ball_point(
-                x[best_idx], self.r, eps=self.eps, p=self.p, workers=-1
-            )
-            for idx in index_remove:
-                bv[idx] = 1
-            candidates = np.ma.array(candidates, mask=bv)
+            if is_dist_matrix:
+                min_dists = np.minimum(min_dists, x[best_idx])
+                bv |= x[best_idx] <= self.r
+            else:
+                new_dists = np.linalg.norm(x - x[best_idx], ord=self.p if np.isfinite(self.p) else np.inf, axis=1)
+                min_dists = np.minimum(min_dists, new_dists)
+                bv |= new_dists <= self.r
+
+            candidates = np.where(~bv)[0]
 
         return selected
 
