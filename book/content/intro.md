@@ -1,9 +1,28 @@
 <!-- #region -->
 # Welcome to QC-Selector's Documentation!
 
-[Selector](https://github.com/theochem/Selector) is a free, open-source, and cross-platform Python library designed to help you effortlessly identify the most diverse subset of molecules from your dataset. Please use the following citation in any publication using Selector library:
+[Selector](https://github.com/theochem/Selector) is a free, open-source, and cross-platform Python library designed to help you effortlessly identify the most diverse subset of molecules from your dataset. Please use the following citation in any publication using the `selector` library:
 
-**"TO be added"**
+> **Selector: A General Python Library for Diverse Subset Selection.**
+> Fanwang Meng, Marco Martínez González, Valerii Chuiko, Alireza Tehrani,
+> Abdul Rahman Al Nabulsi, Abigail Broscius, Hasan Khaleel, Kenneth López-Pérez,
+> Ramón Alain Miranda-Quintana, Paul W. Ayers, Farnaz Heidar-Zadeh.
+> *J. Chem. Inf. Model. 66 (3), 1275–1285 (2026).*
+> https://doi.org/10.1021/acs.jcim.5c01499
+
+```bibtex
+@article{selector_library,
+    author = {Meng, Fanwang and Martínez González, Marco and Chuiko, Valerii and Tehrani, Alireza and Al Nabulsi, Abdul Rahman and Broscius, Abigail and Khaleel, Hasan and López-Pérez, Kenneth and Miranda-Quintana, Ramón Alain and Ayers, Paul W. and Heidar-Zadeh, Farnaz},
+    title = {Selector: A General Python Library for Diverse Subset Selection},
+    journal = {Journal of Chemical Information and Modeling},
+    volume = {66},
+    number = {3},
+    pages = {1275--1285},
+    year = {2026},
+    doi = {10.1021/acs.jcim.5c01499},
+    url = {https://doi.org/10.1021/acs.jcim.5c01499},
+}
+```
 
 The Selector source code is hosted on [GitHub](https://github.com/theochem/Selector) and is released under the [GNU General Public License v3.0](https://github.com/theochem/Selector/blob/main/LICENSE). We welcome any contributions to the Selector library in accordance with our Code of Conduct; please see our [Contributing Guidelines](https://qcdevs.org/guidelines/QCDevsCodeOfConduct/). Please report any issues you encounter while using Selector library on [GitHub Issues](https://github.com/theochem/Selector/issues). For further information and inquiries please contact us at qcdevs@gmail.com.
 

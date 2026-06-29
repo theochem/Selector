@@ -14,18 +14,17 @@ The `Selector` library provides methods for selecting a diverse subset of a (mol
 
 Please use the following citation in any publication using the `selector` library:
 
-```md
+```bibtex
 @article{selector_library,
-author = {Meng, Fanwang and Martínez González, Marco and Chuiko, Valerii and Tehrani, Alireza and Al Nabulsi, Abdul Rahman and Broscius, Abigail and Khaleel, Hasan and López-P{\'e}rez, Kenneth and Miranda-Quintana, Ramón Alain and Ayers, Paul W. and Heidar-Zadeh, Farnaz},
-title = {Selector: A General Python Library for Diverse Subset Selection},
-journal = {Journal of Chemical Information and Modeling},
-volume = {0},
-number = {0},
-pages = {null},
-year = {0},
-doi = {10.1021/acs.jcim.5c01499},
-note ={PMID: 41591801},
-URL = {https://doi.org/10.1021/acs.jcim.5c01499}
+    author = {Meng, Fanwang and Martínez González, Marco and Chuiko, Valerii and Tehrani, Alireza and Al Nabulsi, Abdul Rahman and Broscius, Abigail and Khaleel, Hasan and López-Pérez, Kenneth and Miranda-Quintana, Ramón Alain and Ayers, Paul W. and Heidar-Zadeh, Farnaz},
+    title = {Selector: A General Python Library for Diverse Subset Selection},
+    journal = {Journal of Chemical Information and Modeling},
+    volume = {66},
+    number = {3},
+    pages = {1275--1285},
+    year = {2026},
+    doi = {10.1021/acs.jcim.5c01499},
+    url = {https://doi.org/10.1021/acs.jcim.5c01499},
 }
 ```
 
