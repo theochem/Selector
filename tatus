@@ -1,0 +1,931 @@
+[33m48a161f[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmy-feature-branch[m[33m)[m Added test.txt on my-feature-branch
+[33macc3304[m Added test.txt on my-feature-branch
+[33m918920c[m[33m ([m[1;32mmain[m[33m)[m my first contributtion
+[33m5183815[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Reverted to macos from macOS
+[33m1ebbc7f[m Fix: workflow issues to ensure github actions run reliably
+[33m74f9ae5[m Fix: Restrict jupyter-book version to restore website deployment
+[33m1d500a0[m Fix: Typo in documentation of get_initial_selection function
+[33ma536369[m[33m ([m[1;33mtag: [m[1;33mv0.1.4[m[33m)[m Update numpy version
+[33me96c937[m Fix numpy.trapz, deprecated since NumPy 2.0
+[33mddfeb9b[m Add reference information
+[33m8e244f4[m[33m ([m[1;33mtag: [m[1;33mv0.1.3[m[33m)[m Clean up the image classification example
+[33ma0cd5c3[m Fix the title of the Jupyter notebook
+[33m9f42054[m Use Python 3.12
+[33m2377868[m Add support of Python 3.14
+[33m00c90be[m Update Jupyter book configurations
+[33m356f009[m Add example of image classification
+[33md9bf372[m Add subset selection example with class labels
+[33m9c3cd6c[m[33m ([m[1;33mtag: [m[1;33mv0.1.2[m[33m)[m Update docstrings and documentation (#281)
+[33m48864dd[m[33m ([m[1;33mtag: [m[1;33mv0.1.1a1[m[33m, [m[1;33mtag: [m[1;33mv0.1.1[m[33m)[m Add checking that binary matrix is not suitable for hypershpere overlap (#280)
+[33m6e0da09[m Fix outdated docstrings (#279)
+[33mba3969e[m Fix imports (#278)
+[33m06ea0d4[m[33m ([m[1;33mtag: [m[1;33mv0.1.0[m[33m)[m Update README.md (#277)
+[33m913dc88[m Add missing dependencies (#276)
+[33mc04a253[m[33m ([m[1;31morigin/add_dist[m[33m)[m Add link to webserver (#275)
+[33m2367dae[m[33m ([m[1;33mtag: [m[1;33mv0.0.3[m[33m)[m Fix ref_index of `OptiSim` (#272)
+[33m282d6e3[m Hyperlink Update in Tutorial Notebooks (#271)
+[33m2eb1d7f[m[33m ([m[1;33mtag: [m[1;33mv0.0.2post1[m[33m)[m Add support of selecting different from subsets proportionately (#270)
+[33m90acdfe[m Clean up the distance function kwargs for `DISE` (#269)
+[33md080d9c[m Remove unused GitHub Action file for building documentation website (#267)
+[33m6c6889f[m Update TOC in website (#266)
+[33md4498a6[m[33m ([m[1;33mtag: [m[1;33mv0.0.2b12[m[33m)[m Update README.md (#265)
+[33m19c8cf7[m[33m ([m[1;33mtag: [m[1;33mv0.0.2b11[m[33m)[m Fix the building reference index when `ref_index` is None in `DISE` (#264)
+[33m198e004[m Update the Jupyter Book (#263)
+[33mc678c55[m Fix the rendering problem (#262)
+[33mba03647[m Clean up Package PyPI release (#261)
+[33m5663b0b[m Add PyPI release GitHub Action YAML file (#259)
+[33me7d0f78[m Clean up notebooks (#257)
+[33m86f7b20[m Add tutorial notebook for diversity measures (#250)
+[33m0c6189b[m Add support of distance function and flexible reference index for `DISE` (#249)
+[33m7f0a03b[m Add init to measures & similarity measures. (#254)
+[33ma7c7e63[m Update package structure (#251)
+[33m5a7e001[m Quick Start Notebook (#186)
+[33m8db346b[m Rename X --> x
+[33mad8fe15[m Use lower case argument names following numpy
+[33mca82329[m Fix typos
+[33m545f829[m Add docstrings for the divergences of MacOS and Ubuntu systems
+[33m6b6174b[m Add testing for the case when KD-Tree query gives an integer
+[33m2af583e[m Use stable sorting in numpy
+[33mdc6bebf[m Fix the KD-Tree query return
+[33me1804a4[m Rename the instance name to avoid ambiguity
+[33m68fec6a[m Fix failing tests for `DISE`
+[33me3a67c9[m Exclude neighbours of the ref_index in DISE algorithm
+[33m11806d0[m Update the usage of diversity calculations in `partition` module
+[33m2a66aeb[m Update the documentation for `diversity` module
+[33md95de42[m Rename "hypersphere overlap of subset" to "hypersphere_overlap"
+[33m773cf2f[m Update `scipy` and `pytest` version in pyproject.toml
+[33mca8ee49[m Use version 4.5.0 for codecov
+[33m8639cae[m Fix the failing codecov upload
+[33mbe49d65[m[33m ([m[1;31morigin/tmp[m[33m)[m Fix the numerical stability issue of log det function
+[33m8b46637[m Fix the errors when only some feature columns are constants for `wdud` (#225)
+[33m556b911[m Fix failing `CodeCov` report (#231)
+[33me26f375[m Make sim-based methods consistent with rest of algorithms
+[33m3d8f34a[m Minor changes to the distance-based methods
+[33m259b517[m Refactor sim.py module
+[33mffcb234[m Rename arguments in partition.py
+[33md931154[m Follow the practice of adding dependencies
+[33mfb55443[m Add missing dependencies when building
+[33m344d9bc[m Add `build` as a dependency
+[33m03a40c9[m Use `--no-isolation`
+[33m543e938[m Fix missing `-m` tag
+[33md29ce17[m Fix error with `twine`
+[33mee8ed84[m Fix the error of building packages with `setup.py`
+[33meb6cd91[m Relocate the file needed for testing
+[33m8a68fb1[m Relocate the testing module for similarity based methods
+[33mfe51b62[m Rename simlarity.py to sim.py
+[33m2590395[m Cleaning up
+[33mcf45879[m Add black fixes
+[33m141f846[m Make small fixes to docstrings
+[33m0c991a7[m Calculate medoid and outlier with inv_order = 1
+[33mb28d0d7[m Add select_outlier test
+[33m7aa3333[m Add select_medoid test
+[33me1fdcd8[m Add reference data for isim
+[33m50b4550[m Rename esim tests and improve tests documentation
+[33m529b56e[m Refactor tests to comply with new nsimilarity api
+[33me0eca7c[m Add isim method to SimilarityIndex
+[33ma04cd6a[m Refactor NSimilarity init
+[33m4ef3135[m Add new environment token to fix the failing updating coverage report (#217)
+[33mc34e2b4[m Fix the failing testing because of the architecture change of MacOS (#214)
+[33m55bf0b9[m Merge pull request #204 from FanwangM/cleaning
+[33mdbc2202[m Cleaning up
+[33m3051475[m Merge pull request #199 from Dhrumil07/scaled_similarity_support
+[33mb9c1ee6[m Merge branch 'theochem:main' into scaled_similarity_support
+[33m28edfe3[m minor changes (reformatting)
+[33mecc6b75[m Merge pull request #203 from FanwangM/update_setup
+[33m85b0aba[m Update description
+[33m0ce2e26[m Merge pull request #201 from FanwangM/fix_codecov2
+[33m84c6b93[m Merge pull request #200 from theochem/pre-commit-ci-update-config
+[33m9b7db91[m Use `setup-python` v5
+[33me6d805b[m reformatting code and fixing pre-commit errors
+[33m10caa84[m reformatting the code
+[33m7a4e446[m adding a log message for binary similarity matrices
+[33m9abce1a[m [pre-commit.ci] pre-commit autoupdate
+[33m155a79e[m added the tests for scaled_similarity_matrix method
+[33m87ca793[m added scaled_similarity_matrix method
+[33m9468665[m Merge pull request #198 from Dhrumil07/fixing_documentation
+[33m01ce9f0[m fixing the spelling errors in documentation
+[33m8be0c0f[m Merge pull request #195 from FanwangM/fix_codecov
+[33m369b053[m Upgrade codecov-action version
+[33m867a9d3[m Merge pull request #193 from FanwangM/README
+[33m3f5f7e6[m Update installation instruction
+[33mbcb6dfa[m Merge pull request #190 from theochem/pre-commit-ci-update-config
+[33m6a9d901[m [pre-commit.ci] pre-commit autoupdate
+[33mc5ecf0b[m Merge pull request #187 from theochem/fix_hypersphere_overlap_of_subset
+[33mb7fc00c[m Add fix to hypersphere_overlap_of_subset
+[33mb652992[m Minor fixes
+[33m8418c6f[m Make diversity docstring consistent
+[33m0b85329[m Reset r to r0 when sampling from multiple cluster
+[33m183e253[m Bugfix in DISE because labels were not used
+[33md8c7fff[m Rename cluster_id to labels in DISE
+[33m4a225f4[m Check labels and X have the same size
+[33ma9cf0c6[m Update condition for warning in optimize_radius
+[33m2935f62[m Make OptiSim and DISE args consistent
+[33mb43ce7f[m Improve Distance-Based methods checks & docstring
+[33mac63fe4[m Merge pull request #185 from FanwangM/readme
+[33m0de2c9b[m Remove duplicated line
+[33m97cf67d[m Merge pull request #184 from FanwangM/clean_doc
+[33m27eadc3[m Remove readthedocs.yml because we are using jupyter-book now
+[33m1be2af2[m Fix the rst file paths
+[33m259f82a[m Remove doc folder as it's useless for the jupyter-book
+[33m43f06ed[m Merge pull request #182 from FanwangM/fix_website
+[33m9da5bc0[m Add token arugments to codecov-action
+[33maad4b67[m Update conf.py for sphinx
+[33m8d0795c[m Add codecov related files to .gitignore
+[33mc8201f4[m Use secrets in GitHub and remove the explicit token for codecov
+[33m7399045[m Fix duplicated lines
+[33m2032261[m Update Python version constrain
+[33m702d2b0[m Update the timestamp from 2022 to 2023
+[33m57034a0[m Fix the order of dependencies in requirements.txt
+[33mf407926[m Remove padelpy from requirements_dev.txt
+[33mb29aa97[m Fix reference in dosctring
+[33m3375abd[m Update contents for pyproject.toml
+[33m2bebce9[m Update the package information for the jupyter book
+[33m629f760[m Merge pull request #181 from FanwangM/updates_docs
+[33m88114e5[m Clean up unwanted strings when fixing merge conflicts
+[33m476fbd6[m Fix missing coverage report
+[33m4a9eab6[m Fix failing tests with running pytest as module
+[33m7a2d3bd[m Update the configuration of pytest
+[33m1e757c9[m Fix testing folder name for flake8
+[33mf9a46b6[m Remove molecule loader
+[33m9c43699[m Update updateheaders.py
+[33m7ded582[m Clean up following pre-commit
+[33mcf83769[m Update contents of book following pre-commit
+[33m6a485ed[m Update doc content following pre-commit
+[33m3c190e1[m Add pyproject.toml draft
+[33md2a0cc8[m Rename `DiverseSelector` to `selector` for updateheaders.py
+[33me15cc19[m Update contents of README.md for package renaming
+[33m25941d9[m Add back the checking of website yaml file
+[33m3799c77[m Remove versioneer.py
+[33md832b1f[m Rename `DiverseSelector` to `selector`
+[33m8ac8714[m Remove autopepe8 from pre-commit config
+[33m12b0688[m Remove skipped folders
+[33maba1b7a[m Merge pull request #180 from FanwangM/fix_testing
+[33m33f6f87[m Rename `DiverseSelector` to `selector`
+[33mbb8e77c[m Rename `DiverseSelector` to `selector`
+[33m200db51[m Rename `DiverseSelector` to `selector`
+[33m55889b1[m Remote _version.py
+[33mded2813[m Rename package and remove versioner
+[33m7218f6b[m Rename `DiverseSelector` to `selector`
+[33m84313c1[m Update testing folder name for tox
+[33m311266a[m Remove versioner
+[33m5a7ba58[m Rename methods/dissimilarity.py to methods/distance.py
+[33m262d083[m Rename GridPartitioning to GridPartition
+[33m7b0e76f[m Rename distance.py to similarity.py
+[33m6b41d68[m Rename DirectedSphereExclusion to DISE
+[33m4080403[m Move DirectedSphereExclusion
+[33m3ac5a85[m Update HEADER
+[33mc9d9991[m Rename DiverseSelector to selector
+[33m3507a33[m Move files in test to tests
+[33m65b6dda[m Remove data files for testing molecules
+[33mcfa6d5d[m Remove unused random_seed
+[33mf242f3f[m Merge pull request #177 from FanwangM/fix_shannon_entropy
+[33mac8af8a[m Merge pull request #168 from FanwangM/pre_commit_fix
+[33mb1537b4[m Merge pull request #161 from theochem/new_similarity_methods
+[33mea825dd[m Merge pull request #162 from Ali-Tehrani/grid_partition
+[33m17b8aa8[m Merge branch 'main' into grid_partition
+[33md48b622[m Fix test_partition.py conflicts
+[33mfb037ec[m Comment to clarify the choice of interpolation x
+[33m91d1431[m Remove testing for `entropy()`
+[33m6e736ec[m Remove the `entropy()` function
+[33m4eb670d[m Merge pull request #179 from RichRick1/website
+[33me30f530[m deleted the notebook folder from doc
+[33mf0851ae[m Merge pull request #178 from FanwangM/converter
+[33m6acba2e[m Fix failing test due to the similarity matrix is not symmetric
+[33m693255f[m Add symmetric check for 2D arrays
+[33m0355767[m Polish the docstrings for `sim_to_dist()` function
+[33m5c198a9[m Add scaling factor for converters
+[33mf563117[m Add more variants of Shannon entropy and testing
+[33mc5c466a[m Remove redundant empty lines
+[33m00a234c[m Fix diversity and update testing
+[33m138104b[m Fix the implementation Shannon entropy
+[33m391c6b3[m Add testing example for Shannon entropy diversity
+[33m0d890b3[m Fix the problem when p_i equals zero
+[33m9c74867[m Merge pull request #175 from FanwangM/notebooks
+[33mce8abf9[m Polish the installazation notebook
+[33m75bc451[m Merge pull request #174 from FanwangM/fix_permission2
+[33m9c6f24d[m Only run the build on push events
+[33m69f9e6a[m Add write access to contents
+[33mea22b94[m Merge pull request #173 from FanwangM/fix_permission
+[33mb910bb1[m Disable the website build on push operation
+[33md0026ea[m Add write permission to gh-pages for `GITHUB_TOKEN`
+[33m3bc9c02[m Merge pull request #172 from FanwangM/fix_web3
+[33m8bc1cd4[m Add link of source website providing hints
+[33me1b58a4[m Fix the problem of pushing website with GitHub Actions
+[33m92effc1[m Merge pull request #170 from FanwangM/fix_ghpages
+[33m0300d3d[m Update website deployment GitHub Action
+[33m2344c1f[m Merge pull request #169 from RichRick1/website
+[33mb0de69f[m fixed logo
+[33m3eff238[m updated logo
+[33macada77[m rebuild the book
+[33mca8ca3c[m fixed landing page
+[33maa0288e[m updated installation page
+[33mf471197[m Update excluded folder settings
+[33m1ec0a22[m Fix `bandit` in pre-commit config
+[33m79e4964[m Fix black arguments in pre-commit hooks
+[33m9818e81[m Add metadata in setup.cfg
+[33ma4e97c6[m Skip several documentation related folders
+[33m2733dab[m Reorder the dependencies
+[33mffdb3eb[m Use end-of-file-fixer only for Python files
+[33m91cbe34[m Disable `autofix_prs` for pre-commit ci
+[33m65775b5[m Disable flake8 linter for now
+[33m1bd9d57[m Add .pre-commit-hooks.yaml
+[33m2ded61a[m Update .pre-commit-config.yaml
+[33mf696e71[m Remove .lgtm.yml
+[33m3c984a4[m Add the testing folder of methods to codecovm.yml
+[33m2087180[m Update codecov.yml to fix the coverage calculations
+[33m91f5f30[m Update folder name in .coveragerc
+[33m9ab7507[m Merge pull request #166 from FanwangM/quick_fix
+[33m168ae7f[m Remove testpath in tox.ini
+[33m2ce5986[m Fix test paths
+[33m1d33448[m Merge pull request #165 from FanwangM/fix_testing
+[33m4519e6c[m Only publish the website when in main branch
+[33m84ff7c7[m Add .pre-commit-config.yaml
+[33m8ab158f[m Add .pre-commit-config.yaml
+[33me5c175a[m Fix value check
+[33meeac3e1[m Remove unnecessary check
+[33mfc65196[m Improve docstring
+[33mb0e74cb[m Change weight factor functions to private methods
+[33mba30f16[m Add one liner docstrings to SI dict functions
+[33mf3243b2[m Correct tests for the new methods api
+[33mad106e6[m Clean calculate_outlier
+[33m6a8569d[m Clean calculate_medoid
+[33mf39ac1f[m Clean __call__ method
+[33m39d5983[m Drop .pre-commit-config.yaml
+[33m389ead6[m Clean _calculate_counters method
+[33m59aeb38[m Clean SimilarityIndex docstring
+[33m17aff2d[m Fix package directory for coverage report
+[33mce013c8[m Temporarily stop linter checkings
+[33me5649e3[m Fix `scipy` version
+[33m496691c[m Add pre-commit
+[33m44f1b8d[m Add pre-commit configuration
+[33m988e04b[m Disable linter checking for now
+[33mbdca990[m Merge pull request #164 from FanwangM/add_pyproject
+[33m1b4680f[m Enable Python 3.10
+[33m076c501[m Remove duplicated dependencies in tox.ini
+[33m4076bf5[m Use Python 3.9, 3.10 and 3.11
+[33md338bc0[m Use Python 3.11 for testing
+[33m2b58908[m Downgrade `scipy` version
+[33ma351b9c[m Update CI configurations
+[33m87c6052[m Upgrade `pip` before using it in CI
+[33m7009c26[m Fix `scipy` version because of the change of `scipy` testing
+[33m799c757[m Fix `pytest` 7.4.0 for temporary solution because of ImportPathMismatchError from `pytest`
+[33mb2155cd[m Add `hypothesis` as required by pytest for Python 3.8
+[33m8d22364[m Fix testing folder path
+[33mfe312ba[m Fix test directory
+[33m6db0f8e[m Remove molecules module
+[33m7584e63[m[33m ([m[1;31morigin/molecular_features[m[33m)[m Rename test to tests
+[33mb4b6566[m Fix black issues of converter module
+[33ma7d9402[m Update README.md
+[33m05e6d8d[m Remove unused import and fix balck issues
+[33m8f8341f[m Update __all__ of distance.py module
+[33md0d83cc[m Refresh common module and fix black violations
+[33mab1847b[m Remove empty test_clustering.py file
+[33m208a926[m Refactor dissimilarity module of selectors
+[33ma80f685[m Change methods/base.py arg names & fix black issues
+[33m6ea40df[m Remove repeated implementation of partition_points_to_bins_equifrequent
+[33mfd20c2f[m Polish GridPartitioning class
+[33mc43ed7d[m Fix black violations of test_partition.py
+[33m96d4014[m Fix hypersphere arg to match correct naming
+[33m60556e5[m Fix bug in compute_hypersphere
+[33ma954a2c[m Fix diversity to be a list of tuples
+[33m8cbc218[m Remove redundant utils.py module
+[33ma87c600[m Merge pull request #150 from maximilianvz/polish_dissimilarity
+[33ma60e1f3[m Merge branch 'main' into polish_dissimilarity
+[33m7b8b68d[m Add support of `explicit_diversity_index` for computing the diversity
+[33m9764f7e[m Update the calculation of diversity with fixed function of `compute_diversity`
+[33mb9ca746[m Update doc typos
+[33mcc7a9ae[m Add and fix whitespaces
+[33mdd27ce0[m Refactor getting the bins to a seperate method
+[33mf80dc97[m Add tests for grid partioning
+[33med880bc[m Refactor all methods in Grid partitioning
+[33m5c7a53a[m Remove max_dim and refactor cells variable
+[33mde79fc5[m Improve docs to grid partitioning
+[33m64c2600[m Remove cluster ids and projection onto PCA
+[33m2f0600f[m Fix to compute diversity in grid partitioning
+[33mb26fac0[m Merge pull request #163 from FanwangM/polish_diversity
+[33md10686e[m Update GitHub Action versions
+[33m7bf5088[m Replace white spaces with underscore for diversity measurement methods
+[33m011b3b3[m Merge pull request #138 from theochem/fix_diversity
+[33m5b9f1e8[m Fix failing tests
+[33m2127fba[m Merge branch 'main' into fix_diversity
+[33m0e26edc[m Reformat docstrings
+[33m4e0f5e0[m Merge pull request #158 from xychem/fix_optisim
+[33m06fdb1b[m Get tests to 100% coverage
+[33m5fa00d3[m Adjust tolerance and enforce subset selection
+[33mf7232cd[m Merge pull request #139 from theochem/sim2dist
+[33mc262999[m Check raises in the NSimilarity class
+[33mefc1693[m Join related checks for correct paremeters
+[33md805500[m Improve raises for SimilarityIndex class
+[33mf7b386d[m Add checks to calculate_medoid
+[33mb93eddb[m Change variable name to be consistent
+[33m4e1a6dc[m Add tests for init and _calculate_counters raises
+[33m3ab9f1d[m Rename ref_similarity_data.txt to ref_similarity_data.csv
+[33m4e9baf9[m Add linters fixes to tests
+[33m187d50b[m Add linters fixes
+[33m3994f5b[m fix type-hint error
+[33mf53c758[m Fix __init__.py
+[33mad2a7a2[m Check for valid function parameter values
+[33m76ab608[m Add type hinting to functions
+[33m09fc019[m Improve `select_from_cluster` of `NSimilarity`
+[33mce75946[m Add black fixes to simmilarity tests
+[33m6c809bf[m Fix tests location
+[33mf4920ea[m Add type hints to _get_new_index
+[33m9daeb46[m Add type hints to Nsimilarity.__init__
+[33md159947[m Improve styling  and format
+[33ma751625[m Format fixes
+[33mc5183d5[m Black and Format fixes
+[33m3190fc4[m Add select_from_cluster method and test
+[33m3280fc6[m Implement get_new_index and test
+[33m82f8b7e[m Add member function _scale_data
+[33ma6e41ca[m Add class NSimilarity
+[33me00f3f2[m Code calculate_outlier member function and test
+[33mbe8fc4f[m Code calculate_medoid member function and test
+[33m91870c6[m Select proper parameter combinations for tests
+[33ma4fd03e[m Code _call method of Similarity index and add test
+[33m68db9dd[m Add utility functions for calculating indexes
+[33m2707feb[m Code _calculate_counters class method
+[33m931c573[m Create SimilarityIndex class
+[33mc17b346[m Merge pull request #160 from FanwangM/updated_readme
+[33m9e189d2[m Update README.md
+[33mdf8e626[m Merge pull request #157 from theochem/improve_notebook
+[33mecbab18[m Small improvement to text
+[33mbbe5031[m Improve Jupyter Notebook Tutorial
+[33mbc4c2fd[m Merge pull request #155 from theochem/debug_DirectedSphereExclusion
+[33meefe251[m Fix small bug on OptiSim class
+[33m4eb3c15[m Debug DirectedSphereExclusion
+[33m32a8733[m Fix tolerance value
+[33md0b9c79[m Merge pull request #153 from RichRick1/book
+[33m717452a[m Improve while loop for coverage
+[33mcf07b24[m Update website_auto.yml
+[33mf660144[m Update website_auto.yml
+[33m35c4e70[m Change "Notes" to "References"
+[33mc2619ed[m Fix parameter description spacing
+[33m14fe90f[m Update website_auto.yml
+[33m0357cb7[m Update website_auto.yml
+[33mb54df4a[m Update requirements.txt
+[33mc504952[m Update website_auto.yml
+[33mc7b7eb7[m Create website_auto.yml
+[33m322fe51[m build book
+[33m640500e[m added autodeploy
+[33mc5dfee5[m added autodeploy
+[33m7aaea32[m Merge pull request #151 from RichRick1/book
+[33m8b1cff6[m Merge branch 'main' into book
+[33m265b8b2[m addresses issues
+[33m7aeec91[m Merge pull request #147 from theochem/test_notebook
+[33m64eedbe[m fixed the text
+[33m9f0b4a2[m added logo
+[33m6886e48[m added logo
+[33maf4ffb8[m added the interactive colab launching
+[33mc8412e7[m updated book
+[33m161bf2c[m Fix typo
+[33ma5bd987[m Polish documentation and variable names
+[33m9ec93c8[m created book template
+[33m4af52e1[m move nearest average tanimoto to diversity.py, add tests
+[33m7ffe23c[m Small fixes for the examples to work
+[33m2f715c0[m Add black fixes
+[33m573a5c3[m Fix Directed Sphere Exclusion example (in notebook)
+[33m2630575[m Fix grid partitioning example (notebook)
+[33m517875e[m Fix maxsum example
+[33m5a5f1d7[m Fix MinMax selection with clusters example
+[33m808d468[m Fix example Grid Partitioning Method
+[33m6da8c9c[m Fix Directed Sphere Exclusion example
+[33mf90bc75[m Fix OptiSim example
+[33m89dc2ee[m Fix Brute Strength - MaxMin example
+[33ma39237b[m Generate synthetic data using sklearn
+[33m2a8ac47[m Merge pull request #142 from theochem/directed_spheres
+[33mee0592b[m Merge branch 'main' into directed_spheres
+[33mf62cea9[m Fix long line
+[33md5c1fbc[m Finalize DirectedSphereExclusion implementation
+[33m49ec003[m add cs as explicit_diversity_index argument, update docs
+[33m59e2af6[m Fix failed tests, wrong imports, and black updates
+[33m1291c47[m Merge pull request #137 from theochem/polish_dist
+[33m594c3d1[m Fix coverage configuration
+[33m4d29f11[m Update docstring, black fixes, & error messages
+[33m68b938e[m Finalize test_distance.py and apply black
+[33m7bcb291[m Make Parameters docstring match sklearn
+[33m74f9764[m Finalize nearest_average_tanimoto function
+[33m563fb46[m Finalize tanimoto function
+[33mdc92f44[m Finalize pairwise_similarity_bit function
+[33mbe63b09[m address pull request comments, clean docs
+[33mc715aa9[m optimize nearest_average_tanimoto, add comments to modified_tanimoto
+[33m791701c[m add testing, docs to modified_tanimoto
+[33m4c645e4[m remove compute_distance_matrix, add tanimoto tests
+[33md338ed4[m Merge pull request #146 from FanwangM/fix_failed_refactor
+[33m2f31904[m Rename `total_diversity_volume` --> `hypersphere_overlap_of_subset`
+[33mb90f19d[m Merge pull request #145 from FanwangM/fix_coverage_1
+[33mb5cc6a1[m Fix the coverage report by excluding all test folders
+[33mc5da650[m add error checking to shannon entropy
+[33m47ee5be[m fix gini coeff error checking
+[33m0a4984a[m clean up variable naming, add test coverage
+[33m6a48b92[m address pull request comments
+[33mb797a2e[m Update github workflows to use v3 of Actions
+[33m8510e77[m Merge pull request #140 from maximilianvz/update_dissimilarity
+[33m1f8090b[m Merge branch 'main' into update_dissimilarity
+[33md8ef2cc[m add n_iter as user specified argument
+[33m7250e73[m rename predict_radius, add comments, docs
+[33mbb24152[m optimize Directed_Spheres, add comments, tests
+[33m1ebf549[m add comments to DirectedSphereExclusion, predict_radius
+[33me23c83d[m optimize covariance function, edit code style
+[33m29cd197[m refactor utils to converter module
+[33m797ac7a[m add divide by zero error checking
+[33mfd0cac9[m Remove dist_to_similarity(), and int passed as 'metric'
+[33m5be6a69[m add gravity(), co_occur()
+[33mef65c76[m add single value as input
+[33m23b6ebc[m add error check and blackspace
+[33m4d71c66[m add more conversion methods
+[33m4c2e209[m add gaussian()
+[33m4be2e53[m add reciprocal(), exponential()
+[33m8501187[m expand documentation
+[33m491b01a[m added testing coverage
+[33m7624616[m improve entropy run time and fix math notation
+[33m6a479ae[m fix failing tests due to references to total_diversity_volume
+[33m3079206[m remove redundant arguments
+[33m795f557[m replace references to total_diversity_volume
+[33m868da8c[m rename hypersphere_overlap arguments
+[33m77354e2[m remove redundant arguments
+[33m6bd272f[m rename gini_coefficient arguments
+[33m6255721[m Move feature generation functionality to molecules module
+[33m393a857[m fix total_diversity_volume, rename to hypersphere_overlap_of_subset
+[33m2d2fbba[m Reformat blackspace
+[33m66601a3[m fix wdud implementation, add wdud tests
+[33mfac6e60[m fix shannon_entropy failing tests
+[33mdd56668[m fix logdet documentation
+[33ma4c767d[m fix logdet documentation
+[33m56a7ff3[m add error message to shannon_entropy
+[33mdc4b15e[m document Wasserstein Distance function
+[33m50214e6[m fix shannon_entropy implementation
+[33mebaf13a[m fix logdet to use mol x feature matrix as input
+[33m6068f01[m fix spelling, add latex documentation
+[33maf1a5b7[m fix variable overwriting in entropy()
+[33me9c21bc[m remove explicit_diversity_index
+[33mf3c510b[m Fixed conversion of strings to callables issue (#129)
+[33mb0afcaf[m Add reference for MaxMin algorithm
+[33m9449eeb[m Add comments to (test_)dissimilarity.py
+[33m7992c9c[m Update base.py
+[33m6ce94c9[m Remove clustering module from __init__
+[33mf292666[m Remove methods/clustering.py
+[33m76c9adc[m Move base.py module to methods/base.py
+[33m7be2723[m Merge pull request #127 from theochem/refactor_selectors
+[33mc419e71[m Refactor selectors.py by splitting it into smaller modules
+[33md84b2c8[m Fix installation problem and add missing dependencies
+[33m7305ceb[m Merge pull request #102 from FanwangM/notebooks
+[33m9beb93f[m Merge branch 'main' into notebooks
+[33m498247e[m Merge pull request #120 from alnaba1/perf
+[33m3beba2e[m Add multiprocessing
+[33ma7803b6[m Fix linters
+[33m6741662[m Fix linters
+[33me48a49e[m Merge branch 'main' into perf
+[33mdfc820d[m Fix build error
+[33mca5be4f[m Fix bug
+[33m79502f5[m Optimize selectors
+[33mc7327fc[m Optimize selectors
+[33m0130fb1[m Improve DISE/OptiSim performance
+[33m79a46f3[m Merge pull request #118 from alnaba1/optisim
+[33mb8e914c[m Add tester and docstring
+[33m492443c[m Add source
+[33me64d32a[m Fix tester issue
+[33mdca6da9[m Update tester
+[33m995cb69[m Improve Optisim Performance
+[33med6516d[m Merge pull request #117 from theochem/badge_clean
+[33m6327388[m Clean Python version badge
+[33m8483509[m Merge pull request #115 from FanwangM/fix_imports
+[33me011c6c[m Add __all__ in `selectors.py`
+[33m876f852[m Merge pull request #114 from alnaba1/restructure
+[33m22bdebd[m Fix error with KNN
+[33m652f052[m linters
+[33m367f0fb[m Remove redundancy
+[33mf2039bf[m Fix linters
+[33m6a54fcc[m Fix linters
+[33mcd7b6f3[m Merge branch 'main' into restructure
+[33m20931b2[m Restructure and improve sphere exclusion/kdtree
+[33m8f60145[m Merge pull request #110 from alnaba1/kdtree
+[33me8d0695[m Fix linters
+[33m39ebf95[m Fix linters
+[33mb971ed5[m linters
+[33m998f74f[m Add tests for KDTree, fix bug
+[33m5b0324b[m Finalize KDTree
+[33mcaad6eb[m Fix linters
+[33md2c4786[m Add documentation
+[33madd7068[m tox
+[33m7eebf77[m Fixing tox
+[33ma3556ec[m KDTree performance improvements
+[33m60975b8[m Improve KDTree selection and efficiency
+[33m8370f87[m Merge pull request #111 from alnaba1/radius
+[33mb2407f9[m Fix radius bug
+[33m4a55e7d[m Fix small radius bug
+[33m711d3a8[m Add warning when radius predictor fails
+[33m46351a6[m Improve behavior when given radius
+[33mbc59028[m KDTree based selector prototype
+[33m5efa6ac[m Update practical example notebook
+[33m1ae09f9[m Add `__all__` for selector module
+[33m364dee8[m Minor fix of Jupyter notebooks
+[33m765e681[m Add synthetic data demo
+[33mec25daf[m Merge pull request #97 from FanwangMeng/stratified
+[33medc3e66[m Clean up features module
+[33mf37e1ab[m Add tests for feature augmentation
+[33m01036e0[m Add feature augmenting function
+[33m9bd1377[m Merge pull request #107 from alnaba1/maxsum
+[33m7da55f4[m Add MaxSum class and tester
+[33m83aacf3[m Merge pull request #106 from alnaba1/bug_fix
+[33m9cd7da3[m Fix dimensionality bug grid partitioning
+[33m9b53c6b[m Merge pull request #105 from FanwangMeng/rst_config2
+[33m88fe7fd[m Update rst checking configuration wrt rstcheck new release
+[33mcdeeff9[m Merge pull request #101 from fwmeng88/add_docs
+[33m23536f9[m Fix duplicated display of `Methods` section in documentation
+[33m715bd6b[m Merge pull request #100 from fwmeng88/add_docs
+[33me1540e7[m Update readthedocs.yml
+[33ma4f5eb0[m Merge pull request #99 from fwmeng88/add_docs
+[33m0eaa4e7[m Add working doc skleton
+[33m963c71a[m Fix documentation of `features.py`
+[33mf228ecd[m Clean up utils.py
+[33m797d550[m Update base class documentation cofiguration
+[33m9ed463b[m Add documentation skeleton
+[33m02727f5[m Delete requirements.yaml
+[33m772f0be[m Merge branch 'main' of https://github.com/theochem/DiverseSelector into main
+[33m6054aaf[m Make documentation uppercase
+[33m028eaca[m Merge pull request #98 from alnaba1/selector_fix
+[33m5293879[m Fix linters
+[33m4416d6e[m Merge branch 'main' of https://github.com/theochem/DiverseSelector into main
+[33m3f1b653[m Add tolerance for radius predictor, references
+[33m5351c00[m Merge pull request #96 from alnaba1/selector_fix
+[33m190ad12[m Fix undefined `ExplicitBitVector`
+[33m596c938[m Use numpy for arr_range
+[33m3de7d27[m Fix linters
+[33m89f1d5d[m Fix grid partitioning, refactor, add documentation
+[33me18651a[m Merge pull request #95 from fwmeng88/fix_feature
+[33maa9df22[m Fix pylint errors
+[33mcf48392[m Fix pylint
+[33m0b07de4[m Merge pull request #94 from fwmeng88/fix_feature
+[33mbe983e9[m Ignore pylint C0415: Import outside toplevel
+[33m2022fc8[m Fix pyline and flake8 errors
+[33me7b44c5[m Clean up `features.py`
+[33mce2c8f4[m Fix failing error of feature calculations by fixing the order of molecules
+[33m0ee1ee7[m Remove unused function `compute_features`
+[33mb31f52c[m Fix CSV file name
+[33mdd3d593[m Merge pull request #93 from RichRick1/clean
+[33m048e11e[m fixed the case with less small amount of molecules in a cluster
+[33mfcb3014[m Import mordred & padelpy inside the functions
+[33m9556d7c[m Add random_seed arg to initializer
+[33md76e598[m Merge pull request #92 from RichRick1/clean
+[33m5c0c5cd[m add and fixed tests
+[33mf9f27b6[m Merge pull request #91 from fwmeng88/fix_feature
+[33md09edf0[m Add comments to select method of SelectionBase
+[33ma13855b[m Fix testing for features
+[33m19f1552[m Merge pull request #90 from RichRick1/clean
+[33me01e8f5[m Merge branch 'main' into clean
+[33mdb9f648[m Bugfix optisim and sphereexclusion
+[33mc74b61a[m Fix formatting and bug in `rdkit_desc`
+[33maac32e8[m fixed func
+[33m468b3f4[m fixing style
+[33mbbcc2bf[m Delete extra csv
+[33m71ca2b4[m Merge pull request #89 from RichRick1/main
+[33m280f65c[m add files for testing
+[33mda99828[m Merge pull request #1 from RichRick1/refactor
+[33m9495647[m rebasing
+[33me3e5010[m rebasing
+[33mebb6031[m rebasing
+[33md962b46[m fixing rebase
+[33m9bc0143[m Remove redundant else statements to simplify code
+[33mbe81e41[m Remove n_mols and arr_dist attributes
+[33m20ac58b[m Remove unused imports
+[33m95655ea[m Update README.md
+[33m61f9f79[m fixing rebase
+[33madd1fbb[m Fix testing
+[33m6d58404[m Remove private function and move contents to main function
+[33ma62d249[m Minor updates to features.py
+[33ma9d7cc8[m Refactor feature module
+[33me9d3e1a[m Rename feature.py --> features.py
+[33mfc8a442[m add untracked file
+[33m322e160[m fixed tests
+[33m33480a7[m renamed test file
+[33m1f62c00[m Merge pull request #87 from FarnazH/minor_cleanup
+[33m92e6cb0[m compute distance with function
+[33m143cd66[m Remove redundant else statements to simplify code
+[33mfad5a33[m Remove n_mols and arr_dist attributes
+[33m41e89f2[m Remove unused imports
+[33mbf7c55e[m Update README.md
+[33m61d49d2[m Format all modules with black
+[33m7b72d0c[m deleted useless files
+[33mbceb09d[m Merge pull request #82 from fwmeng88/refactor_features
+[33m23ebc36[m Merge branch 'main' into refactor_features
+[33m7faddde[m reneame uppercase
+[33m05032d3[m Merge pull request #85 from RichRick1/refactor
+[33me47aac2[m add ability to add random seed and init compound
+[33mc86050b[m Fix testing
+[33m813bdbc[m fixed test for MinMax selector
+[33mbfe9cba[m Delete useless files
+[33m98dd72c[m delete useless test
+[33m5f37e7e[m deleted the compute_diversity methods
+[33m512557d[m Remove private function and move contents to main function
+[33mbb70cc0[m rewrite the test
+[33mfe4f723[m change string
+[33m96612e6[m change the default for MaxMin
+[33mb9f7576[m Fix import orders
+[33mc204b62[m Fix imports and __all__ listing
+[33m6f69993[m Clean up imports
+[33m8f3da4d[m Split `metric.py` into two modules
+[33mbd22914[m Minor updates to features.py
+[33mc177e5d[m added Grig Partitioning
+[33m34d7ac9[m Merge pull request #83 from RichRick1/refactor
+[33m5d2af51[m fix test
+[33ma3811c6[m write the explaining for MinMax
+[33mf8dcc76[m rewrite api
+[33m15bff97[m Merge pull request #84 from fwmeng88/div_calc
+[33mb89bdfd[m Fix import orders
+[33m62276d6[m Fix imports and __all__ listing
+[33m2c796d9[m rewrite function usage
+[33mc7a361e[m Clean up imports
+[33m889d50a[m Split `metric.py` into two modules
+[33mbd46731[m Merge branch 'main' into refactor
+[33m69d71be[m rewrite the abstract class
+[33maa5530b[m Clean up
+[33meb03802[m Refactor calculations of diversity and distance matrix
+[33m1eabb9c[m Add wrapper to compute diversity
+[33m8c4fa68[m fixing doc
+[33m9931729[m fixing issues
+[33ma3698a8[m fixing doc
+[33md975126[m fixing documentation
+[33m2c973d8[m fixing documentation
+[33m44c77f7[m fixing documentation
+[33mbab125e[m fixing documentation
+[33mbdc60a4[m fixing the requirement
+[33m58f56be[m fixed the requirement
+[33m21abb23[m add gini coefficient for diversity calculation
+[33m66c335d[m change requirement
+[33m894e7da[m add tests
+[33m295cb7f[m impoved finding max, min value of the matrix
+[33mf981614[m fixed documentation
+[33m65f3a45[m add saving and calculating diversity of the subset
+[33mec8631b[m Merge pull request #79 from fwmeng88/div_calc
+[33m756e19d[m Clean up
+[33m7f2852d[m Refactor calculations of diversity and distance matrix
+[33m0ecd2a5[m Add wrapper to compute diversity
+[33m90884ae[m Refactor feature module
+[33md10eec4[m Rename feature.py --> features.py
+[33mcc48036[m Merge pull request #78 from RichRick1/base
+[33mfec1838[m rewrite API
+[33m4112066[m fixing doc
+[33m93c1125[m fixing issues
+[33m34ecca5[m fixing doc
+[33m35b1330[m fixing documentation
+[33me204fd8[m fixing documentation
+[33m239d58a[m fixing documentation
+[33ma9f0e62[m fixing documentation
+[33m728dfc2[m fixing the requirement
+[33m3fd9f89[m fixed the requirement
+[33m6161c3b[m add gini coefficient for diversity calculation
+[33m0f1149c[m change requirement
+[33m4fbbdd8[m add tests
+[33m629c09b[m impoved finding max, min value of the matrix
+[33mfe13114[m fixed documentation
+[33m994e027[m add saving and calculating diversity of the subset
+[33m498c298[m Merge pull request #76 from Ali-Tehrani/gini
+[33md6b091a[m Merge pull request #77 from fwmeng88/code_conduct
+[33m818bffc[m Use QC-Dev code of conduct
+[33mf1fddbc[m Fix so feature is the probability dist in gini
+[33m72e0d57[m Merge pull request #75 from Ali-Tehrani/gini
+[33m61c4519[m Add test raise to gini and raise error
+[33mdd75133[m Add tests for gini coefficients
+[33m50012e8[m Add gini coefficient
+[33ma77b7f6[m Merge pull request #66 from RichRick1/demo
+[33ma40f497[m Fix import order
+[33m87625ee[m Break long lines
+[33m786cfb3[m fixed an issue with real data
+[33m7fd2611[m checked code
+[33ma21fa48[m Merge pull request #64 from fwmeng88/demo
+[33m6bc1e5b[m Rename feature --> features
+[33m35b36c2[m Merge pull request #60 from Khaleeh/Notes
+[33m0c2822f[m Merge pull request #61 from RichRick1/doc_new
+[33m16fbe1c[m fixing documentation
+[33mfb4375c[m fixed documentation
+[33md196d66[m Add references
+[33me538a0a[m Merge pull request #58 from fwmeng88/bug_fix
+[33m8e9ed5e[m Use the latest version of codecode-action
+[33m428e9f0[m Break long line
+[33m6ce91e5[m Fix failing test by correcting the argument name
+[33m20d0a13[m Add checking if `self.features` is numpy array
+[33m31ae46f[m Rearrange argument names to make it logically clear
+[33m830e37a[m Rename test file for dissimilarity based method
+[33mbfc3b17[m Rename principalcomponents --> principal_components
+[33m6f42be2[m Fix redefinition of `self.arr_dist`
+[33m72b0ac7[m Fix bug of redefining `self.features` and `self.arr_dist`
+[33m5787d2a[m Clean up and fix function names
+[33mc4f52c5[m Fix bug of `self.features` not defined
+[33m3528085[m Fix indention
+[33m99b63b9[m Add maxsplit option to avoid ambiguity
+[33m0d07750[m Fix flake8  errors
+[33m7392897[m Separate feature calculation module from diversity selection
+[33m4b43f36[m Make feature calculations independent
+[33m2d99f77[m Merge pull request #49 from fwmeng88/codecov_update
+[33m9d04578[m Update configuration when computing the coverage
+[33m7a2cf58[m Add versioneer.py to ingore list
+[33m1c6ecfa[m Add data folder to ignore list
+[33m0ba7765[m Update codecov.yml
+[33m073d90e[m Merge pull request #32 from alnaba1/dissimilarity
+[33m956917c[m Fix linters, disable R1702
+[33m69d41f2[m Fix most linters
+[33mae6336d[m Add gridpartitioning algorithm, documentation.
+[33mdeeeefb[m Replace self.features_norm with self.features
+[33ma28fe84[m Change select method structure, fix linters
+[33mc572133[m Fix select wrapper, dissimilarity test
+[33mdecc04e[m Add alternative to pairwise_dist for cheap dissim algorithms
+[33md27b8a7[m Add prototype bruteforce, DISE, optisim dissim methods
+[33m8a30cd3[m Merge pull request #45 from Khaleeh/Add_metrics
+[33mdada2b1[m Fix data type in type checking and docstring
+[33m0f73e9d[m Fix type checking for `euc_bit`
+[33m5ad6df6[m Add a complete function for wdud method
+[33m5a7fcf3[m Move `euc_bit` function to `metric.py`
+[33md149ccb[m FIx pylint errors and add ignore to tox.ini
+[33m1796ba4[m Fix pylint and pep8 errors
+[33mde1d6ba[m Fix docstring
+[33m48cf523[m Fix pylint/pep8 errors and add docstring
+[33mc7c7a7e[m Add tests and minor fixes
+[33m096553a[m Add tests and minor fixes
+[33m38d9f5b[m Fix pylint and pep8 errors
+[33m7389d8a[m Fix WDUD method
+[33mb3485c2[m Minor diversity Fixes
+[33m953a92d[m Add total diversity volume and WDUD
+[33ma7d4532[m Add log detrminate fucntion and shannon entropy
+[33mbe97168[m Add explicit diveristy index
+[33m84b3b41[m Add gini coefficint and entropy diversity methods
+[33m48a9e2d[m Fix pylint errors
+[33m267686f[m Add sklearn supported metrics
+[33m0e430fb[m Add tests for metrics module
+[33m7e8bd9e[m Add cosine and dice
+[33m6653d0a[m Add bit supported cosine, dice, and euclidean
+[33m8a9110c[m Add Modified Tanimoto
+[33ma1cc179[m Add distance/similarity conversion and Tanimoto
+[33m2cde4b4[m Add sklearn pairwise distance
+[33m9e80824[m Merge pull request #43 from RichRick1/clustering
+[33mb46c544[m Merge pull request #44 from fwmeng88/feature_testing
+[33m2cf9a4a[m Add __init__.py and _version.py to ignore list
+[33m570b12b[m Add testing for generating descriptors
+[33mc974e82[m Add test for invalid test
+[33m19559bb[m Add dependencies installation
+[33mf81357e[m Fix import orders
+[33m371e955[m Use `str` function to support PosixPath
+[33mc798d9d[m Add test for RDKit, morgan, feature loader
+[33m195de13[m Fix: RemoveHs --> removeHs
+[33ma29168c[m Use upper case as fingerprint checking
+[33m58f7be1[m Add test for SECFP6 and ECFP6 fingerprints
+[33m3a14bdc[m Fix import orders
+[33mb73689d[m Use `importlib_resources` to mange file path in `common.py`
+[33m2275f74[m Disable Py3.9, Py3.10 because of `networkx` in `mordred`
+[33m8716e7b[m Disable Py39 because of `networkx` in `mordred`
+[33me6783fd[m Remove testing on py39
+[33m8b676b4[m Fix the version of `networkx`
+[33mb1ee933[m Fix the version of `RDKit`
+[33m084c361[m renamed file
+[33m4a4f093[m fixed docstring typo
+[33m258a1fc[m change documentation style
+[33mf9c2793[m Fix indention of tox.ini
+[33m31571ef[m Fix test path in tox.ini
+[33m9511bca[m Fix file path of input SDF
+[33ma423457[m Fix file path if testing data
+[33mf4c130e[m Refactor descriptor calculations with `padelpy`
+[33mc2ca82d[m Fix path of testing CSV files
+[33m699afe9[m Add testing benchmarking data
+[33m1eef2c0[m Add RDKit fragment descriptors
+[33m28c515f[m Add testing for RDKit descriptor
+[33m722592f[m fixed varibale name
+[33mf9ab009[m delete return statement
+[33mfd940d2[m fixing code style
+[33mfb13598[m fixing code style
+[33m5411b72[m fixing tox errors
+[33m971fdaf[m Add testing for mordred and padel descriptor calculations
+[33m57e9c44[m created DiverseSelector class and tests
+[33m443f00c[m Add **kwargs for descriptor generation
+[33m12e6999[m Add testing for mordred descriptors
+[33m1e49164[m Merge pull request #42 from fwmeng88/feature_testing
+[33madae322[m Add `arr_dist` option
+[33me322381[m Fix missing `feature` in base class
+[33m518879e[m Merge pull request #40 from fwmeng88/py310
+[33mf99efa3[m Add badge for Python 3.10
+[33mb7be543[m Merge pull request #39 from fwmeng88/py310
+[33m4b36ee9[m Bump version for `checkout` and `setup-python` for GitHub actions
+[33m7616cef[m Enable Python 3.10.x for CI
+[33m428b10d[m Enable Python 3.10
+[33m1e6fee6[m Merge pull request #38 from fwmeng88/refactor_test
+[33m9c08d2c[m Fix synthetic data generation by adding the labels
+[33mb7688a1[m Fix duplicated number of molecules arguments
+[33m1e4f679[m Move synthetic data to `commonm.py`
+[33mc01f7a9[m Remove useless sample file
+[33me401dba[m Merge pull request #34 from fwmeng88/fix_testing
+[33m34ddbbb[m Fix missing depedencides for `code_cov`
+[33m4a4b650[m Use updated version of `networkx`
+[33m5ab2aa0[m Fix file path
+[33m393fe57[m Merge pull request #31 from RichRick1/test
+[33ma64e6f4[m Use absolute path for the package
+[33m13b4425[m Fix test by correcting the indices
+[33m2872178[m Follow pytest convention
+[33mcb768b0[m Remove __init__.py in testing folder
+[33m0c082a6[m Fix testing imports
+[33ma62adb6[m wrote test for DissimilaritySelector
+[33m8fbb448[m add possibility to specify the dissimilatiry matrix by user
+[33md0fc6bf[m Merge pull request #33 from fwmeng88/fix_imports
+[33m025e41b[m Ignore unnecessary checkings
+[33mf983a77[m Fix import in `__init__.py`
+[33m2aafea0[m Fix docstrings
+[33m27a405a[m Add dependencies in tox environments
+[33mcb87c65[m Fix pylint errors
+[33mef7265a[m Fix flake8 errors
+[33m6fed9cc[m Remove __init__.py in testing folder
+[33maf45499[m Use updated version of `rdkit-pypi`
+[33mc117ffc[m Fix `scikit-learn` package name
+[33m5938ba2[m Refactor feature computation module
+[33m006e017[m Add pandas depedencides
+[33md4a786a[m Fix import path of utils module
+[33m8cac237[m Merge pull request #27 from RichRick1/API
+[33mc638d4a[m fixed import
+[33m22be3ee[m visualizaion of MinMax algorithm
+[33mfedbca6[m add MinMax implementation
+[33mc931ae1[m fixed load_data and _normilize_desk methods
+[33m668222f[m Proposed changes to API
+[33m1883213[m Merge pull request #26 from fwmeng88/api_draft
+[33m8d77c89[m Add DSCS draft
+[33m93abece[m Merge pull request #24 from fwmeng88/api_draft
+[33m191ada9[m Add outline of diversity calculation functions
+[33m43bf93f[m Refactor the base classes
+[33m8f65fec[m Merge pull request #23 from fwmeng88/api_draft
+[33mf5347d7[m Update dependency list
+[33m21044ce[m Add `get_features()` function in `utils.py`
+[33m6b92cec[m Refactor `FingerprintGenerator` class
+[33m1b4d805[m Fix docstrings of `DescriptorGenerator`
+[33md5f28b9[m Add docstrings for `DescriptorGenerator` class
+[33m99f1f8d[m Refactor descriptor generation as a class
+[33mc96ece3[m Fix column names of rdkit fragment descriptor
+[33m0ca5a4a[m Add `descriptor_generator()` wrapper
+[33m6a5cba0[m Clean up rdkit descriptors
+[33m300aefa[m Clean up mordred descriptors
+[33m770b6d7[m Add initial feature generation functions
+[33md1d5348[m Add feature data loading module
+[33mcb0aeba[m Add molecular loader
+[33m8a26d2c[m Merge pull request #21 from RichRick1/SelectorAPI
+[33m0ac26c2[m Merge pull request #22 from fwmeng88/api_draft
+[33meb811d4[m Add other modules
+[33m9c94dbd[m rewrite API
+[33mf145b5c[m Merge pull request #18 from fwmeng88/api_draft
+[33m6c812aa[m Add abstract base class for clustering based methods
+[33md4cbd3a[m Use abstract base class for DBCS
+[33mf8b9998[m Add W0107 to pyline disable list
+[33m0ab14d3[m Add enhanced sampling method for clustering base
+[33maf273da[m Add diversity property to class
+[33ma7cab6a[m Add utils and DBCS
+[33medb789d[m Merge pull request #16 from fwmeng88/contributing
+[33mcb1e6a5[m Add contribution link in README.md
+[33m76492bc[m Add package information for development
+[33m3fa8abb[m Merge pull request #15 from fwmeng88/codecov
+[33mdee5cf0[m Turn off codecov analysis on push events
+[33m6fc74ed[m Merge pull request #14 from fwmeng88/codecov
+[33mac413d7[m Add ignored files
+[33mc37b179[m Add CI for codecov
+[33m04852ad[m Not use Roberto at this moment
+[33m6193d59[m Merge pull request #12 from fwmeng88/skeleton
+[33mb51158c[m Update order of OS
+[33me3c9e6f[m Rename yaml configuration file to codecov.yml
+[33m9ba7e06[m Update display settings
+[33m2fee193[m Merge pull request #10 from fwmeng88/skeleton
+[33m063942d[m Add badges
+[33m2a28e35[m Merge pull request #9 from fwmeng88/skeleton
+[33m1390abd[m Add D401 for flake8
+[33m0d851ef[m Fix docstring style for testing sample file
+[33m110549a[m Move CODE_OF_CONDUCT.md
+[33m8f51f38[m Fix docstring style 2
+[33mef16a71[m Fix docstring style
+[33m71959e3[m Fix import order
+[33m5e34de0[m Fix pylint errors/warnings
+[33mf5e5871[m Add _version.py to ignore list of flake8
+[33m049ac43[m Fix pylineter errors
+[33m1df802d[m Fix flake8 errors
+[33m5031372[m Add setup.cfg
+[33m38ace8a[m Remove Python 3.10 support temporarily
+[33m749893d[m Rename title
+[33mee49c0b[m Remove architecture requirements
+[33m222ba5d[m Merge pull request #8 from fwmeng88/skeleton
+[33mb6229ff[m Add more template information
+[33mbfbda9e[m Add contribution guideline
+[33mda54644[m Add CI related configuration
+[33m3c9ec7f[m Add Python 3.10 and fix pytest testing
+[33md85b925[m Add pytest-cov in requirements.txt
+[33m2e00e81[m Remove Python 3.6 as it has came end of life
+[33m08be650[m Add doc for sphinx
+[33m97c25c1[m Add main package
+[33me0d92e2[m Add devtools
+[33medf7041[m Add .lgtm.yml for static code analysis
+[33m1fbb049[m Add CODE_OF_CONDUCT.md
+[33mad4e6ac[m Add versioneer.py
+[33mcc14e43[m Add .codecov.yml draft
+[33mde87166[m Add requirements.txt
+[33mf718b4c[m Add readthedocs.yml
+[33m1764d73[m Add MANIFEST.in
+[33m5d6f3d5[m Add roberto configuration file
+[33me03d23d[m Add .coveragerc
+[33mf5e71fa[m Add .bandit.yml
+[33mac52956[m Add tox.ini
+[33mc3cba7c[m Add Sphinx documentation folders to .gitignore
+[33m86341d5[m Add editor junk to .gitignore
+[33mf1d48f7[m Add headers
+[33m8a7240b[m Add LICENSE
+[33m1c031c8[m Add setup.py
+[33m97d42f1[m Rename title of README.md
+[33m7a4e535[m Initial commit

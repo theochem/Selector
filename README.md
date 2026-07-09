@@ -62,6 +62,17 @@ and [GitHub releases](https://github.com/theochem/Selector/tags).
 pip install file_path/qc_selector-0.1.0-py3-none-any.whl
 
 ```
+from selector import optisim_selection
+import numpy as np
+
+# Example dataset: 1000 points with 5 features
+points = np.random.rand(1000, 5)
+
+# Select 50 diverse points using OptiSim
+selected_points = optisim_selection(points, n_select=50)
+
+print("Number of selected points:", len(selected_points))
+
 
 ### Installing from the Source Code
 
