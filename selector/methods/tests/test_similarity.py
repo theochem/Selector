@@ -36,6 +36,8 @@ from selector.measures.similarity import (
     pairwise_similarity_bit,
     scaled_similarity_matrix,
     tanimoto,
+    cosine,
+    dice,
 )
 from selector.methods.similarity import NSimilarity, SimilarityIndex
 from selector.methods.tests.common import get_data_file_path
@@ -1608,3 +1610,96 @@ def test_NSimilarity_esim_select(c_threshold, w_factor, sample_size, n_ary, star
 
     # check if the selected data is equal to the reference data
     assert all(x in ref_list for x in selected_data)
+
+
+def test_cosine_raises():
+    # check raised error when a or b is not 1D
+    assert_raises(ValueError, cosine, np.random.random((1, 5)), np.random.random(5))
+    assert_raises(ValueError, cosine, np.random.random(3), np.random.random((1, 4)))
+    assert_raises(ValueError, cosine, np.random.random(4), np.random.random((3, 4)))
+    assert_raises(ValueError, cosine, np.random.random((3, 3)), np.random.random((2, 3)))
+    # check raised error when a and b don't have the same length
+    assert_raises(ValueError, cosine, np.random.random(3), np.random.random(5))
+    assert_raises(ValueError, cosine, np.random.random(20), np.random.random(10))
+
+
+def test_cosine_numerical_correctness():
+    """Test cosine similarity for known numerical values."""
+    a = np.array([1, 0])
+    b = np.array([1, 1])
+    assert pytest.approx(cosine(a, b)) == 1 / np.sqrt(2)
+
+
+def test_cosine_identical_vectors():
+    """Test cosine similarity for identical vectors."""
+    a = np.array([1, 2, 3])
+    b = np.array([1, 2, 3])
+    assert pytest.approx(cosine(a, b)) == 1.0
+
+
+def test_cosine_orthogonal_vectors():
+    """Test cosine similarity for orthogonal vectors."""
+    a = np.array([1, 0])
+    b = np.array([0, 1])
+    assert pytest.approx(cosine(a, b)) == 0.0
+
+
+def test_cosine_zero_vectors():
+    """Test cosine similarity when one or both vectors are zero."""
+    a = np.array([0, 0])
+    b = np.array([1, 1])
+    c = np.array([0, 0])
+    assert cosine(a, b) == 0.0
+    assert cosine(b, a) == 0.0
+    assert cosine(a, c) == 0.0
+
+
+def test_cosine_matrix():
+    """Test pairwise cosine similarity matrix."""
+    x = np.array([[1, 0], [0, 1]])
+    s = pairwise_similarity_bit(x, "cosine")
+    expected = np.array([[1.0, 0.0], [0.0, 1.0]])
+    assert_equal(s, expected)
+
+
+def test_dice_raises():
+    # check raised error when a or b is not 1D
+    assert_raises(ValueError, dice, np.random.random((1, 5)), np.random.random(5))
+    assert_raises(ValueError, dice, np.random.random(3), np.random.random((1, 4)))
+    assert_raises(ValueError, dice, np.random.random(4), np.random.random((3, 4)))
+    assert_raises(ValueError, dice, np.random.random((3, 3)), np.random.random((2, 3)))
+    # check raised error when a and b don't have the same length
+    assert_raises(ValueError, dice, np.random.random(3), np.random.random(5))
+    assert_raises(ValueError, dice, np.random.random(20), np.random.random(10))
+
+
+def test_dice_numerical_correctness():
+    """Test dice similarity for known numerical values."""
+    a = np.array([1, 0, 1])
+    b = np.array([1, 1, 0])
+    assert pytest.approx(dice(a, b)) == 0.5
+
+
+def test_dice_identical_vectors():
+    """Test dice similarity for identical vectors."""
+    a = np.array([1, 2, 3])
+    b = np.array([1, 2, 3])
+    assert pytest.approx(dice(a, b)) == 1.0
+
+
+def test_dice_zero_vectors():
+    """Test dice similarity when one or both vectors are zero."""
+    a = np.array([0, 0])
+    b = np.array([1, 1])
+    c = np.array([0, 0])
+    assert dice(a, b) == 0.0
+    assert dice(b, a) == 0.0
+    assert dice(a, c) == 0.0
+
+
+def test_dice_matrix():
+    """Test pairwise dice similarity matrix."""
+    x = np.array([[1, 0, 1], [1, 1, 0]])
+    s = pairwise_similarity_bit(x, "dice")
+    expected = np.array([[1.0, 0.5], [0.5, 1.0]])
+    assert_almost_equal(s, expected)
