@@ -21,7 +21,24 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>
 #
 # --
-"""Similarity Module."""
+r"""Similarity Module.
+
+This module provides functions to calculate similarity metrics between vectors.
+
+Available Similarity Metrics:
+-----------------------------
++-------------------+---------------------------------------------------------+-----------------------------------+
+| Metric            | Similarity Formula (S)                                  | Corresponding Distance (d)        |
++===================+=========================================================+===================================+
+| Cosine            | :math:`S_{cos} = \frac{a \cdot b}{\|a\| \|b\|}`         | :math:`d_{cos} = 1 - S_{cos}`     |
++-------------------+---------------------------------------------------------+-----------------------------------+
+| Dice (Continuous) | :math:`S_{dice} = \frac{2(a \cdot b)}{\|a\|^2+\|b\|^2}` | :math:`d_{dice} = 1 - S_{dice}`   |
++-------------------+---------------------------------------------------------+-----------------------------------+
+| Tanimoto          | :math:`\frac{a \cdot b}{\|a\|^2+\|b\|^2 - a \cdot b}`   | :math:`d_{tan} = 1 - S_{tan}`     |
++-------------------+---------------------------------------------------------+-----------------------------------+
+
+Note: The Dice similarity implemented here is a continuous vector extension.
+"""
 
 from itertools import combinations_with_replacement
 
@@ -31,6 +48,8 @@ __all__ = [
     "pairwise_similarity_bit",
     "tanimoto",
     "modified_tanimoto",
+    "cosine",
+    "dice",
     "scaled_similarity_matrix",
 ]
 
@@ -57,6 +76,8 @@ def pairwise_similarity_bit(X: np.array, metric: str) -> np.ndarray:
     available_methods = {
         "tanimoto": tanimoto,
         "modified_tanimoto": modified_tanimoto,
+        "cosine": cosine,
+        "dice": dice,
     }
     if metric not in available_methods:
         raise ValueError(
@@ -193,6 +214,94 @@ def modified_tanimoto(a: np.array, b: np.array) -> float:
     #       x = (2-p)/3 so that E(mt) = 1/3, no matter the value of p
     mt = (((2 - p) / 3) * t_1) + (((1 + p) / 3) * t_0)
     return mt
+
+
+def cosine(a: np.array, b: np.array) -> float:
+    r"""Compute Cosine similarity coefficient.
+
+    For two vectors :math:`a` and :math:`b`, Cosine similarity is defined as the
+    dot product of the vectors divided by the product of their lengths:
+
+    .. math::
+        S_{cos}(a, b) = \frac{a \cdot b}{\|a\| \|b\|}
+
+    The corresponding cosine distance is defined as:
+
+    .. math::
+        d_{cos}(a, b) = 1 - S_{cos}(a, b)
+
+    Note that this corresponds to the distance metric used in ``scipy.spatial.distance.cosine``.
+    If either vector has a norm of zero, the similarity is defined as 0.0.
+
+    Parameters
+    ----------
+    a : ndarray of shape (n_features,)
+        The 1D feature array of sample :math:`a` in an `n_features` dimensional space.
+    b : ndarray of shape (n_features,)
+        The 1D feature array of sample :math:`b` in an `n_features` dimensional space.
+
+    Returns
+    -------
+    coeff : float
+        Cosine similarity coefficient between feature arrays :math:`a` and :math:`b`.
+    """
+    if a.ndim != 1 or b.ndim != 1:
+        raise ValueError(f"Arguments a and b should be 1D arrays, got {a.ndim} and {b.ndim}")
+    if a.shape != b.shape:
+        raise ValueError(
+            f"Arguments a and b should have the same shape, got {a.shape} != {b.shape}"
+        )
+
+    norm_a = np.linalg.norm(a)
+    norm_b = np.linalg.norm(b)
+
+    if norm_a == 0.0 or norm_b == 0.0:
+        return 0.0
+
+    return float(np.dot(a, b) / (norm_a * norm_b))
+
+
+def dice(a: np.array, b: np.array) -> float:
+    r"""Compute Dice (Sørensen-Dice) similarity coefficient.
+
+    For two vectors :math:`a` and :math:`b`, Dice similarity is defined as:
+
+    .. math::
+        S_{dice}(a, b) = \frac{2 (a \cdot b)}{\|a\|^2 + \|b\|^2}
+
+    The corresponding distance is:
+
+    .. math::
+        d_{dice}(a, b) = 1 - S_{dice}(a, b)
+
+    This is a continuous vector extension of the binary Dice similarity.
+    If the norm of both vectors is zero, the similarity is defined as 0.0.
+    For vectors containing negative values, the output may fall outside the [0, 1] range.
+
+    Parameters
+    ----------
+    a : ndarray of shape (n_features,)
+        The 1D feature array of sample :math:`a` in an `n_features` dimensional space.
+    b : ndarray of shape (n_features,)
+        The 1D feature array of sample :math:`b` in an `n_features` dimensional space.
+
+    Returns
+    -------
+    coeff : float
+        Dice similarity coefficient between feature arrays :math:`a` and :math:`b`.
+    """
+    if a.ndim != 1 or b.ndim != 1:
+        raise ValueError(f"Arguments a and b should be 1D arrays, got {a.ndim} and {b.ndim}")
+    if a.shape != b.shape:
+        raise ValueError(
+            f"Arguments a and b should have the same shape, got {a.shape} != {b.shape}"
+        )
+
+    denom = float(np.sum(a**2) + np.sum(b**2))
+    if denom == 0.0:
+        return 0.0
+
+    return float(2 * np.dot(a, b) / denom)
 
 
 def scaled_similarity_matrix(X: np.array) -> np.ndarray:
