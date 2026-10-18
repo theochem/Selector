@@ -66,7 +66,7 @@ def pairwise_similarity_bit(X: np.array, metric: str) -> np.ndarray:
         Feature matrix of `n_samples` samples in `n_features` dimensional space.
     metric : str
         The metric used when calculating similarity coefficients between samples in a feature array.
-        Method for calculating similarity coefficient. Options: `"tanimoto"`, `"modified_tanimoto"`.
+        Method for calculating similarity coefficient. Options: `"tanimoto"`, `"modified_tanimoto"`, `"cosine"`, `"dice"`.
 
     Returns
     -------
