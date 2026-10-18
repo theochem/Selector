@@ -32,12 +32,13 @@ import pytest
 from numpy.testing import assert_almost_equal, assert_equal, assert_raises
 
 from selector.measures.similarity import (
+    continuous_dice,
+    cosine,
+    dice,
     modified_tanimoto,
     pairwise_similarity_bit,
     scaled_similarity_matrix,
     tanimoto,
-    cosine,
-    dice,
 )
 from selector.methods.similarity import NSimilarity, SimilarityIndex
 from selector.methods.tests.common import get_data_file_path
@@ -1703,3 +1704,40 @@ def test_dice_matrix():
     s = pairwise_similarity_bit(x, "dice")
     expected = np.array([[1.0, 0.5], [0.5, 1.0]])
     assert_almost_equal(s, expected)
+
+
+def test_continuous_dice_raises():
+    assert_raises(ValueError, continuous_dice, np.random.random((1, 5)), np.random.random(5))
+    assert_raises(ValueError, continuous_dice, np.random.random(3), np.random.random((1, 3)))
+    assert_raises(ValueError, continuous_dice, np.random.random(3), np.random.random(5))
+
+
+def test_continuous_dice_complete_overlap():
+    """cDC is 1 for a binary reference fully covered by a probabilistic map."""
+    a = np.array([1, 1, 0, 0])
+    b = np.array([0.6, 0.8, 0.0, 0.0])
+    assert pytest.approx(continuous_dice(a, b)) == 1.0
+    # the classical Dice coefficient is below 1 for the same inputs
+    assert dice(a, b) < 1.0
+
+
+def test_continuous_dice_numerical_correctness():
+    """Test cDC against a hand-computed value."""
+    a = np.array([1, 1, 0, 0])
+    b = np.array([0.5, 0.0, 0.5, 0.0])
+    # overlap = 0.5, sum(a * sign(b)) = 1 -> c = 0.5
+    # cDC = 2 * 0.5 / (0.5 * 2 + 1.0) = 0.5
+    assert pytest.approx(continuous_dice(a, b)) == 0.5
+
+
+def test_continuous_dice_binary_matches_dice():
+    """For binary inputs c = 1 and cDC reduces to the Dice coefficient."""
+    a = np.array([1, 0, 1, 1])
+    b = np.array([1, 1, 0, 1])
+    assert pytest.approx(continuous_dice(a, b)) == 2 * 2 / (3 + 3)
+
+
+def test_continuous_dice_no_overlap():
+    """cDC is defined as 0.0 when there is no positive overlap."""
+    assert continuous_dice(np.array([1, 0]), np.array([0.0, 0.7])) == 0.0
+    assert continuous_dice(np.array([0, 0]), np.array([0.0, 0.0])) == 0.0

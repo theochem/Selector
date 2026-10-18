@@ -27,15 +27,17 @@ This module provides functions to calculate similarity metrics between vectors.
 
 Available Similarity Metrics:
 -----------------------------
-+-------------------+---------------------------------------------------------+-----------------------------------+
-| Metric            | Similarity Formula (S)                                  | Corresponding Distance (d)        |
-+===================+=========================================================+===================================+
-| Cosine            | :math:`S_{cos} = \frac{a \cdot b}{\|a\| \|b\|}`         | :math:`d_{cos} = 1 - S_{cos}`     |
-+-------------------+---------------------------------------------------------+-----------------------------------+
-| Dice (Continuous) | :math:`S_{dice} = \frac{2(a \cdot b)}{\|a\|^2+\|b\|^2}` | :math:`d_{dice} = 1 - S_{dice}`   |
-+-------------------+---------------------------------------------------------+-----------------------------------+
-| Tanimoto          | :math:`\frac{a \cdot b}{\|a\|^2+\|b\|^2 - a \cdot b}`   | :math:`d_{tan} = 1 - S_{tan}`     |
-+-------------------+---------------------------------------------------------+-----------------------------------+
++-----------------------+---------------------------------------------------------------------+
+| Metric                | Similarity Formula (S)                                              |
++=======================+=====================================================================+
+| Cosine                | :math:`S_{cos} = \frac{a \cdot b}{\|a\| \|b\|}`                     |
++-----------------------+---------------------------------------------------------------------+
+| Dice (Continuous)     | :math:`S_{dice} = \frac{2(a \cdot b)}{\|a\|^2+\|b\|^2}`             |
++-----------------------+---------------------------------------------------------------------+
+| Continuous Dice (cDC) | :math:`S_{cDC} = \frac{2(a \cdot b)}{c\sum_i a_i + \sum_i b_i}`     |
++-----------------------+---------------------------------------------------------------------+
+| Tanimoto              | :math:`\frac{a \cdot b}{\|a\|^2+\|b\|^2 - a \cdot b}`               |
++-----------------------+---------------------------------------------------------------------+
 
 Note: The Dice similarity implemented here is a continuous vector extension.
 """
@@ -50,6 +52,7 @@ __all__ = [
     "modified_tanimoto",
     "cosine",
     "dice",
+    "continuous_dice",
     "scaled_similarity_matrix",
 ]
 
@@ -225,12 +228,6 @@ def cosine(a: np.array, b: np.array) -> float:
     .. math::
         S_{cos}(a, b) = \frac{a \cdot b}{\|a\| \|b\|}
 
-    The corresponding cosine distance is defined as:
-
-    .. math::
-        d_{cos}(a, b) = 1 - S_{cos}(a, b)
-
-    Note that this corresponds to the distance metric used in ``scipy.spatial.distance.cosine``.
     If either vector has a norm of zero, the similarity is defined as 0.0.
 
     Parameters
@@ -252,13 +249,13 @@ def cosine(a: np.array, b: np.array) -> float:
             f"Arguments a and b should have the same shape, got {a.shape} != {b.shape}"
         )
 
-    norm_a = np.linalg.norm(a)
-    norm_b = np.linalg.norm(b)
+    norm_a = np.sqrt(np.einsum("i,i->", a, a))
+    norm_b = np.sqrt(np.einsum("i,i->", b, b))
 
     if norm_a == 0.0 or norm_b == 0.0:
         return 0.0
 
-    return float(np.dot(a, b) / (norm_a * norm_b))
+    return float(np.einsum("i,i->", a, b) / (norm_a * norm_b))
 
 
 def dice(a: np.array, b: np.array) -> float:
@@ -268,11 +265,6 @@ def dice(a: np.array, b: np.array) -> float:
 
     .. math::
         S_{dice}(a, b) = \frac{2 (a \cdot b)}{\|a\|^2 + \|b\|^2}
-
-    The corresponding distance is:
-
-    .. math::
-        d_{dice}(a, b) = 1 - S_{dice}(a, b)
 
     This is a continuous vector extension of the binary Dice similarity.
     If the norm of both vectors is zero, the similarity is defined as 0.0.
@@ -297,11 +289,65 @@ def dice(a: np.array, b: np.array) -> float:
             f"Arguments a and b should have the same shape, got {a.shape} != {b.shape}"
         )
 
-    denom = float(np.sum(a**2) + np.sum(b**2))
+    denom = np.einsum("i,i->", a, a) + np.einsum("i,i->", b, b)
     if denom == 0.0:
         return 0.0
 
-    return float(2 * np.dot(a, b) / denom)
+    return float(2 * np.einsum("i,i->", a, b) / denom)
+
+
+def continuous_dice(a: np.array, b: np.array) -> float:
+    r"""Compute the continuous Dice coefficient (cDC).
+
+    The continuous Dice coefficient extends the Dice coefficient to the comparison of a
+    binary reference :math:`a` with a continuous (probabilistic) array :math:`b`, with
+    values typically in :math:`[0, 1]` [1]_. The size of :math:`a` is weighted by a
+    coefficient :math:`c`, so that the coefficient is 1 for complete overlap:
+
+    .. math::
+        cDC(a, b) = \frac{2 \sum_i a_i b_i}{c \sum_i a_i + \sum_i b_i}
+
+    where :math:`c` is the mean value of :math:`b` over the positions where both
+    :math:`a` and :math:`b` are positive:
+
+    .. math::
+        c = \frac{\sum_i a_i b_i}{\sum_i a_i \, \mathrm{sign}(b_i)}
+
+    This measure is not symmetric in its arguments. If :math:`a` and :math:`b` have no
+    positive overlap, the coefficient is defined as 0.0.
+
+    Parameters
+    ----------
+    a : ndarray of shape (n_features,)
+        The 1D binary (reference) array.
+    b : ndarray of shape (n_features,)
+        The 1D continuous (probabilistic) array.
+
+    Returns
+    -------
+    coeff : float
+        Continuous Dice coefficient between arrays :math:`a` and :math:`b`.
+
+    References
+    ----------
+    .. [1] Shamir, R. R.; Duchin, Y.; Kim, J.; Sapiro, G.; Harel, N.
+       Continuous Dice Coefficient: a Method for Evaluating Probabilistic Segmentations.
+       bioRxiv 2018, 306977.
+    """
+    if a.ndim != 1 or b.ndim != 1:
+        raise ValueError(f"Arguments a and b should be 1D arrays, got {a.ndim} and {b.ndim}")
+    if a.shape != b.shape:
+        raise ValueError(
+            f"Arguments a and b should have the same shape, got {a.shape} != {b.shape}"
+        )
+
+    overlap = np.einsum("i,i->", a, b)
+    sign_overlap = np.einsum("i,i->", a, np.sign(b))
+    if overlap == 0.0 or sign_overlap == 0.0:
+        return 0.0
+
+    c = overlap / sign_overlap
+    return float(2 * overlap / (c * np.sum(a) + np.sum(b)))
 
 
 def scaled_similarity_matrix(X: np.array) -> np.ndarray:
