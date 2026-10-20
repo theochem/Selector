@@ -471,7 +471,7 @@ document.write(`
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 
 <span class="c1"># uncomment the following line to run the code for your own project directory</span>
-<span class="c1"># sys.path.append(&quot;/Users/Someone/Documents/projects/Selector&quot;)</span>
+<span class="c1"># sys.path.append("/Users/Someone/Documents/projects/Selector")</span>
 </pre></div>
 </div>
 </div>
@@ -503,13 +503,13 @@ document.write(`
     <span class="n">indices</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">labels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">reference</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
-    <span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
-    <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span>
+    <span class="n">xlabel</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span>
+    <span class="n">ylabel</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span>
     <span class="n">number</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">fname</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Graphs the data in a scatter plot.</span>
+<span class="w">    </span><span class="sd">"""Graphs the data in a scatter plot.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -532,13 +532,13 @@ document.write(`
 <span class="sd">    fname : str, optional</span>
 <span class="sd">        Filename for saving the figure. If None, figure is shown.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">2</span> <span class="ow">or</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expect data to be a 2D array with 2 columns, got </span><span class="si">{</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Expect data to be a 2D array with 2 columns, got </span><span class="si">{</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">labels</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">labels</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Expect indices and labels to have the same length, got </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="sa">f</span><span class="s2">"Expect indices and labels to have the same length, got </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span><span class="si">}</span><span class="s2">."</span>
         <span class="p">)</span>
 
     <span class="c1"># Add a title and axis labels</span>
@@ -548,12 +548,12 @@ document.write(`
     <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="n">ylabel</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
 
     <span class="c1"># plot original data</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">data</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">data</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="n">facecolors</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">,</span> <span class="n">edgecolors</span><span class="o">=</span><span class="s2">&quot;0.75&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">data</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">data</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">marker</span><span class="o">=</span><span class="s2">"o"</span><span class="p">,</span> <span class="n">facecolors</span><span class="o">=</span><span class="s2">"none"</span><span class="p">,</span> <span class="n">edgecolors</span><span class="o">=</span><span class="s2">"0.75"</span><span class="p">)</span>
 
-    <span class="n">colors</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;skyblue&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="s2">&quot;g&quot;</span><span class="p">,</span> <span class="s2">&quot;orange&quot;</span><span class="p">,</span> <span class="s2">&quot;navy&quot;</span><span class="p">,</span> <span class="s2">&quot;indigo&quot;</span><span class="p">,</span> <span class="s2">&quot;pink&quot;</span><span class="p">,</span> <span class="s2">&quot;purple&quot;</span><span class="p">,</span> <span class="s2">&quot;yellow&quot;</span><span class="p">]</span>
-    <span class="n">markers</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="s2">&quot;|&quot;</span><span class="p">,</span> <span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="s2">&quot;p&quot;</span><span class="p">,</span> <span class="s2">&quot;&gt;&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;&quot;</span><span class="p">,</span> <span class="s2">&quot;^&quot;</span><span class="p">,</span> <span class="s2">&quot;v&quot;</span><span class="p">]</span>
+    <span class="n">colors</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"skyblue"</span><span class="p">,</span> <span class="s2">"r"</span><span class="p">,</span> <span class="s2">"b"</span><span class="p">,</span> <span class="s2">"k"</span><span class="p">,</span> <span class="s2">"g"</span><span class="p">,</span> <span class="s2">"orange"</span><span class="p">,</span> <span class="s2">"navy"</span><span class="p">,</span> <span class="s2">"indigo"</span><span class="p">,</span> <span class="s2">"pink"</span><span class="p">,</span> <span class="s2">"purple"</span><span class="p">,</span> <span class="s2">"yellow"</span><span class="p">]</span>
+    <span class="n">markers</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"o"</span><span class="p">,</span> <span class="s2">"x"</span><span class="p">,</span> <span class="s2">"*"</span><span class="p">,</span> <span class="s2">"_"</span><span class="p">,</span> <span class="s2">"|"</span><span class="p">,</span> <span class="s2">"s"</span><span class="p">,</span> <span class="s2">"p"</span><span class="p">,</span> <span class="s2">"&gt;"</span><span class="p">,</span> <span class="s2">"&lt;"</span><span class="p">,</span> <span class="s2">"^"</span><span class="p">,</span> <span class="s2">"v"</span><span class="p">]</span>
     <span class="n">text_location</span> <span class="o">=</span> <span class="p">[(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)]</span>
-    <span class="n">colors_numbers</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="s2">&quot;blue&quot;</span><span class="p">,</span> <span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="s2">&quot;k&quot;</span><span class="p">]</span>
+    <span class="n">colors_numbers</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"black"</span><span class="p">,</span> <span class="s2">"red"</span><span class="p">,</span> <span class="s2">"blue"</span><span class="p">,</span> <span class="s2">"k"</span><span class="p">,</span> <span class="s2">"k"</span><span class="p">,</span> <span class="s2">"k"</span><span class="p">,</span> <span class="s2">"k"</span><span class="p">,</span> <span class="s2">"k"</span><span class="p">,</span> <span class="s2">"k"</span><span class="p">,</span> <span class="s2">"k"</span><span class="p">,</span> <span class="s2">"k"</span><span class="p">]</span>
 
     <span class="k">if</span> <span class="n">indices</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">selected_index</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">indices</span><span class="p">):</span>
@@ -574,10 +574,10 @@ document.write(`
                         <span class="n">c</span><span class="o">=</span><span class="n">colors_numbers</span><span class="p">[</span><span class="n">index</span><span class="p">],</span>
                     <span class="p">)</span>
     <span class="k">if</span> <span class="n">reference</span><span class="p">:</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="s2">"black"</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">labels</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="c1"># plt.legend(loc=&quot;upper left&quot;, frameon=False)</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;best&quot;</span><span class="p">,</span> <span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="c1"># plt.legend(loc="upper left", frameon=False)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">"best"</span><span class="p">,</span> <span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">fname</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">600</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
@@ -592,7 +592,7 @@ document.write(`
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">render_table</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">caption</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Renders a list of lists in ta markdown table for easy visualization.</span>
+<span class="w">    </span><span class="sd">"""Renders a list of lists in ta markdown table for easy visualization.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -604,35 +604,35 @@ document.write(`
 <span class="sd">    decimals : int, optional</span>
 <span class="sd">        The number of decimal places to round the data to.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="c1"># check all rows have the same number of columns</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">row</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">data</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Expect all rows to have the same number of columns.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Expect all rows to have the same number of columns."</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">caption</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># check if caption is a string</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">caption</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Expect caption to be a string.&quot;</span><span class="p">)</span>
-        <span class="n">tmp_output</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;**</span><span class="si">{</span><span class="n">caption</span><span class="si">}</span><span class="s2">**</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Expect caption to be a string."</span><span class="p">)</span>
+        <span class="n">tmp_output</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"**</span><span class="si">{</span><span class="n">caption</span><span class="si">}</span><span class="s2">**</span><span class="se">\n\n</span><span class="s2">"</span>
 
     <span class="c1"># get the width of each column (transpose the data list and get the max length of each new row)</span>
     <span class="n">colwidths</span> <span class="o">=</span> <span class="p">[</span><span class="nb">max</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">))</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">col</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">data</span><span class="p">)]</span>
 
     <span class="c1"># construct the header row</span>
-    <span class="n">header</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;| </span><span class="si">{</span><span class="s1">&#39; | &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="si">:</span><span class="s1">^</span><span class="si">{</span><span class="n">w</span><span class="si">}}</span><span class="s1">&#39;</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">s</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nb">zip</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="n">colwidths</span><span class="p">))</span><span class="si">}</span><span class="s2"> |&quot;</span>
-    <span class="n">tmp_output</span> <span class="o">+=</span> <span class="n">header</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">header</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"| </span><span class="si">{</span><span class="s1">' | '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="si">:</span><span class="s1">^</span><span class="si">{</span><span class="n">w</span><span class="si">}}</span><span class="s1">'</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">s</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nb">zip</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="n">colwidths</span><span class="p">))</span><span class="si">}</span><span class="s2"> |"</span>
+    <span class="n">tmp_output</span> <span class="o">+=</span> <span class="n">header</span> <span class="o">+</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
 
     <span class="c1"># construct a separator row</span>
-    <span class="n">separator</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;|</span><span class="si">{</span><span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;-&#39;</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">w</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">w</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">colwidths</span><span class="p">])</span><span class="si">}</span><span class="s2">|&quot;</span>
-    <span class="n">tmp_output</span> <span class="o">+=</span> <span class="n">separator</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">separator</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"|</span><span class="si">{</span><span class="s1">'|'</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">'-'</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">w</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">w</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">colwidths</span><span class="p">])</span><span class="si">}</span><span class="s2">|"</span>
+    <span class="n">tmp_output</span> <span class="o">+=</span> <span class="n">separator</span> <span class="o">+</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
 
     <span class="c1"># construct the data rows</span>
     <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
         <span class="c1"># round the data to the specified number of decimal places</span>
         <span class="n">row</span> <span class="o">=</span> <span class="p">[</span><span class="nb">round</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">decimals</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span> <span class="k">else</span> <span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">row</span><span class="p">]</span>
-        <span class="n">row_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;| </span><span class="si">{</span><span class="s1">&#39; | &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="si">:</span><span class="s1">^</span><span class="si">{</span><span class="n">w</span><span class="si">}}</span><span class="s1">&#39;</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">s</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nb">zip</span><span class="p">(</span><span class="n">row</span><span class="p">,</span><span class="w"> </span><span class="n">colwidths</span><span class="p">))</span><span class="si">}</span><span class="s2"> |&quot;</span>
-        <span class="n">tmp_output</span> <span class="o">+=</span> <span class="n">row_str</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">row_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"| </span><span class="si">{</span><span class="s1">' | '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="si">:</span><span class="s1">^</span><span class="si">{</span><span class="n">w</span><span class="si">}}</span><span class="s1">'</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">s</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nb">zip</span><span class="p">(</span><span class="n">row</span><span class="p">,</span><span class="w"> </span><span class="n">colwidths</span><span class="p">))</span><span class="si">}</span><span class="s2"> |"</span>
+        <span class="n">tmp_output</span> <span class="o">+=</span> <span class="n">row_str</span> <span class="o">+</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
 
     <span class="k">return</span> <span class="n">display</span><span class="p">(</span><span class="n">Markdown</span><span class="p">(</span><span class="n">tmp_output</span><span class="p">))</span>
 </pre></div>
@@ -662,13 +662,13 @@ document.write(`
 <span class="p">)</span>
 
 <span class="c1"># compute the (n_sample, n_sample) pairwise distance matrix</span>
-<span class="n">X_dist</span> <span class="o">=</span> <span class="n">pairwise_distances</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="s2">&quot;euclidean&quot;</span><span class="p">)</span>
+<span class="n">X_dist</span> <span class="o">=</span> <span class="n">pairwise_distances</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="s2">"euclidean"</span><span class="p">)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Shape of data   = &quot;</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Shape of labels = &quot;</span><span class="p">,</span> <span class="n">labels</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Unique labels   = &quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">labels</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Cluster size    = &quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">labels</span> <span class="o">==</span> <span class="mi">0</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Shape of the distance array = &quot;</span><span class="p">,</span> <span class="n">X_dist</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Shape of data   = "</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Shape of labels = "</span><span class="p">,</span> <span class="n">labels</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Unique labels   = "</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">labels</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Cluster size    = "</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">labels</span> <span class="o">==</span> <span class="mi">0</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Shape of the distance array = "</span><span class="p">,</span> <span class="n">X_dist</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -692,23 +692,23 @@ Shape of the distance array =  (500, 500)
 <span class="n">size</span> <span class="o">=</span> <span class="mi">50</span>
 
 <span class="c1"># Baroni-Urbani-Buser</span>
-<span class="c1"># selector = NSimilarity(similarity_index=&quot;BUB&quot;, preprocess_data=True)</span>
+<span class="c1"># selector = NSimilarity(similarity_index="BUB", preprocess_data=True)</span>
 <span class="c1"># selected_bub = selector.select(X, size=size)</span>
 
 <span class="c1"># Jaccard-Tanimoto</span>
-<span class="n">selector</span> <span class="o">=</span> <span class="n">NSimilarity</span><span class="p">(</span><span class="n">similarity_index</span><span class="o">=</span><span class="s2">&quot;JT&quot;</span><span class="p">,</span> <span class="n">preprocess_data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">selector</span> <span class="o">=</span> <span class="n">NSimilarity</span><span class="p">(</span><span class="n">similarity_index</span><span class="o">=</span><span class="s2">"JT"</span><span class="p">,</span> <span class="n">preprocess_data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">selected_jt</span> <span class="o">=</span> <span class="n">selector</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">)</span>
 
 <span class="c1"># Austin-Colwell</span>
-<span class="n">selector</span> <span class="o">=</span> <span class="n">NSimilarity</span><span class="p">(</span><span class="n">similarity_index</span><span class="o">=</span><span class="s2">&quot;AC&quot;</span><span class="p">,</span> <span class="n">preprocess_data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">selector</span> <span class="o">=</span> <span class="n">NSimilarity</span><span class="p">(</span><span class="n">similarity_index</span><span class="o">=</span><span class="s2">"AC"</span><span class="p">,</span> <span class="n">preprocess_data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">selected_ac</span> <span class="o">=</span> <span class="n">selector</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">)</span>
 
 <span class="c1"># Russel-Rao</span>
-<span class="n">selector</span> <span class="o">=</span> <span class="n">NSimilarity</span><span class="p">(</span><span class="n">similarity_index</span><span class="o">=</span><span class="s2">&quot;RR&quot;</span><span class="p">,</span> <span class="n">preprocess_data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">selector</span> <span class="o">=</span> <span class="n">NSimilarity</span><span class="p">(</span><span class="n">similarity_index</span><span class="o">=</span><span class="s2">"RR"</span><span class="p">,</span> <span class="n">preprocess_data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">selected_rr</span> <span class="o">=</span> <span class="n">selector</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">)</span>
 
 <span class="c1"># Faith</span>
-<span class="n">selector</span> <span class="o">=</span> <span class="n">NSimilarity</span><span class="p">(</span><span class="n">similarity_index</span><span class="o">=</span><span class="s2">&quot;Fai&quot;</span><span class="p">,</span> <span class="n">preprocess_data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">selector</span> <span class="o">=</span> <span class="n">NSimilarity</span><span class="p">(</span><span class="n">similarity_index</span><span class="o">=</span><span class="s2">"Fai"</span><span class="p">,</span> <span class="n">preprocess_data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">selected_fai</span> <span class="o">=</span> <span class="n">selector</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">)</span>
 
 
@@ -717,15 +717,15 @@ Shape of the distance array =  (500, 500)
     <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span>
     <span class="n">indices</span><span class="o">=</span><span class="p">[</span><span class="n">selected_jt</span><span class="p">,</span> <span class="n">selected_ac</span><span class="p">,</span> <span class="n">selected_rr</span><span class="p">,</span> <span class="n">selected_fai</span><span class="p">],</span>
     <span class="n">labels</span><span class="o">=</span><span class="p">[</span>
-        <span class="s2">&quot;Jaccard-Tanimoto&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;Austin-Colwell&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;Russel-Rao&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;Faith&quot;</span><span class="p">,</span>
+        <span class="s2">"Jaccard-Tanimoto"</span><span class="p">,</span>
+        <span class="s2">"Austin-Colwell"</span><span class="p">,</span>
+        <span class="s2">"Russel-Rao"</span><span class="p">,</span>
+        <span class="s2">"Faith"</span><span class="p">,</span>
     <span class="p">],</span>
-    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Comparing N-Similarity-Based Selectors&quot;</span><span class="p">,</span>
-    <span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;Feature 1&quot;</span><span class="p">,</span>
-    <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Feature 2&quot;</span><span class="p">,</span>
-    <span class="n">fname</span><span class="o">=</span><span class="s2">&quot;quick_start_compare_partition_methods.png&quot;</span><span class="p">,</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">"Comparing N-Similarity-Based Selectors"</span><span class="p">,</span>
+    <span class="n">xlabel</span><span class="o">=</span><span class="s2">"Feature 1"</span><span class="p">,</span>
+    <span class="n">ylabel</span><span class="o">=</span><span class="s2">"Feature 2"</span><span class="p">,</span>
+    <span class="n">fname</span><span class="o">=</span><span class="s2">"quick_start_compare_partition_methods.png"</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -741,29 +741,29 @@ Shape of the distance array =  (500, 500)
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">set_indices</span> <span class="o">=</span> <span class="p">[</span><span class="n">selected_jt</span><span class="p">,</span> <span class="n">selected_ac</span><span class="p">,</span> <span class="n">selected_rr</span><span class="p">,</span> <span class="n">selected_fai</span><span class="p">]</span>
-<span class="n">sim_idx_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;JT&quot;</span><span class="p">,</span> <span class="s2">&quot;AC&quot;</span><span class="p">,</span> <span class="s2">&quot;RR&quot;</span><span class="p">,</span> <span class="s2">&quot;Fai&quot;</span><span class="p">]</span>
-<span class="n">set_labels</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Jaccard-Tanimoto&quot;</span><span class="p">,</span> <span class="s2">&quot;Austin-Colwell&quot;</span><span class="p">,</span> <span class="s2">&quot;Russel-Rao&quot;</span><span class="p">,</span> <span class="s2">&quot;Faith&quot;</span><span class="p">]</span>
+<span class="n">sim_idx_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"JT"</span><span class="p">,</span> <span class="s2">"AC"</span><span class="p">,</span> <span class="s2">"RR"</span><span class="p">,</span> <span class="s2">"Fai"</span><span class="p">]</span>
+<span class="n">set_labels</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"Jaccard-Tanimoto"</span><span class="p">,</span> <span class="s2">"Austin-Colwell"</span><span class="p">,</span> <span class="s2">"Russel-Rao"</span><span class="p">,</span> <span class="s2">"Faith"</span><span class="p">]</span>
 <span class="n">selected_sets</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="n">set_labels</span><span class="p">,</span> <span class="n">sim_idx_list</span><span class="p">,</span> <span class="n">set_indices</span><span class="p">)</span>
 
 <span class="n">scaled_data</span> <span class="o">=</span> <span class="n">NSimilarity</span><span class="p">()</span><span class="o">.</span><span class="n">_scale_data</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 
 <span class="c1"># The similarity of a set of data points</span>
-<span class="n">table_data</span> <span class="o">=</span> <span class="p">[[</span><span class="s2">&quot;&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">sim_idx_list</span><span class="p">]</span>
+<span class="n">table_data</span> <span class="o">=</span> <span class="p">[[</span><span class="s2">""</span><span class="p">]</span> <span class="o">+</span> <span class="n">sim_idx_list</span><span class="p">]</span>
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">selected_sets</span><span class="p">:</span>
     <span class="n">table_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
         <span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
         <span class="o">+</span> <span class="p">[</span>
-            <span class="mi">1</span> <span class="o">-</span> <span class="n">SimilarityIndex</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;esim&quot;</span><span class="p">,</span> <span class="n">sim_index</span><span class="o">=</span><span class="n">si</span><span class="p">)(</span><span class="n">scaled_data</span><span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="mi">2</span><span class="p">]])</span>
+            <span class="mi">1</span> <span class="o">-</span> <span class="n">SimilarityIndex</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">"esim"</span><span class="p">,</span> <span class="n">sim_index</span><span class="o">=</span><span class="n">si</span><span class="p">)(</span><span class="n">scaled_data</span><span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="mi">2</span><span class="p">]])</span>
             <span class="k">for</span> <span class="n">si</span> <span class="ow">in</span> <span class="n">sim_idx_list</span>
         <span class="p">]</span>
     <span class="p">)</span>
 
-<span class="n">caption</span> <span class="o">=</span> <span class="s2">&quot;Diversity of Selected Sets: row = selected set, column = 1 - similarity index&quot;</span>
+<span class="n">caption</span> <span class="o">=</span> <span class="s2">"Diversity of Selected Sets: row = selected set, column = 1 - similarity index"</span>
 <span class="n">render_table</span><span class="p">(</span><span class="n">table_data</span><span class="p">,</span> <span class="n">caption</span><span class="o">=</span><span class="n">caption</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span>
-    <span class="s2">&quot;The selected sets coincide for all similarity indices.</span><span class="se">\n</span><span class="s2">&quot;</span>
-    <span class="s2">&quot;This is due to the fact that the data has low dimensionality</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="s2">"The selected sets coincide for all similarity indices.</span><span class="se">\n</span><span class="s2">"</span>
+    <span class="s2">"This is due to the fact that the data has low dimensionality</span><span class="se">\n</span><span class="s2">"</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -793,14 +793,14 @@ This is due to the fact that the data has low dimensionality
 <span class="n">X</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">make_blobs</span><span class="p">(</span><span class="n">n_samples</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">n_features</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">centers</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
 
 <span class="c1"># compute the (n_sample, n_sample) pairwise distance matrix</span>
-<span class="n">X_dist</span> <span class="o">=</span> <span class="n">pairwise_distances</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="s2">&quot;euclidean&quot;</span><span class="p">)</span>
+<span class="n">X_dist</span> <span class="o">=</span> <span class="n">pairwise_distances</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="s2">"euclidean"</span><span class="p">)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Shape of data   = &quot;</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Shape of labels = &quot;</span><span class="p">,</span> <span class="n">labels</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Unique labels   = &quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">labels</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Shape of data   = "</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Shape of labels = "</span><span class="p">,</span> <span class="n">labels</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Unique labels   = "</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">labels</span><span class="p">))</span>
 <span class="n">size_0</span><span class="p">,</span> <span class="n">size_1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">labels</span> <span class="o">==</span> <span class="mi">0</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">labels</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Cluster sizes = &quot;</span><span class="p">,</span> <span class="n">size_0</span><span class="p">,</span> <span class="n">size_1</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Shape of the distance array = &quot;</span><span class="p">,</span> <span class="n">X_dist</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Cluster sizes = "</span><span class="p">,</span> <span class="n">size_0</span><span class="p">,</span> <span class="n">size_1</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Shape of the distance array = "</span><span class="p">,</span> <span class="n">X_dist</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -821,19 +821,19 @@ Shape of the distance array =  (500, 500)
 <span class="n">size</span> <span class="o">=</span> <span class="mi">50</span>
 
 <span class="c1"># Jaccard-Tanimoto</span>
-<span class="n">selector</span> <span class="o">=</span> <span class="n">NSimilarity</span><span class="p">(</span><span class="n">similarity_index</span><span class="o">=</span><span class="s2">&quot;JT&quot;</span><span class="p">,</span> <span class="n">preprocess_data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">selector</span> <span class="o">=</span> <span class="n">NSimilarity</span><span class="p">(</span><span class="n">similarity_index</span><span class="o">=</span><span class="s2">"JT"</span><span class="p">,</span> <span class="n">preprocess_data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">selected_jt</span> <span class="o">=</span> <span class="n">selector</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">)</span>
 
 <span class="c1"># Austin-Colwell</span>
-<span class="n">selector</span> <span class="o">=</span> <span class="n">NSimilarity</span><span class="p">(</span><span class="n">similarity_index</span><span class="o">=</span><span class="s2">&quot;AC&quot;</span><span class="p">,</span> <span class="n">preprocess_data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">selector</span> <span class="o">=</span> <span class="n">NSimilarity</span><span class="p">(</span><span class="n">similarity_index</span><span class="o">=</span><span class="s2">"AC"</span><span class="p">,</span> <span class="n">preprocess_data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">selected_ac</span> <span class="o">=</span> <span class="n">selector</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">)</span>
 
 <span class="c1"># Russel-Rao</span>
-<span class="n">selector</span> <span class="o">=</span> <span class="n">NSimilarity</span><span class="p">(</span><span class="n">similarity_index</span><span class="o">=</span><span class="s2">&quot;RR&quot;</span><span class="p">,</span> <span class="n">preprocess_data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">selector</span> <span class="o">=</span> <span class="n">NSimilarity</span><span class="p">(</span><span class="n">similarity_index</span><span class="o">=</span><span class="s2">"RR"</span><span class="p">,</span> <span class="n">preprocess_data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">selected_rr</span> <span class="o">=</span> <span class="n">selector</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">)</span>
 
 <span class="c1"># Faith</span>
-<span class="n">selector</span> <span class="o">=</span> <span class="n">NSimilarity</span><span class="p">(</span><span class="n">similarity_index</span><span class="o">=</span><span class="s2">&quot;Fai&quot;</span><span class="p">,</span> <span class="n">preprocess_data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">selector</span> <span class="o">=</span> <span class="n">NSimilarity</span><span class="p">(</span><span class="n">similarity_index</span><span class="o">=</span><span class="s2">"Fai"</span><span class="p">,</span> <span class="n">preprocess_data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">selected_fai</span> <span class="o">=</span> <span class="n">selector</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">)</span>
 
 
@@ -842,15 +842,15 @@ Shape of the distance array =  (500, 500)
     <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span>
     <span class="n">indices</span><span class="o">=</span><span class="p">[</span><span class="n">selected_jt</span><span class="p">,</span> <span class="n">selected_ac</span><span class="p">,</span> <span class="n">selected_rr</span><span class="p">,</span> <span class="n">selected_fai</span><span class="p">],</span>
     <span class="n">labels</span><span class="o">=</span><span class="p">[</span>
-        <span class="s2">&quot;Jaccard-Tanimoto&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;Austin-Colwell&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;Russel-Rao&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;Faith&quot;</span><span class="p">,</span>
+        <span class="s2">"Jaccard-Tanimoto"</span><span class="p">,</span>
+        <span class="s2">"Austin-Colwell"</span><span class="p">,</span>
+        <span class="s2">"Russel-Rao"</span><span class="p">,</span>
+        <span class="s2">"Faith"</span><span class="p">,</span>
     <span class="p">],</span>
-    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Comparing NSimilarity-Based Selectors&quot;</span><span class="p">,</span>
-    <span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;Feature 1&quot;</span><span class="p">,</span>
-    <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Feature 2&quot;</span><span class="p">,</span>
-    <span class="n">fname</span><span class="o">=</span><span class="s2">&quot;quick_start_compare_nsim_methods_cluster.png&quot;</span><span class="p">,</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">"Comparing NSimilarity-Based Selectors"</span><span class="p">,</span>
+    <span class="n">xlabel</span><span class="o">=</span><span class="s2">"Feature 1"</span><span class="p">,</span>
+    <span class="n">ylabel</span><span class="o">=</span><span class="s2">"Feature 2"</span><span class="p">,</span>
+    <span class="n">fname</span><span class="o">=</span><span class="s2">"quick_start_compare_nsim_methods_cluster.png"</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>

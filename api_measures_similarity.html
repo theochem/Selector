@@ -396,6 +396,10 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#available-similarity-metrics">Available Similarity Metrics:</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.measures.similarity.continuous_dice"><code class="docutils literal notranslate"><span class="pre">continuous_dice()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.measures.similarity.cosine"><code class="docutils literal notranslate"><span class="pre">cosine()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.measures.similarity.dice"><code class="docutils literal notranslate"><span class="pre">dice()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.measures.similarity.modified_tanimoto"><code class="docutils literal notranslate"><span class="pre">modified_tanimoto()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.measures.similarity.pairwise_similarity_bit"><code class="docutils literal notranslate"><span class="pre">pairwise_similarity_bit()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.measures.similarity.scaled_similarity_matrix"><code class="docutils literal notranslate"><span class="pre">scaled_similarity_matrix()</span></code></a></li>
@@ -414,6 +418,136 @@ document.write(`
   <section id="module-selector.measures.similarity">
 <span id="selector-measures-similarity"></span><span id="measures-similarity"></span><h1><a class="reference internal" href="#module-selector.measures.similarity" title="selector.measures.similarity"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selector.measures.similarity</span></code></a><a class="headerlink" href="#module-selector.measures.similarity" title="Permalink to this heading">#</a></h1>
 <p>Similarity Module.</p>
+<p>This module provides functions to calculate similarity metrics between vectors.</p>
+<section id="available-similarity-metrics">
+<h2>Available Similarity Metrics:<a class="headerlink" href="#available-similarity-metrics" title="Permalink to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 75%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Metric</p></th>
+<th class="head"><p>Similarity Formula (S)</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Cosine</p></td>
+<td><p><span class="math notranslate nohighlight">\(S_{cos} = \frac{a \cdot b}{\|a\| \|b\|}\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>Dice (Continuous)</p></td>
+<td><p><span class="math notranslate nohighlight">\(S_{dice} = \frac{2(a \cdot b)}{\|a\|^2+\|b\|^2}\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p>Continuous Dice (cDC)</p></td>
+<td><p><span class="math notranslate nohighlight">\(S_{cDC} = \frac{2(a \cdot b)}{c\sum_i a_i + \sum_i b_i}\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>Tanimoto</p></td>
+<td><p><span class="math notranslate nohighlight">\(\frac{a \cdot b}{\|a\|^2+\|b\|^2 - a \cdot b}\)</span></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Note: The Dice similarity implemented here is a continuous vector extension.</p>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py" id="selector.measures.similarity.continuous_dice">
+<span class="sig-prename descclassname"><span class="pre">selector.measures.similarity.</span></span><span class="sig-name descname"><span class="pre">continuous_dice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#selector.measures.similarity.continuous_dice" title="Permalink to this definition">#</a></dt>
+<dd><p>Compute the continuous Dice coefficient (cDC).</p>
+<p>The continuous Dice coefficient extends the Dice coefficient to the comparison of a
+binary reference <span class="math notranslate nohighlight">\(a\)</span> with a continuous (probabilistic) array <span class="math notranslate nohighlight">\(b\)</span>, with
+values typically in <span class="math notranslate nohighlight">\([0, 1]\)</span> <a class="footnote-reference brackets" href="#id2" id="id1">1</a>. The size of <span class="math notranslate nohighlight">\(a\)</span> is weighted by a
+coefficient <span class="math notranslate nohighlight">\(c\)</span>, so that the coefficient is 1 for complete overlap:</p>
+<div class="math notranslate nohighlight">
+\[cDC(a, b) = \frac{2 \sum_i a_i b_i}{c \sum_i a_i + \sum_i b_i}\]</div>
+<p>where <span class="math notranslate nohighlight">\(c\)</span> is the mean value of <span class="math notranslate nohighlight">\(b\)</span> over the positions where both
+<span class="math notranslate nohighlight">\(a\)</span> and <span class="math notranslate nohighlight">\(b\)</span> are positive:</p>
+<div class="math notranslate nohighlight">
+\[c = \frac{\sum_i a_i b_i}{\sum_i a_i \, \mathrm{sign}(b_i)}\]</div>
+<p>This measure is not symmetric in its arguments. If <span class="math notranslate nohighlight">\(a\)</span> and <span class="math notranslate nohighlight">\(b\)</span> have no
+positive overlap, the coefficient is defined as 0.0.</p>
+<section id="parameters">
+<h2>Parameters<a class="headerlink" href="#parameters" title="Permalink to this heading">#</a></h2>
+<dl class="simple">
+<dt>a<span class="classifier">ndarray of shape (n_features,)</span></dt><dd><p>The 1D binary (reference) array.</p>
+</dd>
+<dt>b<span class="classifier">ndarray of shape (n_features,)</span></dt><dd><p>The 1D continuous (probabilistic) array.</p>
+</dd>
+</dl>
+</section>
+<section id="returns">
+<h2>Returns<a class="headerlink" href="#returns" title="Permalink to this heading">#</a></h2>
+<dl class="simple">
+<dt>coeff<span class="classifier">float</span></dt><dd><p>Continuous Dice coefficient between arrays <span class="math notranslate nohighlight">\(a\)</span> and <span class="math notranslate nohighlight">\(b\)</span>.</p>
+</dd>
+</dl>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this heading">#</a></h2>
+<dl class="footnote brackets">
+<dt class="label" id="id2"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
+<dd><p>Shamir, R. R.; Duchin, Y.; Kim, J.; Sapiro, G.; Harel, N.
+Continuous Dice Coefficient: a Method for Evaluating Probabilistic Segmentations.
+bioRxiv 2018, 306977.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="selector.measures.similarity.cosine">
+<span class="sig-prename descclassname"><span class="pre">selector.measures.similarity.</span></span><span class="sig-name descname"><span class="pre">cosine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#selector.measures.similarity.cosine" title="Permalink to this definition">#</a></dt>
+<dd><p>Compute Cosine similarity coefficient.</p>
+<p>For two vectors <span class="math notranslate nohighlight">\(a\)</span> and <span class="math notranslate nohighlight">\(b\)</span>, Cosine similarity is defined as the
+dot product of the vectors divided by the product of their lengths:</p>
+<div class="math notranslate nohighlight">
+\[S_{cos}(a, b) = \frac{a \cdot b}{\|a\| \|b\|}\]</div>
+<p>If either vector has a norm of zero, the similarity is defined as 0.0.</p>
+<section id="id3">
+<h2>Parameters<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h2>
+<dl class="simple">
+<dt>a<span class="classifier">ndarray of shape (n_features,)</span></dt><dd><p>The 1D feature array of sample <span class="math notranslate nohighlight">\(a\)</span> in an <cite>n_features</cite> dimensional space.</p>
+</dd>
+<dt>b<span class="classifier">ndarray of shape (n_features,)</span></dt><dd><p>The 1D feature array of sample <span class="math notranslate nohighlight">\(b\)</span> in an <cite>n_features</cite> dimensional space.</p>
+</dd>
+</dl>
+</section>
+<section id="id4">
+<h2>Returns<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h2>
+<dl class="simple">
+<dt>coeff<span class="classifier">float</span></dt><dd><p>Cosine similarity coefficient between feature arrays <span class="math notranslate nohighlight">\(a\)</span> and <span class="math notranslate nohighlight">\(b\)</span>.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="selector.measures.similarity.dice">
+<span class="sig-prename descclassname"><span class="pre">selector.measures.similarity.</span></span><span class="sig-name descname"><span class="pre">dice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#selector.measures.similarity.dice" title="Permalink to this definition">#</a></dt>
+<dd><p>Compute Dice (Sørensen-Dice) similarity coefficient.</p>
+<p>For two vectors <span class="math notranslate nohighlight">\(a\)</span> and <span class="math notranslate nohighlight">\(b\)</span>, Dice similarity is defined as:</p>
+<div class="math notranslate nohighlight">
+\[S_{dice}(a, b) = \frac{2 (a \cdot b)}{\|a\|^2 + \|b\|^2}\]</div>
+<p>This is a continuous vector extension of the binary Dice similarity.
+If the norm of both vectors is zero, the similarity is defined as 0.0.
+For vectors containing negative values, the output may fall outside the [0, 1] range.</p>
+<section id="id5">
+<h2>Parameters<a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h2>
+<dl class="simple">
+<dt>a<span class="classifier">ndarray of shape (n_features,)</span></dt><dd><p>The 1D feature array of sample <span class="math notranslate nohighlight">\(a\)</span> in an <cite>n_features</cite> dimensional space.</p>
+</dd>
+<dt>b<span class="classifier">ndarray of shape (n_features,)</span></dt><dd><p>The 1D feature array of sample <span class="math notranslate nohighlight">\(b\)</span> in an <cite>n_features</cite> dimensional space.</p>
+</dd>
+</dl>
+</section>
+<section id="id6">
+<h2>Returns<a class="headerlink" href="#id6" title="Permalink to this heading">#</a></h2>
+<dl class="simple">
+<dt>coeff<span class="classifier">float</span></dt><dd><p>Dice similarity coefficient between feature arrays <span class="math notranslate nohighlight">\(a\)</span> and <span class="math notranslate nohighlight">\(b\)</span>.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="selector.measures.similarity.modified_tanimoto">
 <span class="sig-prename descclassname"><span class="pre">selector.measures.similarity.</span></span><span class="sig-name descname"><span class="pre">modified_tanimoto</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#selector.measures.similarity.modified_tanimoto" title="Permalink to this definition">#</a></dt>
@@ -426,8 +560,8 @@ shorter vectors using a Bernoulli probability model.</p>
 <span class="math notranslate nohighlight">\(T_1\)</span> is the number of common ‘1’ bits between data points
 (<span class="math notranslate nohighlight">\(T_1 = | A \cap B |\)</span>), and <span class="math notranslate nohighlight">\(T_0\)</span> is the number of common ‘0’
 bits between data points (<span class="math notranslate nohighlight">\(T_0 = |(1-A) \cap (1-B)|\)</span>).</p>
-<section id="parameters">
-<h2>Parameters<a class="headerlink" href="#parameters" title="Permalink to this heading">#</a></h2>
+<section id="id7">
+<h2>Parameters<a class="headerlink" href="#id7" title="Permalink to this heading">#</a></h2>
 <dl class="simple">
 <dt>a<span class="classifier">ndarray of shape (n_features,)</span></dt><dd><p>The 1D bitstring feature array of sample <span class="math notranslate nohighlight">\(A\)</span> in an <cite>n_features</cite> dimensional space.</p>
 </dd>
@@ -435,8 +569,8 @@ bits between data points (<span class="math notranslate nohighlight">\(T_0 = |(1
 </dd>
 </dl>
 </section>
-<section id="returns">
-<h2>Returns<a class="headerlink" href="#returns" title="Permalink to this heading">#</a></h2>
+<section id="id8">
+<h2>Returns<a class="headerlink" href="#id8" title="Permalink to this heading">#</a></h2>
 <dl class="simple">
 <dt>mt<span class="classifier">float</span></dt><dd><p>Modified tanimoto coefficient between bitstring feature arrays <span class="math notranslate nohighlight">\(A\)</span> and <span class="math notranslate nohighlight">\(B\)</span>.</p>
 </dd>
@@ -461,18 +595,18 @@ Technometrics 44, 110-119.</p>
 <dt class="sig sig-object py" id="selector.measures.similarity.pairwise_similarity_bit">
 <span class="sig-prename descclassname"><span class="pre">selector.measures.similarity.</span></span><span class="sig-name descname"><span class="pre">pairwise_similarity_bit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#selector.measures.similarity.pairwise_similarity_bit" title="Permalink to this definition">#</a></dt>
 <dd><p>Compute pairwise similarity coefficient matrix.</p>
-<section id="id1">
-<h2>Parameters<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h2>
+<section id="id9">
+<h2>Parameters<a class="headerlink" href="#id9" title="Permalink to this heading">#</a></h2>
 <dl class="simple">
 <dt>X<span class="classifier">ndarray of shape (n_samples, n_features)</span></dt><dd><p>Feature matrix of <cite>n_samples</cite> samples in <cite>n_features</cite> dimensional space.</p>
 </dd>
 <dt>metric<span class="classifier">str</span></dt><dd><p>The metric used when calculating similarity coefficients between samples in a feature array.
-Method for calculating similarity coefficient. Options: <cite>“tanimoto”</cite>, <cite>“modified_tanimoto”</cite>.</p>
+Method for calculating similarity coefficient. Options: <cite>“tanimoto”</cite>, <cite>“modified_tanimoto”</cite>, <cite>“cosine”</cite>, <cite>“dice”</cite>.</p>
 </dd>
 </dl>
 </section>
-<section id="id2">
-<h2>Returns<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h2>
+<section id="id10">
+<h2>Returns<a class="headerlink" href="#id10" title="Permalink to this heading">#</a></h2>
 <dl class="simple">
 <dt>s<span class="classifier">ndarray of shape (n_samples, n_samples)</span></dt><dd><p>A symmetric similarity matrix between each pair of samples in the feature matrix.
 The diagonal elements are directly computed instead of assuming that they are 1.</p>
@@ -487,15 +621,15 @@ The diagonal elements are directly computed instead of assuming that they are 1.
 <dd><p>Compute the scaled similarity matrix.</p>
 <div class="math notranslate nohighlight">
 \[X(i,j) = \frac{X(i,j)}{\sqrt{X(i,i)X(j,j)}}\]</div>
-<section id="id3">
-<h2>Parameters<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h2>
+<section id="id11">
+<h2>Parameters<a class="headerlink" href="#id11" title="Permalink to this heading">#</a></h2>
 <dl class="simple">
 <dt>X<span class="classifier">ndarray of shape (n_samples, n_samples)</span></dt><dd><p>Similarity matrix of <cite>n_samples</cite>.</p>
 </dd>
 </dl>
 </section>
-<section id="id4">
-<h2>Returns<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h2>
+<section id="id12">
+<h2>Returns<a class="headerlink" href="#id12" title="Permalink to this heading">#</a></h2>
 <dl class="simple">
 <dt>s<span class="classifier">ndarray of shape (n_samples, n_samples)</span></dt><dd><p>A scaled symmetric similarity matrix.</p>
 </dd>
@@ -514,8 +648,8 @@ is defined as the size of their intersection divided by the size of their union:
 \frac{| A \cap B|}{|A| + |B| - | A \cap B|} =
 \frac{A \cdot B}{\|A\|^2 + \|B\|^2 - A \cdot B}\]</div>
 <p>where <span class="math notranslate nohighlight">\(A \cdot B = \sum_i{A_i B_i}\)</span> and <span class="math notranslate nohighlight">\(\|A\|^2 = \sum_i{A_i^2}\)</span>.</p>
-<section id="id5">
-<h2>Parameters<a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h2>
+<section id="id13">
+<h2>Parameters<a class="headerlink" href="#id13" title="Permalink to this heading">#</a></h2>
 <dl class="simple">
 <dt>a<span class="classifier">ndarray of shape (n_features,)</span></dt><dd><p>The 1D feature array of sample <span class="math notranslate nohighlight">\(A\)</span> in an <cite>n_features</cite> dimensional space.</p>
 </dd>
@@ -523,8 +657,8 @@ is defined as the size of their intersection divided by the size of their union:
 </dd>
 </dl>
 </section>
-<section id="id6">
-<h2>Returns<a class="headerlink" href="#id6" title="Permalink to this heading">#</a></h2>
+<section id="id14">
+<h2>Returns<a class="headerlink" href="#id14" title="Permalink to this heading">#</a></h2>
 <dl class="simple">
 <dt>coeff<span class="classifier">float</span></dt><dd><p>Tanimoto coefficient between feature arrays <span class="math notranslate nohighlight">\(A\)</span> and <span class="math notranslate nohighlight">\(B\)</span>.</p>
 </dd>
@@ -592,6 +726,10 @@ Journal of Cheminformatics 7.</p>
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#available-similarity-metrics">Available Similarity Metrics:</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.measures.similarity.continuous_dice"><code class="docutils literal notranslate"><span class="pre">continuous_dice()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.measures.similarity.cosine"><code class="docutils literal notranslate"><span class="pre">cosine()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.measures.similarity.dice"><code class="docutils literal notranslate"><span class="pre">dice()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.measures.similarity.modified_tanimoto"><code class="docutils literal notranslate"><span class="pre">modified_tanimoto()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.measures.similarity.pairwise_similarity_bit"><code class="docutils literal notranslate"><span class="pre">pairwise_similarity_bit()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selector.measures.similarity.scaled_similarity_matrix"><code class="docutils literal notranslate"><span class="pre">scaled_similarity_matrix()</span></code></a></li>

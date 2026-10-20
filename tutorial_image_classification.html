@@ -489,10 +489,10 @@ different selection methods with the random selection baseline.</p>
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># set up the selection methods</span>
 <span class="n">methods</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;MaxMin&quot;</span><span class="p">:</span> <span class="n">MaxMin</span><span class="p">(),</span>
-    <span class="s2">&quot;MaxSum&quot;</span><span class="p">:</span> <span class="n">MaxSum</span><span class="p">(),</span>
-    <span class="s2">&quot;DISE&quot;</span><span class="p">:</span> <span class="n">DISE</span><span class="p">(</span><span class="n">ref_index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mf">2.0</span><span class="p">),</span>
-    <span class="s2">&quot;OptiSim&quot;</span><span class="p">:</span> <span class="n">OptiSim</span><span class="p">(</span><span class="n">ref_index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">0.1</span><span class="p">),</span>
+    <span class="s2">"MaxMin"</span><span class="p">:</span> <span class="n">MaxMin</span><span class="p">(),</span>
+    <span class="s2">"MaxSum"</span><span class="p">:</span> <span class="n">MaxSum</span><span class="p">(),</span>
+    <span class="s2">"DISE"</span><span class="p">:</span> <span class="n">DISE</span><span class="p">(</span><span class="n">ref_index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mf">2.0</span><span class="p">),</span>
+    <span class="s2">"OptiSim"</span><span class="p">:</span> <span class="n">OptiSim</span><span class="p">(</span><span class="n">ref_index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">0.1</span><span class="p">),</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -527,7 +527,7 @@ different selection methods with the random selection baseline.</p>
 
 <span class="c1"># Run experiments and store results</span>
 <span class="k">for</span> <span class="n">method_name</span><span class="p">,</span> <span class="n">method</span> <span class="ow">in</span> <span class="n">methods</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Method: </span><span class="si">{</span><span class="n">method_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Method: </span><span class="si">{</span><span class="n">method_name</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
     <span class="n">method_accuracies</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">method_f1_scores</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">p</span><span class="p">,</span> <span class="n">size</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">percentages</span><span class="p">,</span> <span class="n">sizes</span><span class="p">):</span>
@@ -564,9 +564,9 @@ different selection methods with the random selection baseline.</p>
 
         <span class="n">accuracy</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">accuracy_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_test_pred</span><span class="p">)</span>
         <span class="n">method_accuracies</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">actual_percentage</span><span class="p">,</span> <span class="n">accuracy</span><span class="p">))</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Percentage: </span><span class="si">{</span><span class="n">actual_percentage</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">, Accuracy: </span><span class="si">{</span><span class="n">accuracy</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  Percentage: </span><span class="si">{</span><span class="n">actual_percentage</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">, Accuracy: </span><span class="si">{</span><span class="n">accuracy</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
-        <span class="n">f1</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">f1_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_test_pred</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s2">&quot;weighted&quot;</span><span class="p">)</span>
+        <span class="n">f1</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">f1_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_test_pred</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s2">"weighted"</span><span class="p">)</span>
         <span class="n">method_f1_scores</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">actual_percentage</span><span class="p">,</span> <span class="n">f1</span><span class="p">))</span>
 
     <span class="n">results_accuracies</span><span class="p">[</span><span class="n">method_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">method_accuracies</span>
@@ -578,7 +578,7 @@ different selection methods with the random selection baseline.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># add random selection as baseline</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Method: Random&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Method: Random"</span><span class="p">)</span>
 <span class="n">random_accuracies</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="n">random_f1_scores</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -598,17 +598,17 @@ different selection methods with the random selection baseline.</p>
 
         <span class="n">accuracy</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">accuracy_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_test_pred</span><span class="p">)</span>
         <span class="n">random_accuracies_tmp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">accuracy</span><span class="p">)</span>
-        <span class="n">f1</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">f1_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_test_pred</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s2">&quot;weighted&quot;</span><span class="p">)</span>
+        <span class="n">f1</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">f1_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_test_pred</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s2">"weighted"</span><span class="p">)</span>
         <span class="n">random_f1_scores_tmp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f1</span><span class="p">)</span>
 
     <span class="n">accuracy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">random_accuracies_tmp</span><span class="p">)</span>
     <span class="n">random_accuracies</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">p</span><span class="p">,</span> <span class="n">accuracy</span><span class="p">))</span>
     <span class="n">f1_score</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">random_f1_scores_tmp</span><span class="p">)</span>
     <span class="n">random_f1_scores</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">p</span><span class="p">,</span> <span class="n">f1_score</span><span class="p">))</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Percentage: </span><span class="si">{</span><span class="n">p</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">, Accuracy: </span><span class="si">{</span><span class="n">accuracy</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Percentage: </span><span class="si">{</span><span class="n">p</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">, Accuracy: </span><span class="si">{</span><span class="n">accuracy</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
-<span class="n">results_accuracies</span><span class="p">[</span><span class="s2">&quot;Random&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">random_accuracies</span>
-<span class="n">results_f1_scores</span><span class="p">[</span><span class="s2">&quot;Random&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">random_f1_scores</span>
+<span class="n">results_accuracies</span><span class="p">[</span><span class="s2">"Random"</span><span class="p">]</span> <span class="o">=</span> <span class="n">random_accuracies</span>
+<span class="n">results_f1_scores</span><span class="p">[</span><span class="s2">"Random"</span><span class="p">]</span> <span class="o">=</span> <span class="n">random_f1_scores</span>
 </pre></div>
 </div>
 </div>
@@ -635,7 +635,7 @@ Percentage: 1.00, Accuracy: 0.9930
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">markers</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;^&quot;</span><span class="p">,</span> <span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="s2">&quot;p&quot;</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;&gt;&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;&quot;</span><span class="p">,</span> <span class="s2">&quot;|&quot;</span><span class="p">,</span> <span class="s2">&quot;v&quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">]</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">markers</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"o"</span><span class="p">,</span> <span class="s2">"*"</span><span class="p">,</span> <span class="s2">"^"</span><span class="p">,</span> <span class="s2">"s"</span><span class="p">,</span> <span class="s2">"p"</span><span class="p">,</span> <span class="s2">"x"</span><span class="p">,</span> <span class="s2">"&gt;"</span><span class="p">,</span> <span class="s2">"&lt;"</span><span class="p">,</span> <span class="s2">"|"</span><span class="p">,</span> <span class="s2">"v"</span><span class="p">,</span> <span class="s2">"_"</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>
@@ -655,13 +655,13 @@ Percentage: 1.00, Accuracy: 0.9930
         <span class="n">markersize</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span>
     <span class="p">)</span>
 
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Percentages of Training Data&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Accuracy&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">"Percentages of Training Data"</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">"Accuracy"</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.05</span><span class="p">)</span>
 <span class="c1"># plt.ylim(0.75, 1.00)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Accuracy vs Different Subsets&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">"Accuracy vs Different Subsets"</span><span class="p">)</span>
 
 <span class="c1"># save the figure</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
@@ -686,13 +686,13 @@ Percentage: 1.00, Accuracy: 0.9930
         <span class="n">markersize</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span>
     <span class="p">)</span>
 
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Percentages of Training Data&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;F1 Score&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">"Percentages of Training Data"</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">"F1 Score"</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.05</span><span class="p">)</span>
 <span class="c1"># plt.ylim(0.75, 1.00)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;F1 Score vs Different Subsets&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">"F1 Score vs Different Subsets"</span><span class="p">)</span>
 
 <span class="c1"># save the figure</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>

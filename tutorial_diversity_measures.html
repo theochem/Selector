@@ -467,10 +467,10 @@ document.write(`
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
-<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">"ignore"</span><span class="p">)</span>
 
 <span class="c1"># uncomment the following line to run the code for your own project directory</span>
-<span class="c1"># sys.path.append(&quot;/Users/Someone/Documents/projects/Selector&quot;)</span>
+<span class="c1"># sys.path.append("/Users/Someone/Documents/projects/Selector")</span>
 </pre></div>
 </div>
 </div>
@@ -497,7 +497,7 @@ document.write(`
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">render_table</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">caption</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Renders a list of lists in ta markdown table for easy visualization.</span>
+<span class="w">    </span><span class="sd">"""Renders a list of lists in ta markdown table for easy visualization.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -508,35 +508,35 @@ document.write(`
 <span class="sd">        The caption of the table.</span>
 <span class="sd">    decimals : int, optional</span>
 <span class="sd">        The number of decimal places to round the data to.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="c1"># check all rows have the same number of columns</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">row</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">data</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Expect all rows to have the same number of columns.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Expect all rows to have the same number of columns."</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">caption</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># check if caption is a string</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">caption</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Expect caption to be a string.&quot;</span><span class="p">)</span>
-        <span class="n">tmp_output</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;**</span><span class="si">{</span><span class="n">caption</span><span class="si">}</span><span class="s2">**</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Expect caption to be a string."</span><span class="p">)</span>
+        <span class="n">tmp_output</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"**</span><span class="si">{</span><span class="n">caption</span><span class="si">}</span><span class="s2">**</span><span class="se">\n\n</span><span class="s2">"</span>
 
     <span class="c1"># get the width of each column (transpose the data list and get the max length of each new row)</span>
     <span class="n">colwidths</span> <span class="o">=</span> <span class="p">[</span><span class="nb">max</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">))</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">col</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">data</span><span class="p">)]</span>
 
     <span class="c1"># construct the header row</span>
-    <span class="n">header</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;| </span><span class="si">{</span><span class="s1">&#39; | &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="si">:</span><span class="s1">^</span><span class="si">{</span><span class="n">w</span><span class="si">}}</span><span class="s1">&#39;</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">s</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nb">zip</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="n">colwidths</span><span class="p">))</span><span class="si">}</span><span class="s2"> |&quot;</span>
-    <span class="n">tmp_output</span> <span class="o">+=</span> <span class="n">header</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">header</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"| </span><span class="si">{</span><span class="s1">' | '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="si">:</span><span class="s1">^</span><span class="si">{</span><span class="n">w</span><span class="si">}}</span><span class="s1">'</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">s</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nb">zip</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="n">colwidths</span><span class="p">))</span><span class="si">}</span><span class="s2"> |"</span>
+    <span class="n">tmp_output</span> <span class="o">+=</span> <span class="n">header</span> <span class="o">+</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
 
     <span class="c1"># construct a separator row</span>
-    <span class="n">separator</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;|</span><span class="si">{</span><span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;-&#39;</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">w</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">w</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">colwidths</span><span class="p">])</span><span class="si">}</span><span class="s2">|&quot;</span>
-    <span class="n">tmp_output</span> <span class="o">+=</span> <span class="n">separator</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">separator</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"|</span><span class="si">{</span><span class="s1">'|'</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">'-'</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">w</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">w</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">colwidths</span><span class="p">])</span><span class="si">}</span><span class="s2">|"</span>
+    <span class="n">tmp_output</span> <span class="o">+=</span> <span class="n">separator</span> <span class="o">+</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
 
     <span class="c1"># construct the data rows</span>
     <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
         <span class="c1"># round the data to the specified number of decimal places</span>
         <span class="n">row</span> <span class="o">=</span> <span class="p">[</span><span class="nb">round</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">decimals</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span> <span class="k">else</span> <span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">row</span><span class="p">]</span>
-        <span class="n">row_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;| </span><span class="si">{</span><span class="s1">&#39; | &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="si">:</span><span class="s1">^</span><span class="si">{</span><span class="n">w</span><span class="si">}}</span><span class="s1">&#39;</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">s</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nb">zip</span><span class="p">(</span><span class="n">row</span><span class="p">,</span><span class="w"> </span><span class="n">colwidths</span><span class="p">))</span><span class="si">}</span><span class="s2"> |&quot;</span>
-        <span class="n">tmp_output</span> <span class="o">+=</span> <span class="n">row_str</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">row_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"| </span><span class="si">{</span><span class="s1">' | '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="si">:</span><span class="s1">^</span><span class="si">{</span><span class="n">w</span><span class="si">}}</span><span class="s1">'</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">s</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nb">zip</span><span class="p">(</span><span class="n">row</span><span class="p">,</span><span class="w"> </span><span class="n">colwidths</span><span class="p">))</span><span class="si">}</span><span class="s2"> |"</span>
+        <span class="n">tmp_output</span> <span class="o">+=</span> <span class="n">row_str</span> <span class="o">+</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
 
     <span class="k">return</span> <span class="n">display</span><span class="p">(</span><span class="n">Markdown</span><span class="p">(</span><span class="n">tmp_output</span><span class="p">))</span>
 </pre></div>
@@ -567,13 +567,13 @@ document.write(`
 <span class="n">X</span> <span class="o">=</span> <span class="p">(</span><span class="n">X</span> <span class="o">&gt;</span> <span class="n">median_threshold</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
 
 <span class="c1"># compute the (n_sample, n_sample) pairwise distance matrix</span>
-<span class="n">X_dist</span> <span class="o">=</span> <span class="n">pairwise_distances</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="s2">&quot;euclidean&quot;</span><span class="p">)</span>
+<span class="n">X_dist</span> <span class="o">=</span> <span class="n">pairwise_distances</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="s2">"euclidean"</span><span class="p">)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Shape of data   = &quot;</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Shape of labels = &quot;</span><span class="p">,</span> <span class="n">labels</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Unique labels   = &quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">labels</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Cluster size    = &quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">labels</span> <span class="o">==</span> <span class="mi">0</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Shape of the distance array = &quot;</span><span class="p">,</span> <span class="n">X_dist</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Shape of data   = "</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Shape of labels = "</span><span class="p">,</span> <span class="n">labels</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Unique labels   = "</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">labels</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Cluster size    = "</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">labels</span> <span class="o">==</span> <span class="mi">0</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Shape of the distance array = "</span><span class="p">,</span> <span class="n">X_dist</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -601,7 +601,7 @@ Shape of the distance array =  (500, 500)
 <span class="n">collector</span> <span class="o">=</span> <span class="n">MaxMin</span><span class="p">()</span>
 <span class="n">index_maxmin</span> <span class="o">=</span> <span class="n">collector</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">X_dist</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">)</span>
 
-<span class="n">collector</span> <span class="o">=</span> <span class="n">MaxSum</span><span class="p">(</span><span class="n">fun_dist</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">squareform</span><span class="p">(</span><span class="n">pdist</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="s2">&quot;minkowski&quot;</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)))</span>
+<span class="n">collector</span> <span class="o">=</span> <span class="n">MaxSum</span><span class="p">(</span><span class="n">fun_dist</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">squareform</span><span class="p">(</span><span class="n">pdist</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="s2">"minkowski"</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)))</span>
 <span class="n">index_maxsum</span> <span class="o">=</span> <span class="n">collector</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">)</span>
 
 <span class="n">collector</span> <span class="o">=</span> <span class="n">OptiSim</span><span class="p">(</span><span class="n">ref_index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
@@ -615,24 +615,24 @@ Shape of the distance array =  (500, 500)
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">div_measure</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;logdet&quot;</span><span class="p">,</span> <span class="s2">&quot;wdud&quot;</span><span class="p">,</span> <span class="s2">&quot;shannon_entropy&quot;</span><span class="p">,</span> <span class="s2">&quot;hypersphere_overlap&quot;</span><span class="p">]</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">div_measure</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"logdet"</span><span class="p">,</span> <span class="s2">"wdud"</span><span class="p">,</span> <span class="s2">"shannon_entropy"</span><span class="p">,</span> <span class="s2">"hypersphere_overlap"</span><span class="p">]</span>
 <span class="n">seleced_sets</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span>
-    <span class="p">[</span><span class="s2">&quot;MaxMin&quot;</span><span class="p">,</span> <span class="s2">&quot;MaxSum&quot;</span><span class="p">,</span> <span class="s2">&quot;OptiSim&quot;</span><span class="p">,</span> <span class="s2">&quot;DISE&quot;</span><span class="p">],</span>
+    <span class="p">[</span><span class="s2">"MaxMin"</span><span class="p">,</span> <span class="s2">"MaxSum"</span><span class="p">,</span> <span class="s2">"OptiSim"</span><span class="p">,</span> <span class="s2">"DISE"</span><span class="p">],</span>
     <span class="p">[</span><span class="n">index_maxmin</span><span class="p">,</span> <span class="n">index_maxsum</span><span class="p">,</span> <span class="n">index_optisim</span><span class="p">,</span> <span class="n">index_dise</span><span class="p">],</span>
 <span class="p">)</span>
 
 <span class="c1"># compute the diversity of the selected sets and render the results in a table</span>
-<span class="n">table_data</span> <span class="o">=</span> <span class="p">[[</span><span class="s2">&quot;&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">div_measure</span><span class="p">]</span>
+<span class="n">table_data</span> <span class="o">=</span> <span class="p">[[</span><span class="s2">""</span><span class="p">]</span> <span class="o">+</span> <span class="n">div_measure</span><span class="p">]</span>
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">seleced_sets</span><span class="p">:</span>
     <span class="n">div_data</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
     <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">div_measure</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">m</span> <span class="o">!=</span> <span class="s2">&quot;hypersphere_overlap&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">m</span> <span class="o">!=</span> <span class="s2">"hypersphere_overlap"</span><span class="p">:</span>
             <span class="n">div_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">compute_diversity</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="n">div_type</span><span class="o">=</span><span class="n">m</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">div_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hypersphere_overlap_of_subset</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">X</span><span class="p">,</span> <span class="n">x_subset</span><span class="o">=</span><span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">]]))</span>
     <span class="n">table_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">div_data</span><span class="p">)</span>
 
-<span class="n">render_table</span><span class="p">(</span><span class="n">table_data</span><span class="p">,</span> <span class="n">caption</span><span class="o">=</span><span class="s2">&quot;Diversity of Selected Sets&quot;</span><span class="p">)</span>
+<span class="n">render_table</span><span class="p">(</span><span class="n">table_data</span><span class="p">,</span> <span class="n">caption</span><span class="o">=</span><span class="s2">"Diversity of Selected Sets"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
