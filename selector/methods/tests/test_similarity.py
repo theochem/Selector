@@ -32,6 +32,9 @@ import pytest
 from numpy.testing import assert_almost_equal, assert_equal, assert_raises
 
 from selector.measures.similarity import (
+    continuous_dice,
+    cosine,
+    dice,
     modified_tanimoto,
     pairwise_similarity_bit,
     scaled_similarity_matrix,
@@ -1608,3 +1611,170 @@ def test_NSimilarity_esim_select(c_threshold, w_factor, sample_size, n_ary, star
 
     # check if the selected data is equal to the reference data
     assert all(x in ref_list for x in selected_data)
+
+
+def test_cosine_raises():
+    # check raised error when a or b is not 1D
+    assert_raises(ValueError, cosine, np.random.random((1, 5)), np.random.random(5))
+    assert_raises(ValueError, cosine, np.random.random(3), np.random.random((1, 4)))
+    assert_raises(ValueError, cosine, np.random.random(4), np.random.random((3, 4)))
+    assert_raises(ValueError, cosine, np.random.random((3, 3)), np.random.random((2, 3)))
+    # check raised error when a and b don't have the same length
+    assert_raises(ValueError, cosine, np.random.random(3), np.random.random(5))
+    assert_raises(ValueError, cosine, np.random.random(20), np.random.random(10))
+
+
+def test_cosine_numerical_correctness():
+    """Test cosine similarity for known numerical values."""
+    a = np.array([1, 0])
+    b = np.array([1, 1])
+    assert pytest.approx(cosine(a, b)) == 1 / np.sqrt(2)
+
+
+def test_cosine_identical_vectors():
+    """Test cosine similarity for identical vectors."""
+    a = np.array([1, 2, 3])
+    b = np.array([1, 2, 3])
+    assert pytest.approx(cosine(a, b)) == 1.0
+
+
+def test_cosine_orthogonal_vectors():
+    """Test cosine similarity for orthogonal vectors."""
+    a = np.array([1, 0])
+    b = np.array([0, 1])
+    assert pytest.approx(cosine(a, b)) == 0.0
+
+
+def test_cosine_zero_vectors():
+    """Test cosine similarity when one or both vectors are zero."""
+    a = np.array([0, 0])
+    b = np.array([1, 1])
+    c = np.array([0, 0])
+    assert cosine(a, b) == 0.0
+    assert cosine(b, a) == 0.0
+    assert cosine(a, c) == 0.0
+
+
+def test_cosine_matrix():
+    """Test pairwise cosine similarity matrix."""
+    x = np.array([[1, 0], [0, 1]])
+    s = pairwise_similarity_bit(x, "cosine")
+    expected = np.array([[1.0, 0.0], [0.0, 1.0]])
+    assert_almost_equal(s, expected)
+
+
+def test_dice_raises():
+    # check raised error when a or b is not 1D
+    assert_raises(ValueError, dice, np.random.random((1, 5)), np.random.random(5))
+    assert_raises(ValueError, dice, np.random.random(3), np.random.random((1, 4)))
+    assert_raises(ValueError, dice, np.random.random(4), np.random.random((3, 4)))
+    assert_raises(ValueError, dice, np.random.random((3, 3)), np.random.random((2, 3)))
+    # check raised error when a and b don't have the same length
+    assert_raises(ValueError, dice, np.random.random(3), np.random.random(5))
+    assert_raises(ValueError, dice, np.random.random(20), np.random.random(10))
+
+
+def test_dice_numerical_correctness():
+    """Test dice similarity for known numerical values."""
+    a = np.array([1, 0, 1])
+    b = np.array([1, 1, 0])
+    assert pytest.approx(dice(a, b)) == 0.5
+
+
+def test_dice_identical_vectors():
+    """Test dice similarity for identical vectors."""
+    a = np.array([1, 2, 3])
+    b = np.array([1, 2, 3])
+    assert pytest.approx(dice(a, b)) == 1.0
+
+
+def test_dice_zero_vectors():
+    """Test dice similarity when one or both vectors are zero."""
+    a = np.array([0, 0])
+    b = np.array([1, 1])
+    c = np.array([0, 0])
+    assert dice(a, b) == 0.0
+    assert dice(b, a) == 0.0
+    assert dice(a, c) == 0.0
+
+
+def test_dice_matrix():
+    """Test pairwise dice similarity matrix."""
+    x = np.array([[1, 0, 1], [1, 1, 0]])
+    s = pairwise_similarity_bit(x, "dice")
+    expected = np.array([[1.0, 0.5], [0.5, 1.0]])
+    assert_almost_equal(s, expected)
+
+
+def test_continuous_dice_raises():
+    assert_raises(ValueError, continuous_dice, np.random.random((1, 5)), np.random.random(5))
+    assert_raises(ValueError, continuous_dice, np.random.random(3), np.random.random((1, 3)))
+    assert_raises(ValueError, continuous_dice, np.random.random(3), np.random.random(5))
+
+
+def test_continuous_dice_complete_overlap():
+    """cDC is 1 for a binary reference fully covered by a probabilistic map."""
+    a = np.array([1, 1, 0, 0])
+    b = np.array([0.6, 0.8, 0.0, 0.0])
+    assert pytest.approx(continuous_dice(a, b)) == 1.0
+    # the classical Dice coefficient is below 1 for the same inputs
+    assert dice(a, b) < 1.0
+
+
+def test_continuous_dice_numerical_correctness():
+    """Test cDC against a hand-computed value."""
+    a = np.array([1, 1, 0, 0])
+    b = np.array([0.5, 0.0, 0.5, 0.0])
+    # overlap = 0.5, sum(a * sign(b)) = 1 -> c = 0.5
+    # cDC = 2 * 0.5 / (0.5 * 2 + 1.0) = 0.5
+    assert pytest.approx(continuous_dice(a, b)) == 0.5
+
+
+def test_continuous_dice_binary_matches_dice():
+    """For binary inputs c = 1 and cDC reduces to the Dice coefficient."""
+    a = np.array([1, 0, 1, 1])
+    b = np.array([1, 1, 0, 1])
+    assert pytest.approx(continuous_dice(a, b)) == 2 * 2 / (3 + 3)
+
+
+def test_continuous_dice_no_overlap():
+    """cDC is defined as 0.0 when there is no positive overlap."""
+    assert continuous_dice(np.array([1, 0]), np.array([0.0, 0.7])) == 0.0
+    assert continuous_dice(np.array([0, 0]), np.array([0.0, 0.0])) == 0.0
+
+
+def test_cosine_bool_and_narrow_int_dtypes():
+    """Boolean and narrow integer inputs must not overflow or saturate."""
+    assert pytest.approx(cosine(np.array([True, False]), np.array([True, True]))) == 1 / np.sqrt(2)
+    ones = np.ones(256, dtype=np.uint8)
+    assert pytest.approx(cosine(ones, ones)) == 1.0
+    # pairwise path
+    x = np.array([[True, False], [True, True]])
+    assert_almost_equal(
+        pairwise_similarity_bit(x, "cosine"),
+        np.array([[1.0, 1 / np.sqrt(2)], [1 / np.sqrt(2), 1.0]]),
+    )
+    x = np.ones((2, 256), dtype=np.uint8)
+    assert_almost_equal(pairwise_similarity_bit(x, "cosine"), np.ones((2, 2)))
+
+
+def test_dice_bool_and_narrow_int_dtypes():
+    """Boolean and narrow integer inputs must not overflow or saturate."""
+    a = np.array([True, False])
+    assert pytest.approx(dice(a, a)) == 1.0
+    assert pytest.approx(dice(np.array([True, False, True]), np.array([True, True, False]))) == 0.5
+    ones = np.ones(128, dtype=np.uint8)
+    assert pytest.approx(dice(ones, ones)) == 1.0
+    # pairwise path, including the diagonal
+    x = np.array([[True, False, True], [True, True, False]])
+    assert_almost_equal(pairwise_similarity_bit(x, "dice"), np.array([[1.0, 0.5], [0.5, 1.0]]))
+    x = np.ones((2, 128), dtype=np.uint8)
+    assert_almost_equal(pairwise_similarity_bit(x, "dice"), np.ones((2, 2)))
+
+
+def test_continuous_dice_bool_and_narrow_int_dtypes():
+    """Binary masks given as bool or narrow integers must not overflow."""
+    ones = np.ones(256, dtype=np.uint8)
+    assert pytest.approx(continuous_dice(ones, ones)) == 1.0
+    a = np.array([True, True, False])
+    assert pytest.approx(continuous_dice(a, a)) == 1.0
