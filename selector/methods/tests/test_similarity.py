@@ -1660,7 +1660,7 @@ def test_cosine_matrix():
     x = np.array([[1, 0], [0, 1]])
     s = pairwise_similarity_bit(x, "cosine")
     expected = np.array([[1.0, 0.0], [0.0, 1.0]])
-    assert_equal(s, expected)
+    assert_almost_equal(s, expected)
 
 
 def test_dice_raises():
@@ -1741,3 +1741,40 @@ def test_continuous_dice_no_overlap():
     """cDC is defined as 0.0 when there is no positive overlap."""
     assert continuous_dice(np.array([1, 0]), np.array([0.0, 0.7])) == 0.0
     assert continuous_dice(np.array([0, 0]), np.array([0.0, 0.0])) == 0.0
+
+
+def test_cosine_bool_and_narrow_int_dtypes():
+    """Boolean and narrow integer inputs must not overflow or saturate."""
+    assert pytest.approx(cosine(np.array([True, False]), np.array([True, True]))) == 1 / np.sqrt(2)
+    ones = np.ones(256, dtype=np.uint8)
+    assert pytest.approx(cosine(ones, ones)) == 1.0
+    # pairwise path
+    x = np.array([[True, False], [True, True]])
+    assert_almost_equal(
+        pairwise_similarity_bit(x, "cosine"),
+        np.array([[1.0, 1 / np.sqrt(2)], [1 / np.sqrt(2), 1.0]]),
+    )
+    x = np.ones((2, 256), dtype=np.uint8)
+    assert_almost_equal(pairwise_similarity_bit(x, "cosine"), np.ones((2, 2)))
+
+
+def test_dice_bool_and_narrow_int_dtypes():
+    """Boolean and narrow integer inputs must not overflow or saturate."""
+    a = np.array([True, False])
+    assert pytest.approx(dice(a, a)) == 1.0
+    assert pytest.approx(dice(np.array([True, False, True]), np.array([True, True, False]))) == 0.5
+    ones = np.ones(128, dtype=np.uint8)
+    assert pytest.approx(dice(ones, ones)) == 1.0
+    # pairwise path, including the diagonal
+    x = np.array([[True, False, True], [True, True, False]])
+    assert_almost_equal(pairwise_similarity_bit(x, "dice"), np.array([[1.0, 0.5], [0.5, 1.0]]))
+    x = np.ones((2, 128), dtype=np.uint8)
+    assert_almost_equal(pairwise_similarity_bit(x, "dice"), np.ones((2, 2)))
+
+
+def test_continuous_dice_bool_and_narrow_int_dtypes():
+    """Binary masks given as bool or narrow integers must not overflow."""
+    ones = np.ones(256, dtype=np.uint8)
+    assert pytest.approx(continuous_dice(ones, ones)) == 1.0
+    a = np.array([True, True, False])
+    assert pytest.approx(continuous_dice(a, a)) == 1.0

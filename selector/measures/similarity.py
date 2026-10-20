@@ -242,6 +242,9 @@ def cosine(a: np.array, b: np.array) -> float:
     coeff : float
         Cosine similarity coefficient between feature arrays :math:`a` and :math:`b`.
     """
+    # cast to float so that boolean and narrow integer inputs do not overflow in the contractions
+    a = np.asarray(a, dtype=float)
+    b = np.asarray(b, dtype=float)
     if a.ndim != 1 or b.ndim != 1:
         raise ValueError(f"Arguments a and b should be 1D arrays, got {a.ndim} and {b.ndim}")
     if a.shape != b.shape:
@@ -282,6 +285,9 @@ def dice(a: np.array, b: np.array) -> float:
     coeff : float
         Dice similarity coefficient between feature arrays :math:`a` and :math:`b`.
     """
+    # cast to float so that boolean and narrow integer inputs do not overflow in the contractions
+    a = np.asarray(a, dtype=float)
+    b = np.asarray(b, dtype=float)
     if a.ndim != 1 or b.ndim != 1:
         raise ValueError(f"Arguments a and b should be 1D arrays, got {a.ndim} and {b.ndim}")
     if a.shape != b.shape:
@@ -334,6 +340,9 @@ def continuous_dice(a: np.array, b: np.array) -> float:
        Continuous Dice Coefficient: a Method for Evaluating Probabilistic Segmentations.
        bioRxiv 2018, 306977.
     """
+    # cast to float so that boolean and narrow integer inputs do not overflow in the contractions
+    a = np.asarray(a, dtype=float)
+    b = np.asarray(b, dtype=float)
     if a.ndim != 1 or b.ndim != 1:
         raise ValueError(f"Arguments a and b should be 1D arrays, got {a.ndim} and {b.ndim}")
     if a.shape != b.shape:
