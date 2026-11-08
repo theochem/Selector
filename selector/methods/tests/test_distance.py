@@ -23,6 +23,8 @@
 # --
 """Test selector/methods/distance.py."""
 
+import threading
+
 import numpy as np
 import pytest
 from numpy.testing import assert_equal, assert_raises
@@ -250,6 +252,30 @@ def test_maxmin_invalid_input():
     with pytest.raises(ValueError):
         collector = MaxMin(ref_index=0)
         _ = collector.select(x_dist, size=2)
+
+
+def test_maxmin_duplicate_points():
+    """Testing that MaxMin does not select the same sample twice when points coincide."""
+    # the first two samples are identical, so both have distance 0 to the selected set
+    x = np.array([[0.0, 0.0], [0.0, 0.0], [5.0, 0.0], [9.0, 0.0]])
+    selected = MaxMin().select(squareform(pdist(x)), size=4)
+    assert_equal(selected, [0, 3, 2, 1])
+    # all samples are identical
+    selected = MaxMin().select(np.zeros((3, 3)), size=3)
+    assert_equal(selected, [0, 1, 2])
+
+
+def test_maxsum_identical_points():
+    """Testing that MaxSum selects every sample once when all points are identical."""
+    selected = []
+    # run in a daemon thread, so an endless selection loop fails the test instead of hanging it
+    thread = threading.Thread(
+        target=lambda: selected.extend(MaxSum().select(np.zeros((3, 3)), size=3)), daemon=True
+    )
+    thread.start()
+    thread.join(timeout=10)
+    assert not thread.is_alive(), "MaxSum did not finish"
+    assert_equal(selected, [0, 1, 2])
 
 
 def test_maxsum_clustered_data():
