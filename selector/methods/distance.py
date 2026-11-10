@@ -130,9 +130,11 @@ class MaxMin(SelectionBase):
         while len(selected) < size:
             # determine the min pairwise distances between the selected points and all other points
             min_distances = np.min(x_dist[selected], axis=0)
+            # only points that are not selected yet are candidates (duplicate points can tie at 0)
+            candidates = np.delete(np.arange(len(x_dist)), selected)
             # determine which point affords the maximum distance among the minimum distances
             # captured in min_distances
-            new_id = np.argmax(min_distances)
+            new_id = candidates[np.argmax(min_distances[candidates])]
             selected.append(new_id)
 
         selected = [int(i) for i in selected]
@@ -230,15 +232,10 @@ class MaxSum(SelectionBase):
         while len(selected) < size:
             # determine sum of pairwise distances between selected points and all other points
             sum_distances = np.sum(x_dist[selected], axis=0)
-            # determine which point has the max sum of pairwise distances to already-selected points
-            new_id = np.argmax(sum_distances)
             # make sure that new_id corresponds to a new point
-            while new_id in selected:
-                # set the sum of distances for the current point corresponding to new_id to 0
-                sum_distances[new_id] = 0
-                # find a different point with the maximum sum of pairwise distances to
-                # already-selected points
-                new_id = np.argmax(sum_distances)
+            candidates = np.delete(np.arange(len(x_dist)), selected)
+            # determine which point has the max sum of pairwise distances to already-selected points
+            new_id = candidates[np.argmax(sum_distances[candidates])]
             selected.append(new_id)
 
         selected = [int(i) for i in selected]
