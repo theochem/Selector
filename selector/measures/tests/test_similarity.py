@@ -55,6 +55,26 @@ def test_tanimoto_shape_mismatch():
         tanimoto(np.array([1, 2]), np.array([1, 2, 3]))
 
 
+@pytest.mark.parametrize("dtype", [bool, np.uint8, np.int8, np.int32, np.float64])
+def test_tanimoto_narrow_dtypes(dtype):
+    """Check tanimoto is not affected by the integer type of the fingerprints."""
+    rng = np.random.default_rng(1)
+    a = rng.random(2048) < 0.6
+    b = rng.random(2048) < 0.6
+    expected = np.sum(a & b) / np.sum(a | b)
+    assert tanimoto(a.astype(dtype), b.astype(dtype)) == pytest.approx(expected)
+
+
+@pytest.mark.parametrize("dtype", [bool, np.uint8, np.int8, np.int32, np.float64])
+def test_modified_tanimoto_narrow_dtypes(dtype):
+    """Check modified tanimoto is not affected by the integer type of the fingerprints."""
+    rng = np.random.default_rng(2)
+    a = rng.random(2048) < 0.6
+    b = rng.random(2048) < 0.6
+    expected = modified_tanimoto(a.astype(float), b.astype(float))
+    assert modified_tanimoto(a.astype(dtype), b.astype(dtype)) == pytest.approx(expected)
+
+
 def test_modified_all_zero():
     """Check modified tanimoto handles zero vectors safely."""
     a = np.zeros(5)
