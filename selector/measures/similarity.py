@@ -128,6 +128,9 @@ def tanimoto(a: np.array, b: np.array) -> float:
     Journal of Cheminformatics 7.
 
     """
+    # cast to float so that boolean and narrow integer inputs do not overflow in the sums
+    a = np.asarray(a, dtype=float)
+    b = np.asarray(b, dtype=float)
     if a.ndim != 1 or b.ndim != 1:
         raise ValueError(f"Arguments a and b should be 1D arrays, got {a.ndim} and {b.ndim}")
     if a.shape != b.shape:
@@ -182,6 +185,9 @@ def modified_tanimoto(a: np.array, b: np.array) -> float:
     Technometrics 44, 110-119.
 
     """
+    # cast to float so that boolean and narrow integer inputs do not overflow in the sums
+    a = np.asarray(a, dtype=float)
+    b = np.asarray(b, dtype=float)
     if a.ndim != 1:
         raise ValueError(f"Argument `a` should have dimension 1 rather than {a.ndim}.")
     if b.ndim != 1:
