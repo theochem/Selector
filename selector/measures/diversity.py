@@ -149,6 +149,8 @@ def logdet(x: np.ndarray) -> float:
     descriptors learned with graph neural networks. Scientific Reports 12, 2022.
 
     """
+    # cast to float so that boolean and narrow integer inputs do not overflow in the product
+    x = np.asarray(x, dtype=float)
     mid = np.dot(x, np.transpose(x)) + np.identity(x.shape[0])
     logdet_mid = np.linalg.slogdet(mid)
     f_logdet = logdet_mid.sign * logdet_mid.logabsdet
@@ -541,10 +543,12 @@ def nearest_average_tanimoto(x: np.ndarray) -> float:
     A Novel Measure for Assessing the Diversity of Compound Databases.
     Journal of Chemical Information and Modeling 46, 1898-1904.
     """
+    # cast to float so that unsigned and boolean inputs do not wrap around in the differences
+    x = np.asarray(x, dtype=float)
     tani = []
     for idx, _ in enumerate(x):
-        # arbitrary distance for comparison:
-        short = 100
+        # distance for comparison, larger than any distance between two points
+        short = np.inf
         a = 0
         b = 0
         # search for shortest distance point from idx

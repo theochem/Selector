@@ -114,6 +114,14 @@ def test_logdet():
     assert_almost_equal(sel, expected)
 
 
+@pytest.mark.parametrize("dtype", [bool, np.uint8, np.int8])
+def test_logdet_narrow_dtypes(dtype):
+    """Test that the log determinant does not depend on the integer type of the fingerprints."""
+    rng = np.random.default_rng(3)
+    x = rng.random((20, 512)) < 0.5
+    assert_almost_equal(logdet(x.astype(dtype)), logdet(x.astype(float)))
+
+
 def test_logdet_non_square_matrix():
     """Test the log determinant function with a rectangular matrix."""
     sel = logdet(sample4)
@@ -361,3 +369,21 @@ def test_nearest_average_tanimoto_nonsquare():
         ]
     )
     assert_equal(nearest_average_tanimoto(x), expected)
+
+
+@pytest.mark.parametrize("dtype", [bool, np.uint8])
+def test_nearest_average_tanimoto_narrow_dtypes(dtype):
+    """Test that the nearest average tanimoto does not depend on the type of the fingerprints."""
+    rng = np.random.default_rng(4)
+    x = rng.random((20, 64)) < 0.5
+    assert_almost_equal(
+        nearest_average_tanimoto(x.astype(dtype)), nearest_average_tanimoto(x.astype(float))
+    )
+
+
+def test_nearest_average_tanimoto_distant_points():
+    """Test that the nearest neighbours are found when all the distances are larger than 100."""
+    x = np.array([[0.0, 0.0], [300.0, 0.0], [300.0, 400.0]])
+    # nearest neighbours: 0 -> 1, 1 -> 0, 2 -> 1
+    tani = [0.0, 0.0, 90000 / (90000 + 250000 - 90000)]
+    assert_almost_equal(nearest_average_tanimoto(x), np.average(tani))
